@@ -1,17 +1,15 @@
-## My Project
+# MLOps Modules
 
-TODO: Fill this README out!
+MLOps modules is a collection of resuable Infrastructure as Code (IAC) modules that works with [SeedFarmer CLI](https://github.com/awslabs/seed-farmer). Please see the [DOCS](https://seed-farmer.readthedocs.io/en/latest/) for all things seed-farmer.
 
-Be sure to:
+The modules in this repository are decoupled from each other and can be aggregated together using GitOps (manifest file) principles provided by `seedfarmer` and achieve the desired use cases. It removes the undifferentiated heavy lifting for an end user by providing hardended modules and enables them to focus on building business on top of them.
 
-* Change the title in this README
-* Edit your repository description on GitHub
+## General Information
 
-## Security
+The modules in this repository are / must be generic for resuse without affiliation to any one particular project or use case or any vertical.
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+All modules in this repository adhere to the module strutucture defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
 
-## License
-
-This project is licensed under the Apache-2.0 License.
-
+- [Project Structure](https://seed-farmer.readthedocs.io/en/latest/project_development.html)
+- [Module Development](https://seed-farmer.readthedocs.io/en/latest/module_development.html)
+- [Module Manifest Guide](https://seed-farmer.readthedocs.io/en/latest/manifests.html)
