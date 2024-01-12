@@ -29,12 +29,36 @@ Contributions via pull requests are much appreciated. Before sending us a pull r
 
 To send us a pull request, please:
 
-1. Fork the repository.
-2. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
-3. Ensure local tests pass.
-4. Commit to your fork using clear commit messages.
-5. Send us a pull request, answering any default questions in the pull request interface.
-6. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
+1. Fork the repository and follow the [deployment guide](docs/deployment_guide.md) for deploying MLOps modules.
+
+```sh
+git clone https://github.com/{your-account}/mlops-modules.git
+```
+
+2. Then, prepare your local environment before you move forward with the development.
+
+```sh
+cd mlops-modules
+git checkout -b <<BRANCH-NAME>>
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt -r requirements-dev.txt
+```
+
+3. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
+
+4. Ensure deployment/testing to personal environments pass.
+
+- create a copy of your config file under `config` directory and name it as `dev-<NAME>.env`
+- Replace the necessary values of the env vars inside your `dev-<NAME>.env` file
+- Run the below command to deploy the infrastructure
+
+```sh
+seedfarmer apply manifests/local/deployment.yaml --env-file config/dev-<NAME>.env --debug
+```
+
+5. Commit to your fork using clear commit messages.
+6. Send us a pull request, answering any default questions in the pull request interface.
+7. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
 
 GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).

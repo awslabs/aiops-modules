@@ -1,0 +1,3 @@
+project: mlops-modules
+description: This is for local testing - intended for contributions
+#projectPolicyPath: <some relative path to this file>
