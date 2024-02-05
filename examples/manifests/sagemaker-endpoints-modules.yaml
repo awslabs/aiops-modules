@@ -1,0 +1,27 @@
+# This is an example manifest group.
+# Replace the parameters with the parameters for your model below prior the deployment.
+name: example-endpoint
+path: modules/sagemaker/sagemaker-endpoint
+parameters:
+  - name: sagemaker_project_id
+    value: project-1
+  - name: sagemaker_project_name
+    value: project-1
+  - name: model_package_arn
+    value: arn:aws:sagemaker:<region>:<account>:model-package/<package-name>/1
+  - name: model_bucket_arn
+    value: arn:aws:s3:::<bucket-name>
+  - name: instance_type
+    value: ml.m5.large
+  - name: vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
