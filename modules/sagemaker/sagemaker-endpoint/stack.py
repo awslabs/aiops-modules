@@ -12,8 +12,9 @@ from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
-from scripts.get_approved_package import get_approved_package
 from typing_extensions import NotRequired, Required
+
+from scripts.get_approved_package import get_approved_package
 
 
 class EndpointConfigProductionVariant(TypedDict):
@@ -56,7 +57,10 @@ class DeployEndpointStack(Stack):
         # Import VPC, create security group, and add ingress rule
         vpc = ec2.Vpc.from_lookup(self, f"{app_prefix}-vpc", vpc_id=vpc_id)
         security_group = ec2.SecurityGroup(self, f"{app_prefix}-sg", vpc=vpc, allow_all_outbound=True)
-        security_group.add_ingress_rule(peer=ec2.Peer.ipv4(vpc.vpc_cidr_block), connection=ec2.Port.all_tcp())
+        security_group.add_ingress_rule(
+            peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
+            connection=ec2.Port.all_tcp(),
+        )
 
         if not model_execution_role_arn:
             # Create model execution role

@@ -5,6 +5,7 @@ import json
 import os
 
 import aws_cdk
+
 from stack import DeployEndpointStack
 
 
@@ -69,12 +70,12 @@ stack = DeployEndpointStack(
     subnet_ids=subnet_ids,
     model_bucket_arn=model_bucket_arn,
     ecr_repo_arn=ecr_repo_arn,
-    endpoint_config_prod_variant=dict(
-        initial_instance_count=initial_instance_count,
-        initial_variant_weight=initial_variant_weight,
-        instance_type=instance_type,
-        variant_name=variant_name,
-    ),
+    endpoint_config_prod_variant={
+        "initial_instance_count": initial_instance_count,
+        "initial_variant_weight": initial_variant_weight,
+        "instance_type": instance_type,
+        "variant_name": variant_name,
+    },
     env=environment,
 )
 

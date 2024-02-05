@@ -4,7 +4,6 @@ from unittest import mock
 
 import aws_cdk as cdk
 import botocore.session
-import pytest
 from aws_cdk.assertions import Template
 from botocore.stub import Stubber
 
@@ -19,7 +18,7 @@ def stack_defaults() -> None:
         del sys.modules["stack"]
 
 
-def test_synthesize_stack_model_package_input(stack_defaults) -> None:
+def test_synthesize_stack_model_package_input() -> None:
     import stack
 
     app = cdk.App()
@@ -52,10 +51,10 @@ def test_synthesize_stack_model_package_input(stack_defaults) -> None:
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
         ),
-        endpoint_config_prod_variant=dict(
-            variant_name="AllTraffic",
-            initial_variant_weight=1,
-        ),
+        endpoint_config_prod_variant={
+            "initial_variant_weight": 1,
+            "variant_name": "AllTraffic",
+        },
     )
 
     template = Template.from_stack(endpoint_stack)
@@ -78,7 +77,6 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
     vpc_id = "vpc-12345"
     model_package_group_name = "example-group"
     model_bucket_arn = "arn:aws:s3:::test-bucket"
-    dev_account = "111111111111"
 
     sagemaker_client = botocore.session.get_session().create_client("sagemaker", region_name="us-east-1")
     mock_s3_client.return_value = sagemaker_client
@@ -93,7 +91,7 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
         response = {
             "ModelPackageSummaryList": [
                 {
-                    "ModelPackageArn": f"arn:aws:sagemaker:us-east-1:{dev_account}:model-package/{model_package_group_name}/1",
+                    "ModelPackageArn": f"arn:aws:sagemaker:us-east-1:111:model-package/{model_package_group_name}/1",
                     "ModelPackageStatus": "Completed",
                     "ModelPackageName": model_package_group_name,
                     "CreationTime": "2021-01-01T00:00:00Z",
@@ -119,10 +117,10 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
                 account=os.environ["CDK_DEFAULT_ACCOUNT"],
                 region=os.environ["CDK_DEFAULT_REGION"],
             ),
-            endpoint_config_prod_variant=dict(
-                variant_name="AllTraffic",
-                initial_variant_weight=1,
-            ),
+            endpoint_config_prod_variant={
+                "initial_variant_weight": 1,
+                "variant_name": "AllTraffic",
+            },
         )
 
     template = Template.from_stack(endpoint_stack)
