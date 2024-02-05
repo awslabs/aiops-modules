@@ -2,7 +2,7 @@
 
 ## Description
 
-This is an example module that creates SageMaker real-time inference endpoint for a model.
+This module creates SageMaker real-time inference endpoint for a model.
 
 ## Inputs/Outputs
 
@@ -15,6 +15,10 @@ This is an example module that creates SageMaker real-time inference endpoint fo
 - `model-package-arn`: Model package ARN or
 - `model-package-group-name`: Model package group name to pull latest approved model from
 - `model-bucket-arn`: Model bucket ARN
+
+The user must specify either `model-package-arn` for a specific model or `model-package-group-name` to automatically
+pull latest approved model from the model package group and deploy and endpoint. The latter is useful to scenarios
+where endpoints are provisioned as part of automated Continuous Integration and Deployment pipeline.
 
 #### Optional
 
