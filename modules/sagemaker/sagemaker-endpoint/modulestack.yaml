@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template deploys a Module specific IAM permissions
+
+Parameters:
+  RoleName:
+    Type: String
+    Description: The name of the IAM Role
+  ModelPackageGroupName:
+    Type: String
+    Description: The name of the SageMaker Model Package Group
+    Default: NotPopulated
+
+Resources:
+  Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "sagemaker-endpoint-modulespecific-policy"
+      Roles: [!Ref RoleName]
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sagemaker:ListModelPackages
+            Resource:
+              - !Sub arn:${AWS::Partition}:sagemaker:${AWS::Region}:${AWS::AccountId}:model-package/${ModelPackageGroupName}/*

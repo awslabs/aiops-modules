@@ -1,0 +1,4 @@
+aws-cdk-lib==2.91.0
+cdk-nag==2.12.29
+yamldataclassconfig
+boto3
