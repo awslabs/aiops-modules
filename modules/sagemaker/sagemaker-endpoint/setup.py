@@ -10,7 +10,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="author",
     install_requires=[
-        "aws-cdk-lib==2.20.0",
+        "aws-cdk-lib==2.126.0",
     ],
     python_requires=">=3.6",
     classifiers=[

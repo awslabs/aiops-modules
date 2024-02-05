@@ -1,4 +1,4 @@
-aws-cdk-lib==2.91.0
-cdk-nag==2.12.29
+aws-cdk-lib==2.126.0
+cdk-nag==2.28.27
 yamldataclassconfig
 boto3
