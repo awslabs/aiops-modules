@@ -4,6 +4,7 @@ from unittest import mock
 
 import aws_cdk as cdk
 import botocore.session
+import pytest
 from aws_cdk.assertions import Template
 from botocore.stub import Stubber
 
