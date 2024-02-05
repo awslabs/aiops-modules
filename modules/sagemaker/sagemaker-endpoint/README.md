@@ -15,11 +15,11 @@ This is an example module that creates SageMaker real-time inference endpoint fo
 - `model-package-arn`: Model package ARN or
 - `model-package-group-name`: Model package group name to pull latest approved model from
 - `model-bucket-arn`: Model bucket ARN
-- 
+
 #### Optional
 
-- `sagemaker-project-id`: The VPC-ID that the endpoint will be created in
-- `sagemaker-project-name`: The subnets that the endpoint will be created in\
+- `sagemaker-project-id`: SageMaker project id
+- `sagemaker-project-name`: SageMaker project name
 - `model-execution-role-arn`: Model execution role ARN. Will be created if not provided.
 - `ecr-repo-arn`: ECR repository ARN if custom container is used
 - `variant-name`: Endpoint config production variant name. `AllTraffic` by default.
