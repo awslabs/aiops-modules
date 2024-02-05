@@ -30,5 +30,5 @@ def test_app(stack_defaults):
 def test_vpc_id(stack_defaults):
     del os.environ["SEEDFARMER_PARAMETER_VPC_ID"]
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="Missing input parameter vpc-id"):
         import app  # noqa: F401

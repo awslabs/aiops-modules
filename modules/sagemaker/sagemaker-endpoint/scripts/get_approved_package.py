@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from logging import Logger
-from typing import Optional
+from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 logger = Logger(name="get_approved_package")
 
 
-def get_approved_package(region_name: str, model_package_group_name: str) -> Optional[str]:
+def get_approved_package(region_name: str, model_package_group_name: str) -> Any:
     """Gets the latest approved model package for a model package group.
     Returns:
         The SageMaker Model Package ARN.

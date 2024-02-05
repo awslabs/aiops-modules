@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from datetime import datetime, timezone
-from typing import Any, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional
 
 import constructs
 from aws_cdk import Aspects, Stack, Tags
@@ -12,16 +12,8 @@ from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
-from typing_extensions import NotRequired, Required
 
 from scripts.get_approved_package import get_approved_package
-
-
-class EndpointConfigProductionVariant(TypedDict):
-    variant_name: Required[str]
-    initial_instance_count: NotRequired[float]
-    initial_variant_weight: Required[float]
-    instance_type: NotRequired[str]
 
 
 def get_timestamp() -> str:
@@ -44,7 +36,7 @@ class DeployEndpointStack(Stack):
         subnet_ids: List[str],
         model_bucket_arn: Optional[str],
         ecr_repo_arn: Optional[str],
-        endpoint_config_prod_variant: EndpointConfigProductionVariant,
+        endpoint_config_prod_variant: Dict[str, Any],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -88,13 +80,16 @@ class DeployEndpointStack(Stack):
                     )
                 )
 
-            model_execution_role_arn: str = model_execution_role.role_arn
+            model_execution_role_arn = model_execution_role.role_arn
 
         self.model_execution_role_arn = model_execution_role_arn
 
         if not model_package_arn:
             # Get latest approved model package from the model registry
-            model_package_arn = get_approved_package(self.region, model_package_group_name)
+            if model_package_group_name:
+                model_package_arn = get_approved_package(self.region, model_package_group_name)
+            else:
+                raise ValueError("Either model_package_arn or model_package_group_name is required")
 
         # Create model instance
         model_name = f"{app_prefix}-{get_timestamp()}"
@@ -121,8 +116,7 @@ class DeployEndpointStack(Stack):
         kms_key.grant_encrypt_decrypt(iam.AccountRootPrincipal())
 
         # Create endpoint config
-        endpoint_config_name = f"{app_prefix}-endpoint-config"
-        endpoint_config_prod_variant = endpoint_config_prod_variant or {}
+        endpoint_config_name: str = f"{app_prefix}-endpoint-config"
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
             f"{app_prefix}-endpoint-config",
@@ -142,7 +136,7 @@ class DeployEndpointStack(Stack):
         endpoint = sagemaker.CfnEndpoint(
             self,
             "Endpoint",
-            endpoint_config_name=endpoint_config.endpoint_config_name,
+            endpoint_config_name=endpoint_config.endpoint_config_name,  # type: ignore[arg-type]
             endpoint_name=endpoint_name,
         )
         endpoint.add_depends_on(endpoint_config)
