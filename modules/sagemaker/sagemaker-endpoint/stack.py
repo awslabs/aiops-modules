@@ -67,11 +67,7 @@ class DeployEndpointStack(Stack):
 
             if model_artifacts_bucket_arn:
                 # Grant model assets bucket read permissions
-                model_bucket = s3.Bucket.from_bucket_arn(
-                    self,
-                    f"{app_prefix}-model-bucket",
-                    model_artifacts_bucket_arn
-                )
+                model_bucket = s3.Bucket.from_bucket_arn(self, f"{app_prefix}-model-bucket", model_artifacts_bucket_arn)
                 model_bucket.grant_read(model_execution_role)
 
             if ecr_repo_arn:
