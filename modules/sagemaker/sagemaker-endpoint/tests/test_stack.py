@@ -33,7 +33,7 @@ def test_synthesize_stack_model_package_input() -> None:
     sagemaker_project_name = "sagemaker-project"
     vpc_id = "vpc-12345"
     model_package_arn = "example-arn"
-    model_bucket_arn = "arn:aws:s3:::test-bucket"
+    model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
 
     endpoint_stack = stack.DeployEndpointStack(
         scope=app,
@@ -46,7 +46,7 @@ def test_synthesize_stack_model_package_input() -> None:
         model_execution_role_arn=None,
         vpc_id=vpc_id,
         subnet_ids=[],
-        model_bucket_arn=model_bucket_arn,
+        model_artifacts_bucket_arn=model_artifacts_bucket_arn,
         ecr_repo_arn=None,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -77,7 +77,7 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
     sagemaker_project_name = "sagemaker-project"
     vpc_id = "vpc-12345"
     model_package_group_name = "example-group"
-    model_bucket_arn = "arn:aws:s3:::test-bucket"
+    model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
 
     sagemaker_client = botocore.session.get_session().create_client("sagemaker", region_name="us-east-1")
     mock_s3_client.return_value = sagemaker_client
@@ -112,7 +112,7 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
             model_execution_role_arn=None,
             vpc_id=vpc_id,
             subnet_ids=[],
-            model_bucket_arn=model_bucket_arn,
+            model_artifacts_bucket_arn=model_artifacts_bucket_arn,
             ecr_repo_arn=None,
             env=cdk.Environment(
                 account=os.environ["CDK_DEFAULT_ACCOUNT"],

@@ -16,7 +16,6 @@ def stack_defaults():
     os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_PROJECT_ID"] = "12345"
     os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_PROJECT_NAME"] = "sagemaker-project"
     os.environ["SEEDFARMER_PARAMETER_MODEL_PACKAGE_ARN"] = "example-arn"
-    os.environ["SEEDFARMER_PARAMETER_MODEL_BUCKET_ARN"] = "arn:aws:s3:::test-bucket"
 
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
