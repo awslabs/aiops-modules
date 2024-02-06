@@ -13,3 +13,11 @@ All modules in this repository adhere to the module strutucture defined in the t
 - [Project Structure](https://seed-farmer.readthedocs.io/en/latest/project_development.html)
 - [Module Development](https://seed-farmer.readthedocs.io/en/latest/module_development.html)
 - [Module Manifest Guide](https://seed-farmer.readthedocs.io/en/latest/manifests.html)
+
+## Modules
+
+### SageMaker Modules
+
+| Type                                                                        | Description                                     |
+|-----------------------------------------------------------------------------|-------------------------------------------------|
+| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint. |

@@ -1,0 +1,19 @@
+# This is an example manifest.
+# Replace the parameters in referenced manifest groups with your values prior the deployment.
+name: mlops
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: examples/manifests/networking-modules.yaml
+  - name: sagemaker-endpoints
+    path: examples/manifests/sagemaker-endpoints-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
