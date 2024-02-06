@@ -90,6 +90,7 @@ class DeployEndpointStack(Stack):
                 model_package_arn = get_approved_package(self.region, model_package_group_name)
             else:
                 raise ValueError("Either model_package_arn or model_package_group_name is required")
+        self.model_package_arn = model_package_arn
 
         # Create model instance
         model_name: str = f"{app_prefix}-model-{get_timestamp()}"
@@ -139,6 +140,9 @@ class DeployEndpointStack(Stack):
         )
         endpoint.add_dependency(endpoint_config)
         self.endpoint = endpoint
+        self.endpoint_url = (
+            f"https://runtime.sagemaker.{self.region}.amazonaws.com/endpoints/{endpoint.attr_endpoint_name}/invocations"
+        )
 
         # Add CDK nag solutions checks
         Aspects.of(self).add(AwsSolutionsChecks())

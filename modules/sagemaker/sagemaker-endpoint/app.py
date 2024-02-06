@@ -86,8 +86,9 @@ aws_cdk.CfnOutput(
         {
             "ModelExecutionRoleArn": stack.model_execution_role_arn,
             "ModelName": stack.model.model_name,
-            "EndpointName": stack.endpoint.endpoint_name,
-            "EndpointUrl": stack.endpoint.endpoint_name,
+            "ModelPackageArn": stack.model_package_arn,
+            "EndpointName": stack.endpoint.attr_endpoint_name,
+            "EndpointUrl": stack.endpoint_url,
         }
     ),
 )
