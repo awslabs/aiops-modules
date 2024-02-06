@@ -2,18 +2,26 @@
 
 ## Description
 
-This module creates SageMaker real-time inference endpoint for a model.
+This module creates SageMaker Model, Endpoint Configuration Production Variant, and a real-time Inference Endpoint. 
+The endpoint is deployed in a VPC inside user-provided subnets.
+
+The module supports provisioning of an endpoint from a model package, or may automatically pull
+the latest approved model from model package group to support CI/CD deployment scenarios.
+
+### Architecture
+
+![SageMaker Endpoint Module Architecture](docs/_static/sagemaker-endpoint-module-architecture.png "SageMaker Endpoint Module Architecture")
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 
-- `vpc-id`: The VPC-ID that the endpoint will be created in
-- `subnet-ids`: The subnets that the endpoint will be created in
-- `model-package-arn`: Model package ARN or
-- `model-package-group-name`: Model package group name to pull latest approved model from
+- `vpc-id`: The VPC-ID that the endpoint will be created in.
+- `subnet-ids`: The subnets that the endpoint will be created in.
+- `model-package-arn`: Model package ARN `OR`
+- `model-package-group-name`: Model package group name to pull latest approved model package from the group.
 
 The user must specify either `model-package-arn` for a specific model or `model-package-group-name` to automatically
 pull latest approved model from the model package group and deploy and endpoint. The latter is useful to scenarios
@@ -61,18 +69,20 @@ parameters:
 
 ### Module Metadata Outputs
 
-- `ModelExecutionRoleArn`: Model execution role ARN
-- `ModelName`: Model name
-- `EndpointName`: Endpoint name
-- `EndpointUrl` Endpoint Url
+- `ModelExecutionRoleArn`: SageMaker Model Execution IAM role ARN
+- `ModelName`: SageMaker Model name
+- `ModelPackageArn`: SageMaker Model package ARN
+- `EndpointName`: SageMaker Endpoint name
+- `EndpointUrl`: SageMaker Endpoint Url
 
 #### Output Example
 
 ```json
 {
-  "ModelExecutionRoleArn": "arn:aws:iam::xxx:role/xxx",
-  "ModelName": "xxx",
-  "EndpointName": "xxx-endpoint",
-  "EndpointUrl": "xxx-endpoint"
+  "ModelExecutionRoleArn": "arn:aws:iam::xxxxxxxxxxxx:role/xxxxxxxxxxxx",
+  "ModelName": "mlops-mlops-sagemaker-endpoints-endpoint-model-xxxxxxxxxxxx",
+  "EndpointName": "mlopsmlopssagemakerendpointsendpointendpoint-xxxxxxxxxxxx",
+  "ModelPackageArn": "arn:aws:sagemaker:us-east-1:xxxxxxxxxxxx:model-package/model-mlops-demo/1",
+  "EndpointUrl": "https://runtime.sagemaker.us-east-1.amazonaws.com/endpoints/mlopsmlopssagemakerendpointsendpointendpoint-xxxxxxxxxxxx/invocations"
 }
 ```
