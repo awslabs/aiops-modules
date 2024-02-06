@@ -1,0 +1,17 @@
+name: mlops
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/networking-modules.yaml
+  - name: sagemaker-studio
+    path: manifests/sagemaker-studio-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
