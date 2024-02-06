@@ -1,6 +1,6 @@
 # This is an example manifest.
 # Replace the parameters in referenced manifest groups with your values prior the deployment.
-name: mlops-modules
+name: mlops
 toolchainRegion: us-east-1
 forceDependencyRedeploy: true
 groups:

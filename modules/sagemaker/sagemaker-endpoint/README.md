@@ -14,7 +14,6 @@ This module creates SageMaker real-time inference endpoint for a model.
 - `subnet-ids`: The subnets that the endpoint will be created in
 - `model-package-arn`: Model package ARN or
 - `model-package-group-name`: Model package group name to pull latest approved model from
-- `model-bucket-arn`: Model bucket ARN
 
 The user must specify either `model-package-arn` for a specific model or `model-package-group-name` to automatically
 pull latest approved model from the model package group and deploy and endpoint. The latter is useful to scenarios
@@ -25,6 +24,7 @@ where endpoints are provisioned as part of automated Continuous Integration and 
 - `sagemaker-project-id`: SageMaker project id
 - `sagemaker-project-name`: SageMaker project name
 - `model-execution-role-arn`: Model execution role ARN. Will be created if not provided.
+- `model-artifacts-bucket-arn`: Bucket ARN that contains model artifacts. Required by model execution IAM role to download model artifacts.
 - `ecr-repo-arn`: ECR repository ARN if custom container is used
 - `variant-name`: Endpoint config production variant name. `AllTraffic` by default.
 - `initial-instance-count`: Initial instance count. `1` by default.
@@ -43,8 +43,6 @@ parameters:
     value: dummy123
   - name: model_package_arn
     value: arn:aws:sagemaker:<region>:<account>:model-package/<package_name>/1
-  - name: model_bucket_arn
-    value: arn:aws:s3:::<bucket_name>
   - name: instance_type
     value: ml.m5.large
   - name: vpc_id

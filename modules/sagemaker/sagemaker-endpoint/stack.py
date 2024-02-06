@@ -34,7 +34,7 @@ class DeployEndpointStack(Stack):
         model_execution_role_arn: Optional[str],
         vpc_id: str,
         subnet_ids: List[str],
-        model_bucket_arn: Optional[str],
+        model_artifacts_bucket_arn: Optional[str],
         ecr_repo_arn: Optional[str],
         endpoint_config_prod_variant: Dict[str, Any],
         **kwargs: Any,
@@ -58,17 +58,21 @@ class DeployEndpointStack(Stack):
             # Create model execution role
             model_execution_role = iam.Role(
                 self,
-                f"{app_prefix}-model-exec-role",
+                f"{app_prefix}-model-exec",
                 assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
                 managed_policies=[
                     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
                 ],
             )
 
-            if model_bucket_arn:
-                # Grant model assets bucket read-write permissions
-                model_bucket = s3.Bucket.from_bucket_arn(self, f"{app_prefix}-model-bucket", model_bucket_arn)
-                model_bucket.grant_read_write(model_execution_role)
+            if model_artifacts_bucket_arn:
+                # Grant model assets bucket read permissions
+                model_bucket = s3.Bucket.from_bucket_arn(
+                    self,
+                    f"{app_prefix}-model-bucket",
+                    model_artifacts_bucket_arn
+                )
+                model_bucket.grant_read(model_execution_role)
 
             if ecr_repo_arn:
                 # Add ECR permissions
@@ -92,7 +96,7 @@ class DeployEndpointStack(Stack):
                 raise ValueError("Either model_package_arn or model_package_group_name is required")
 
         # Create model instance
-        model_name = f"{app_prefix}-{get_timestamp()}"
+        model_name: str = f"{app_prefix}-model-{get_timestamp()}"
         model = sagemaker.CfnModel(
             self,
             f"{app_prefix}-model",
@@ -116,10 +120,10 @@ class DeployEndpointStack(Stack):
         kms_key.grant_encrypt_decrypt(iam.AccountRootPrincipal())
 
         # Create endpoint config
-        endpoint_config_name: str = f"{app_prefix}-endpoint-config"
+        endpoint_config_name: str = f"{app_prefix}-conf-{get_timestamp()}"
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
-            f"{app_prefix}-endpoint-config",
+            f"{app_prefix}-endpoint-conf",
             endpoint_config_name=endpoint_config_name,
             kms_key_id=kms_key.key_id,
             production_variants=[
@@ -129,17 +133,15 @@ class DeployEndpointStack(Stack):
                 )
             ],
         )
-        endpoint_config.add_depends_on(model)
+        endpoint_config.add_dependency(model)
 
         # Create endpoint
-        endpoint_name = f"{app_prefix}-endpoint"
         endpoint = sagemaker.CfnEndpoint(
             self,
-            "Endpoint",
+            f"{app_prefix}-endpoint",
             endpoint_config_name=endpoint_config.endpoint_config_name,  # type: ignore[arg-type]
-            endpoint_name=endpoint_name,
         )
-        endpoint.add_depends_on(endpoint_config)
+        endpoint.add_dependency(endpoint_config)
         self.endpoint = endpoint
 
         # Add CDK nag solutions checks
