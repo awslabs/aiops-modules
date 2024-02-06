@@ -6,7 +6,7 @@ The modules in this repository are decoupled from each other and can be aggregat
 
 ## General Information
 
-The modules in this repository are / must be generic for resuse without affiliation to any one particular project or use case or any vertical.
+The modules in this repository are / must be generic for reuse without affiliation to any one particular project in Machine Learning Operations domain.
 
 All modules in this repository adhere to the module strutucture defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
 
@@ -21,3 +21,7 @@ All modules in this repository adhere to the module strutucture defined in the t
 | Type                                                                        | Description                                     |
 |-----------------------------------------------------------------------------|-------------------------------------------------|
 | [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint. |
+
+### Industry Data Framework (IDF) Modules
+
+The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
