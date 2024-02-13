@@ -1,0 +1,27 @@
+name: mlflow-fargate
+path: modules/mlflow/mlflow-fargate
+parameters:
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: ecr-repository-name
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: ecr-mlflow
+        key: EcrRepositoryName
+  - name: artifacts-bucket-name
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: buckets
+        key: ArtifactsBucketName

@@ -3,7 +3,7 @@ path: git::https://github.com/awslabs/idf-modules.git//modules/ml/sagemaker-stud
 targetAccount: primary
 parameters:
   - name: studio_domain_name
-    value: mlops
+    value: mlops-studio
   - name: vpc_id
     valueFrom:
       moduleMetadata:
