@@ -25,18 +25,18 @@ class MlflowImagePublishingStack(Stack):  # type: ignore
 
         Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
 
-        repo = ecr.Repository.from_repository_name(self, f"{app_prefix}-repo", repository_name=ecr_repo_name)
+        repo = ecr.Repository.from_repository_name(self, "ECR", repository_name=ecr_repo_name)
 
         local_image = DockerImageAsset(
             self,
-            f"{app_prefix}-image",
+            "ImageAsset",
             directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"),
         )
 
-        self.image_uri = f"{repo.repository_uri}:mlflow-latest"
+        self.image_uri = f"{repo.repository_uri}:latest"
         ECRDeployment(
             self,
-            f"{app_prefix}-img-deployment",
+            "ECRDeployment",
             src=DockerImageName(local_image.image_uri),
             dest=DockerImageName(self.image_uri),
         )

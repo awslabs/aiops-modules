@@ -2,7 +2,7 @@
 
 ## Description
 
-This module creates and mlflow container image and pushes to the specified ECR.
+This module creates an mlflow container image and pushes to the specified ECR.
 
 ## Inputs/Outputs
 
@@ -34,6 +34,6 @@ parameters:
 
 ```json
 {
-  "MlflowImageUri": ""
+  "MlflowImageUri": "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/ecr-mlflow:latest"
 }
 ```
