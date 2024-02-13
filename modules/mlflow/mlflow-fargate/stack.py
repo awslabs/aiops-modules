@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, cast
+from typing import Any, List, Optional, cast
 
 from aws_cdk import Duration, Stack, Tags
 from aws_cdk import aws_ec2 as ec2
@@ -20,9 +20,11 @@ class MlflowFargateStack(Stack):  # type: ignore
         app_prefix: str,
         vpc_id: str,
         subnet_ids: List[str],
-        cluster_name: str,
-        service_name: str,
+        ecs_cluster_name: Optional[str],
+        service_name: Optional[str],
         ecr_repo_name: str,
+        task_cpu_units: int,
+        task_memory_limit_mb: int,
         artifacts_bucket_name: str,
         **kwargs: Any,
     ) -> None:
@@ -41,21 +43,22 @@ class MlflowFargateStack(Stack):  # type: ignore
         )
 
         vpc = ec2.Vpc.from_lookup(self, "vpc", vpc_id=vpc_id)
-        self.subnets = [ec2.Subnet.from_subnet_id(self, f"sub-{subnet_id}", subnet_id) for subnet_id in subnet_ids]
+        subnets = [ec2.Subnet.from_subnet_id(self, f"sub-{subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
         cluster = ecs.Cluster(
             self,
             "EcsCluster",
-            cluster_name=cluster_name,
+            cluster_name=ecs_cluster_name,
             vpc=vpc,
         )
+        self.cluster = cluster
 
         task_definition = ecs.FargateTaskDefinition(
             self,
             "MlflowTask",
             task_role=role,
-            cpu=4 * 1024,
-            memory_limit_mib=8 * 1024,
+            cpu=task_cpu_units,
+            memory_limit_mib=task_memory_limit_mb,
         )
 
         container = task_definition.add_container(
@@ -64,7 +67,7 @@ class MlflowFargateStack(Stack):  # type: ignore
             image=ecs.ContainerImage.from_ecr_repository(
                 repository=ecr.Repository.from_repository_name(
                     self,
-                    "ecr-repo",
+                    "ECRRepo",
                     repository_name=ecr_repo_name,
                 ),
             ),
@@ -82,7 +85,7 @@ class MlflowFargateStack(Stack):  # type: ignore
         port_mapping = ecs.PortMapping(container_port=5000, host_port=5000, protocol=ecs.Protocol.TCP)
         container.add_port_mappings(port_mapping)
 
-        fargate_service = ecs_patterns.NetworkLoadBalancedFargateService(
+        service = ecs_patterns.NetworkLoadBalancedFargateService(
             self,
             "MlflowLBService",
             service_name=service_name,
@@ -91,18 +94,18 @@ class MlflowFargateStack(Stack):  # type: ignore
         )
 
         # Setup security group
-        fargate_service.service.connections.security_groups[0].add_ingress_rule(
+        service.service.connections.security_groups[0].add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.tcp(5000),
             description="Allow inbound from VPC for mlflow",
         )
 
         # Setup autoscaling policy
-        scaling = fargate_service.service.auto_scale_task_count(max_capacity=2)
+        scaling = service.service.auto_scale_task_count(max_capacity=2)
         scaling.scale_on_cpu_utilization(
             id="AutoscalingPolicy",
             target_utilization_percent=70,
             scale_in_cooldown=Duration.seconds(60),
             scale_out_cooldown=Duration.seconds(60),
         )
-        self.fargate_service = fargate_service
+        self.service = service

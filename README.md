@@ -8,7 +8,7 @@ The modules in this repository are decoupled from each other and can be aggregat
 
 The modules in this repository are / must be generic for reuse without affiliation to any one particular project in Machine Learning Operations domain.
 
-All modules in this repository adhere to the module strutucture defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
+All modules in this repository adhere to the module structure defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
 
 - [Project Structure](https://seed-farmer.readthedocs.io/en/latest/project_development.html)
 - [Module Development](https://seed-farmer.readthedocs.io/en/latest/module_development.html)
@@ -21,6 +21,13 @@ All modules in this repository adhere to the module strutucture defined in the t
 | Type                                                                        | Description                                     |
 |-----------------------------------------------------------------------------|-------------------------------------------------|
 | [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint. |
+
+### Mlflow Modules
+
+| Type                                                                | Description                     |
+|---------------------------------------------------------------------|---------------------------------|
+| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)        | Creates Mlflow container image. |
+| [Mlflow on Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow on AWS Fargate.     |
 
 ### Industry Data Framework (IDF) Modules
 
