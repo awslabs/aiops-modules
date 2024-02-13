@@ -1,4 +1,4 @@
-# SageMaker Model Endpoint
+# Mlflow image module
 
 ## Description
 
