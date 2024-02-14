@@ -4,40 +4,33 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
-aiohttp==3.9.2
-    # via black
-aiosignal==1.3.1
-    # via aiohttp
 annotated-types==0.6.0
     # via pydantic
-async-timeout==4.0.3
-    # via aiohttp
-attrs==23.1.0
+attrs==23.2.0
     # via
-    #   aiohttp
     #   cattrs
     #   jschema-to-python
     #   jsii
     #   jsonschema
     #   referencing
     #   sarif-om
-aws-cdk-asset-awscli-v1==2.2.201
+aws-cdk-asset-awscli-v1==2.2.202
     # via aws-cdk-lib
 aws-cdk-asset-kubectl-v20==2.1.2
     # via aws-cdk-lib
 aws-cdk-asset-node-proxy-agent-v6==2.0.1
     # via aws-cdk-lib
-aws-cdk-lib==2.115.0
+aws-cdk-lib==2.127.0
     # via cdk-nag
-aws-sam-translator==1.82.0
+aws-sam-translator==1.84.0
     # via cfn-lint
-awscli==1.32.0
+awscli==1.32.41
     # via -r requirements-dev.in
-black==23.12.0
+black==24.2.0
     # via -r requirements-dev.in
-boto3==1.34.0
+boto3==1.34.41
     # via aws-sam-translator
-botocore==1.34.0
+botocore==1.34.41
     # via
     #   awscli
     #   boto3
@@ -49,11 +42,11 @@ build==1.0.3
     #   pyroma
 cattrs==23.2.3
     # via jsii
-cdk-nag==2.27.216
+cdk-nag==2.28.34
     # via -r requirements-dev.in
-certifi==2023.11.17
+certifi==2024.2.2
     # via requests
-cfn-lint==0.83.5
+cfn-lint==0.85.1
     # via -r requirements-dev.in
 charset-normalizer==3.3.2
     # via requests
@@ -77,17 +70,11 @@ exceptiongroup==1.2.0
     # via
     #   cattrs
     #   pytest
-flake8==6.1.0
+flake8==7.0.0
     # via -r requirements-dev.in
-frozenlist==1.4.0
-    # via
-    #   aiohttp
-    #   aiosignal
 idna==3.6
-    # via
-    #   requests
-    #   yarl
-importlib-metadata==7.0.0
+    # via requests
+importlib-metadata==7.0.1
     # via build
 importlib-resources==6.1.1
     # via jsii
@@ -101,7 +88,7 @@ jmespath==1.0.1
     #   botocore
 jschema-to-python==1.2.3
     # via cfn-lint
-jsii==1.93.0
+jsii==1.94.0
     # via
     #   aws-cdk-asset-awscli-v1
     #   aws-cdk-asset-kubectl-v20
@@ -115,11 +102,11 @@ jsonpickle==3.0.2
     # via jschema-to-python
 jsonpointer==2.4
     # via jsonpatch
-jsonschema==4.20.0
+jsonschema==4.21.1
     # via
     #   aws-sam-translator
     #   cfn-lint
-jsonschema-specifications==2023.11.2
+jsonschema-specifications==2023.12.1
     # via jsonschema
 junit-xml==1.9
     # via cfn-lint
@@ -127,11 +114,7 @@ mccabe==0.7.0
     # via flake8
 mpmath==1.3.0
     # via sympy
-multidict==6.0.4
-    # via
-    #   aiohttp
-    #   yarl
-mypy==1.7.1
+mypy==1.8.0
     # via -r requirements-dev.in
 mypy-extensions==1.0.0
     # via
@@ -153,9 +136,9 @@ pbr==6.0.0
     #   sarif-om
 pip-tools==7.3.0
     # via -r requirements-dev.in
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via black
-pluggy==1.3.0
+pluggy==1.4.0
     # via pytest
 publication==0.0.3
     # via
@@ -170,13 +153,13 @@ pyasn1==0.5.1
     # via rsa
 pycodestyle==2.11.1
     # via flake8
-pydantic==2.5.2
+pydantic==2.6.1
     # via aws-sam-translator
-pydantic-core==2.14.5
+pydantic-core==2.16.2
     # via pydantic
-pydot==1.4.2
+pydot==2.0.0
     # via -r requirements-dev.in
-pyflakes==3.1.0
+pyflakes==3.2.0
     # via flake8
 pygments==2.17.2
     # via pyroma
@@ -186,7 +169,7 @@ pyproject-hooks==1.0.0
     # via build
 pyroma==4.2
     # via -r requirements-dev.in
-pytest==7.4.3
+pytest==8.0.0
     # via -r requirements-dev.in
 python-dateutil==2.8.2
     # via
@@ -196,21 +179,21 @@ pyyaml==6.0.1
     # via
     #   awscli
     #   cfn-lint
-referencing==0.32.0
+referencing==0.33.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2023.10.3
+regex==2023.12.25
     # via cfn-lint
 requests==2.31.0
     # via pyroma
-rpds-py==0.13.2
+rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
 rsa==4.7.2
     # via awscli
-s3transfer==0.9.0
+s3transfer==0.10.0
     # via
     #   awscli
     #   boto3
@@ -231,7 +214,7 @@ tomli==2.0.1
     #   pip-tools
     #   pyproject-hooks
     #   pytest
-trove-classifiers==2023.11.29
+trove-classifiers==2024.1.31
     # via pyroma
 typeguard==2.13.3
     # via
@@ -244,7 +227,7 @@ typeguard==2.13.3
     #   jsii
 types-pyyaml==6.0.12.12
     # via -r requirements-dev.in
-types-setuptools==69.0.0.0
+types-setuptools==69.0.0.20240125
     # via -r requirements-dev.in
 typing-extensions==4.9.0
     # via
@@ -261,8 +244,6 @@ urllib3==1.26.18
     #   requests
 wheel==0.42.0
     # via pip-tools
-yarl==1.9.4
-    # via aiohttp
 zipp==3.17.0
     # via
     #   importlib-metadata
