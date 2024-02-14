@@ -38,11 +38,15 @@ task_memory_limit_mb = os.getenv(_param("TASK_MEMORY_LIMIT_MB"), DEFAULT_TASK_ME
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 # TODO: add persistent backend store
 
+if not vpc_id:
+    raise ValueError("Missing input parameter vpc-id")
+
 if not ecr_repo_name:
     raise ValueError("Missing input parameter ecr-repository-name")
 
-if not vpc_id:
-    raise ValueError("Missing input parameter vpc-id")
+if not artifacts_bucket_name:
+    raise ValueError("Missing input parameter artifacts-bucket-name")
+
 
 app = aws_cdk.App()
 stack = MlflowFargateStack(

@@ -9,6 +9,7 @@ from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_s3 as s3
 from constructs import Construct, IConstruct
 
 
@@ -37,13 +38,16 @@ class MlflowFargateStack(Stack):  # type: ignore
             "TaskRole",
             assumed_by=iam.ServicePrincipal(service="ecs-tasks.amazonaws.com"),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonECS_FullAccess"),
             ],
         )
 
-        vpc = ec2.Vpc.from_lookup(self, "vpc", vpc_id=vpc_id)
-        subnets = [ec2.Subnet.from_subnet_id(self, f"sub-{subnet_id}", subnet_id) for subnet_id in subnet_ids]
+        # Grant artifacts bucket read-write permissions
+        model_bucket = s3.Bucket.from_bucket_name(self, "ArtifactsBucket", bucket_name=artifacts_bucket_name)
+        model_bucket.grant_read_write(role)
+
+        vpc = ec2.Vpc.from_lookup(self, "Vpc", vpc_id=vpc_id)
+        subnets = [ec2.Subnet.from_subnet_id(self, f"Sub{subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
         cluster = ecs.Cluster(
             self,
@@ -91,6 +95,7 @@ class MlflowFargateStack(Stack):  # type: ignore
             service_name=service_name,
             cluster=cluster,
             task_definition=task_definition,
+            task_subnets=ec2.SubnetSelection(subnets=subnets),
         )
 
         # Setup security group
