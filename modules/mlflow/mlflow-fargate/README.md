@@ -4,6 +4,10 @@
 
 This module runs Mlflow on AWS Fargate.
 
+### Architecture
+
+![Mlflow on AWS Fargate Module Architecture](docs/_static/mlflow-fargate-module-architecture.png "Mlflow on AWS Fargate Module Architecture")
+
 ## Inputs/Outputs
 
 ### Input Parameters

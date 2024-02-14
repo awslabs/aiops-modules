@@ -24,10 +24,10 @@ All modules in this repository adhere to the module structure defined in the the
 
 ### Mlflow Modules
 
-| Type                                                                | Description                     |
-|---------------------------------------------------------------------|---------------------------------|
-| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)        | Creates Mlflow container image. |
-| [Mlflow on Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow on AWS Fargate.     |
+| Type                                                                    | Description                     |
+|-------------------------------------------------------------------------|---------------------------------|
+| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow container image. |
+| [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow on AWS Fargate.     |
 
 ### Industry Data Framework (IDF) Modules
 
