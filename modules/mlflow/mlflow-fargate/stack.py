@@ -3,13 +3,14 @@
 
 from typing import Any, List, Optional, cast
 
-from aws_cdk import Duration, Stack, Tags
+from aws_cdk import Aspects, Duration, Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
+from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
 from constructs import Construct, IConstruct
 
 
@@ -54,6 +55,7 @@ class MlflowFargateStack(Stack):  # type: ignore
             "EcsCluster",
             cluster_name=ecs_cluster_name,
             vpc=vpc,
+            container_insights=True,
         )
         self.cluster = cluster
 
@@ -97,6 +99,15 @@ class MlflowFargateStack(Stack):  # type: ignore
             task_definition=task_definition,
             task_subnets=ec2.SubnetSelection(subnets=subnets),
         )
+        lb_access_logs_bucket = s3.Bucket(
+            self,
+            "LBAccessLogsBucket",
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            enforce_ssl=True,
+        )
+        service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket)
+        self.lb_access_logs_bucket = lb_access_logs_bucket
 
         # Setup security group
         service.service.connections.security_groups[0].add_ingress_rule(
@@ -114,3 +125,37 @@ class MlflowFargateStack(Stack):  # type: ignore
             scale_out_cooldown=Duration.seconds(60),
         )
         self.service = service
+
+        # Add CDK nag solutions checks
+        Aspects.of(self).add(AwsSolutionsChecks())
+
+        NagSuppressions.add_stack_suppressions(
+            self,
+            apply_to_nested_stacks=True,
+            suppressions=[
+                NagPackSuppression(
+                    **{
+                        "id": "AwsSolutions-IAM4",
+                        "reason": "Managed Policies are for src account roles only",
+                    }
+                ),
+                NagPackSuppression(
+                    **{
+                        "id": "AwsSolutions-IAM5",
+                        "reason": "Resource access restricted to resources",
+                    }
+                ),
+                NagPackSuppression(
+                    **{
+                        "id": "AwsSolutions-ECS2",
+                        "reason": "Not passing secrets via env variables",
+                    }
+                ),
+                NagPackSuppression(
+                    **{
+                        "id": "AwsSolutions-S1",
+                        "reason": "Access logs not required for access logs bucket",
+                    }
+                ),
+            ],
+        )

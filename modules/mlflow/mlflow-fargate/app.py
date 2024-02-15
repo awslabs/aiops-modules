@@ -76,6 +76,7 @@ aws_cdk.CfnOutput(
             "ECSClusterName": stack.cluster.cluster_name,
             "ServiceName": stack.service.service.service_name,
             "LoadBalancerDNSName": stack.service.load_balancer.load_balancer_dns_name,
+            "LoadBalancerAccessLogsBucketArn": stack.lb_access_logs_bucket.bucket_arn,
         }
     ),
 )

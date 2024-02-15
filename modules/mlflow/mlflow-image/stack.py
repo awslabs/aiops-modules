@@ -4,11 +4,11 @@
 import os
 from typing import Any, cast
 
-from aws_cdk import Stack, Tags
+from aws_cdk import Aspects, Stack, Tags
 from aws_cdk import aws_ecr as ecr
 from aws_cdk.aws_ecr_assets import DockerImageAsset
 from cdk_ecr_deployment import DockerImageName, ECRDeployment
-from cdk_nag import NagPackSuppression, NagSuppressions
+from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
 from constructs import Construct, IConstruct
 
 
@@ -40,6 +40,9 @@ class MlflowImagePublishingStack(Stack):  # type: ignore
             src=DockerImageName(local_image.image_uri),
             dest=DockerImageName(self.image_uri),
         )
+
+        # Add CDK nag solutions checks
+        Aspects.of(self).add(AwsSolutionsChecks())
 
         NagSuppressions.add_stack_suppressions(
             self,
