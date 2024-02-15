@@ -27,6 +27,7 @@ class MlflowFargateStack(Stack):  # type: ignore
         ecr_repo_name: str,
         task_cpu_units: int,
         task_memory_limit_mb: int,
+        autoscale_max_capacity: int,
         artifacts_bucket_name: str,
         **kwargs: Any,
     ) -> None:
@@ -117,7 +118,7 @@ class MlflowFargateStack(Stack):  # type: ignore
         )
 
         # Setup autoscaling policy
-        scaling = service.service.auto_scale_task_count(max_capacity=2)
+        scaling = service.service.auto_scale_task_count(max_capacity=autoscale_max_capacity)
         scaling.scale_on_cpu_utilization(
             id="AutoscalingPolicy",
             target_utilization_percent=70,

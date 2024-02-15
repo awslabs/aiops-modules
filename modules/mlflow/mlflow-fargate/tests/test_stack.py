@@ -31,6 +31,7 @@ def test_synthesize_stack() -> None:
     ecr_repo_name = "repo"
     task_cpu_units = 4 * 1024
     task_memory_limit_mb = 8 * 1024
+    autoscale_max_capacity = 2
     artifacts_bucket_name = "bucket"
 
     stack = stack.MlflowFargateStack(
@@ -44,6 +45,7 @@ def test_synthesize_stack() -> None:
         ecr_repo_name=ecr_repo_name,
         task_cpu_units=task_cpu_units,
         task_memory_limit_mb=task_memory_limit_mb,
+        autoscale_max_capacity=autoscale_max_capacity,
         artifacts_bucket_name=artifacts_bucket_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],

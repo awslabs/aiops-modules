@@ -22,6 +22,7 @@ DEFAULT_ECS_CLUSTER_NAME = None
 DEFAULT_SERVICE_NAME = None
 DEFAULT_TASK_CPU_UNITS = 4 * 1024
 DEFAULT_TASK_MEMORY_LIMIT_MB = 8 * 1024
+DEFAULT_AUTOSCALE_MAX_CAPACITY = 2
 
 environment = aws_cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -35,6 +36,7 @@ service_name = os.getenv(_param("SERVICE_NAME"), DEFAULT_SERVICE_NAME)
 ecr_repo_name = os.getenv(_param("ECR_REPOSITORY_NAME"))
 task_cpu_units = os.getenv(_param("TASK_CPU_UNITS"), DEFAULT_TASK_CPU_UNITS)
 task_memory_limit_mb = os.getenv(_param("TASK_MEMORY_LIMIT_MB"), DEFAULT_TASK_MEMORY_LIMIT_MB)
+autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUTOSCALE_MAX_CAPACITY)
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 # TODO: add persistent backend store
 
@@ -60,6 +62,7 @@ stack = MlflowFargateStack(
     ecr_repo_name=ecr_repo_name,
     task_cpu_units=int(task_cpu_units),
     task_memory_limit_mb=int(task_memory_limit_mb),
+    autoscale_max_capacity=int(autoscale_max_capacity),
     artifacts_bucket_name=artifacts_bucket_name,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
