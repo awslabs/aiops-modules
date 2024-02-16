@@ -38,7 +38,6 @@ task_cpu_units = os.getenv(_param("TASK_CPU_UNITS"), DEFAULT_TASK_CPU_UNITS)
 task_memory_limit_mb = os.getenv(_param("TASK_MEMORY_LIMIT_MB"), DEFAULT_TASK_MEMORY_LIMIT_MB)
 autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUTOSCALE_MAX_CAPACITY)
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
-# TODO: add persistent backend store
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -80,6 +79,7 @@ aws_cdk.CfnOutput(
             "ServiceName": stack.service.service.service_name,
             "LoadBalancerDNSName": stack.service.load_balancer.load_balancer_dns_name,
             "LoadBalancerAccessLogsBucketArn": stack.lb_access_logs_bucket.bucket_arn,
+            "EFSFileSystemId": stack.fs.file_system_id,
         }
     ),
 )

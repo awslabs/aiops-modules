@@ -4,6 +4,8 @@
 
 This module runs Mlflow on AWS Fargate.
 
+By default, uses EFS for backend storage.
+
 ### Architecture
 
 ![Mlflow on AWS Fargate Module Architecture](docs/_static/mlflow-fargate-module-architecture.png "Mlflow on AWS Fargate Module Architecture")
@@ -63,6 +65,7 @@ parameters:
 - `ECSClusterName`: Name of the ECS cluster.
 - `ServiceName`: Name of the service.
 - `LoadBalancerDNSName`: Load balancer DNS name.
+- `EFSFileSystemId`: EFS file system id.
 
 #### Output Example
 
@@ -70,6 +73,7 @@ parameters:
 {
   "ECSClusterName": "mlops-mlops-mlflow-mlflow-fargate-EcsCluster97242B84-xxxxxxxxxxxx",
   "ServiceName": "mlops-mlops-mlflow-mlflow-fargate-MlflowLBServiceEBACC043-xxxxxxxxxxxx",
-  "LoadBalancerDNSName": "xxxxxxxxxxxx.elb.us-east-1.amazonaws.com"
+  "LoadBalancerDNSName": "xxxxxxxxxxxx.elb.us-east-1.amazonaws.com",
+  "EFSFileSystemId": "fs-xxxxxxxxxxx",
 }
 ```

@@ -80,6 +80,7 @@ class MlflowFargateStack(Stack):  # type: ignore
             ),
             environment={
                 "BUCKET": f"s3://{artifacts_bucket_name}",
+                "DUMMY": "DUMMY",
             },
             logging=ecs.LogDriver.aws_logs(stream_prefix="mlflow"),
         )
