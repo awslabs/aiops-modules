@@ -27,6 +27,8 @@ By default, uses EFS for backend storage.
 - `service-name`: Name of the service.
 - `task-cpu-units`: The number of cpu units used by the Fargate task.
 - `task-memory-limit-mb`: The amount (in MiB) of memory used by the Fargate task.
+- `lb-access-logs-bucket-name`: Name of the bucket to store load balancer access logs
+- `lb-access-logs-bucket-prefix`: Prefix for load balancer access logs
 
 ### Sample manifest declaration
 
@@ -65,6 +67,7 @@ parameters:
 - `ECSClusterName`: Name of the ECS cluster.
 - `ServiceName`: Name of the service.
 - `LoadBalancerDNSName`: Load balancer DNS name.
+- `LoadBalancerAccessLogsBucketArn`: Load balancer access logs bucket arn
 - `EFSFileSystemId`: EFS file system id.
 
 #### Output Example
@@ -74,6 +77,7 @@ parameters:
   "ECSClusterName": "mlops-mlops-mlflow-mlflow-fargate-EcsCluster97242B84-xxxxxxxxxxxx",
   "ServiceName": "mlops-mlops-mlflow-mlflow-fargate-MlflowLBServiceEBACC043-xxxxxxxxxxxx",
   "LoadBalancerDNSName": "xxxxxxxxxxxx.elb.us-east-1.amazonaws.com",
+  "LoadBalancerAccessLogsBucketArn": "arn:aws:s3:::xxxxxxxxxxxx",
   "EFSFileSystemId": "fs-xxxxxxxxxxx",
 }
 ```
