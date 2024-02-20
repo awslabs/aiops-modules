@@ -1,4 +1,4 @@
-# SageMaker studio Infrastructure
+# SageMaker Studio Infrastructure
 
 This module contains the resources that are required to deploy the SageMaker Studio infrastructure. It defines the setup for Amazon SageMaker Studio Domain and creates SageMaker Studio User Profiles for Data Scientists and Lead Data Scientists.
 
