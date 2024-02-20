@@ -37,11 +37,11 @@ This module handles the deployment of the following resources:
 
 ## Inputs and outputs:
 ### Required inputs:
-  - `VPC_ID`
-  - `subnet_ids`
+  - `vpc_id` - the VPC id that the SageMaker Studio Domain will be created in
+  - `subnet_ids` - the subnets that the SageMaker Studio Domai will be created in
 ### Optional Inputs:
-  - `studio_domain_name`
-  - `studio_bucket_name`
+  - `studio_domain_name` - name of the SageMaker Studio Domain
+  - `studio_bucket_name` - name of the bucket used by studio
   - `app_image_config_name` - custom kernel app config name
   - `image_name` - custom kernel image name
   - `data_science_users` - a list of data science user names to create
@@ -54,9 +54,9 @@ This module handles the deployment of the following resources:
   - `StudioDomainId` - the Id of the domain created by Sagemaker Studio
   - `StudioBucketName` - the Bucket (or prefix) given access to Sagemaker Studio
   - `StudioDomainEFSId` - the EFS created by Sagemaker Studio
-  - `DataScientistRoleArn`
-  - `LeadDataScientistRoleArn`
-  - `SageMakerExecutionRoleArn`
+  - `DataScientistRoleArn` - ARN of the Data Scientist IAM role
+  - `LeadDataScientistRoleArn` - ARN of the Lead Data Scientist IAM role
+  - `SageMakerExecutionRoleArn` - ARN of the SageMaker execution IAM role
 
 ### Example Output:
 ```yaml
