@@ -47,6 +47,8 @@ def test_synthesize_stack() -> None:
         task_memory_limit_mb=task_memory_limit_mb,
         autoscale_max_capacity=autoscale_max_capacity,
         artifacts_bucket_name=artifacts_bucket_name,
+        lb_access_logs_bucket_name=None,
+        lb_access_logs_bucket_prefix=None,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
