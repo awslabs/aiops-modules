@@ -1,0 +1,9 @@
+name: mlflow-image
+path: modules/mlflow/mlflow-image
+parameters:
+  - name: ecr-repository-name
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: ecr-mlflow
+        key: EcrRepositoryName

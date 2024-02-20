@@ -3,7 +3,7 @@ path: modules/sagemaker/sagemaker-studio
 targetAccount: primary
 parameters:
   - name: studio_domain_name
-    value: mlops
+    value: mlops-studio
   - name: vpc_id
     valueFrom:
       moduleMetadata:
