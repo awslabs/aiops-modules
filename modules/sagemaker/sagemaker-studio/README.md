@@ -15,9 +15,11 @@ This module contains the resources that are required to deploy the SageMaker Stu
     - [Module Structure](#module-structure)
   - [Troubleshooting](#troubleshooting)
 
-### SageMaker Studio Stack
+### Architecture
 
-This stack handles the deployment of the following resources:
+![SageMaker Studio Module Architecture](docs/_static/sagemaker-studio-module-architecture.png "SageMaker Studio Module Architecture")
+
+This module handles the deployment of the following resources:
 
 1. SageMaker Studio Domain requires, along with
 2. IAM roles which would be linked to SM Studio user profiles. User Profile creating process is managed by manifests files in `manifests/shared-infra/mlops-modules.yaml`. You can simply add new entries in the list to create a new user. The user will be linked to a role depending on which group you add them to (`data_science_users` or `lead_data_science_users`).
