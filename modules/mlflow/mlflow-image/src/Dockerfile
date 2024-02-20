@@ -2,7 +2,7 @@ FROM python:3.10.12
 
 RUN pip install \
     mlflow==2.10.2 \
-    boto3 && \
+    boto3==1.34.45 && \
     mkdir /mlflow/
 
 EXPOSE 5000
