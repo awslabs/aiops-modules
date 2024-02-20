@@ -30,6 +30,8 @@ class MlflowFargateStack(Stack):  # type: ignore
         task_memory_limit_mb: int,
         autoscale_max_capacity: int,
         artifacts_bucket_name: str,
+        lb_access_logs_bucket_name: Optional[str],
+        lb_access_logs_bucket_prefix: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -80,7 +82,6 @@ class MlflowFargateStack(Stack):  # type: ignore
             ),
             environment={
                 "BUCKET": f"s3://{artifacts_bucket_name}",
-                "DUMMY": "DUMMY",
             },
             logging=ecs.LogDriver.aws_logs(stream_prefix="mlflow"),
         )
@@ -141,14 +142,19 @@ class MlflowFargateStack(Stack):  # type: ignore
         self.service = service
 
         # Enable access logs
-        lb_access_logs_bucket = s3.Bucket(
-            self,
-            "LBAccessLogsBucket",
-            encryption=s3.BucketEncryption.S3_MANAGED,
-            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
-            enforce_ssl=True,
-        )
-        service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket)
+        if lb_access_logs_bucket_name:
+            lb_access_logs_bucket = s3.Bucket.from_bucket_name(
+                self, "LBAccessLogsBucket", bucket_name=lb_access_logs_bucket_name
+            )
+        else:
+            lb_access_logs_bucket = s3.Bucket(
+                self,
+                "LBAccessLogsBucket",
+                encryption=s3.BucketEncryption.S3_MANAGED,
+                block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+                enforce_ssl=True,
+            )
+        service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket, prefix=lb_access_logs_bucket_prefix)
         self.lb_access_logs_bucket = lb_access_logs_bucket
 
         # Allow access to EFS from Fargate service

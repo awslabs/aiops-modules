@@ -23,6 +23,8 @@ DEFAULT_SERVICE_NAME = None
 DEFAULT_TASK_CPU_UNITS = 4 * 1024
 DEFAULT_TASK_MEMORY_LIMIT_MB = 8 * 1024
 DEFAULT_AUTOSCALE_MAX_CAPACITY = 2
+DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME = None
+DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX = None
 
 environment = aws_cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -38,6 +40,8 @@ task_cpu_units = os.getenv(_param("TASK_CPU_UNITS"), DEFAULT_TASK_CPU_UNITS)
 task_memory_limit_mb = os.getenv(_param("TASK_MEMORY_LIMIT_MB"), DEFAULT_TASK_MEMORY_LIMIT_MB)
 autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUTOSCALE_MAX_CAPACITY)
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
+lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
+lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -63,6 +67,8 @@ stack = MlflowFargateStack(
     task_memory_limit_mb=int(task_memory_limit_mb),
     autoscale_max_capacity=int(autoscale_max_capacity),
     artifacts_bucket_name=artifacts_bucket_name,
+    lb_access_logs_bucket_name=lb_access_logs_bucket_name,
+    lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],
