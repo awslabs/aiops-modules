@@ -1,5 +1,5 @@
 name: studio
-path: git::https://github.com/awslabs/idf-modules.git//modules/ml/sagemaker-studio?ref=release/1.3.0&depth=1
+path: modules/sagemaker/sagemaker-studio
 targetAccount: primary
 parameters:
   - name: studio_domain_name

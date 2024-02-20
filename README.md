@@ -21,6 +21,8 @@ All modules in this repository adhere to the module structure defined in the the
 | Type                                                                        | Description                                     |
 |-----------------------------------------------------------------------------|-------------------------------------------------|
 | [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint. |
+| [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)     | Creates SageMaker Studio Domain.                |
+
 
 ### Mlflow Modules
 
