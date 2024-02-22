@@ -15,7 +15,7 @@ from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
 from constructs import Construct, IConstruct
 
 
-class MlflowFargateStack(Stack):  # type: ignore
+class MlflowFargateStack(Stack):
     def __init__(
         self,
         scope: Construct,
@@ -178,35 +178,27 @@ class MlflowFargateStack(Stack):  # type: ignore
         )
 
         # Add CDK nag solutions checks
-        Aspects.of(self).add(AwsSolutionsChecks())
+        Aspects.of(self).add(AwsSolutionsChecks(log_ignores=True))
 
         NagSuppressions.add_stack_suppressions(
             self,
             apply_to_nested_stacks=True,
             suppressions=[
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM4",
-                        "reason": "Managed Policies are for src account roles only",
-                    }
+                    id="AwsSolutions-IAM4",
+                    reason="Managed Policies are for src account roles only",
                 ),
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM5",
-                        "reason": "Resource access restricted to resources",
-                    }
+                    id="AwsSolutions-IAM5",
+                    reason="Resource access restricted to resources",
                 ),
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-ECS2",
-                        "reason": "Not passing secrets via env variables",
-                    }
+                    id="AwsSolutions-ECS2",
+                    reason="Not passing secrets via env variables",
                 ),
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-S1",
-                        "reason": "Access logs not required for access logs bucket",
-                    }
+                    id="AwsSolutions-S1",
+                    reason="Access logs not required for access logs bucket",
                 ),
             ],
         )
