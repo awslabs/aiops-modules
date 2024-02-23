@@ -31,12 +31,6 @@ parameters:
         group: storage
         name: mlflow-mysql
         key: DatabaseHostname
-  - name: rds-port
-    valueFrom:
-      moduleMetadata:
-        group: storage
-        name: mlflow-mysql
-        key: DatabasePort
   - name: rds-credentials-secret-arn
     valueFrom:
       moduleMetadata:

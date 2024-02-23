@@ -43,7 +43,6 @@ artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
 lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
 rds_hostname = os.getenv(_param("RDS_HOSTNAME"))
-rds_port = os.getenv(_param("RDS_PORT"))
 rds_credentials_secret_arn = os.getenv(_param("RDS_CREDENTIALS_SECRET_ARN"))
 
 if not vpc_id:
@@ -55,8 +54,15 @@ if not ecr_repo_name:
 if not artifacts_bucket_name:
     raise ValueError("Missing input parameter artifacts-bucket-name")
 
+if not rds_hostname:
+    raise ValueError("Missing input parameter rds-hostname")
+
+if not rds_credentials_secret_arn:
+    raise ValueError("Missing input parameter rds-credentials-secret-arn")
+
 
 app = aws_cdk.App()
+
 stack = MlflowFargateStack(
     scope=app,
     id=app_prefix,
@@ -73,7 +79,6 @@ stack = MlflowFargateStack(
     lb_access_logs_bucket_name=lb_access_logs_bucket_name,
     lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
     rds_hostname=rds_hostname,
-    rds_port=rds_port,
     rds_credentials_secret_arn=rds_credentials_secret_arn,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],

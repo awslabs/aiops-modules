@@ -31,11 +31,10 @@ class MlflowFargateStack(cdk.Stack):
         task_memory_limit_mb: int,
         autoscale_max_capacity: int,
         artifacts_bucket_name: str,
+        rds_hostname: str,
+        rds_credentials_secret_arn: str,
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
-        rds_hostname: Optional[str],
-        rds_port: Optional[str],
-        rds_credentials_secret_arn: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -91,7 +90,7 @@ class MlflowFargateStack(cdk.Stack):
             environment={
                 "BUCKET": model_bucket.s3_url_for_object(),
                 "HOST": rds_hostname,
-                "PORT": rds_port,
+                "PORT": secret.secret_value_from_json("port").to_string(),
                 "DATABASE": secret.secret_value_from_json("dbname").to_string(),
                 "USERNAME": secret.secret_value_from_json("username").to_string(),
             },
