@@ -3,7 +3,7 @@
 
 from typing import Any, List, Optional, cast
 
-from aws_cdk import Aspects, Duration, Stack, Tags
+import aws_cdk as cdk
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
@@ -12,11 +12,11 @@ from aws_cdk import aws_efs as efs
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
-from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
+import cdk_nag
 from constructs import Construct, IConstruct
 
 
-class MlflowFargateStack(Stack):
+class MlflowFargateStack(cdk.Stack):
     def __init__(
         self,
         scope: Construct,
@@ -40,7 +40,7 @@ class MlflowFargateStack(Stack):
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
+        cdk.Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
 
         role = iam.Role(
             self,
@@ -188,30 +188,30 @@ class MlflowFargateStack(Stack):
         scaling.scale_on_cpu_utilization(
             id="AutoscalingPolicy",
             target_utilization_percent=70,
-            scale_in_cooldown=Duration.seconds(60),
-            scale_out_cooldown=Duration.seconds(60),
+            scale_in_cooldown=cdk.Duration.seconds(60),
+            scale_out_cooldown=cdk.Duration.seconds(60),
         )
 
         # Add CDK nag solutions checks
-        Aspects.of(self).add(AwsSolutionsChecks(log_ignores=True))
+        cdk.Aspects.of(self).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
-        NagSuppressions.add_stack_suppressions(
+        cdk_nag.NagSuppressions.add_stack_suppressions(
             self,
             apply_to_nested_stacks=True,
             suppressions=[
-                NagPackSuppression(
+                cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM4",
                     reason="Managed Policies are for src account roles only",
                 ),
-                NagPackSuppression(
+                cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM5",
                     reason="Resource access restricted to resources",
                 ),
-                NagPackSuppression(
+                cdk_nag.NagPackSuppression(
                     id="AwsSolutions-ECS2",
                     reason="Not passing secrets via env variables",
                 ),
-                NagPackSuppression(
+                cdk_nag.NagPackSuppression(
                     id="AwsSolutions-S1",
                     reason="Access logs not required for access logs bucket",
                 ),
