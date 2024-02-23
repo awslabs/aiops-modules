@@ -92,7 +92,7 @@ class MlflowFargateStack(cdk.Stack):
                 "BUCKET": model_bucket.s3_url_for_object(),
                 "HOST": rds_hostname,
                 "PORT": rds_port,
-                "DATABASE": secret.secret_value_from_json("dbInstanceIdentifier").to_string(),
+                "DATABASE": secret.secret_value_from_json("dbname").to_string(),
                 "USERNAME": secret.secret_value_from_json("username").to_string(),
             },
             secrets={
