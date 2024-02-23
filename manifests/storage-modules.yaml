@@ -13,3 +13,30 @@ parameters:
     value: SSE
   - name: retention-type
     value: RETAIN
+---
+name: mysql
+path: git::https://github.com/LeonLuttenberger/idf-modules.git//modules/database/rds?ref=fix/rds-database-module-nags&depth=1
+targetAccount: primary
+parameters:
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: engine
+    value: mysql
+  - name: engine-version
+    value: 8.0.35
+  - name: instance-type
+    value: t2.small
+  - name: admin-username
+    value: admin
+  - name: removal-policy
+    value: DESTROY

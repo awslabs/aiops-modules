@@ -25,3 +25,21 @@ parameters:
         group: storage
         name: buckets
         key: ArtifactsBucketName
+  - name: rds-hostname
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mysql
+        key: DatabaseHostname
+  - name: rds-port
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mysql
+        key: DatabasePort
+  - name: rds-credentials-secret-arn
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mysql
+        key: CredentialsSecretArn
