@@ -10,6 +10,8 @@ groups:
     path: manifests/sagemaker-studio-modules.yaml
   - name: images
     path: manifests/images-modules.yaml
+  - name: database
+    path: manifests/database-modules.yaml
   - name: mlflow
     path: manifests/mlflow-modules.yaml
 targetAccountMappings:

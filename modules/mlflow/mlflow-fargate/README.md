@@ -4,7 +4,7 @@
 
 This module runs Mlflow on AWS Fargate.
 
-By default, uses EFS for backend storage.
+Uses EFS and RDS for backend storage.
 
 ### Architecture
 
@@ -20,6 +20,8 @@ By default, uses EFS for backend storage.
 - `subnet-ids`: The subnets that the Fargate task will use.
 - `ecr-repository-name`: The name of the ECR repository to pull the image from.
 - `artifacts-bucket-name`: Name of the artifacts store bucket
+- `rds-hostname`: Endpoint address of the RDS instance
+- `rds-credentials-secret-arn`: RDS database credentials stored in SecretsManager
 
 #### Optional
 
@@ -60,6 +62,18 @@ parameters:
         group: storage
         name: buckets
         key: ArtifactsBucketName
+  - name: rds-hostname
+    valueFrom:
+      moduleMetadata:
+        group: database
+        name: mlflow-mysql
+        key: DatabaseHostname
+  - name: rds-credentials-secret-arn
+    valueFrom:
+      moduleMetadata:
+        group: database
+        name: mlflow-mysql
+        key: CredentialsSecretArn
 ```
 
 ### Module Metadata Outputs
