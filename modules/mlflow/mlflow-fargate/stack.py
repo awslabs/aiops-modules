@@ -4,6 +4,7 @@
 from typing import Any, List, Optional, cast
 
 import aws_cdk as cdk
+import cdk_nag
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_ecs as ecs
@@ -12,7 +13,6 @@ from aws_cdk import aws_efs as efs
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
-import cdk_nag
 from constructs import Construct, IConstruct
 
 

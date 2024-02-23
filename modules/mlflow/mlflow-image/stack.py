@@ -5,10 +5,10 @@ import os
 from typing import Any, cast
 
 import aws_cdk as cdk
-from aws_cdk import aws_ecr as ecr
-from aws_cdk import aws_ecr_assets as ecr_assets
 import cdk_ecr_deployment as ecr_deployment
 import cdk_nag
+from aws_cdk import aws_ecr as ecr
+from aws_cdk import aws_ecr_assets as ecr_assets
 from constructs import Construct, IConstruct
 
 
