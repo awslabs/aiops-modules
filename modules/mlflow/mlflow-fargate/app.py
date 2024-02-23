@@ -42,6 +42,9 @@ autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUT
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
 lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
+rds_hostname = os.getenv(_param("RDS_HOSTNAME"))
+rds_port = os.getenv(_param("RDS_PORT"))
+rds_credentials_secret_arn = os.getenv(_param("RDS_CREDENTIALS_SECRET_ARN"))
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -69,6 +72,9 @@ stack = MlflowFargateStack(
     artifacts_bucket_name=artifacts_bucket_name,
     lb_access_logs_bucket_name=lb_access_logs_bucket_name,
     lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
+    rds_hostname=rds_hostname,
+    rds_port=rds_port,
+    rds_credentials_secret_arn=rds_credentials_secret_arn,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],
@@ -82,8 +88,8 @@ aws_cdk.CfnOutput(
     value=stack.to_json_string(
         {
             "ECSClusterName": stack.cluster.cluster_name,
-            "ServiceName": stack.service.service.service_name,
-            "LoadBalancerDNSName": stack.service.load_balancer.load_balancer_dns_name,
+            "ServiceName": stack.fargate_service.service.service_name,
+            "LoadBalancerDNSName": stack.fargate_service.load_balancer.load_balancer_dns_name,
             "LoadBalancerAccessLogsBucketArn": stack.lb_access_logs_bucket.bucket_arn,
             "EFSFileSystemId": stack.fs.file_system_id,
         }

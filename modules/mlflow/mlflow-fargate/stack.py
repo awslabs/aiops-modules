@@ -10,6 +10,7 @@ from aws_cdk import aws_ecs as ecs
 from aws_cdk import aws_ecs_patterns as ecs_patterns
 from aws_cdk import aws_efs as efs
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
 from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
 from constructs import Construct, IConstruct
@@ -32,6 +33,9 @@ class MlflowFargateStack(Stack):
         artifacts_bucket_name: str,
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
+        rds_hostname: Optional[str],
+        rds_port: Optional[str],
+        rds_credentials_secret_arn: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -52,8 +56,12 @@ class MlflowFargateStack(Stack):
         model_bucket.grant_read_write(role)
 
         vpc = ec2.Vpc.from_lookup(self, "Vpc", vpc_id=vpc_id)
-        subnets = [ec2.Subnet.from_subnet_id(self, f"Sub{subnet_id}", subnet_id) for subnet_id in subnet_ids]
+        subnets = [ec2.Subnet.from_subnet_id(self, f"Subnet {subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
+        # Load database
+        secret = rds.DatabaseSecret.from_secret_complete_arn(self, "Secret", rds_credentials_secret_arn)
+
+        # Create ECS cluster
         cluster = ecs.Cluster(
             self,
             "EcsCluster",
@@ -81,7 +89,14 @@ class MlflowFargateStack(Stack):
                 ),
             ),
             environment={
-                "BUCKET": f"s3://{artifacts_bucket_name}",
+                "BUCKET": model_bucket.s3_url_for_object(),
+                "HOST": rds_hostname,
+                "PORT": rds_port,
+                "DATABASE": secret.secret_value_from_json("dbInstanceIdentifier").to_string(),
+                "USERNAME": secret.secret_value_from_json("username").to_string(),
+            },
+            secrets={
+                "PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
             },
             logging=ecs.LogDriver.aws_logs(stream_prefix="mlflow"),
         )
@@ -130,7 +145,7 @@ class MlflowFargateStack(Stack):
         )
 
         # Create ECS Service
-        service = ecs_patterns.NetworkLoadBalancedFargateService(
+        fargate_service = ecs_patterns.NetworkLoadBalancedFargateService(
             self,
             "MlflowLBService",
             service_name=service_name,
@@ -139,7 +154,7 @@ class MlflowFargateStack(Stack):
             task_subnets=ec2.SubnetSelection(subnets=subnets),
             circuit_breaker=ecs.DeploymentCircuitBreaker(rollback=True),
         )
-        self.service = service
+        self.fargate_service = fargate_service
 
         # Enable access logs
         if lb_access_logs_bucket_name:
@@ -154,22 +169,22 @@ class MlflowFargateStack(Stack):
                 block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
                 enforce_ssl=True,
             )
-        service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket, prefix=lb_access_logs_bucket_prefix)
+        fargate_service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket, prefix=lb_access_logs_bucket_prefix)
         self.lb_access_logs_bucket = lb_access_logs_bucket
 
         # Allow access to EFS from Fargate service
-        fs.grant_root_access(service.task_definition.task_role.grant_principal)
-        fs.connections.allow_default_port_from(service.service.connections)
+        fs.grant_root_access(fargate_service.task_definition.task_role.grant_principal)
+        fs.connections.allow_default_port_from(fargate_service.service.connections)
 
         # Setup security group
-        service.service.connections.security_groups[0].add_ingress_rule(
+        fargate_service.service.connections.security_groups[0].add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.tcp(5000),
             description="Allow inbound from VPC for mlflow",
         )
 
         # Setup autoscaling policy
-        scaling = service.service.auto_scale_task_count(max_capacity=autoscale_max_capacity)
+        scaling = fargate_service.service.auto_scale_task_count(max_capacity=autoscale_max_capacity)
         scaling.scale_on_cpu_utilization(
             id="AutoscalingPolicy",
             target_utilization_percent=70,

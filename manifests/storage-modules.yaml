@@ -14,7 +14,7 @@ parameters:
   - name: retention-type
     value: RETAIN
 ---
-name: mysql
+name: mlflow-mysql
 path: git::https://github.com/LeonLuttenberger/idf-modules.git//modules/database/rds?ref=fix/rds-database-module-nags&depth=1
 targetAccount: primary
 parameters:
@@ -38,5 +38,7 @@ parameters:
     value: t2.small
   - name: admin-username
     value: admin
+  - name: credential-rotation-days
+    value: 30
   - name: removal-policy
     value: DESTROY
