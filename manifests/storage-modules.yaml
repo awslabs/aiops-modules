@@ -15,7 +15,7 @@ parameters:
     value: RETAIN
 ---
 name: mlflow-mysql
-path: git::https://github.com/LeonLuttenberger/idf-modules.git//modules/database/rds?ref=fix/rds-database-module-nags&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/database/rds?ref=46e88c9a8364448c11154bdce7fed78c4b3988dd&depth=1
 targetAccount: primary
 parameters:
   - name: vpc-id
