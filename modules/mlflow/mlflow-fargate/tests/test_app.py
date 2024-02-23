@@ -16,7 +16,9 @@ def stack_defaults():
     os.environ["SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME"] = "repo5"
     os.environ["SEEDFARMER_PARAMETER_ARTIFACTS_BUCKET_NAME"] = "bucket"
     os.environ["SEEDFARMER_PARAMETER_RDS_HOSTNAME"] = "xxxxx"
-    os.environ["SEEDFARMER_PARAMETER_RDS_CREDENTIALS_SECRET_ARN"] = "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
+    os.environ[
+        "SEEDFARMER_PARAMETER_RDS_CREDENTIALS_SECRET_ARN"
+    ] = "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
 
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
