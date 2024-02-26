@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, Optional, cast
+from typing import Any, List, Optional, TypedDict, cast
 
 import aws_cdk as cdk
 import cdk_nag
@@ -14,6 +14,13 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
 from constructs import Construct, IConstruct
+
+
+class RDSSettings(TypedDict):
+    hostname: str
+    port: int
+    credentials_secret_arn: str
+    security_group_id: str
 
 
 class MlflowFargateStack(cdk.Stack):
@@ -31,8 +38,7 @@ class MlflowFargateStack(cdk.Stack):
         task_memory_limit_mb: int,
         autoscale_max_capacity: int,
         artifacts_bucket_name: str,
-        rds_hostname: Optional[str],
-        rds_credentials_secret_arn: Optional[str],
+        rds_settings: Optional[RDSSettings],
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
         **kwargs: Any,
@@ -86,8 +92,7 @@ class MlflowFargateStack(cdk.Stack):
             ),
             logging=ecs.LogDriver.aws_logs(stream_prefix="mlflow"),
             model_bucket=model_bucket,
-            rds_hostname=rds_hostname,
-            rds_credentials_secret_arn=rds_credentials_secret_arn,
+            rds_settings=rds_settings,
         )
 
         port_mapping = ecs.PortMapping(container_port=5000, host_port=5000, protocol=ecs.Protocol.TCP)
@@ -167,11 +172,23 @@ class MlflowFargateStack(cdk.Stack):
         fs.connections.allow_default_port_from(fargate_service.service.connections)
 
         # Setup security group
-        fargate_service.service.connections.security_groups[0].add_ingress_rule(
+        fargate_securigy_group = fargate_service.service.connections.security_groups[0]
+        fargate_securigy_group.add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.tcp(5000),
             description="Allow inbound from VPC for mlflow",
         )
+
+        # Setup RDS security group if needed
+        if rds_settings:
+            rds_security_group = ec2.SecurityGroup.from_security_group_id(
+                self, "RDS Security Group", rds_settings["security_group_id"]
+            )
+            rds_security_group.add_ingress_rule(
+                peer=ec2.Peer.security_group_id(fargate_securigy_group.security_group_id),
+                connection=ec2.Port.tcp(rds_settings["port"]),
+                description="Allow inbound access to RDS for mlflow",
+            )
 
         # Setup autoscaling policy
         scaling = fargate_service.service.auto_scale_task_count(max_capacity=autoscale_max_capacity)
@@ -214,19 +231,18 @@ class MlflowFargateStack(cdk.Stack):
         image: ecs.EcrImage,
         logging: ecs.LogDriver,
         model_bucket: s3.IBucket,
-        rds_hostname: Optional[str],
-        rds_credentials_secret_arn: Optional[str],
+        rds_settings: Optional[RDSSettings],
     ) -> ecs.ContainerDefinition:
-        if rds_hostname and rds_credentials_secret_arn:
-            secret = rds.DatabaseSecret.from_secret_complete_arn(self, "Secret", rds_credentials_secret_arn)
+        if rds_settings:
+            secret = rds.DatabaseSecret.from_secret_complete_arn(self, "Secret", rds_settings["credentials_secret_arn"])
 
             return task_definition.add_container(
                 "ContainerDef",
                 image=image,
                 environment={
                     "BUCKET": model_bucket.s3_url_for_object(),
-                    "HOST": rds_hostname,
-                    "PORT": secret.secret_value_from_json("port").to_string(),
+                    "HOST": rds_settings["hostname"],
+                    "PORT": str(rds_settings["port"]),
                     "DATABASE": secret.secret_value_from_json("dbname").to_string(),
                     "USERNAME": secret.secret_value_from_json("username").to_string(),
                 },
@@ -235,9 +251,6 @@ class MlflowFargateStack(cdk.Stack):
                 },
                 logging=logging,
             )
-
-        if rds_hostname or rds_credentials_secret_arn:
-            raise ValueError("Either both rds-hostname and rds-credentials-secret-arn need to be defined or neither.")
 
         return task_definition.add_container(
             "ContainerDef",

@@ -52,6 +52,8 @@ def test_artifacts_bucket_name(stack_defaults):
 
 def test_rds_settings(stack_defaults):
     os.environ["SEEDFARMER_PARAMETER_RDS_HOSTNAME"] = "xxxxx"
+    os.environ["SEEDFARMER_PARAMETER_RDS_PORT"] = "3306"
+    os.environ["SEEDFARMER_PARAMETER_RDS_SECURITY_GROUP_ID"] = "sg-12345"
     os.environ["SEEDFARMER_PARAMETER_RDS_CREDENTIALS_SECRET_ARN"] = (
         "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
     )
@@ -60,20 +62,20 @@ def test_rds_settings(stack_defaults):
 
 
 def test_rds_settings_missing_hostname(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_RDS_PORT"] = "3306"
+    os.environ["SEEDFARMER_PARAMETER_RDS_SECURITY_GROUP_ID"] = "sg-12345"
     os.environ["SEEDFARMER_PARAMETER_RDS_CREDENTIALS_SECRET_ARN"] = (
         "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
     )
 
-    with pytest.raises(
-        ValueError, match="Either both rds-hostname and rds-credentials-secret-arn need to be defined or neither."
-    ):
+    with pytest.raises(ValueError):
         import app  # noqa: F401
 
 
 def test_rds_settings_missing_credentials(stack_defaults):
     os.environ["SEEDFARMER_PARAMETER_RDS_HOSTNAME"] = "xxxxx"
+    os.environ["SEEDFARMER_PARAMETER_RDS_PORT"] = "3306"
+    os.environ["SEEDFARMER_PARAMETER_RDS_SECURITY_GROUP_ID"] = "sg-12345"
 
-    with pytest.raises(
-        ValueError, match="Either both rds-hostname and rds-credentials-secret-arn need to be defined or neither."
-    ):
+    with pytest.raises(ValueError):
         import app  # noqa: F401

@@ -40,11 +40,14 @@ def test_synthesize_stack(stack_defaults, use_rds) -> None:
     artifacts_bucket_name = "bucket"
 
     if use_rds:
-        rds_hostname = "hostname"
-        secret_arn = "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
+        rds_settings = {
+            "hostname": "hostname",
+            "port": 3306,
+            "security_group_id": "sg-01234",
+            "credentials_secret_arn": "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy",
+        }
     else:
-        rds_hostname = None
-        secret_arn = None
+        rds_settings = None
 
     stack = stack.MlflowFargateStack(
         scope=app,
@@ -59,8 +62,7 @@ def test_synthesize_stack(stack_defaults, use_rds) -> None:
         task_memory_limit_mb=task_memory_limit_mb,
         autoscale_max_capacity=autoscale_max_capacity,
         artifacts_bucket_name=artifacts_bucket_name,
-        rds_hostname=rds_hostname,
-        rds_credentials_secret_arn=secret_arn,
+        rds_settings=rds_settings,
         lb_access_logs_bucket_name=None,
         lb_access_logs_bucket_prefix=None,
         env=cdk.Environment(
