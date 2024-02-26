@@ -28,12 +28,12 @@ parameters:
   - name: rds-hostname
     valueFrom:
       moduleMetadata:
-        group: database
+        group: storage
         name: mlflow-mysql
         key: DatabaseHostname
   - name: rds-credentials-secret-arn
     valueFrom:
       moduleMetadata:
-        group: database
+        group: storage
         name: mlflow-mysql
         key: CredentialsSecretArn
