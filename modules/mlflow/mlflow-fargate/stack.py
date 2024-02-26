@@ -31,8 +31,8 @@ class MlflowFargateStack(cdk.Stack):
         task_memory_limit_mb: int,
         autoscale_max_capacity: int,
         artifacts_bucket_name: str,
-        rds_hostname: str,
-        rds_credentials_secret_arn: str,
+        rds_hostname: Optional[str],
+        rds_credentials_secret_arn: Optional[str],
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
         **kwargs: Any,
@@ -57,9 +57,6 @@ class MlflowFargateStack(cdk.Stack):
         vpc = ec2.Vpc.from_lookup(self, "Vpc", vpc_id=vpc_id)
         subnets = [ec2.Subnet.from_subnet_id(self, f"Subnet {subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
-        # Load database
-        secret = rds.DatabaseSecret.from_secret_complete_arn(self, "Secret", rds_credentials_secret_arn)
-
         # Create ECS cluster
         cluster = ecs.Cluster(
             self,
@@ -78,8 +75,8 @@ class MlflowFargateStack(cdk.Stack):
             memory_limit_mib=task_memory_limit_mb,
         )
 
-        container = task_definition.add_container(
-            "ContainerDef",
+        container = self._add_container_to_task_definition(
+            task_definition=task_definition,
             image=ecs.ContainerImage.from_ecr_repository(
                 repository=ecr.Repository.from_repository_name(
                     self,
@@ -87,18 +84,12 @@ class MlflowFargateStack(cdk.Stack):
                     repository_name=ecr_repo_name,
                 ),
             ),
-            environment={
-                "BUCKET": model_bucket.s3_url_for_object(),
-                "HOST": rds_hostname,
-                "PORT": secret.secret_value_from_json("port").to_string(),
-                "DATABASE": secret.secret_value_from_json("dbname").to_string(),
-                "USERNAME": secret.secret_value_from_json("username").to_string(),
-            },
-            secrets={
-                "PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
-            },
             logging=ecs.LogDriver.aws_logs(stream_prefix="mlflow"),
+            model_bucket=model_bucket,
+            rds_hostname=rds_hostname,
+            rds_credentials_secret_arn=rds_credentials_secret_arn,
         )
+
         port_mapping = ecs.PortMapping(container_port=5000, host_port=5000, protocol=ecs.Protocol.TCP)
         container.add_port_mappings(port_mapping)
 
@@ -215,4 +206,44 @@ class MlflowFargateStack(cdk.Stack):
                     reason="Access logs not required for access logs bucket",
                 ),
             ],
+        )
+
+    def _add_container_to_task_definition(
+        self,
+        task_definition: ecs.FargateTaskDefinition,
+        image: ecs.EcrImage,
+        logging: ecs.LogDriver,
+        model_bucket: s3.IBucket,
+        rds_hostname: Optional[str],
+        rds_credentials_secret_arn: Optional[str],
+    ) -> ecs.ContainerDefinition:
+        if rds_hostname and rds_credentials_secret_arn:
+            secret = rds.DatabaseSecret.from_secret_complete_arn(self, "Secret", rds_credentials_secret_arn)
+
+            return task_definition.add_container(
+                "ContainerDef",
+                image=image,
+                environment={
+                    "BUCKET": model_bucket.s3_url_for_object(),
+                    "HOST": rds_hostname,
+                    "PORT": secret.secret_value_from_json("port").to_string(),
+                    "DATABASE": secret.secret_value_from_json("dbname").to_string(),
+                    "USERNAME": secret.secret_value_from_json("username").to_string(),
+                },
+                secrets={
+                    "PASSWORD": ecs.Secret.from_secrets_manager(secret, "password"),
+                },
+                logging=logging,
+            )
+
+        if rds_hostname or rds_credentials_secret_arn:
+            raise ValueError("Either both rds-hostname and rds-credentials-secret-arn need to be defined or neither.")
+
+        return task_definition.add_container(
+            "ContainerDef",
+            image=image,
+            environment={
+                "BUCKET": model_bucket.s3_url_for_object(),
+            },
+            logging=logging,
         )

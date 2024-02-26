@@ -54,12 +54,6 @@ if not ecr_repo_name:
 if not artifacts_bucket_name:
     raise ValueError("Missing input parameter artifacts-bucket-name")
 
-if not rds_hostname:
-    raise ValueError("Missing input parameter rds-hostname")
-
-if not rds_credentials_secret_arn:
-    raise ValueError("Missing input parameter rds-credentials-secret-arn")
-
 
 app = aws_cdk.App()
 

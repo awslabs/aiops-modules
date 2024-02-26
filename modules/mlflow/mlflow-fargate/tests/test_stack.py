@@ -1,5 +1,6 @@
 import os
 import sys
+from unittest import mock
 
 import aws_cdk as cdk
 import pytest
@@ -7,16 +8,20 @@ from aws_cdk.assertions import Template
 
 
 @pytest.fixture(scope="function")
-def stack_defaults() -> None:
-    os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
-    os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
+def stack_defaults():
+    with mock.patch.dict(os.environ, {}, clear=True):
+        os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
+        os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
-    # Unload the app import so that subsequent tests don't reuse
-    if "stack" in sys.modules:
-        del sys.modules["stack"]
+        # Unload the app import so that subsequent tests don't reuse
+        if "stack" in sys.modules:
+            del sys.modules["stack"]
+
+        yield
 
 
-def test_synthesize_stack() -> None:
+@pytest.mark.parametrize("use_rds", [False, True])
+def test_synthesize_stack(stack_defaults, use_rds) -> None:
     import stack
 
     app = cdk.App()
@@ -33,8 +38,13 @@ def test_synthesize_stack() -> None:
     task_memory_limit_mb = 8 * 1024
     autoscale_max_capacity = 2
     artifacts_bucket_name = "bucket"
-    rds_hostname = "hostname"
-    secret_arn = "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
+
+    if use_rds:
+        rds_hostname = "hostname"
+        secret_arn = "arn:aws:secretsmanager:us-east-1:111111111111:secret:xxxxxx/xxxxxx-yyyyyy"
+    else:
+        rds_hostname = None
+        secret_arn = None
 
     stack = stack.MlflowFargateStack(
         scope=app,
