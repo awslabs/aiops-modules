@@ -1,0 +1,100 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seedfarmer-module-sagemaker-notebook"
+authors = [
+    {name = "AWS"}
+]
+description = "SageMaker Notebook Infrastructure as Code (IaC) Seed-Farmer Module."
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+classifiers = [
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.9",
+        "Typing :: Typed",
+]
+dependencies = [
+  "aws-cdk-lib~=2.126.0",
+  "constructs~=10.3.0",
+  "pydantic~=2.5.3",
+  "pydantic-settings~=2.0.3",
+  "configobj~=5.0.8",
+  "validators~=0.22.0"
+  
+]
+
+dynamic = ["version", "readme"]
+
+[tool.setuptools.dynamic]
+version = {attr = "sagemaker_notebook.__version__.VERSION"}
+readme = {file = ["README.md"]}
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["sagemaker_notebook"]  # package names should match these glob patterns (["*"] by default)
+
+
+[tool.ruff]
+line-length = 120
+#src = ["src"]
+
+# Enable pycodestyle (`E`), Pyflakes (`F`), PyDocsStyle (`D`), isort (`I`), pep8-naming (`N`) codes by default.
+select = ["E", "F", "D", "I", "N", "Q", "C90", "N", "S", "RUF"]
+ignore = []
+
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".env",
+    ".vscode",
+    ".aws*",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "shared",
+    "tests",
+    "codeseeder.out"
+]
+
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$" # Allow unused variables when underscore-prefixed.
+target-version = "py39"                                      # Assume Python 3.9
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401", "D104"]
+
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
