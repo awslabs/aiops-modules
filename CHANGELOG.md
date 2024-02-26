@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+## v1.0.0
+
 ### **Added**
 
 - added `mlflow-image` and `mlflow-fargate` modules
