@@ -1,8 +1,8 @@
-# Mlflow image module
+# Mlflow Image
 
 ## Description
 
-This module creates an mlflow container image and pushes to the specified ECR.
+This module creates an mlflow container image and pushes to the specified Elastic Container Repository.
 
 ## Inputs/Outputs
 

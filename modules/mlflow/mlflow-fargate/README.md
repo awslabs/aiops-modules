@@ -1,10 +1,10 @@
-# Mlflow on Fargate module
+# Mlflow on AWS Fargate
 
 ## Description
 
-This module runs Mlflow on AWS Fargate.
+This module runs Mlflow on AWS Fargate as a load-balanced Elastic Container Service.
 
-By default, uses EFS for backend storage. Optionally, an RDS instance can be used for storage.
+By default, uses Elastic File System for backend storage and S3 for artifact storage. Optionally, a Relational Database Storage instance can be used for metadata.
 
 ### Architecture
 
