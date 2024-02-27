@@ -1,7 +1,5 @@
 """Seedfarmer module to deploy SageMaker Notebooks."""
 
-import logging
-import pathlib
 from typing import Any, Dict, List, Optional
 
 import aws_cdk.aws_ec2 as ec2
@@ -10,9 +8,6 @@ import aws_cdk.aws_kms as kms
 import aws_cdk.aws_sagemaker as sagemaker
 from aws_cdk import CfnOutput, Stack, Tags
 from constructs import Construct
-
-logging.basicConfig()
-logger = logging.getLogger(pathlib.Path(__file__).name)
 
 
 class SagemakerNotebookStack(Stack):
