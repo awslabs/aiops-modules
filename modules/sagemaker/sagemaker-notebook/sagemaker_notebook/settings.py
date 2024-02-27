@@ -35,7 +35,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     root_access: str = Field(default="Disabled")
     volume_size_in_gb: Optional[int] = Field(default=None)
     imds_version: str = Field(default="2")
-    subnet_id: Optional[str] = Field(default=None)
+    subnet_ids: Optional[List[str]] = Field(default=None)
     code_repository: Optional[str] = Field(default=None)
     additional_code_repositories: Optional[List[str]] = Field(default=None)
     vpc_id: Optional[str] = Field(default=None)

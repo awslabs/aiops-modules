@@ -23,7 +23,7 @@ class SagemakerNotebookStack(Stack):
         root_access: Optional[str] = None,
         volume_size_in_gb: Optional[int] = None,
         imds_version: Optional[int] = None,
-        subnet_id: Optional[str] = None,
+        subnet_ids: Optional[List[str]] = None,
         vpc_id: Optional[str] = None,
         kms_key_arn: Optional[str] = None,
         code_repository: Optional[str] = None,
@@ -52,8 +52,9 @@ class SagemakerNotebookStack(Stack):
             The size, in GB, of the ML storage volume to attach to the notebook instance, by default None
         imds_version, optional
             The Instance Metadata Service (IMDS) version, by default None
-        subnet_id, optional
-            The ID of the subnet in a VPC to which you would like to have a connectivity, by default None
+        subnet_ids, optional
+            A list of subnet IDs in a VPC to which you would like to have a connectivity, by default None.
+            Only the first subnet id will be used.
         vpc_id, optional
             The ID of the VPC to which you would like to have a connectivity, by default None
         kms_key_arn, optional
@@ -76,7 +77,7 @@ class SagemakerNotebookStack(Stack):
         self.volume_size_in_gb = volume_size_in_gb
         self.code_repository = code_repository
         self.imds_version = imds_version
-        self.subnet_id = subnet_id
+        self.subnet_id = subnet_ids[0] if subnet_ids else None
         self.vpc_id = vpc_id
         self.kms_key_arn = kms_key_arn
         self.role_arn = role_arn

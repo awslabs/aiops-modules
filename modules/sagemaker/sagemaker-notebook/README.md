@@ -19,7 +19,7 @@ This module creates a SageMaker Notebook instance.
 - `root_access`: Whether root access is enabled or disabled for users of the notebook instance, by default None
 - `volume_size_in_gb`: The size, in GB, of the ML storage volume to attach to the notebook instance, by default None
 - `imds_version`: The Instance Metadata Service (IMDS) version, by default None
-- `subnet_id`: The ID of the subnet in a VPC to which you would like to have a connectivity, by default None
+- `subnet_ids`: A list of subnet IDs in a VPC to which you would like to have a connectivity, by default None. Only the first subnet id will be used.
 - `vpc_id`: The ID of the VPC to which you would like to have a connectivity, by default None
 - `kms_key_arn`: The ARN of a AWS KMS key that SageMaker uses to encrypt data on the storage volume attached, by default None
 - `code_repository`: The Git repository associated with the notebook instance as its default code repository, by default None

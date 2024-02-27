@@ -22,7 +22,7 @@ def test_synthesize_stack() -> None:
         root_access="Enabled",
         volume_size_in_gb=8,
         imds_version="1",
-        subnet_id="subnet-id-123123",
+        subnet_ids=["subnet-id-a", "subnet-id-b"],
         vpc_id="vpc-12345",
         kms_key_arn="arn:aws:kms:*:*:*",
         code_repository="https://",
