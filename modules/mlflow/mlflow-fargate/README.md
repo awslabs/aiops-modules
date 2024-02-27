@@ -4,7 +4,7 @@
 
 This module runs Mlflow on AWS Fargate.
 
-By default, uses EFS for backend storage.
+By default, uses EFS for backend storage. Optionally, an RDS instance can be used for storage.
 
 ### Architecture
 
@@ -27,6 +27,8 @@ By default, uses EFS for backend storage.
 - `service-name`: Name of the service.
 - `task-cpu-units`: The number of cpu units used by the Fargate task.
 - `task-memory-limit-mb`: The amount (in MiB) of memory used by the Fargate task.
+- `rds-hostname`: Endpoint address of the RDS instance
+- `rds-credentials-secret-arn`: RDS database credentials stored in SecretsManager
 - `lb-access-logs-bucket-name`: Name of the bucket to store load balancer access logs
 - `lb-access-logs-bucket-prefix`: Prefix for load balancer access logs
 
@@ -60,6 +62,18 @@ parameters:
         group: storage
         name: buckets
         key: ArtifactsBucketName
+  - name: rds-hostname
+    valueFrom:
+      moduleMetadata:
+        group: database
+        name: mlflow-mysql
+        key: DatabaseHostname
+  - name: rds-credentials-secret-arn
+    valueFrom:
+      moduleMetadata:
+        group: database
+        name: mlflow-mysql
+        key: CredentialsSecretArn
 ```
 
 ### Module Metadata Outputs
