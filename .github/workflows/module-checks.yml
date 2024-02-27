@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - id: language
+      - id: determine-language
         name: Determine Language
         run: |
           set -x
@@ -72,23 +72,23 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install Requirements (Python)
-        if: ${{ steps.language.outputs == 'python' }}
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
         run: |
           set -x
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
           pip install -r $MODULE_PATH/requirements.txt
       - name: Install Requirements (Typescript)
-        if: ${{ steps.language.outputs == 'typescript' }}
+        if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: |
           set -x
           cd $MODULE_PATH
           npm install
       - name: Static checks and linting
-        run: scripts/validate.sh --language ${{ steps.language.outputs }} --path $MODULE_PATH/
+        run: scripts/validate.sh --language ${{ steps.determine-language.outputs.language }} --path $MODULE_PATH/
       - name: Pytest
-        if: ${{ steps.language == 'python' }}
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
         run: cd $MODULE_PATH/ && pytest
       - name: NPM Test
-        if: ${{ steps.language == 'typescript' }}
+        if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: cd $MODULE_PATH/ && npm test
