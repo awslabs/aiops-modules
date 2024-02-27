@@ -34,12 +34,24 @@ The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/ge
 Example manifest:
 
 ```
-name: hf-asr-whisper-endpoint
+name: hf-mistral-endpoint
 path: modules/fmops/sagemaker-jumpstart-fm-endpoint
 targetAccount: primary
 parameters:
   - name: jump-start-model-name
-    value: HUGGINGFACE_ASR_WHISPER_BASE_1_0_0
+    value: HUGGINGFACE_LLM_MISTRAL_7B_2_1_0
   - name: instance-type
-    value: ml.c4.2xlarge
+    value: inf1.xlarge
+  - name: vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
 ```
