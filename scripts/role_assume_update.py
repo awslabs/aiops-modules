@@ -5,7 +5,7 @@ import boto3
 
 iam = boto3.client("iam")
 ROLE_ARN = sys.argv[1]
-ROLE_NAME = "seedfarmer-addf-toolchain-role"
+ROLE_NAME = "seedfarmer-mlops-toolchain-role"
 
 
 trusted_principals = iam.get_role(RoleName=ROLE_NAME)["Role"][
