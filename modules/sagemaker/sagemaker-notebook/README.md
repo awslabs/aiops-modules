@@ -4,6 +4,10 @@
 
 This module creates a SageMaker Notebook instance.
 
+### Architecture
+
+![SageMaker Notebook Instance Architecture](docs/_static/architecture.drawio.png "SageMaker Notebook Instance Architecture")
+
 ## Inputs/Outputs
 
 ### Input Paramenters
