@@ -1,0 +1,8 @@
+name: hf-asr-whisper-endpoint
+path: modules/fmops/sagemaker-jumpstart-fm-endpoint
+targetAccount: primary
+parameters:
+  - name: jump-start-model-name
+    value: HUGGINGFACE_ASR_WHISPER_BASE_2_0_0
+  - name: instance-type
+    value: ml.g5.2xlarge
