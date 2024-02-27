@@ -27,10 +27,13 @@ By default, uses EFS for backend storage. Optionally, an RDS instance can be use
 - `service-name`: Name of the service.
 - `task-cpu-units`: The number of cpu units used by the Fargate task.
 - `task-memory-limit-mb`: The amount (in MiB) of memory used by the Fargate task.
-- `rds-hostname`: Endpoint address of the RDS instance
-- `rds-credentials-secret-arn`: RDS database credentials stored in SecretsManager
 - `lb-access-logs-bucket-name`: Name of the bucket to store load balancer access logs
 - `lb-access-logs-bucket-prefix`: Prefix for load balancer access logs
+- `rds-hostname`: Endpoint address of the RDS instance
+- `rds-port`: Port of the RDS instance
+- `rds-credentials-secret-arn`: RDS database credentials stored in SecretsManager
+- `rds-security-group-id`: Security group of the RDS instance
+  - needed so that an inbound rule can be created to grant Fargate access to the database
 
 ### Sample manifest declaration
 
