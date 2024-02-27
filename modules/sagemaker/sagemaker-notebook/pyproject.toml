@@ -44,13 +44,13 @@ line-length = 120
 #src = ["src"]
 
 # Enable pycodestyle (`E`), Pyflakes (`F`), PyDocsStyle (`D`), isort (`I`), pep8-naming (`N`) codes by default.
-select = ["E", "F", "D", "I", "N", "Q", "C90", "N", "S", "RUF"]
-ignore = []
+lint.select = ["E", "F", "D", "I", "N", "Q", "C90", "N", "S", "RUF"]
+lint.ignore = []
 
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
+lint.fixable = ["ALL"]
+lint.unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -83,18 +83,18 @@ exclude = [
     "codeseeder.out"
 ]
 
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$" # Allow unused variables when underscore-prefixed.
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$" # Allow unused variables when underscore-prefixed.
 target-version = "py39"                                      # Assume Python 3.9
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "D104"]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 10
 
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 docstring-quotes = "double"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
