@@ -33,7 +33,7 @@ The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/ge
 
 Example manifest:
 
-```
+```yaml
 name: hf-mistral-endpoint
 path: modules/fmops/sagemaker-jumpstart-fm-endpoint
 targetAccount: primary

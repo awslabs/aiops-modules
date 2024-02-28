@@ -1,16 +1,34 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as SagemakerFmEndpoint from '../lib/sagemaker-fm-endpoint-stack';
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { SagemakerJumpStartFmEndpointStack } from '../lib/sagemaker-jumpstart-fm-endpoint-stack';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/sagemaker-fm-endpoint-stack.ts
-test("SQS Queue Created", () => {
-  //   const app = new cdk.App();
-  //     // WHEN
-  //   const stack = new SagemakerFmEndpoint.SagemakerFmEndpointStack(app, 'MyTestStack');
-  //     // THEN
-  //   const template = Template.fromStack(stack);
-  //   template.hasResourceProperties('AWS::SQS::Queue', {
-  //     VisibilityTimeout: 300
-  //   });
+test("Synth stack", () => {
+    const app = new cdk.App();
+
+    const projectName = "mlops"
+    const deploymentName = "platform"
+    const moduleName = "fm-endpoint"
+    const jumpStartModelName = "HUGGINGFACE_LLM_MISTRAL_7B_2_1_0"
+    const instanceType = "ml.g5.2xlarge"
+    const vpcId = "vpc-123"
+    const subnetIds = ["sub1", "sub2"]
+    const account = "123456789"
+    const region = "us-east-1"
+
+    const stack = new SagemakerJumpStartFmEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
+        projectName,
+        deploymentName,
+        moduleName,
+        jumpStartModelName,
+        instanceType,
+        vpcId,
+        subnetIds,
+        env: { account, region },
+    });
+
+    const template = Template.fromStack(stack);
+
+    template.hasResource("AWS::SageMaker::Endpoint", {});
+    template.hasResource("AWS::IAM::Role", {});
+    template.hasResource("AWS::EC2::SecurityGroup", {});
 });
