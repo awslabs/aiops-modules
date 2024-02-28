@@ -5,7 +5,7 @@ parameters:
   - name: jump-start-model-name
     value: HUGGINGFACE_LLM_MISTRAL_7B_2_1_0
   - name: instance-type
-    value: inf1.xlarge
+    value: ml.g5.2xlarge
   - name: vpc_id
     valueFrom:
       moduleMetadata:
