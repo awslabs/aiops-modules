@@ -1,0 +1,23 @@
+publishGenericEnvVariables: true
+deploy:
+  phases:
+    install:
+      commands:
+      - env
+      # Install whatever additional build libraries
+      - npm install -g aws-cdk@2.130.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
+destroy:
+  phases:
+    install:
+      commands:
+      # Install whatever additional build libraries
+      - npm install -g aws-cdk@2.130.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      # execute the CDK
+      - cdk destroy --force --app "python app.py"
