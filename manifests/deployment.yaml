@@ -1,7 +1,5 @@
 name: mlops
-toolchainRegion: 
-  valueFrom:
-    envVariable: AWS_REGION
+toolchainRegion: us-east-1
 forceDependencyRedeploy: true
 groups:
   - name: networking
@@ -21,7 +19,5 @@ targetAccountMappings:
         envVariable: PRIMARY_ACCOUNT
     default: true
     regionMappings:
-      - region: 
-          valueFrom:
-            envVariable: AWS_REGION
+      - region: us-east-1
         default: true
