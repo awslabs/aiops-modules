@@ -6,10 +6,10 @@ import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
-from templates.ml2prod_basic.pipeline_constructs.build_pipeline_construct import (
+from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
-from templates.ml2prod_basic.pipeline_constructs.deploy_pipeline_construct import (
+from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import (
     DeployPipelineConstruct,
 )
 
@@ -27,7 +27,6 @@ class Product(servicecatalog.ProductStack):
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
     ) -> None:
-        # super().__init__(scope, id, asset_bucket=asset_bucket)
         super().__init__(scope, id)
 
         sagemaker_project_name = CfnParameter(
