@@ -25,7 +25,7 @@ python_version = "3.8"
 strict = true
 ignore_missing_imports = true
 disallow_untyped_decorators = false
-exclude = "codeseeder.out/|example/|tests/"
+exclude = "codeseeder.out/|example/|tests/|functions/sm_studio/enable_sm_projects/|scripts/"
 warn_unused_ignores = false
 
 [tool.pytest.ini_options]

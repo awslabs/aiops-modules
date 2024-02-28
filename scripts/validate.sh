@@ -67,7 +67,7 @@ if [[ $SKIP_STATIC_CHECKS == "false" ]]; then
     echo "Validating Static Checks"
     if [[ $LANGUAGE == "python" ]]; then
         echo "Checking mypy"
-        mypy --ignore-missing-imports .
+        mypy .
     elif [[ $LANGUAGE == "typescript" ]]; then
         echo "Checking eslint"
         npx eslint . --ext .js,.jsx,.ts,.tsx
