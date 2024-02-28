@@ -3,6 +3,8 @@
 ## Issue ticket number and link
 
 ## Checklist before requesting a review
+
+- [ ] I updated `CHANGELOG.MD` with a description of my changes
 - [ ] If the change was to a module, I ran the code validation script (`scripts/validate.sh`)
 - [ ] If the change was to a module, I have added thorough tests
 - [ ] If the change was to a module, I have added/updated the module's README.md
