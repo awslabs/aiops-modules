@@ -17,7 +17,7 @@ line-length = 120
 target-version = "py38"
 
 [tool.ruff.lint]
-select = ["F", "I", "E", "W", ]
+select = ["F", "I", "E", "W"]
 fixable = ["ALL"]
 
 [tool.mypy]
