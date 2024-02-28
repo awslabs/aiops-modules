@@ -60,7 +60,9 @@ def get_approved_package():
             raise Exception(error_message)
         # Return the pmodel package arn
         model_package_arn = approved_packages[0]["ModelPackageArn"]
-        logger.info(f"Identified the latest approved model package: {model_package_arn}")
+        logger.info(
+            f"Identified the latest approved model package: {model_package_arn}"
+        )
         return model_package_arn
     except ClientError as e:
         error_message = e.response["Error"]["Message"]

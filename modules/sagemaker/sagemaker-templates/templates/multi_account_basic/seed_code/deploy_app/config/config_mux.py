@@ -33,12 +33,16 @@ def get_config_for_stage(scope: constructs, path: str):
         config_path = Path(__file__).parent.joinpath(stage_name.lower(), path)
 
         if not config_path.exists():
-            print(f"Config file {path} for stage {stage_name} not found. Using {default_path} instead")
+            print(
+                f"Config file {path} for stage {stage_name} not found. Using {default_path} instead"
+            )
             config_path = default_path
 
         return config_path
     else:
-        print(f"Stack created without a stage, config {path} not found. Using {default_path} instead")
+        print(
+            f"Stack created without a stage, config {path} not found. Using {default_path} instead"
+        )
         return default_path
 
 
@@ -48,12 +52,16 @@ def get_config_for_stack(scope: constructs, path: str):
         config_path = Path(__file__).parent.joinpath(stack_name.lower(), path)
 
         if not config_path.exists():
-            print(f"Config file {path} for stack {stack_name} not found. Using {default_path} instead")
+            print(
+                f"Config file {path} for stack {stack_name} not found. Using {default_path} instead"
+            )
             config_path = default_path
 
         return config_path
     else:
-        print(f"Stack created without a stack, config {path} not found. Using {default_path} instead")
+        print(
+            f"Stack created without a stack, config {path} not found. Using {default_path} instead"
+        )
         return default_path
 
 

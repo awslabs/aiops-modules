@@ -60,7 +60,9 @@ class DeployPipelineConstruct(Construct):
             ),
         )
         aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-id", project_id)
-        aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-name", project_name)
+        aws_cdk.Tags.of(deploy_app_repository).add(
+            "sagemaker:project-name", project_name
+        )
 
         cdk_synth_build_role = iam.Role(
             self,
@@ -124,9 +126,13 @@ class DeployPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
+                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(
+                        value=model_package_group_name
+                    ),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
+                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
+                        value=project_name
+                    ),
                 },
             ),
         )

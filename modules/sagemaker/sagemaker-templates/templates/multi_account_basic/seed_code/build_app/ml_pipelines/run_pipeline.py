@@ -22,7 +22,11 @@ import argparse
 import json
 import sys
 
-from ml_pipelines._utils import convert_struct, get_pipeline_custom_tags, get_pipeline_driver
+from ml_pipelines._utils import (
+    convert_struct,
+    get_pipeline_custom_tags,
+    get_pipeline_driver,
+)
 
 
 def main():  # pragma: no cover
@@ -30,7 +34,9 @@ def main():  # pragma: no cover
 
     Creates or updates the pipeline and runs it.
     """
-    parser = argparse.ArgumentParser("Creates or updates and runs the pipeline for the pipeline script.")
+    parser = argparse.ArgumentParser(
+        "Creates or updates and runs the pipeline for the pipeline script."
+    )
 
     parser.add_argument(
         "-n",
@@ -77,13 +83,17 @@ def main():  # pragma: no cover
 
     try:
         pipeline = get_pipeline_driver(args.module_name, args.kwargs)
-        print("###### Creating/updating a SageMaker Pipeline with the following definition:")
+        print(
+            "###### Creating/updating a SageMaker Pipeline with the following definition:"
+        )
         parsed = json.loads(pipeline.definition())
         print(json.dumps(parsed, indent=2, sort_keys=True))
 
         all_tags = get_pipeline_custom_tags(args.module_name, args.kwargs, tags)
 
-        upsert_response = pipeline.upsert(role_arn=args.role_arn, description=args.description, tags=all_tags)
+        upsert_response = pipeline.upsert(
+            role_arn=args.role_arn, description=args.description, tags=all_tags
+        )
 
         upsert_response = pipeline.upsert(
             role_arn=args.role_arn, description=args.description

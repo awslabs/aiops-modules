@@ -23,12 +23,20 @@ DEFAULT_DEPLOYMENT_REGION = "eu-west-1"
 
 ssm_client = boto3.client("ssm", region_name=DEFAULT_DEPLOYMENT_REGION)
 
-DEV_ACCOUNT = ssm_client.get_parameter(Name="/mlops/dev/account_id")["Parameter"]["Value"]
+DEV_ACCOUNT = ssm_client.get_parameter(Name="/mlops/dev/account_id")["Parameter"][
+    "Value"
+]
 
-PREPROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/preprod/account_id")["Parameter"]["Value"]
-PREPROD_REGION = ssm_client.get_parameter(Name="/mlops/preprod/region")["Parameter"]["Value"]
+PREPROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/preprod/account_id")[
+    "Parameter"
+]["Value"]
+PREPROD_REGION = ssm_client.get_parameter(Name="/mlops/preprod/region")["Parameter"][
+    "Value"
+]
 
-PROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/prod/account_id")["Parameter"]["Value"]
+PROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/prod/account_id")["Parameter"][
+    "Value"
+]
 PROD_REGION = ssm_client.get_parameter(Name="/mlops/prod/region")["Parameter"]["Value"]
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "")
