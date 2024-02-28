@@ -31,6 +31,12 @@ All modules in this repository adhere to the module structure defined in the the
 | [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow Docker container image and pushes the image to Elastic Container Registry                                                                                                          |
 | [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
 
+### FMOps Modules
+
+| Type                                                                                                            | Description                                                     |
+|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
+
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
