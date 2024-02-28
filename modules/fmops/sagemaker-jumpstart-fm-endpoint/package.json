@@ -11,7 +11,8 @@
     "cdk": "cdk",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "check-format": "prettier --ignore-path .gitignore --check \"**/*.+(js|ts|json)\"",
-    "lint": "eslint **/*.ts"
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx,.json --fix",
+    "check-lint": "npx eslint . --ext .js,.jsx,.ts,.tsx,.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
