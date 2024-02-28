@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Vpc, SecurityGroup } from "aws-cdk-lib/aws-ec2";
-import { Effect, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { CfnModel } from "aws-cdk-lib/aws-sagemaker";
 import {
   JumpStartModel,
