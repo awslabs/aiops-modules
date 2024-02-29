@@ -88,7 +88,7 @@ jobs:
         run: scripts/validate.sh --language ${{ steps.determine-language.outputs.language }} --path $MODULE_PATH/
       - name: Pytest
         if: ${{ steps.determine-language.outputs.language == 'python' }}
-        run: cd $MODULE_PATH/ && pytest
+        run: cd $MODULE_PATH/ && pytest tests
       - name: NPM Test
         if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: cd $MODULE_PATH/ && npm test
