@@ -178,9 +178,7 @@ class SagemakerNotebookStack(Stack):
             "NotebookRole",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "AmazonSageMakerFullAccess"
-                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
             ],
         )
 
@@ -210,9 +208,7 @@ class SagemakerNotebookStack(Stack):
             A Security Group, defaults None.
         """
         if self.vpc:
-            security_group = ec2.SecurityGroup(
-                self, "SecurityGroup", vpc=self.vpc, allow_all_outbound=True
-            )
+            security_group = ec2.SecurityGroup(self, "SecurityGroup", vpc=self.vpc, allow_all_outbound=True)
             security_group.add_ingress_rule(
                 peer=ec2.Peer.ipv4(self.vpc.vpc_cidr_block),
                 connection=ec2.Port.all_tcp(),

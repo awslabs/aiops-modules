@@ -23,9 +23,7 @@ def env_defaults():
     os.environ["SEEDFARMER_PARAMETER_IMDS_VERSION"] = "2"
     os.environ["SEEDFARMER_PARAMETER_SUBNET_ID"] = "dummy321"
     os.environ["SEEDFARMER_PARAMETER_CODE_REPOSITORY"] = "dummy321"
-    os.environ["SEEDFARMER_PARAMETER_ADDITIONAL_CODE_REPOSITORIES"] = (
-        '["dummy321", "dummy321"]'
-    )
+    os.environ["SEEDFARMER_PARAMETER_ADDITIONAL_CODE_REPOSITORIES"] = '["dummy321", "dummy321"]'
     os.environ["SEEDFARMER_PARAMETER_VPC_ID"] = "dummy321"
     os.environ["SEEDFARMER_PARAMETER_KMS_KEY_ARN"] = "dummy321"
     os.environ["SEEDFARMER_PARAMETER_ROLE_ARN"] = "dummy321"
