@@ -289,7 +289,7 @@ Resources:
               commands:
                 - echo Build started on `date`
                 - echo 'Cloning mlops repo...'
-                - git clone https://github.com/mahesh-balumuri/mlops-modules.git
+                - git clone https://github.com/awslabs/mlops-modules.git
                 - echo 'Cloning complete'
                 - cd mlops-modules/
                 - echo 'Installing dependencies...'
