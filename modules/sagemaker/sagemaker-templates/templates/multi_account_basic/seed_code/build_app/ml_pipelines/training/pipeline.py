@@ -99,21 +99,11 @@ def get_pipeline(
         role = sagemaker.session.get_execution_role(sagemaker_session)
 
     # parameters for pipeline execution
-    processing_instance_count = ParameterInteger(
-        name="ProcessingInstanceCount", default_value=1
-    )
-    processing_instance_type = ParameterString(
-        name="ProcessingInstanceType", default_value="ml.m5.xlarge"
-    )
-    training_instance_type = ParameterString(
-        name="TrainingInstanceType", default_value="ml.m5.xlarge"
-    )
-    inference_instance_type = ParameterString(
-        name="InferenceInstanceType", default_value="ml.m5.xlarge"
-    )  # noqa: F841
-    model_approval_status = ParameterString(
-        name="ModelApprovalStatus", default_value="PendingManualApproval"
-    )
+    processing_instance_count = ParameterInteger(name="ProcessingInstanceCount", default_value=1)
+    processing_instance_type = ParameterString(name="ProcessingInstanceType", default_value="ml.m5.xlarge")
+    training_instance_type = ParameterString(name="TrainingInstanceType", default_value="ml.m5.xlarge")
+    inference_instance_type = ParameterString(name="InferenceInstanceType", default_value="ml.m5.xlarge")  # noqa: F841
+    model_approval_status = ParameterString(name="ModelApprovalStatus", default_value="PendingManualApproval")
     input_data = ParameterString(
         name="InputDataUrl",
         default_value=f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/abalone-dataset.csv",
@@ -131,11 +121,9 @@ def get_pipeline(
 
     # processing step for feature engineering
     try:
-        processing_image_uri = (
-            sagemaker_session.sagemaker_client.describe_image_version(
-                ImageName=processing_image_name
-            )["ContainerImage"]
-        )
+        processing_image_uri = sagemaker_session.sagemaker_client.describe_image_version(
+            ImageName=processing_image_name
+        )["ContainerImage"]
     except sagemaker_session.sagemaker_client.exceptions.ResourceNotFound:
         processing_image_uri = sagemaker.image_uris.retrieve(
             framework="xgboost",
@@ -159,9 +147,7 @@ def get_pipeline(
         processor=script_processor,
         outputs=[
             ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
-            ProcessingOutput(
-                output_name="validation", source="/opt/ml/processing/validation"
-            ),
+            ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
             ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
         ],
         code="source_scripts/preprocessing/prepare_abalone_data/main.py",  # we must figure out this path to get it from step_source directory
@@ -172,9 +158,9 @@ def get_pipeline(
     model_path = f"s3://{default_bucket}/{base_job_prefix}/AbaloneTrain"
 
     try:
-        training_image_uri = sagemaker_session.sagemaker_client.describe_image_version(
-            ImageName=training_image_name
-        )["ContainerImage"]
+        training_image_uri = sagemaker_session.sagemaker_client.describe_image_version(ImageName=training_image_name)[
+            "ContainerImage"
+        ]
     except sagemaker_session.sagemaker_client.exceptions.ResourceNotFound:
         training_image_uri = sagemaker.image_uris.retrieve(
             framework="xgboost",
@@ -209,15 +195,11 @@ def get_pipeline(
         estimator=xgb_train,
         inputs={
             "train": TrainingInput(
-                s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
-                    "train"
-                ].S3Output.S3Uri,
+                s3_data=step_process.properties.ProcessingOutputConfig.Outputs["train"].S3Output.S3Uri,
                 content_type="text/csv",
             ),
             "validation": TrainingInput(
-                s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
-                    "validation"
-                ].S3Output.S3Uri,
+                s3_data=step_process.properties.ProcessingOutputConfig.Outputs["validation"].S3Output.S3Uri,
                 content_type="text/csv",
             ),
         },
@@ -248,16 +230,12 @@ def get_pipeline(
                 destination="/opt/ml/processing/model",
             ),
             ProcessingInput(
-                source=step_process.properties.ProcessingOutputConfig.Outputs[
-                    "test"
-                ].S3Output.S3Uri,
+                source=step_process.properties.ProcessingOutputConfig.Outputs["test"].S3Output.S3Uri,
                 destination="/opt/ml/processing/test",
             ),
         ],
         outputs=[
-            ProcessingOutput(
-                output_name="evaluation", source="/opt/ml/processing/evaluation"
-            ),
+            ProcessingOutput(output_name="evaluation", source="/opt/ml/processing/evaluation"),
         ],
         code="source_scripts/evaluate/evaluate_xgboost/main.py",
         property_files=[evaluation_report],
@@ -267,18 +245,16 @@ def get_pipeline(
     model_metrics = ModelMetrics(
         model_statistics=MetricsSource(
             s3_uri="{}/evaluation.json".format(
-                step_eval.arguments["ProcessingOutputConfig"]["Outputs"][0]["S3Output"][
-                    "S3Uri"
-                ]
+                step_eval.arguments["ProcessingOutputConfig"]["Outputs"][0]["S3Output"]["S3Uri"]
             ),
             content_type="application/json",
         )
     )
 
     try:
-        inference_image_uri = sagemaker_session.sagemaker_client.describe_image_version(
-            ImageName=inference_image_name
-        )["ContainerImage"]
+        inference_image_uri = sagemaker_session.sagemaker_client.describe_image_version(ImageName=inference_image_name)[
+            "ContainerImage"
+        ]
     except sagemaker_session.sagemaker_client.exceptions.ResourceNotFound:
         inference_image_uri = sagemaker.image_uris.retrieve(
             framework="xgboost",

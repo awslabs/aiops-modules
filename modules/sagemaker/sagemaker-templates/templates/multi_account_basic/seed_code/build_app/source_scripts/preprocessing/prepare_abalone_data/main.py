@@ -124,15 +124,11 @@ if __name__ == "__main__":
 
     X = np.concatenate((y_pre, X_pre), axis=1)
 
-    logger.info(
-        "Splitting %d rows of data into train, validation, test datasets.", len(X)
-    )
+    logger.info("Splitting %d rows of data into train, validation, test datasets.", len(X))
     np.random.shuffle(X)
     train, validation, test = np.split(X, [int(0.7 * len(X)), int(0.85 * len(X))])
 
     logger.info("Writing out datasets to %s.", base_dir)
     pd.DataFrame(train).to_csv(f"{base_dir}/train/train.csv", header=False, index=False)
-    pd.DataFrame(validation).to_csv(
-        f"{base_dir}/validation/validation.csv", header=False, index=False
-    )
+    pd.DataFrame(validation).to_csv(f"{base_dir}/validation/validation.csv", header=False, index=False)
     pd.DataFrame(test).to_csv(f"{base_dir}/test/test.csv", header=False, index=False)

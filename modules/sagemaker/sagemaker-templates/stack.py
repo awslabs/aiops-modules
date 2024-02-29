@@ -57,11 +57,8 @@ class ServiceCatalogStack(Stack):
 
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
-
             build_app_asset, deploy_app_asset = self.upload_assets(
-                portfolio_access_role=portfolio_access_role
-                if portfolio_access_role_arn
-                else account_root_principal,
+                portfolio_access_role=portfolio_access_role if portfolio_access_role_arn else account_root_principal,
                 template_name=template_name,
             )
 

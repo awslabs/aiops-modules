@@ -30,9 +30,7 @@ def main():  # pragma: no cover
 
     Prints the json to stdout or saves to file.
     """
-    parser = argparse.ArgumentParser(
-        "Gets the pipeline definition for the pipeline script."
-    )
+    parser = argparse.ArgumentParser("Gets the pipeline definition for the pipeline script.")
 
     parser.add_argument(
         "-n",

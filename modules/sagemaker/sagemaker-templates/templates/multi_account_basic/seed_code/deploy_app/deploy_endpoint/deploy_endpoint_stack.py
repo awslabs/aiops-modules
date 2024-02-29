@@ -15,7 +15,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,6 +32,7 @@ from config.constants import (
     PROJECT_ID,
     PROJECT_NAME,
 )
+from dataclasses import dataclass
 from yamldataclassconfig import create_file_path_field
 
 from .get_approved_package import get_approved_package
@@ -50,9 +50,7 @@ class EndpointConfigProductionVariant(StageYamlDataClassConfig):
     instance_type: str = "ml.m5.2xlarge"
     variant_name: str = "AllTraffic"
 
-    FILE_PATH: Path = create_file_path_field(
-        "endpoint-config.yml", path_is_absolute=True
-    )
+    FILE_PATH: Path = create_file_path_field("endpoint-config.yml", path_is_absolute=True)
 
     def get_endpoint_config_production_variant(self, model_name):
         """
@@ -160,9 +158,7 @@ class DeployEndpointStack(Stack):
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
                 model_execution_policy,
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "AmazonSageMakerFullAccess"
-                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
             ],
         )
 
@@ -183,9 +179,7 @@ class DeployEndpointStack(Stack):
             execution_role_arn=model_execution_role.role_arn,
             model_name=model_name,
             containers=[
-                sagemaker.CfnModel.ContainerDefinitionProperty(
-                    model_package_name=latest_approved_model_package
-                )
+                sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
             ],
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
                 security_group_ids=[sg_id],
@@ -224,9 +218,7 @@ class DeployEndpointStack(Stack):
             endpoint_config_name=endpoint_config_name,
             kms_key_id=kms_key.key_id,
             production_variants=[
-                endpoint_config_production_variant.get_endpoint_config_production_variant(
-                    model.model_name
-                )
+                endpoint_config_production_variant.get_endpoint_config_production_variant(model.model_name)
             ],
         )
 

@@ -1,6 +1,7 @@
 import os
 
 import aws_cdk
+
 from stack import ServiceCatalogStack
 
 project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")

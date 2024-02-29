@@ -39,9 +39,7 @@ def resolve_ecr_uri_from_image_versions(sagemaker_session, image_versions, image
             image_arn = image_version["ImageVersionArn"]
             version = image_version["Version"]
             logger.info(f"Identified the latest image version: {image_arn}")
-            response = sagemaker_session.sagemaker_client.describe_image_version(
-                ImageName=image_name, Version=version
-            )
+            response = sagemaker_session.sagemaker_client.describe_image_version(ImageName=image_name, Version=version)
             return response["ContainerImage"]
     return None
 
@@ -71,9 +69,7 @@ def resolve_ecr_uri(sagemaker_session, image_arn):
                 NextToken=next_token,
             )
 
-            ecr_uri = resolve_ecr_uri_from_image_versions(
-                sagemaker_session, response["ImageVersions"], image_name
-            )
+            ecr_uri = resolve_ecr_uri_from_image_versions(sagemaker_session, response["ImageVersions"], image_name)
 
             if ecr_uri is not None:
                 return ecr_uri

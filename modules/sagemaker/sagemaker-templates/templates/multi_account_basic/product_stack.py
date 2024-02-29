@@ -6,18 +6,13 @@ import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
-from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import (
-    BuildPipelineConstruct,
-)
-from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import (
-    DeployPipelineConstruct,
-)
+
+from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
+from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import DeployPipelineConstruct
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = (
-        "Creates a SageMaker pipeline which trains a model on Abalone data."
-    )
+    DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone data."
     TEMPLATE_NAME: str = "Train Model on Abalone Data"
 
     def __init__(
