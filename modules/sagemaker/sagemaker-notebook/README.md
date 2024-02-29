@@ -55,26 +55,3 @@ parameters:
   "SageMakerNotebookArn": "arn:aws:sagemaker:xxxxxxx:123412341234:notebook-instance/xxxxx",
 }
 ```
-
-## Install Instructions
-
-To start using this module, do the following steps:
-
-1. Create and activate a python virtual environment (venv).
-
-   ```bash
-   python3 -m venv .venv # create venv
-   source .venv/bin/activate # activate venv
-   ```
-
-2. Update PIP to the latest version which, supports installment from pyproject.toml config.
-
-   ```bash
-   pip install -U pip
-   ```
-
-3. Install the project.
-
-   ```bash
-   pip install -e .
-   ```
