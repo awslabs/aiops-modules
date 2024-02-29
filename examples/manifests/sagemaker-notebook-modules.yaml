@@ -6,31 +6,15 @@ parameters:
     value: dummy
   - name: instance_type
     value: ml.t2.xlarge
-  - name: direct_internet_access
-    value: Enabled
-  - name: root_access
-    value: Disabled
-  - name: volume_size_in_gb
-    value: 20
-  - name: imds_version
-    value: 2
-  - name: subnet_ids
+  - name: subnet_ids # Optional parameter, you can remove it safely
     valueFrom:
       moduleMetadata:
         group: networking
         name: networking
         key: PrivateSubnetIds
-  - name: vpc_id
+  - name: vpc_id # Optional parameter, you can remove it safely
     valueFrom:
       moduleMetadata:
         group: networking
         name: networking
         key: VpcId
-  - name: kms_key_arn
-    value: arn:aws:kms:us-east-1:xxxxxx:key/xxxxx-xxxx-xxxx-xxxxx
-  - name: code_repository
-    value: https://git-codecommit.us-east-1.amazonaws.com/v1/repos/xxxxxxxxx
-  - name: additional_code_repositories
-    value: '["https://github.com/aws/amazon-sagemaker-examples.git"]'
-  - name: tags
-    value: '{"test": "True"}'
