@@ -46,4 +46,4 @@ def test_synthesize_stack(stack_defaults):
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::ServiceCatalog::Portfolio", 1)
-    template.resource_count_is("AWS::ServiceCatalog::Product", 1)
+    template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 1)
