@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
@@ -145,7 +148,8 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:DescribeModelPackageGroup",
                     ],
                     resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{model_package_group_name}"
+                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+                        f"{model_package_group_name}"
                     ],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),
@@ -161,7 +165,8 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:CreateModel",
                     ],
                     resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
+                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                        f"{model_package_group_name}/*"
                     ],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),

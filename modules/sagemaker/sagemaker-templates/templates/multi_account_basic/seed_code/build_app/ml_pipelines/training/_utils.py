@@ -1,28 +1,18 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
+from typing import Any, Dict, List
 
+import boto3
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_ecr_uri_from_image_versions(sagemaker_session, image_versions, image_name):
+def resolve_ecr_uri_from_image_versions(
+    sagemaker_session: boto3.Session, image_versions: List[Dict[str, Any]], image_name: str
+) -> Any:
     """Gets ECR URI from image versions
     Args:
         sagemaker_session: boto3 session for sagemaker client
@@ -44,7 +34,7 @@ def resolve_ecr_uri_from_image_versions(sagemaker_session, image_versions, image
     return None
 
 
-def resolve_ecr_uri(sagemaker_session, image_arn):
+def resolve_ecr_uri(sagemaker_session: boto3.Session, image_arn: str) -> Any:
     """Gets the ECR URI from the image name
 
     Args:

@@ -1,22 +1,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
 
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import constructs
 from aws_cdk import Aws, CfnParameter, Stack, Tags
@@ -39,7 +26,7 @@ from .get_approved_package import get_approved_package
 
 
 @dataclass
-class EndpointConfigProductionVariant(StageYamlDataClassConfig):
+class EndpointConfigProductionVariant(StageYamlDataClassConfig):  # type:ignore[misc]
     """
     Endpoint Config Production Variant Dataclass
     a dataclass to handle mapping yml file configs to python class for endpoint configs
@@ -52,7 +39,9 @@ class EndpointConfigProductionVariant(StageYamlDataClassConfig):
 
     FILE_PATH: Path = create_file_path_field("endpoint-config.yml", path_is_absolute=True)
 
-    def get_endpoint_config_production_variant(self, model_name):
+    def get_endpoint_config_production_variant(
+        self, model_name: str
+    ) -> sagemaker.CfnEndpointConfig.ProductionVariantProperty:
         """
         Function to handle creation of cdk glue job. It use the class fields for the job parameters.
 
@@ -82,9 +71,9 @@ class DeployEndpointStack(Stack):
 
     def __init__(
         self,
-        scope: constructs,
+        scope: constructs.Construct,
         id: str,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(scope, id, **kwargs)
 
@@ -162,7 +151,8 @@ class DeployEndpointStack(Stack):
             ],
         )
 
-        # setup timestamp to be used to trigger the custom resource update event to retrieve latest approved model and to be used with model and endpoint config resources' names
+        # setup timestamp to be used to trigger the custom resource update event to retrieve
+        # latest approved model and to be used with model and endpoint config resources' names
         now = datetime.now().replace(tzinfo=timezone.utc)
 
         timestamp = now.strftime("%Y%m%d%H%M%S")
@@ -218,7 +208,9 @@ class DeployEndpointStack(Stack):
             endpoint_config_name=endpoint_config_name,
             kms_key_id=kms_key.key_id,
             production_variants=[
-                endpoint_config_production_variant.get_endpoint_config_production_variant(model.model_name)
+                endpoint_config_production_variant.get_endpoint_config_production_variant(
+                    model.model_name  # type: ignore[arg-type]
+                )
             ],
         )
 
@@ -230,7 +222,7 @@ class DeployEndpointStack(Stack):
         endpoint = sagemaker.CfnEndpoint(
             self,
             "Endpoint",
-            endpoint_config_name=endpoint_config.endpoint_config_name,
+            endpoint_config_name=endpoint_config.endpoint_config_name,  # type: ignore[arg-type]
             endpoint_name=endpoint_name,
         )
 

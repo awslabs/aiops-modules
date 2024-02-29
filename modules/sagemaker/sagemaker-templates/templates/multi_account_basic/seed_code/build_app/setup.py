@@ -1,25 +1,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
 
 import os
+from typing import Any, Dict
 
 import setuptools
 
-about = {}
+about: Dict[str, Any] = {}
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "ml_pipelines", "__version__.py")) as f:
     exec(f.read(), about)
@@ -48,7 +35,7 @@ setuptools.setup(
     description=about["__description__"],
     version=about["__version__"],
     author=about["__author__"],
-    author_email=["__author_email__"],
+    author_email=about["__author_email__"],
     long_description=readme,
     long_description_content_type="text/markdown",
     url=about["__url__"],

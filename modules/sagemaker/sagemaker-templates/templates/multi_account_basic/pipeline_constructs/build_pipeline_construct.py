@@ -1,19 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
+
+from typing import Any
 
 import aws_cdk
 from aws_cdk import Aws
@@ -39,7 +27,7 @@ class BuildPipelineConstruct(Construct):
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -118,8 +106,8 @@ class BuildPipelineConstruct(Construct):
                 ]
             ),
         )
+
         cloudwatch.Metric.grant_put_metric_data(sagemaker_policy)
-        sagemaker_execution_role.grant_pass_role(sagemaker_policy)
         s3_artifact.grant_read_write(sagemaker_policy)
         sagemaker_seedcode_bucket.grant_read_write(sagemaker_policy)
 
@@ -167,8 +155,10 @@ class BuildPipelineConstruct(Construct):
                     "sagemaker:ListTags",
                 ],
                 resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{model_package_group_name}",
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+                    f"{model_package_group_name}",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                    f"{model_package_group_name}/*",
                 ],
             ),
         )
@@ -185,7 +175,8 @@ class BuildPipelineConstruct(Construct):
                     "sagemaker:ListTags",
                 ],
                 resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                    f"{model_package_group_name}/*"
                 ],
             )
         )
@@ -204,8 +195,10 @@ class BuildPipelineConstruct(Construct):
                     "sagemaker:ListTags",
                 ],
                 resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/{sagemaker_pipeline_name}",
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/{sagemaker_pipeline_name}/execution/*",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/"
+                    f"{sagemaker_pipeline_name}",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/"
+                    f"{sagemaker_pipeline_name}/execution/*",
                 ],
             ),
         )
@@ -245,7 +238,7 @@ class BuildPipelineConstruct(Construct):
                     ),
                     "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_name),
                     "ARTIFACT_BUCKET_KMS_ID": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.encryption_key.key_id
+                        value=s3_artifact.encryption_key.key_id  # type: ignore[union-attr]
                     ),
                 },
             ),

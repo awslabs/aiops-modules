@@ -1,19 +1,5 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
 
 """Example workflow pipeline script for abalone pipeline.
 
@@ -26,6 +12,7 @@
 Implements a get_pipeline(**kwargs) method.
 """
 import logging
+from typing import Any, Optional
 
 import boto3
 import sagemaker
@@ -48,7 +35,7 @@ from sagemaker.workflow.steps import ProcessingStep, TrainingStep
 logger = logging.getLogger(__name__)
 
 
-def get_session(region, default_bucket):
+def get_session(region: str, default_bucket: Optional[str]) -> boto3.Session:
     """Gets the sagemaker session based on the region.
 
     Args:
@@ -74,15 +61,15 @@ def get_session(region, default_bucket):
 
 
 def get_pipeline(
-    region,
-    role=None,
-    default_bucket=None,
-    bucket_kms_id=None,
-    model_package_group_name="AbalonePackageGroup",
-    pipeline_name="AbalonePipeline",
-    base_job_prefix="Abalone",
-    project_id="SageMakerProjectId",
-):
+    region: str,
+    role: Optional[str] = None,
+    default_bucket: Optional[str] = None,
+    bucket_kms_id: Optional[str] = None,
+    model_package_group_name: str = "AbalonePackageGroup",
+    pipeline_name: str = "AbalonePipeline",
+    base_job_prefix: str = "Abalone",
+    project_id: str = "SageMakerProjectId",
+) -> Any:
     """Gets a SageMaker ML Pipeline instance working with on abalone data.
 
     Args:
@@ -111,13 +98,6 @@ def get_pipeline(
     processing_image_name = "sagemaker-{0}-processingimagebuild".format(project_id)
     training_image_name = "sagemaker-{0}-trainingimagebuild".format(project_id)
     inference_image_name = "sagemaker-{0}-inferenceimagebuild".format(project_id)
-
-    # network_config = NetworkConfig(
-    #     enable_network_isolation=True,
-    #     security_group_ids=security_group_ids,
-    #     subnets=subnets,
-    #     encrypt_inter_container_traffic=True,
-    # )
 
     # processing step for feature engineering
     try:
@@ -150,7 +130,7 @@ def get_pipeline(
             ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
             ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
         ],
-        code="source_scripts/preprocessing/prepare_abalone_data/main.py",  # we must figure out this path to get it from step_source directory
+        code="source_scripts/preprocessing/prepare_abalone_data/main.py",
         job_arguments=["--input-data", input_data],
     )
 

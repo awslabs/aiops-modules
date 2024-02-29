@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 
 import aws_cdk
@@ -11,7 +14,6 @@ app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 
 DEFAULT_PORTFOLIO_NAME = "MLOps SageMaker Project Templates"
 DEFAULT_PORTFOLIO_OWNER = "administrator"
-DEFAULT_PORTFOLIO_ACCESS_ROLE_ARN = None
 
 
 def _param(name: str) -> str:
@@ -25,7 +27,10 @@ environment = aws_cdk.Environment(
 
 portfolio_name = os.getenv(_param("PORTFOLIO_NAME"), DEFAULT_PORTFOLIO_NAME)
 portfolio_owner = os.getenv(_param("PORTFOLIO_OWNER"), DEFAULT_PORTFOLIO_OWNER)
-portfolio_access_role_arn = os.getenv(_param("PORTFOLIO_ACCESS_ROLE_ARN"), DEFAULT_PORTFOLIO_ACCESS_ROLE_ARN)
+portfolio_access_role_arn = os.getenv(_param("PORTFOLIO_ACCESS_ROLE_ARN"))
+
+if not portfolio_access_role_arn:
+    raise ValueError("Missing input parameter portfolio-access-role-arn")
 
 app = aws_cdk.App()
 stack = ServiceCatalogStack(

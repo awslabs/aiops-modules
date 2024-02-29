@@ -1,19 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
+
+from typing import Any
 
 import aws_cdk
 from aws_cdk import Aws, CfnCapabilities
@@ -39,10 +27,10 @@ class DeployPipelineConstruct(Construct):
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
-        preprod_account: int,
-        prod_account: int,
+        preprod_account: str,
+        prod_account: str,
         deployment_region: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -73,8 +61,10 @@ class DeployPipelineConstruct(Construct):
             iam.PolicyStatement(
                 actions=["sagemaker:ListModelPackages"],
                 resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{project_name}-{project_id}*",
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{project_name}-{project_id}/*",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+                    f"{project_name}-{project_id}*",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                    f"{project_name}-{project_id}/*",
                 ],
             )
         )
@@ -158,13 +148,20 @@ class DeployPipelineConstruct(Construct):
                         "build": {
                             "commands": [
                                 "echo Starting cfn scanning `date` in `pwd`",
-                                "echo 'RulesToSuppress:\n- id: W58\n  reason: W58 is an warning raised due to Lambda functions require permission to write CloudWatch Logs, although the lambda role contains the policy that support these permissions cgn_nag continues to through this problem (https://github.com/stelligent/cfn_nag/issues/422)' > cfn_nag_ignore.yml",  # this is temporary solution to an issue with W58 rule with cfn_nag
+                                "echo 'RulesToSuppress:\n- id: W58\n  reason: W58 is an warning raised due to Lambda "
+                                "functions require permission to write CloudWatch Logs, although the lambda role "
+                                "contains the policy that support these permissions cgn_nag continues to through "
+                                "this problem (https://github.com/stelligent/cfn_nag/issues/422)' > cfn_nag_ignore.yml",
                                 'mkdir report || echo "dir report exists"',
-                                "SCAN_RESULT=$(cfn_nag_scan --fail-on-warnings --deny-list-path cfn_nag_ignore.yml --input-path  ${TemplateFolder} -o json > ./report/cfn_nag.out.json && echo OK || echo FAILED)",
+                                "SCAN_RESULT=$(cfn_nag_scan --fail-on-warnings --deny-list-path cfn_nag_ignore.yml "
+                                "--input-path  ${TemplateFolder} -o json > ./report/cfn_nag.out.json && echo OK || "
+                                "echo FAILED)",
                                 "echo Completed cfn scanning `date`",
                                 "echo $SCAN_RESULT",
                                 "echo $FAIL_BUILD",
-                                """if [[ "$FAIL_BUILD" = "true" && "$SCAN_RESULT" = "FAILED" ]]; then printf "\n\nFailiing pipeline as possible insecure configurations were detected\n\n" && exit 1; fi""",
+                                """if [[ "$FAIL_BUILD" = "true" && "$SCAN_RESULT" = "FAILED" ]]; then printf "\n\n
+                                Failiing pipeline as possible insecure configurations were detected
+                                \n\n" && exit 1; fi""",
                             ]
                         },
                     },
@@ -237,12 +234,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "DevActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/cdk-hnb659fds-deploy-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
+                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/"
+                        f"cdk-hnb659fds-deploy-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "DevDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/cdk-hnb659fds-cfn-exec-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
+                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -270,12 +269,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "PreProdActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/cdk-hnb659fds-deploy-role-{preprod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/"
+                        f"cdk-hnb659fds-deploy-role-{preprod_account}-{deployment_region}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "PreProdDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/cdk-hnb659fds-cfn-exec-role-{preprod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{preprod_account}-{deployment_region}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -303,12 +304,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "ProdActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/cdk-hnb659fds-deploy-role-{prod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/"
+                        f"cdk-hnb659fds-deploy-role-{prod_account}-{deployment_region}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "ProdDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/cdk-hnb659fds-cfn-exec-role-{prod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{prod_account}-{deployment_region}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,

@@ -1,6 +1,9 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 import importlib
 import os
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
 from aws_cdk import aws_iam as iam
@@ -16,8 +19,8 @@ class ServiceCatalogStack(Stack):
         id: str,
         portfolio_name: str,
         portfolio_owner: str,
-        portfolio_access_role_arn: Optional[str] = None,
-        **kwargs,
+        portfolio_access_role_arn: str,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
@@ -39,10 +42,10 @@ class ServiceCatalogStack(Stack):
         )
         self.portfolio.give_access_to_role(account_root_principal)
 
-        portfolio_access_role = None
-        if portfolio_access_role_arn is not None:
-            portfolio_access_role = iam.Role.from_role_arn(self, "portfolio-access-role", portfolio_access_role_arn)
-            self.portfolio.give_access_to_role(portfolio_access_role)
+        portfolio_access_role: iam.IRole = iam.Role.from_role_arn(
+            self, "portfolio-access-role", portfolio_access_role_arn
+        )
+        self.portfolio.give_access_to_role(portfolio_access_role)
 
         product_launch_role = iam.Role(
             self,
@@ -58,7 +61,7 @@ class ServiceCatalogStack(Stack):
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
             build_app_asset, deploy_app_asset = self.upload_assets(
-                portfolio_access_role=portfolio_access_role if portfolio_access_role_arn else account_root_principal,
+                portfolio_access_role=portfolio_access_role,
                 template_name=template_name,
             )
 
@@ -95,7 +98,7 @@ class ServiceCatalogStack(Stack):
 
     def upload_assets(
         self,
-        portfolio_access_role: iam.Role,
+        portfolio_access_role: iam.IRole,
         template_name: str,
     ) -> Tuple[s3_assets.Asset, Optional[s3_assets.Asset]]:
         # Create the build and deployment asset as an output to pass to pipeline stack
