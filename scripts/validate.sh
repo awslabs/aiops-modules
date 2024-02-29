@@ -69,6 +69,9 @@ if [[ $SKIP_STATIC_CHECKS == "false" ]]; then
         echo "Checking flake8, mypy"
         flake8 .
         mypy --ignore-missing-imports .
+    elif [[ $LANGUAGE == "typescript" ]]; then
+        echo "Checking eslint"
+        npx eslint . --ext .js,.jsx,.ts,.tsx
     else
         echo "ERROR Language: ${LANGUAGE}"
         exit 1

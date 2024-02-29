@@ -25,3 +25,27 @@ parameters:
         group: storage
         name: buckets
         key: ArtifactsBucketName
+  - name: rds-hostname
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mlflow-mysql
+        key: DatabaseHostname
+  - name: rds-port
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mlflow-mysql
+        key: DatabasePort
+  - name: rds-credentials-secret-arn
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mlflow-mysql
+        key: CredentialsSecretArn
+  - name: rds-security-group-id
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: mlflow-mysql
+        key: SecurityGroupId

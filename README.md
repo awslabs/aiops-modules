@@ -18,18 +18,24 @@ All modules in this repository adhere to the module structure defined in the the
 
 ### SageMaker Modules
 
-| Type                                                                        | Description                                     |
-|-----------------------------------------------------------------------------|-------------------------------------------------|
-| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint. |
-| [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)     | Creates SageMaker Studio Domain.                |
+| Type                                                                        | Description                                                                                                                                                                    |
+|-----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md) | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
+| [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)     | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config |
 
 
 ### Mlflow Modules
 
-| Type                                                                    | Description                     |
-|-------------------------------------------------------------------------|---------------------------------|
-| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow container image. |
-| [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow on AWS Fargate.     |
+| Type                                                                    | Description                                                                                                                                                                                       |
+|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow Docker container image and pushes the image to Elastic Container Registry                                                                                                          |
+| [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
+
+### FMOps Modules
+
+| Type                                                                                                            | Description                                                     |
+|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 
 ### Industry Data Framework (IDF) Modules
 

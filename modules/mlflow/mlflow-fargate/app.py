@@ -3,10 +3,11 @@
 
 import json
 import os
+from typing import Optional, cast
 
 import aws_cdk
 
-from stack import MlflowFargateStack
+from stack import MlflowFargateStack, RDSSettings
 
 
 def _param(name: str) -> str:
@@ -43,6 +44,11 @@ artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
 lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
 
+rds_hostname = os.getenv(_param("RDS_HOSTNAME"))
+rds_port = os.getenv(_param("RDS_PORT"))
+rds_security_group_id = os.getenv(_param("RDS_SECURITY_GROUP_ID"))
+rds_credentials_secret_arn = os.getenv(_param("RDS_CREDENTIALS_SECRET_ARN"))
+
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
 
@@ -53,7 +59,26 @@ if not artifacts_bucket_name:
     raise ValueError("Missing input parameter artifacts-bucket-name")
 
 
+rds_settings: Optional[RDSSettings]
+if all([rds_hostname, rds_port, rds_security_group_id, rds_credentials_secret_arn]):
+    rds_settings = RDSSettings(
+        hostname=cast(str, rds_hostname),
+        port=int(cast(str, rds_port)),
+        security_group_id=cast(str, rds_security_group_id),
+        credentials_secret_arn=cast(str, rds_credentials_secret_arn),
+    )
+elif not any([rds_hostname, rds_port, rds_security_group_id, rds_credentials_secret_arn]):
+    rds_settings = None
+else:
+    raise ValueError(
+        "Invalid combination of input parameters rds-hostname, rds-port, rds-security-group-id, "
+        "and rds-credentials-secret-arn. "
+        "They must either all be specified or none of them."
+    )
+
+
 app = aws_cdk.App()
+
 stack = MlflowFargateStack(
     scope=app,
     id=app_prefix,
@@ -69,6 +94,7 @@ stack = MlflowFargateStack(
     artifacts_bucket_name=artifacts_bucket_name,
     lb_access_logs_bucket_name=lb_access_logs_bucket_name,
     lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
+    rds_settings=rds_settings,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],
@@ -82,8 +108,8 @@ aws_cdk.CfnOutput(
     value=stack.to_json_string(
         {
             "ECSClusterName": stack.cluster.cluster_name,
-            "ServiceName": stack.service.service.service_name,
-            "LoadBalancerDNSName": stack.service.load_balancer.load_balancer_dns_name,
+            "ServiceName": stack.fargate_service.service.service_name,
+            "LoadBalancerDNSName": stack.fargate_service.load_balancer.load_balancer_dns_name,
             "LoadBalancerAccessLogsBucketArn": stack.lb_access_logs_bucket.bucket_arn,
             "EFSFileSystemId": stack.fs.file_system_id,
         }
