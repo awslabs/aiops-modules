@@ -1,0 +1,20 @@
+
+name: notebook
+path: modules/sagemaker/sagemaker-notebook
+parameters:
+  - name: notebook_name
+    value: dummy
+  - name: instance_type
+    value: ml.t2.xlarge
+  - name: subnet_ids # Optional parameter, you can remove it safely
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: vpc_id # Optional parameter, you can remove it safely
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
