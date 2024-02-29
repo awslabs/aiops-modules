@@ -22,7 +22,7 @@ class SagemakerNotebookStack(Stack):
         direct_internet_access: Optional[str] = None,
         root_access: Optional[str] = None,
         volume_size_in_gb: Optional[int] = None,
-        imds_version: Optional[int] = None,
+        imds_version: Optional[str] = None,
         subnet_ids: Optional[List[str]] = None,
         vpc_id: Optional[str] = None,
         kms_key_arn: Optional[str] = None,
@@ -30,7 +30,7 @@ class SagemakerNotebookStack(Stack):
         additional_code_repositories: Optional[List[str]] = None,
         role_arn: Optional[str] = None,
         tags: Optional[Dict[str, str]] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Deploy a SageMaker notebook.
 
@@ -95,7 +95,7 @@ class SagemakerNotebookStack(Stack):
 
         self.setup_tags()
 
-    def setup_resources(self):
+    def setup_resources(self) -> None:
         """Deploy resources."""
         self.vpc = self.get_vpc()
 
@@ -105,20 +105,20 @@ class SagemakerNotebookStack(Stack):
 
         self.sm_notebook = self.get_sm_notebook()
 
-    def setup_tags(self):
+    def setup_tags(self) -> None:
         """Add tags to all resources."""
         Tags.of(self).add("sagemaker:deployment-stage", Stack.of(self).stack_name)
         for k, v in (self.additional_tags or {}).items():
             Tags.of(self).add(k, v)
 
-    def setup_outputs(self):
+    def setup_outputs(self) -> None:
         """Setups outputs and metadata."""
         CfnOutput(scope=self, id="SageMakerNotebookArn", value=self.sm_notebook.ref)
 
         CfnOutput(
             scope=self,
             id="SageMakerNotebookName",
-            value=self.sm_notebook.notebook_instance_name,
+            value=self.notebook_name,
         )
         CfnOutput(
             scope=self,
@@ -163,7 +163,7 @@ class SagemakerNotebookStack(Stack):
 
         return sm_notebook
 
-    def get_role(self) -> iam.Role:
+    def get_role(self) -> iam.IRole:
         """Get or create an IAM Role.
 
         Returns

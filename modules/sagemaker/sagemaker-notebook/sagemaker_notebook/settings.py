@@ -65,7 +65,7 @@ class SeedFarmerSettings(CdkBaseSettings):
     deployment_name: str = Field(default="")
     module_name: str = Field(default="")
 
-    @computed_field
+    @computed_field  # type: ignore
     @property
     def app_prefix(self) -> str:
         """Application prefix."""
