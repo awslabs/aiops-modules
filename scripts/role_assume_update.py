@@ -11,7 +11,7 @@ ROLE_NAME = "seedfarmer-mlops-toolchain-role"
 trusted_principals = iam.get_role(RoleName=ROLE_NAME)["Role"][
     "AssumeRolePolicyDocument"
 ]["Statement"][0]["Principal"]["AWS"]
-if type(trusted_principals) is not list:
+if not isinstance(trusted_principals, list):
     trusted_principals = [trusted_principals]
     print(
         f"Current principals in assume role policy for {ROLE_NAME}: {trusted_principals}"
