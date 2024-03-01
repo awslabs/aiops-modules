@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Create a Sagemaker Model Stack."""
+
 import aws_cdk as cdk
 
 from sagemaker_notebook.settings import ApplicationSettings
