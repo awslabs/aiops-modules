@@ -3,11 +3,11 @@ name: Check One-Click Launch Template
 on:
   push:
     branches: ["main"]
-    paths: ["one-click-launch.yaml", ".github/workflows/one-click-template-lint.yml"]
+    paths: ["one-click-launch.yaml", "requirements-dev.txt", ".github/workflows/one-click-template-lint.yml"]
 
   pull_request:
     branches: ["main", "release/*", "stable"]
-    paths: ["one-click-launch.yaml", ".github/workflows/one-click-template-lint.yml"]
+    paths: ["one-click-launch.yaml", "requirements-dev.txt", ".github/workflows/one-click-template-lint.yml"]
 
   workflow_dispatch:
 

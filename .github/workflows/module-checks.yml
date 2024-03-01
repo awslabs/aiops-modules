@@ -3,11 +3,11 @@ name: Module Checks
 on:
   push:
     branches: ["main"]
-    paths: ['modules/**', '.github/workflows/module-checks.yml']
+    paths: ["modules/**", "requirements-dev.txt", ".github/workflows/module-checks.yml"]
 
   pull_request:
     branches: ["main", "release/*", "stable"]
-    paths: ['modules/**', '.github/workflows/module-checks.yml']
+    paths: ["modules/**", "requirements-dev.txt", ".github/workflows/module-checks.yml"]
 
   workflow_dispatch:
 
