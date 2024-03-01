@@ -226,8 +226,8 @@ Resources:
               Resource: 
               - !Sub "arn:aws:s3:::codeseeder-mlops-${AWS::AccountId}-*"
               - !Sub "arn:aws:s3:::codeseeder-mlops-${AWS::AccountId}-*/*"
-              - !Sub "arn:aws:s3:::mlops*"
-              - !Sub "arn:aws:s3:::mlops*/*"
+              - "arn:aws:s3:::mlops*"
+              - "arn:aws:s3:::mlops*/*"
             - Sid: CodebuildCleanup
               Effect: Allow
               Action:
@@ -240,7 +240,7 @@ Resources:
       Description: Builds MLOps Solution Using Seedfarmer
       ServiceRole: !GetAtt 'CodeBuildRole.Arn'
       Artifacts:
-        Type: no_artifacts
+        Type: NO_ARTIFACTS
       TimeoutInMinutes: 480
       Environment:
         Type: LINUX_CONTAINER
