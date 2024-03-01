@@ -1,0 +1,48 @@
+name: Check One-Click Launch Template
+
+on:
+  push:
+    branches: ["main"]
+    paths: ["one-click-launch.yaml", "scripts/**", ".github/workflows/one-click-lint.yml"]
+
+  pull_request:
+    branches: ["main", "release/*", "stable"]
+    paths: ["one-click-launch.yaml", "scripts/**", ".github/workflows/one-click-lint.yml"]
+
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: CFN Lint Template
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Lint
+        run: cfn-lint --template ./one-click-launch.yaml
+
+  format-python-script:
+    name: Format Python Script
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install Requirements
+        run: |
+          set -x
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+      - name: Ruff Format Check
+        run: ruff format --check scripts/
+      - name: Ruff Check
+        run: ruff check scripts/
