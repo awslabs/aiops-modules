@@ -33,3 +33,6 @@ addopts = "-v --cov=. --cov-report term --cov-config=coverage.ini --cov-fail-und
 pythonpath = [
   "."
 ]
+testpaths = [
+  "tests"
+]
