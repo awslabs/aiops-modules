@@ -111,6 +111,8 @@ class BuildPipelineConstruct(Construct):
         s3_artifact.grant_read_write(sagemaker_policy)
         sagemaker_seedcode_bucket.grant_read_write(sagemaker_policy)
 
+        sagemaker_execution_role.grant_pass_role(codebuild_role)
+
         # Attach the policy
         sagemaker_policy.attach_to_role(sagemaker_execution_role)
         sagemaker_policy.attach_to_role(codebuild_role)
