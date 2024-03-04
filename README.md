@@ -20,10 +20,10 @@ All modules in this repository adhere to the module structure defined in the the
 
 | Type                                                                                  | Description                                                                                                                                                                    |
 |---------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)           | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
 | [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)               | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config |
-| [SageMaker Project Templates Module](modules/sagemaker/sagemaker-templates/README.md) | Creates SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog.                                        |
-
+| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)           | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
+| [SageMaker Project Templates Module](modules/sagemaker/sagemaker-templates/README.md) | Provisions SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog                                      |
+| [SageMaker Notebook Instance Module](modules/sagemaker/sagemaker-notebook/README.md)  | Creates secure SageMaker Notebook Instance for the Data Scientist, clones the source code to the workspace                                                                     |
 
 ### Mlflow Modules
 
