@@ -28,7 +28,9 @@ class DeployPipelineConstruct(Construct):
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
         preprod_account: str,
+        preprod_region: str,
         prod_account: str,
+        prod_region: str,
         deployment_region: str,
         **kwargs: Any,
     ) -> None:
@@ -104,7 +106,7 @@ class DeployPipelineConstruct(Construct):
                             "commands": [
                                 "npm install -g aws-cdk",
                                 "pip install -r requirements.txt",
-                                "cdk synth --no-lookups",
+                                "cdk synth --no-lookups --app \"python app.py\"",
                             ]
                         }
                     },
@@ -117,6 +119,12 @@ class DeployPipelineConstruct(Construct):
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
+                    "DEPLOYMENT_ACCOUNT": codebuild.BuildEnvironmentVariable(value=Aws.ACCOUNT_ID),
+                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(value=deployment_region),
+                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=preprod_account),
+                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(value=preprod_region),
+                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=prod_account),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
                 },
             ),
         )
@@ -170,6 +178,14 @@ class DeployPipelineConstruct(Construct):
             ),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
+                environment_variables={
+                    "DEPLOYMENT_ACCOUNT": codebuild.BuildEnvironmentVariable(value=Aws.ACCOUNT_ID),
+                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(value=deployment_region),
+                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=preprod_account),
+                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(value=preprod_region),
+                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=prod_account),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
+                },
             ),
         )
 

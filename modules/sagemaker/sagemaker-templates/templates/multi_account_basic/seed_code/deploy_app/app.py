@@ -17,8 +17,8 @@
 
 import aws_cdk as cdk
 from config.constants import (
-    DEFAULT_DEPLOYMENT_REGION,
-    DEV_ACCOUNT,
+    DEPLOYMENT_ACCOUNT,
+    DEPLOYMENT_REGION,
     PREPROD_ACCOUNT,
     PREPROD_REGION,
     PROD_ACCOUNT,
@@ -28,7 +28,7 @@ from deploy_endpoint.deploy_endpoint_stack import DeployEndpointStack
 
 app = cdk.App()
 
-dev_env = cdk.Environment(account=DEV_ACCOUNT, region=DEFAULT_DEPLOYMENT_REGION)
+dev_env = cdk.Environment(account=DEPLOYMENT_ACCOUNT, region=DEPLOYMENT_REGION)
 preprod_env = cdk.Environment(account=PREPROD_ACCOUNT, region=PREPROD_REGION)
 prod_env = cdk.Environment(account=PROD_ACCOUNT, region=PROD_REGION)
 

@@ -17,19 +17,14 @@
 
 import os
 
-import boto3
+DEPLOYMENT_ACCOUNT = os.environ["DEPLOYMENT_ACCOUNT"]
+DEPLOYMENT_REGION = os.environ["DEPLOYMENT_REGION"]
 
-DEFAULT_DEPLOYMENT_REGION = "eu-west-1"
+PREPROD_ACCOUNT = os.environ["PREPROD_ACCOUNT"]
+PREPROD_REGION = os.environ["PREPROD_REGION"]
 
-ssm_client = boto3.client("ssm", region_name=DEFAULT_DEPLOYMENT_REGION)
-
-DEV_ACCOUNT = ssm_client.get_parameter(Name="/mlops/dev/account_id")["Parameter"]["Value"]
-
-PREPROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/preprod/account_id")["Parameter"]["Value"]
-PREPROD_REGION = ssm_client.get_parameter(Name="/mlops/preprod/region")["Parameter"]["Value"]
-
-PROD_ACCOUNT = ssm_client.get_parameter(Name="/mlops/prod/account_id")["Parameter"]["Value"]
-PROD_REGION = ssm_client.get_parameter(Name="/mlops/prod/region")["Parameter"]["Value"]
+PROD_ACCOUNT = os.environ["PROD_ACCOUNT"]
+PROD_REGION = os.environ["PROD_REGION"]
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "")
 PROJECT_ID = os.getenv("PROJECT_ID", "")

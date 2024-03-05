@@ -12,7 +12,7 @@ from aws_cdk import aws_kms as kms
 from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
-    DEV_ACCOUNT,
+    DEPLOYMENT_ACCOUNT,
     ECR_REPO_ARN,
     MODEL_BUCKET_ARN,
     MODEL_PACKAGE_GROUP_NAME,
@@ -126,7 +126,7 @@ class DeployEndpointStack(Stack):
                             "kms:DescribeKey",
                         ],
                         effect=iam.Effect.ALLOW,
-                        resources=[f"arn:aws:kms:{Aws.REGION}:{DEV_ACCOUNT}:key/*"],
+                        resources=[f"arn:aws:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"],
                     ),
                 ]
             ),

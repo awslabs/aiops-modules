@@ -48,11 +48,25 @@ class Product(servicecatalog.ProductStack):
             description="Pre-prod account id.",
         ).value_as_string
 
+        preprod_region = CfnParameter(
+            self,
+            "PreprodRegion",
+            type="String",
+            description="Pre-prod region.",
+        ).value_as_string
+
         prod_account_id = CfnParameter(
             self,
             "ProdAccountId",
             type="String",
             description="Prod account id.",
+        ).value_as_string
+
+        prod_region = CfnParameter(
+            self,
+            "ProdRegion",
+            type="String",
+            description="Prod region.",
         ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
@@ -234,6 +248,8 @@ class Product(servicecatalog.ProductStack):
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
             preprod_account=preprod_account_id,
+            preprod_region=preprod_region,
             prod_account=prod_account_id,
+            prod_region=prod_region,
             deployment_region=Aws.REGION,
         )
