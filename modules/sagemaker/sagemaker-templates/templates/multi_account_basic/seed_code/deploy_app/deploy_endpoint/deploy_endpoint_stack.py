@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import constructs
-from aws_cdk import Aws, CfnParameter, Stack, Tags
+from aws_cdk import Aws, Stack, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_sagemaker as sagemaker
@@ -81,24 +81,6 @@ class DeployEndpointStack(Stack):
         Tags.of(self).add("sagemaker:project-name", PROJECT_NAME)
         Tags.of(self).add("sagemaker:deployment-stage", Stack.of(self).stack_name)
 
-        app_subnet_ids = CfnParameter(
-            self,
-            "subnet-ids",
-            type="AWS::SSM::Parameter::Value<List<String>>",
-            description="Account APP Subnets IDs",
-            min_length=1,
-            default="/vpc/subnets/private/ids",
-        ).value_as_list
-
-        sg_id = CfnParameter(
-            self,
-            "sg-id",
-            type="AWS::SSM::Parameter::Value<String>",
-            description="Account Default Security Group id",
-            min_length=1,
-            default="/vpc/sg/id",
-        ).value_as_string
-
         # iam role that would be used by the model endpoint to run the inference
         model_execution_policy = iam.ManagedPolicy(
             self,
@@ -171,10 +153,6 @@ class DeployEndpointStack(Stack):
             containers=[
                 sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
             ],
-            vpc_config=sagemaker.CfnModel.VpcConfigProperty(
-                security_group_ids=[sg_id],
-                subnets=app_subnet_ids,
-            ),
         )
 
         # Sagemaker Endpoint Config

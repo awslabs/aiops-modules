@@ -106,7 +106,7 @@ class DeployPipelineConstruct(Construct):
                             "commands": [
                                 "npm install -g aws-cdk",
                                 "pip install -r requirements.txt",
-                                "cdk synth --no-lookups --app \"python app.py\"",
+                                'cdk synth --no-lookups --app "python app.py"',
                             ]
                         }
                     },
