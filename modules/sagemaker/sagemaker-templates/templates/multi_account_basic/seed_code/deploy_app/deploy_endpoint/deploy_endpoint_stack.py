@@ -143,7 +143,7 @@ class DeployEndpointStack(Stack):
         latest_approved_model_package = get_approved_package()
 
         # Sagemaker Model
-        model_name = f"{MODEL_PACKAGE_GROUP_NAME}-{timestamp}"
+        model_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-{timestamp}"
 
         model = sagemaker.CfnModel(
             self,
