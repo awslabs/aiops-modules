@@ -156,7 +156,7 @@ class DeployEndpointStack(Stack):
         )
 
         # Sagemaker Endpoint Config
-        endpoint_config_name = f"{MODEL_PACKAGE_GROUP_NAME}-ec-{timestamp}"
+        endpoint_config_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-ec-{timestamp}"
 
         endpoint_config_production_variant = EndpointConfigProductionVariant()
 
