@@ -1,0 +1,10 @@
+name: service-catalog
+path: modules/sagemaker/sagemaker-templates-service-catalog
+targetAccount: primary
+parameters:
+  - name: portfolio-access-role-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: LeadDataScientistRoleArn

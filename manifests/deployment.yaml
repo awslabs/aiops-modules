@@ -8,6 +8,8 @@ groups:
     path: manifests/storage-modules.yaml
   - name: sagemaker-studio
     path: manifests/sagemaker-studio-modules.yaml
+  - name: sagemaker-templates
+    path: manifests/sagemaker-templates-modules.yaml
   - name: images
     path: manifests/images-modules.yaml
   - name: mlflow
