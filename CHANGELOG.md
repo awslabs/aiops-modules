@@ -22,4 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- refactor validation script to use `ruff` instead of `black` and `isort`
+
 ### **Removed**

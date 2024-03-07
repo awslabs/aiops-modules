@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,6 @@ from config.constants import (
     PROJECT_ID,
     PROJECT_NAME,
 )
-from dataclasses import dataclass
 from yamldataclassconfig import create_file_path_field
 
 from .get_approved_package import get_approved_package

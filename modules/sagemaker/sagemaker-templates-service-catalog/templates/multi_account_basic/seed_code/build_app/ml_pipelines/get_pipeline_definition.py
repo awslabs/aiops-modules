@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """A CLI to get pipeline definitions from pipeline modules."""
+
 from __future__ import absolute_import
 
 import argparse

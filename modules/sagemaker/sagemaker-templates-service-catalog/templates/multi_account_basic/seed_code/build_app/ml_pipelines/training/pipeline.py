@@ -11,6 +11,7 @@
 
 Implements a get_pipeline(**kwargs) method.
 """
+
 import logging
 from typing import Any, Optional
 
