@@ -8,6 +8,7 @@ import {
   SageMakerInstanceType,
   JumpStartSageMakerEndpoint,
 } from "@cdklabs/generative-ai-cdk-constructs";
+import * as cdk_nag from "cdk-nag";
 
 interface SagemakerJumpStartFmEndpointStackProps extends cdk.StackProps {
   projectName?: string;
@@ -91,5 +92,12 @@ export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
       role: this.role,
       vpcConfig: vpcConfig,
     });
+
+    cdk_nag.NagSuppressions.addResourceSuppressions(this.role, [
+      {
+        id: "AwsSolutions-IAM5",
+        reason: "Resource access restriced to S3 buckets (with a prefix) and ECR images",
+      },
+    ]);
   }
 }
