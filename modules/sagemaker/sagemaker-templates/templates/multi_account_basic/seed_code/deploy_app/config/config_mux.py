@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from abc import ABCMeta
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import constructs
 from aws_cdk import Stack, Stage
-from dataclasses import dataclass
 from yamldataclassconfig.config import YamlDataClassConfig
 
 DEFAULT_STAGE_NAME = "dev"
