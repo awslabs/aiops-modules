@@ -1,5 +1,5 @@
-name: templates
-path: modules/sagemaker/sagemaker-templates
+name: service-catalog
+path: modules/sagemaker/sagemaker-templates-service-catalog
 targetAccount: primary
 parameters:
   - name: portfolio-access-role-arn
