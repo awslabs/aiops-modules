@@ -4,6 +4,7 @@
 from typing import Any, List, cast
 
 import aws_cdk as core
+import cdk_nag
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
@@ -111,6 +112,21 @@ class SagemakerStudioStack(Stack):
             for user in lead_data_science_users
         ]
 
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            self.sm_roles,
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM4",
+                    reason="Managed Policies are for src account roles only",
+                ),
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM5",
+                    reason="Resource access restricted to resources",
+                ),
+            ],
+        )
+
     def enable_sagemaker_projects(self, roles: List[str]) -> None:
         event_handler = PythonFunction(
             self,
@@ -150,6 +166,33 @@ class SagemakerStudioStack(Stack):
                 "iteration": 1,
                 "ExecutionRoles": roles,
             },
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            [event_handler.role, provider],
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM4",
+                    reason="Managed Policies are for src account roles only",
+                ),
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM5",
+                    reason="Resource access restricted to resources",
+                ),
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            [event_handler, provider],
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-L1",
+                    reason=(
+                        "We don't want customer deployments to start failing when a new version of Python comes out."
+                    ),
+                ),
+            ],
         )
 
     def sagemaker_studio_domain(
