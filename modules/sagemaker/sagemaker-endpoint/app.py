@@ -5,6 +5,7 @@ import json
 import os
 
 import aws_cdk
+import cdk_nag
 
 from stack import DeployEndpointStack
 
@@ -84,7 +85,7 @@ aws_cdk.CfnOutput(
     id="metadata",
     value=stack.to_json_string(
         {
-            "ModelExecutionRoleArn": stack.model_execution_role_arn,
+            "ModelExecutionRoleArn": stack.model_execution_role.role_arn,
             "ModelName": stack.model.model_name,
             "ModelPackageArn": stack.model_package_arn,
             "EndpointName": stack.endpoint.attr_endpoint_name,
@@ -93,5 +94,6 @@ aws_cdk.CfnOutput(
     ),
 )
 
+aws_cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()

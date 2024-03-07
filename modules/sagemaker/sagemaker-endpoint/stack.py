@@ -5,13 +5,13 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import constructs
-from aws_cdk import Aspects, Stack, Tags
+from aws_cdk import Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
-from cdk_nag import AwsSolutionsChecks, NagPackSuppression, NagSuppressions
+from cdk_nag import NagPackSuppression, NagSuppressions
 
 from scripts.get_approved_package import get_approved_package
 
@@ -56,7 +56,7 @@ class DeployEndpointStack(Stack):
 
         if not model_execution_role_arn:
             # Create model execution role
-            model_execution_role = iam.Role(
+            self.model_execution_role = iam.Role(
                 self,
                 f"{app_prefix}-model-exec",
                 assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
@@ -68,21 +68,21 @@ class DeployEndpointStack(Stack):
             if model_artifacts_bucket_arn:
                 # Grant model assets bucket read permissions
                 model_bucket = s3.Bucket.from_bucket_arn(self, f"{app_prefix}-model-bucket", model_artifacts_bucket_arn)
-                model_bucket.grant_read(model_execution_role)
+                model_bucket.grant_read(self.model_execution_role)
 
             if ecr_repo_arn:
                 # Add ECR permissions
-                model_execution_role.add_to_policy(
+                self.model_execution_role.add_to_policy(
                     iam.PolicyStatement(
                         actions=["ecr:Get*"],
                         effect=iam.Effect.ALLOW,
                         resources=[ecr_repo_arn],
                     )
                 )
-
-            model_execution_role_arn = model_execution_role.role_arn
-
-        self.model_execution_role_arn = model_execution_role_arn
+        else:
+            self.model_execution_role = iam.Role.from_role_arn(
+                self, f"{app_prefix}-model-exec", model_execution_role_arn
+            )
 
         if not model_package_arn:
             # Get latest approved model package from the model registry
@@ -90,6 +90,7 @@ class DeployEndpointStack(Stack):
                 model_package_arn = get_approved_package(self.region, model_package_group_name)
             else:
                 raise ValueError("Either model_package_arn or model_package_group_name is required")
+
         self.model_package_arn = model_package_arn
 
         # Create model instance
@@ -97,7 +98,7 @@ class DeployEndpointStack(Stack):
         model = sagemaker.CfnModel(
             self,
             f"{app_prefix}-model",
-            execution_role_arn=model_execution_role_arn,
+            execution_role_arn=self.model_execution_role.role_arn,
             model_name=model_name,
             containers=[sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)],
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
@@ -144,25 +145,18 @@ class DeployEndpointStack(Stack):
             f"https://runtime.sagemaker.{self.region}.amazonaws.com/endpoints/{endpoint.attr_endpoint_name}/invocations"
         )
 
-        # Add CDK nag solutions checks
-        Aspects.of(self).add(AwsSolutionsChecks())
-
-        NagSuppressions.add_stack_suppressions(
-            self,
-            suppressions=[
-                NagPackSuppression(
-                    id="AwsSolutions-IAM4",
-                    reason="Managed Policies are for service account roles only.",
-                )
-            ],
-        )
-
-        NagSuppressions.add_stack_suppressions(
-            self,
-            suppressions=[
-                NagPackSuppression(
-                    id="AwsSolutions-IAM5",
-                    reason="Model execution role requires s3 permissions to the bucket.",
-                )
-            ],
-        )
+        # Add CDK nag suppressions
+        if not model_execution_role_arn:
+            NagSuppressions.add_resource_suppressions(
+                self.model_execution_role,
+                suppressions=[
+                    NagPackSuppression(
+                        id="AwsSolutions-IAM4",
+                        reason="Managed Policies are for service account roles only.",
+                    ),
+                    NagPackSuppression(
+                        id="AwsSolutions-IAM5",
+                        reason="Model execution role requires s3 permissions to the bucket.",
+                    ),
+                ],
+            )
