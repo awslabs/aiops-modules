@@ -17,28 +17,24 @@ aws-cdk-asset-node-proxy-agent-v6==2.0.1
 aws-cdk-lib==2.130.0
     # via
     #   -r requirements.in
-    #   cdk-ecr-deployment
     #   cdk-nag
 boto3==1.34.35
     # via -r requirements.in
-botocore==1.34.40
+botocore==1.34.51
     # via
     #   boto3
     #   s3transfer
 cattrs==23.2.3
     # via jsii
-cdk-ecr-deployment==3.0.31
-    # via -r requirements.in
 cdk-nag==2.28.27
     # via -r requirements.in
 constructs==10.3.0
     # via
     #   aws-cdk-lib
-    #   cdk-ecr-deployment
     #   cdk-nag
 exceptiongroup==1.2.0
     # via cattrs
-importlib-resources==6.1.1
+importlib-resources==6.1.2
     # via jsii
 jmespath==1.0.1
     # via
@@ -50,7 +46,6 @@ jsii==1.94.0
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lib
-    #   cdk-ecr-deployment
     #   cdk-nag
     #   constructs
 publication==0.0.3
@@ -59,7 +54,6 @@ publication==0.0.3
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lib
-    #   cdk-ecr-deployment
     #   cdk-nag
     #   constructs
     #   jsii
@@ -77,11 +71,10 @@ typeguard==2.13.3
     #   aws-cdk-asset-kubectl-v20
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lib
-    #   cdk-ecr-deployment
     #   cdk-nag
     #   constructs
     #   jsii
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
     #   cattrs
     #   jsii
