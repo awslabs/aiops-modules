@@ -201,7 +201,7 @@ class MlflowFargateStack(cdk.Stack):
 
         # Add CDK nag suppressions
         cdk_nag.NagSuppressions.add_resource_suppressions(
-            [task_role, task_definition.execution_role],
+            [task_role, task_definition.execution_role],  # type: ignore[list-item]
             apply_to_children=True,
             suppressions=[
                 cdk_nag.NagPackSuppression(

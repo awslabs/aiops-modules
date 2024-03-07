@@ -54,6 +54,7 @@ class DeployEndpointStack(Stack):
             connection=ec2.Port.all_tcp(),
         )
 
+        self.model_execution_role: iam.IRole
         if not model_execution_role_arn:
             # Create model execution role
             self.model_execution_role = iam.Role(
