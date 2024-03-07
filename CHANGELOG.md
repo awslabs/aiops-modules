@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- added `sagemaker-templates` module with `multi_account_basic` project template
 - bump cdk & ecr deployment version to fix deprecated custom resource runtimes issue in `mlflow-image`
 - added `sagemaker-jumpstart-fm-endpoint` module
 - added RDS persistence layer to MLFlow modules

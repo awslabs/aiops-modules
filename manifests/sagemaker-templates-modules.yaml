@@ -1,0 +1,10 @@
+name: templates
+path: modules/sagemaker/sagemaker-templates
+targetAccount: primary
+parameters:
+  - name: portfolio-access-role-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: LeadDataScientistRoleArn
