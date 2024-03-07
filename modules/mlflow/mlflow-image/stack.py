@@ -50,7 +50,7 @@ class MlflowImagePublishingStack(cdk.Stack):
                     reason="Managed Policies are for src account roles only",
                     applies_to=[
                         "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-                    ]
+                    ],
                 ),
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM5",
