@@ -41,16 +41,16 @@ class MlflowImagePublishingStack(cdk.Stack):
             dest=ecr_deployment.DockerImageName(self.image_uri),
         )
 
-        # Add CDK nag solutions checks
-        cdk.Aspects.of(self).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
-
+        # Add CDK nag suppressions
         cdk_nag.NagSuppressions.add_stack_suppressions(
             self,
-            apply_to_nested_stacks=True,
             suppressions=[
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM4",
                     reason="Managed Policies are for src account roles only",
+                    applies_to=[
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                    ]
                 ),
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM5",
