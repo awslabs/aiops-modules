@@ -2,7 +2,6 @@ import * as cdk from "aws-cdk-lib";
 import { Annotations, Match, Template } from "aws-cdk-lib/assertions";
 import { SagemakerJumpStartFmEndpointStack } from "../lib/sagemaker-jumpstart-fm-endpoint-stack";
 
-
 describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   const app = new cdk.App();
 
@@ -29,17 +28,14 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
 
   test("Synth stack", () => {
     const template = Template.fromStack(stack);
-  
+
     template.hasResource("AWS::SageMaker::Endpoint", {});
     template.hasResource("AWS::IAM::Role", {});
     template.hasResource("AWS::EC2::SecurityGroup", {});
   });
 
   test("No CDK Nag Errors", () => {
-    const errors = Annotations.fromStack(stack).findError(
-      "*",
-      Match.stringLikeRegexp("AwsSolutions-.*")
-    );
+    const errors = Annotations.fromStack(stack).findError("*", Match.stringLikeRegexp("AwsSolutions-.*"));
     expect(errors).toHaveLength(0);
   });
 });
