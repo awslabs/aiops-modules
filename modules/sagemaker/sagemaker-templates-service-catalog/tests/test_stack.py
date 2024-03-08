@@ -5,8 +5,9 @@ import os
 import sys
 
 import aws_cdk as cdk
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
+from aws_cdk.assertions import Annotations, Match, Template
 
 
 @pytest.fixture(scope="function")
@@ -20,7 +21,8 @@ def stack_defaults():
         del sys.modules["stack"]
 
 
-def test_synthesize_stack(stack_defaults):
+@pytest.fixture(scope="function")
+def stack(stack_defaults) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -31,7 +33,7 @@ def test_synthesize_stack(stack_defaults):
     portfolio_owner = "owner"
     portfolio_access_role_arn = "arn:aws:iam::xxxxxxxxxxxx:role/role"
 
-    stack = stack.ServiceCatalogStack(
+    return stack.ServiceCatalogStack(
         app,
         f"{project_name}-{dep_name}-{mod_name}",
         portfolio_name=portfolio_name,
@@ -43,7 +45,19 @@ def test_synthesize_stack(stack_defaults):
         ),
     )
 
+
+def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::ServiceCatalog::Portfolio", 1)
     template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 1)
+
+
+def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
