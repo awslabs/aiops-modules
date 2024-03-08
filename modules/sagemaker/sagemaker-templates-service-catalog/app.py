@@ -4,6 +4,7 @@
 import os
 
 import aws_cdk
+import cdk_nag
 
 from stack import ServiceCatalogStack
 
@@ -52,5 +53,7 @@ aws_cdk.CfnOutput(
         }
     ),
 )
+
+aws_cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()
