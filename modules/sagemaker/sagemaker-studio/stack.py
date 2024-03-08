@@ -169,7 +169,7 @@ class SagemakerStudioStack(Stack):
         )
 
         cdk_nag.NagSuppressions.add_resource_suppressions(
-            [event_handler.role, provider],
+            [event_handler.role, provider],  # type: ignore[list-item]
             apply_to_children=True,
             suppressions=[
                 cdk_nag.NagPackSuppression(
