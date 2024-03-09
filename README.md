@@ -6,24 +6,29 @@ The modules in this repository are decoupled from each other and can be aggregat
 
 ## General Information
 
-The modules in this repository are / must be generic for reuse without affiliation to any one particular project in Machine Learning Operations domain.
+The modules in this repository are / must be generic for reuse without affiliation to any one particular project in Machine Learning and Foundation Model Operations domain.
 
 All modules in this repository adhere to the module structure defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
 
 - [Project Structure](https://seed-farmer.readthedocs.io/en/latest/project_development.html)
 - [Module Development](https://seed-farmer.readthedocs.io/en/latest/module_development.html)
 - [Module Manifest Guide](https://seed-farmer.readthedocs.io/en/latest/manifests.html)
+- [Seed-Farmer Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/dfd2f6b2-3923-4d79-80bd-7db6c4842122/en-US)
+
+## Deployment
+
+See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ## Modules
 
 ### SageMaker Modules
 
-| Type                                                                                  | Description                                                                                                                                                                    |
-|---------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)               | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config |
-| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)           | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
-| [SageMaker Project Templates in Service Catalog Module](modules/sagemaker/sagemaker-templates-service-catalog/README.md) | Provisions SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog                                      |
-| [SageMaker Notebook Instance Module](modules/sagemaker/sagemaker-notebook/README.md)  | Creates secure SageMaker Notebook Instance for the Data Scientist, clones the source code to the workspace                                                                     |
+| Type                                                                                                                      | Description                                                                                                                                                                    |
+|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)                                                   | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config |
+| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)                                               | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
+| [SageMaker Project Templates via Service Catalog Module](modules/sagemaker/sagemaker-templates-service-catalog/README.md) | Provisions SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog                                      |
+| [SageMaker Notebook Instance Module](modules/sagemaker/sagemaker-notebook/README.md)                                      | Creates secure SageMaker Notebook Instance for the Data Scientist, clones the source code to the workspace                                                                     |
 
 ### Mlflow Modules
 

@@ -6,7 +6,7 @@ The templates are registered in Service Catalog and available via SageMaker Stud
 
 ### Architecture
 
-![SageMaker Templates Module Architecture](docs/_static/sagemaker-templates-module-architecture.png "SageMaker Templates Module Architecture")
+![SageMaker Templates via Service Catalog Module Architecture](docs/_static/sagemaker-templates-service-catalog-module-architecture.png "SageMaker Templates in Service Catalog Module Architecture")
 
 ### Project Templates
 
@@ -14,9 +14,10 @@ The module contains ogranizational SageMaker Project Templates vended as Service
 
 #### Basic Multi-Account Template
 
-This project template contains an example of basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
+This project template contains basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
+The template contains SageMaker Pipeline to train a model on Abalone dataset using XGBoost, perform evaluation, and an example CI/CD pipeline to deploy the model endpoints to multiple AWS accounts.
 
-TODO: add detailed description and architecture diagram.
+![Basic Multi-Account Template](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/diagrams/mlops-sm-project-general-architecture.jpg)
 
 ## Inputs and outputs:
 ### Required inputs:
