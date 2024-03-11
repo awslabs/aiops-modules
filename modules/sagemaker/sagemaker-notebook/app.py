@@ -2,6 +2,7 @@
 """Create a Sagemaker Model Stack."""
 
 import aws_cdk as cdk
+import cdk_nag
 
 from sagemaker_notebook.settings import ApplicationSettings
 from sagemaker_notebook.stack import SagemakerNotebookStack
@@ -22,5 +23,7 @@ stack = SagemakerNotebookStack(
     env=env,
     **app_settings.parameters.model_dump(),
 )
+
+cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()

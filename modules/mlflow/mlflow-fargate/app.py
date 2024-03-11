@@ -6,6 +6,7 @@ import os
 from typing import Optional, cast
 
 import aws_cdk
+import cdk_nag
 
 from stack import MlflowFargateStack, RDSSettings
 
@@ -115,5 +116,7 @@ aws_cdk.CfnOutput(
         }
     ),
 )
+
+aws_cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()

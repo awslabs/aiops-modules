@@ -1,5 +1,6 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
+import * as cdk_nag from "cdk-nag";
 import { SagemakerJumpStartFmEndpointStack } from "./lib/sagemaker-jumpstart-fm-endpoint-stack";
 
 const account = process.env.CDK_DEFAULT_ACCOUNT;
@@ -34,5 +35,7 @@ new cdk.CfnOutput(stack, "metadata", {
     RoleArn: stack.role.roleArn,
   }),
 });
+
+cdk.Aspects.of(app).add(new cdk_nag.AwsSolutionsChecks({ logIgnores: true }));
 
 app.synth();

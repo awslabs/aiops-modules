@@ -5,6 +5,7 @@ import importlib
 import os
 from typing import Any, Optional, Tuple
 
+import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3_assets as s3_assets
@@ -60,6 +61,9 @@ class ServiceCatalogStack(Stack):
 
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
+            if template_name == "__pycache__":
+                continue
+
             build_app_asset, deploy_app_asset = self.upload_assets(
                 portfolio_access_role=portfolio_access_role,
                 template_name=template_name,
@@ -95,6 +99,29 @@ class ServiceCatalogStack(Stack):
             self.portfolio.set_launch_role(product, product_launch_role)
 
             Tags.of(product).add(key="sagemaker:studio-visibility", value="true")
+
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                portfolio_access_role,
+                apply_to_children=True,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-IAM5",
+                        reason="The role needs wildcard permissions to be able to access template assets in S3",
+                    ),
+                ],
+            )
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                product_launch_role,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-IAM4",
+                        reason=(
+                            "Product launch role needs admin permissions in order to be able "
+                            "to create resources in the AWS account."
+                        ),
+                    ),
+                ],
+            )
 
     def upload_assets(
         self,

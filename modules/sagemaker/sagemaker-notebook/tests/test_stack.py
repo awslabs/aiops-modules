@@ -1,8 +1,11 @@
 import aws_cdk as cdk
-from aws_cdk.assertions import Template
+import cdk_nag
+import pytest
+from aws_cdk.assertions import Annotations, Match, Template
 
 
-def test_synthesize_stack() -> None:
+@pytest.fixture(scope="function")
+def stack() -> cdk.Stack:
     from sagemaker_notebook import stack
 
     app = cdk.App()
@@ -12,7 +15,7 @@ def test_synthesize_stack() -> None:
     mod_name = "test-module"
     app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
-    stack = stack.SagemakerNotebookStack(
+    return stack.SagemakerNotebookStack(
         scope=app,
         construct_id=app_prefix,
         env=cdk.Environment(account="111111111111", region="us-east-1"),
@@ -31,5 +34,17 @@ def test_synthesize_stack() -> None:
         tags={"test": "True"},
     )
 
+
+def test_synthesize_stack(stack) -> None:
     template = Template.from_stack(stack)
     template.resource_count_is("AWS::SageMaker::NotebookInstance", 1)
+
+
+def test_no_cdk_nag_errors(stack) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
