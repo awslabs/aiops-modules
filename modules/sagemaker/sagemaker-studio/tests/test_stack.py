@@ -21,7 +21,7 @@ def stack_defaults() -> None:
 
 
 @pytest.fixture(scope="function")
-def stack(stack_defaults) -> cdk.Stack:
+def stack(stack_defaults, enable_custom_sagemaker_projects: bool) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -34,7 +34,6 @@ def stack(stack_defaults) -> cdk.Stack:
     lead_data_science_users = ["lead-ds-user-1"]
     app_image_config_name = None
     image_name = None
-    enable_custom_sagemaker_projects = False
 
     return stack.SagemakerStudioStack(
         app,
@@ -58,7 +57,8 @@ def stack(stack_defaults) -> cdk.Stack:
     )
 
 
-def test_synthesize_stack(stack: cdk.Stack) -> None:
+@pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
+def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::SageMaker::Domain", 1)
@@ -67,7 +67,8 @@ def test_synthesize_stack(stack: cdk.Stack) -> None:
     template.resource_count_is("AWS::IAM::Role", 3)
 
 
-def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
+@pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
+def test_no_cdk_nag_errors(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
     cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
 
     nag_errors = Annotations.from_stack(stack).find_error(

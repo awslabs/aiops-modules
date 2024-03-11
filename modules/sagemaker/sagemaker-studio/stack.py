@@ -182,18 +182,6 @@ class SagemakerStudioStack(Stack):
                 ),
             ],
         )
-        cdk_nag.NagSuppressions.add_resource_suppressions(
-            [event_handler, provider],
-            apply_to_children=True,
-            suppressions=[
-                cdk_nag.NagPackSuppression(
-                    id="AwsSolutions-L1",
-                    reason=(
-                        "We don't want customer deployments to start failing when a new version of Python comes out."
-                    ),
-                ),
-            ],
-        )
 
     def sagemaker_studio_domain(
         self,
