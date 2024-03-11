@@ -3,8 +3,9 @@ import sys
 from unittest import mock
 
 import aws_cdk as cdk
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
+from aws_cdk.assertions import Annotations, Match, Template
 
 
 @pytest.fixture(scope="function")
@@ -20,8 +21,8 @@ def stack_defaults():
         yield
 
 
-@pytest.mark.parametrize("use_rds", [False, True])
-def test_synthesize_stack(stack_defaults, use_rds) -> None:
+@pytest.fixture(scope="function")
+def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -49,7 +50,7 @@ def test_synthesize_stack(stack_defaults, use_rds) -> None:
     else:
         rds_settings = None
 
-    stack = stack.MlflowFargateStack(
+    return stack.MlflowFargateStack(
         scope=app,
         id=app_prefix,
         app_prefix=app_prefix,
@@ -71,6 +72,20 @@ def test_synthesize_stack(stack_defaults, use_rds) -> None:
         ),
     )
 
+
+@pytest.mark.parametrize("use_rds", [False, True])
+def test_synthesize_stack(stack: cdk.Stack, use_rds: bool) -> None:
     template = Template.from_stack(stack)
     template.resource_count_is("AWS::ECS::Cluster", 1)
     template.resource_count_is("AWS::ECS::TaskDefinition", 1)
+
+
+@pytest.mark.parametrize("use_rds", [False, True])
+def test_no_cdk_nag_errors(stack: cdk.Stack, use_rds: bool) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
