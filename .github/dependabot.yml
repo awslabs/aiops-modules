@@ -19,3 +19,14 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Module: sagemaker-endpoint
+  - package-ecosystem: "pip"
+    directory: "modules/sagemaker/sagemaker-endpoint"
+    schedule:
+      interval: "weekly"
+    groups:
+        production-dependencies:
+          dependency-type: "production"
+        development-dependencies:
+          dependency-type: "development"
