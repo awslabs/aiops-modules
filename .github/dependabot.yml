@@ -22,7 +22,7 @@ updates:
 
   # Module: sagemaker-endpoint
   - package-ecosystem: "pip"
-    directory: "modules/sagemaker/sagemaker-endpoint"
+    directory: "modules/sagemaker/sagemaker-endpoint/"
     schedule:
       interval: "weekly"
     groups:
