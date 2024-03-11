@@ -150,6 +150,7 @@ class DeployEndpointStack(Stack):
         if not model_execution_role_arn:
             NagSuppressions.add_resource_suppressions(
                 self.model_execution_role,
+                apply_to_children=True,
                 suppressions=[
                     NagPackSuppression(
                         id="AwsSolutions-IAM4",
