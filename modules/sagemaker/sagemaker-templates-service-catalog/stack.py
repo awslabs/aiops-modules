@@ -61,6 +61,9 @@ class ServiceCatalogStack(Stack):
 
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
+            if template_name == "__pycache__":
+                continue
+
             build_app_asset, deploy_app_asset = self.upload_assets(
                 portfolio_access_role=portfolio_access_role,
                 template_name=template_name,
