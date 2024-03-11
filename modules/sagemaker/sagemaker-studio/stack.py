@@ -131,7 +131,7 @@ class SagemakerStudioStack(Stack):
         event_handler = PythonFunction(
             self,
             "sg-project-function",
-            runtime=lambda_.Runtime.PYTHON_3_8,
+            runtime=lambda_.Runtime.PYTHON_3_12,
             entry="functions/sm_studio/enable_sm_projects",
             timeout=core.Duration.seconds(120),
         )
@@ -179,6 +179,15 @@ class SagemakerStudioStack(Stack):
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM5",
                     reason="Resource access restricted to resources",
+                ),
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            provider,
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-L1", reason="We don't control the version used by the Provider construct."
                 ),
             ],
         )

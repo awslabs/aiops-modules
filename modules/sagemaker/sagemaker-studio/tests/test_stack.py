@@ -64,7 +64,7 @@ def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bo
     template.resource_count_is("AWS::SageMaker::Domain", 1)
     template.resource_count_is("AWS::SageMaker::UserProfile", 2)
     template.resource_count_is("AWS::EC2::SecurityGroup", 1)
-    template.resource_count_is("AWS::IAM::Role", 3)
+    template.resource_count_is("AWS::IAM::Role", 5 if enable_custom_sagemaker_projects else 3)
 
 
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
