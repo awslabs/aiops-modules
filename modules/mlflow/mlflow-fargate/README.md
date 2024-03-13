@@ -34,6 +34,7 @@ By default, uses Elastic File System for backend storage and S3 for artifact sto
 - `rds-credentials-secret-arn`: RDS database credentials stored in SecretsManager
 - `rds-security-group-id`: Security group of the RDS instance
   - needed so that an inbound rule can be created to grant Fargate access to the database
+- `efs-removal-policy`: EFS removal policy. `RETAIN` by default. Allowed values: `RETAIN`, `DESTROY`.
 
 ### Sample manifest declaration
 
