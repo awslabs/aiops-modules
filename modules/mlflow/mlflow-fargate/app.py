@@ -27,6 +27,7 @@ DEFAULT_TASK_MEMORY_LIMIT_MB = 8 * 1024
 DEFAULT_AUTOSCALE_MAX_CAPACITY = 2
 DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME = None
 DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX = None
+DEFAULT_EFS_REMOVAL_POLICY = "RETAIN"
 
 environment = aws_cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -44,11 +45,13 @@ autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUT
 artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
 lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
 lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
+efs_removal_policy = os.getenv(_param("EFS_REMOVAL_POLICY"), DEFAULT_EFS_REMOVAL_POLICY)
 
 rds_hostname = os.getenv(_param("RDS_HOSTNAME"))
 rds_port = os.getenv(_param("RDS_PORT"))
 rds_security_group_id = os.getenv(_param("RDS_SECURITY_GROUP_ID"))
 rds_credentials_secret_arn = os.getenv(_param("RDS_CREDENTIALS_SECRET_ARN"))
+
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -95,6 +98,7 @@ stack = MlflowFargateStack(
     artifacts_bucket_name=artifacts_bucket_name,
     lb_access_logs_bucket_name=lb_access_logs_bucket_name,
     lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
+    efs_removal_policy=efs_removal_policy,
     rds_settings=rds_settings,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],

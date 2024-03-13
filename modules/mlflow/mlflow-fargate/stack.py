@@ -41,6 +41,7 @@ class MlflowFargateStack(cdk.Stack):
         rds_settings: Optional[RDSSettings],
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
+        efs_removal_policy: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -120,6 +121,7 @@ class MlflowFargateStack(cdk.Stack):
                     ),
                 ]
             ),
+            removal_policy=cdk.RemovalPolicy.DESTROY if efs_removal_policy == "DESTROY" else cdk.RemovalPolicy.RETAIN,
         )
         self.fs = fs
 

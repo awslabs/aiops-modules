@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+- added EFS removal policy to `mlflow-fargate` module
+
 ## v1.0.0
 
 ### **Added**

@@ -39,6 +39,7 @@ def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
     task_memory_limit_mb = 8 * 1024
     autoscale_max_capacity = 2
     artifacts_bucket_name = "bucket"
+    efs_removal_policy = "DESTROY"
 
     if use_rds:
         rds_settings = {
@@ -66,6 +67,7 @@ def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
         rds_settings=rds_settings,
         lb_access_logs_bucket_name=None,
         lb_access_logs_bucket_prefix=None,
+        efs_removal_policy=efs_removal_policy,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
