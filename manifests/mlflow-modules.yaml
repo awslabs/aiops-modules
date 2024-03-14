@@ -49,5 +49,5 @@ parameters:
         group: storage
         name: mlflow-mysql
         key: SecurityGroupId
- - name: efs-removal-policy
-   value: DESTROY
+  - name: efs-removal-policy
+    value: DESTROY
