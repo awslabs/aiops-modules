@@ -4,13 +4,13 @@ parameters:
   - name: vpc-id
     valueFrom:
       moduleMetadata:
-        group: optionals
+        group: networking
         name: networking
         key: VpcId
   - name: private-subnet-ids
     valueFrom:
       moduleMetadata:
-        group: optionals
+        group: networking
         name: networking
         key: PrivateSubnetIds
   - name: airflow-version
