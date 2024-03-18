@@ -26,8 +26,9 @@ PREPROD_REGION = os.environ["PREPROD_REGION"]
 PROD_ACCOUNT = os.environ["PROD_ACCOUNT"]
 PROD_REGION = os.environ["PROD_REGION"]
 
+MODEL_BUCKET_ARN = os.environ["MODEL_BUCKET_ARN"]
+
 PROJECT_NAME = os.getenv("PROJECT_NAME", "")
 PROJECT_ID = os.getenv("PROJECT_ID", "")
 MODEL_PACKAGE_GROUP_NAME = os.getenv("MODEL_PACKAGE_GROUP_NAME", "")
-MODEL_BUCKET_ARN = os.getenv("MODEL_BUCKET_ARN", "arn:aws:s3:::*mlops*")
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)

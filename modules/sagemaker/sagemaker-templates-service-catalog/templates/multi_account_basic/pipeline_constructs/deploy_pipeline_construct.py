@@ -24,6 +24,7 @@ class DeployPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
+        s3_artifact: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
@@ -117,6 +118,7 @@ class DeployPipelineConstruct(Construct):
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "DEPLOYMENT_ACCOUNT": codebuild.BuildEnvironmentVariable(value=Aws.ACCOUNT_ID),

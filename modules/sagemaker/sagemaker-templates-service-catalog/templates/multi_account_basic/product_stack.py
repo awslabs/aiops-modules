@@ -151,9 +151,17 @@ class Product(servicecatalog.ProductStack):
             )
         )
 
-        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-
         # cross account model registry resource policy
+        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
+        model_package_arn = (
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+            f"{model_package_group_name}/*"
+        )
+        model_package_group_arn = (
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+            f"{model_package_group_name}"
+        )
+
         model_package_group_policy = iam.PolicyDocument(
             statements=[
                 iam.PolicyStatement(
@@ -161,10 +169,7 @@ class Product(servicecatalog.ProductStack):
                     actions=[
                         "sagemaker:DescribeModelPackageGroup",
                     ],
-                    resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-                        f"{model_package_group_name}"
-                    ],
+                    resources=[model_package_group_arn],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),
                         iam.AccountPrincipal(prod_account_id),
@@ -178,10 +183,7 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:UpdateModelPackage",
                         "sagemaker:CreateModel",
                     ],
-                    resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-                        f"{model_package_group_name}/*"
-                    ],
+                    resources=[model_package_arn],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),
                         iam.AccountPrincipal(prod_account_id),
@@ -244,6 +246,7 @@ class Product(servicecatalog.ProductStack):
             "deploy",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
+            s3_artifact=s3_artifact,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
