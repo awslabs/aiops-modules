@@ -10,6 +10,7 @@ import constructs
 from aws_cdk import Aws, Stack, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
+from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
@@ -89,18 +90,6 @@ class DeployEndpointStack(Stack):
                 statements=[
                     iam.PolicyStatement(
                         actions=[
-                            "s3:Put*",
-                            "s3:Get*",
-                            "s3:List*",
-                        ],
-                        effect=iam.Effect.ALLOW,
-                        resources=[
-                            MODEL_BUCKET_ARN,
-                            f"{MODEL_BUCKET_ARN}/*",
-                        ],
-                    ),
-                    iam.PolicyStatement(
-                        actions=[
                             "kms:Encrypt",
                             "kms:ReEncrypt*",
                             "kms:GenerateDataKey*",
@@ -113,6 +102,9 @@ class DeployEndpointStack(Stack):
                 ]
             ),
         )
+
+        model_bucket = s3.Bucket.from_bucket_arn(self, "ModelBucket", MODEL_BUCKET_ARN)
+        model_bucket.grant_read_write(model_execution_policy)
 
         if ECR_REPO_ARN:
             model_execution_policy.add_statements(
@@ -127,10 +119,7 @@ class DeployEndpointStack(Stack):
             self,
             "ModelExecutionRole",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            managed_policies=[
-                model_execution_policy,
-                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
-            ],
+            managed_policies=[model_execution_policy],
         )
 
         # setup timestamp to be used to trigger the custom resource update event to retrieve
@@ -166,7 +155,7 @@ class DeployEndpointStack(Stack):
         kms_key = kms.Key(
             self,
             "endpoint-kms-key",
-            description="key used for encryption of data in Amazpn SageMaker Endpoint",
+            description="key used for encryption of data in Amazon SageMaker Endpoint",
             enable_key_rotation=True,
             policy=iam.PolicyDocument(
                 statements=[
