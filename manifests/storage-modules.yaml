@@ -35,7 +35,7 @@ parameters:
   - name: engine-version
     value: 8.0.35
   - name: instance-type
-    value: t2.small
+    value: t3.small
   - name: database-name
     value: mlflowdb
   - name: admin-username
