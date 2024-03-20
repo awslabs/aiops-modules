@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - added EFS removal policy to `mlflow-fargate` module
 - remove AmazonSageMakerFullAccess from `multi_account_basic` template in the `sagemaker-templates-service-catalog` module
+- update MySQL instance to use T3 instance type
 
 ## v1.0.0
 
