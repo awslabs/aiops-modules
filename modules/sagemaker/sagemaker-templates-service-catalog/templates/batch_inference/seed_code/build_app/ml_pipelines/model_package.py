@@ -46,7 +46,7 @@ def get_approved_package(region_name: str, model_package_group_name: str) -> Opt
         # Return the pmodel package arn
         model_package_arn = approved_packages[0]["ModelPackageArn"]
         logger.info(f"Identified the latest approved model package: {model_package_arn}")
-        return model_package_arn
+        return model_package_arn  # type: ignore[no-any-return]
 
     except ClientError as e:
         error_message = e.response["Error"]["Message"]

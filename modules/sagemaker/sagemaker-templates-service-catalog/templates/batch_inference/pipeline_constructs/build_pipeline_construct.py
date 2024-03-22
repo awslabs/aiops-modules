@@ -87,7 +87,7 @@ class BuildPipelineConstruct(Construct):
         )
         cloudwatch.Metric.grant_put_metric_data(sagemaker_policy)
         model_bucket.grant_read_write(sagemaker_policy)
-        sagemaker_execution_role.grant_pass_role(sagemaker_policy)
+        sagemaker_execution_role.grant_pass_role(sagemaker_policy)  # type: ignore[arg-type]
 
         # Attach the policy
         sagemaker_policy.attach_to_role(sagemaker_execution_role)
