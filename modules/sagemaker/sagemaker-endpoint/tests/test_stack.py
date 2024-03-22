@@ -29,7 +29,6 @@ def stack_model_package_input() -> cdk.Stack:
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
-    app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
@@ -39,8 +38,7 @@ def stack_model_package_input() -> cdk.Stack:
 
     return stack.DeployEndpointStack(
         scope=app,
-        id=app_prefix,
-        app_prefix=app_prefix,
+        id=f"{project_name}-{dep_name}-{mod_name}",
         sagemaker_project_id=sagemaker_project_id,
         sagemaker_project_name=sagemaker_project_name,
         model_package_arn=model_package_arn,
@@ -71,7 +69,6 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
-    app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
@@ -103,8 +100,7 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
 
         return stack.DeployEndpointStack(
             scope=app,
-            id=app_prefix,
-            app_prefix=app_prefix,
+            id=f"{project_name}-{dep_name}-{mod_name}",
             sagemaker_project_id=sagemaker_project_id,
             sagemaker_project_name=sagemaker_project_name,
             model_package_arn=None,

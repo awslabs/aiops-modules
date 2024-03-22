@@ -61,7 +61,6 @@ app = aws_cdk.App()
 stack = DeployEndpointStack(
     scope=app,
     id=app_prefix,
-    app_prefix=app_prefix,
     sagemaker_project_id=sagemaker_project_id,
     sagemaker_project_name=sagemaker_project_name,
     model_package_arn=model_package_arn,
