@@ -82,7 +82,7 @@ def get_pipeline(
         default_value=f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/abalone-dataset.csv",
     )
 
-    outputs_bucket = ParameterString(name="OutputsBucket")
+    outputs_bucket = ParameterString(name="OutputsBucketName", default_value=artifact_bucket)
 
     # Retry policies
     # https://docs.aws.amazon.com/sagemaker/latest/dg/pipelines-retry-policy.html
