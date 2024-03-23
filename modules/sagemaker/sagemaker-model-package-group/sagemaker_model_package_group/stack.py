@@ -35,18 +35,18 @@ class SagemakerModelPackageGroupStack(Stack):
             The construct ID of this stack
         model_package_group_name
             The Model Package Group name.
-        retain_on_delete
+        retain_on_delete, optional
             Wether or not to retain resources on delete. Defaults True.
-        target_event_bus_arn
+        target_event_bus_arn, optional
             The event bus arn in to send events model package group state change events to.
             It can be a bus located in another account. Defaults None.
-        model_package_group_description
+        model_package_group_description, optional
             The model package group description. Defaults None.
-        target_account_ids
+        target_account_ids, optional
             The target account ids which shall have read-only access to the model package group. Defaults None.
-        sagemaker_project_id
+        sagemaker_project_id, optional
             SageMaker project id, defaults None
-        sagemaker_project_name
+        sagemaker_project_name, optional
             SageMaker project name, defaults None
         """
         super().__init__(scope, construct_id, **kwargs)
