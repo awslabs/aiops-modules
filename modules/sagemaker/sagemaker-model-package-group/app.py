@@ -3,8 +3,8 @@
 
 import aws_cdk as cdk
 
-from sagemaker_model_package_event.settings import ApplicationSettings
-from sagemaker_model_package_event.stack import SagemakerModelPackageEventStack
+from sagemaker_model_package_group.settings import ApplicationSettings
+from sagemaker_model_package_group.stack import SagemakerModelPackageGroupStack
 
 # Load application settings from env vars.
 app_settings = ApplicationSettings()
@@ -16,7 +16,7 @@ env = cdk.Environment(
 
 app = cdk.App()
 
-stack = SagemakerModelPackageEventStack(
+stack = SagemakerModelPackageGroupStack(
     scope=app,
     construct_id=app_settings.settings.app_prefix,
     env=env,

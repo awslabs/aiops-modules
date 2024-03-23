@@ -1,6 +1,6 @@
 """Defines the stack settings."""
 from abc import ABC
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,9 +26,12 @@ class SeedFarmerParameters(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    target_event_bus_name: str
-    target_account_id: str
     model_package_group_name: str
+
+    retain_on_delete: bool = Field(default=True)
+    target_event_bus_arn: Optional[str] = Field(default=None)
+    model_package_group_description: Optional[str] = Field(default=None)
+    target_account_ids: Optional[List[str]] = Field(default=None)
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
 
