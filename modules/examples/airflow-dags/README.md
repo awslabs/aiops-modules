@@ -8,7 +8,7 @@ This module demonstrates:
   - within the Stack, grant the MWAA Execution Role permission to assume the created DAG Execution Role
 - creating DAGs on a shared MWAA Environment by utilizing Input Parameters
   - within the DAG, demonstrate assuming the DAG Execution Role with service and data permissions specific to the DAG
-- exporting Metadata by setting the `ADDF_MODULE_METADATA` env var on completion
+- exporting Metadata by setting the `MLOPS_MODULE_METADATA` env var on completion
 
 ## Inputs/Outputs
 
@@ -27,11 +27,16 @@ This module demonstrates:
 ### Module Metadata Outputs
 
 - `DagRoleArn`: ARN of the DAG Execution Role created by the Stack
+- `MlOpsBucket`: Name of the Bucket used by the dag
+- `SageMakerExecutionRole`: ARN of the Sagemaker Execution Role created by the Stack
 
 #### Output Example
 
 ```json
 {
-    "DagRoleArn": "arn::::"
+    "DagRoleArn": "arn::::",
+    "MlOpsBucket": "",
+    "SageMakerExecutionRole" : "arn::::"
+
 }
 ```
