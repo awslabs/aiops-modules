@@ -1,0 +1,27 @@
+name: dags
+path: modules/examples/airflow-dags/
+parameters:
+  - name: dag-bucket-name
+    valueFrom:
+      moduleMetadata:
+        group: mwaa
+        name: mwaa
+        key: DagBucketName
+  - name: dag-path
+    valueFrom:
+      moduleMetadata:
+        group: mwaa
+        name: mwaa
+        key: DagPath
+  - name: mwaa-exec-role-arn
+    valueFrom:
+      moduleMetadata:
+        group: mwaa
+        name: mwaa
+        key: MwaaExecRoleArn
+  # - name: bucket-policy-arn
+  #   valueFrom:
+  #     moduleMetadata:
+  #       group: optionals
+  #       name: datalake-buckets
+  #       key: FullAccessPolicyArn
