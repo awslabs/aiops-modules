@@ -12,12 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 - added EFS removal policy to `mlflow-fargate` module
-- added `batch_inference` template to the `sagemaker-templates-service-catalog` module
 
 ### **Changed**
 
 - update MySQL instance to use T3 instance type
-- fixed the deprecated `go1.x` lambda runtime to use the standard `al2023` runtime
+- upgrade `cdk_ecr_deployment` version to fix the deprecated `go1.x` lambda runtime
 
 ### **Removed**
 
