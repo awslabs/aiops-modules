@@ -3,8 +3,9 @@
 
 import importlib
 import os
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, Tuple, List
 
+import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3_assets as s3_assets
@@ -20,12 +21,12 @@ class ServiceCatalogStack(Stack):
         portfolio_name: str,
         portfolio_owner: str,
         portfolio_access_role_arn: str,
-        pre_prod_vpc_id: str = None,
-        pre_prod_private_subnet_ids: list = None,
-        pre_prod_public_subnet_ids: list = None,
-        prod_vpc_id: str = None,
-        prod_private_subnet_ids: list = None,
-        prod_public_subnet_ids: list = None,
+        pre_prod_vpcid: str ,
+        pre_prod_private_subnetids: List[str],
+        pre_prod_public_subnetids: List[str],
+        prod_vpcid: str ,
+        prod_private_subnetids: List[str],
+        prod_public_subnetids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -75,6 +76,12 @@ class ServiceCatalogStack(Stack):
             product_stack: servicecatalog.ProductStack = product_stack_module.Product(
                 self,
                 f"{template_name}ProductStack",
+                pre_prod_vpcid=pre_prod_vpcid,
+                pre_prod_private_subnetids=pre_prod_private_subnetids,
+                pre_prod_public_subnetids=pre_prod_public_subnetids,
+                prod_vpcid=prod_vpcid,
+                prod_private_subnetids=prod_private_subnetids,
+                prod_public_subnetids=prod_public_subnetids,
                 build_app_asset=build_app_asset,
                 deploy_app_asset=deploy_app_asset,
             )
@@ -102,6 +109,28 @@ class ServiceCatalogStack(Stack):
 
             Tags.of(product).add(key="sagemaker:studio-visibility", value="true")
 
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                portfolio_access_role,
+                apply_to_children=True,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-IAM5",
+                        reason="The role needs wildcard permissions to be able to access template assets in S3",
+                    ),
+                ],
+            )
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                product_launch_role,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-IAM4",
+                        reason=(
+                            "Product launch role needs admin permissions in order to be able "
+                            "to create resources in the AWS account."
+                        ),
+                    ),
+                ],
+            )
     def upload_assets(
         self,
         portfolio_access_role: iam.IRole,

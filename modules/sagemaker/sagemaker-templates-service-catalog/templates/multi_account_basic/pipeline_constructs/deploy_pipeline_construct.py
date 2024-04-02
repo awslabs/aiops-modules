@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from typing import Any, List
+
 import aws_cdk
 from aws_cdk import Aws, CfnCapabilities
 from aws_cdk import aws_codebuild as codebuild
@@ -31,12 +32,12 @@ class DeployPipelineConstruct(Construct):
         prod_account: str,
         prod_region: str,
         deployment_region: str,
-        preprod_vpc_id: str = None,
-        preprod_private_subnet_ids: List[str]= None,
-        preprod_public_subnet_ids: List[str] = None,
-        prod_vpc_id: str = None,
-        prod_private_subnet_ids: List[str ] = None,
-        prod_public_subnet_ids: List[str ] = None,
+        preprod_vpc_id: str ,
+        preprod_private_subnet_ids: List[str],
+        preprod_public_subnet_ids: List[str],
+        prod_vpc_id: str ,
+        prod_private_subnet_ids: List[str],
+        prod_public_subnet_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)

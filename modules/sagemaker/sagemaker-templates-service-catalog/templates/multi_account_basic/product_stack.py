@@ -8,12 +8,12 @@ import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
-from typing import List
+from aws_cdk import Fn
 from constructs import Construct
-
+from typing import List
 from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import DeployPipelineConstruct
-
+import json
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone data."
@@ -25,6 +25,12 @@ class Product(servicecatalog.ProductStack):
         id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
+        pre_prod_vpcid: str,
+        pre_prod_private_subnetids: List[str],
+        pre_prod_public_subnetids: List[str],
+        prod_vpcid: str,
+        prod_private_subnetids: List[str],
+        prod_public_subnetids: List[str],
     ) -> None:
         super().__init__(scope, id)
 
@@ -70,91 +76,69 @@ class Product(servicecatalog.ProductStack):
             description="Prod region.",
         ).value_as_string
 
-        pre_prod_vpc_id = CfnParameter(
+        preprod_vpc_id = CfnParameter(
             self,
             "PreprodVpcId",
             type="AWS::EC2::VPC::Id",
             description="The ID of the VPC to be used.",
-            default="",
-        )
-        if pre_prod_vpc_id:
-            preprod_vpc_id = pre_prod_vpc_id.value_as_string
-        else:
-            preprod_vpc_id = ""
+            default=pre_prod_vpcid,
+        ).value_as_string
 
         pre_prod_private_subnet_ids = CfnParameter(
             self,
             "PreprodPrivateSubnetIds",
             type="List<AWS::EC2::Subnet::Id>",
             description="A list of private subnet IDs within the VPC.",
-            default=None,
+            default=",".join(pre_prod_private_subnetids),
         )
-
-        if pre_prod_private_subnet_ids.value_as_list:
-            preprod_private_subnet_ids = [
-                Fn.select(i, pre_prod_private_subnet_ids.value_as_list)
-                for i in range(len(pre_prod_private_subnet_ids.value_as_list))
-            ]
-        else:
-            preprod_private_subnet_ids = []
 
         pre_prod_public_subnet_ids = CfnParameter(
             self,
             "PreprodPublicSubnetIds",
             type="List<AWS::EC2::Subnet::Id>",
             description="A list of public subnet IDs within the VPC.",
-            default=None,
+            default=",".join(pre_prod_public_subnetids),
         )
-        if pre_prod_public_subnet_ids.value_as_list:
-            preprod_public_subnet_ids = [
-                Fn.select(i, pre_prod_public_subnet_ids.value_as_list)
-                for i in range(len(pre_prod_public_subnet_ids.value_as_list))
-            ]
-        else:
-            preprod_public_subnet_ids = []
 
-        prod_vpc_id = CfnParameter(
+        # preprod_public_subnet_ids = [
+        #         Fn.select(i, pre_prod_public_subnet_ids.value_as_list)
+        #         for i in range(len(pre_prod_public_subnet_ids.value_as_list))
+        #     ]
+
+        prodvpc_id = CfnParameter(
             self,
             "ProdVpcId",
             type="AWS::EC2::VPC::Id",
             description="The ID of the VPC to be used.",
-            default="",
-        )
-        if prod_vpc_id:
-            prodvpc_id = prod_vpc_id.value_as_string
-        else:
-            prodvpc_id = ""
+            default=prod_vpcid,
+        ).value_as_string
 
         prod_private_subnet_ids = CfnParameter(
             self,
             "ProdPrivateSubnetIds",
             type="List<AWS::EC2::Subnet::Id>",
             description="A list of private subnet IDs within the VPC.",
-            default=None,
+            default=",".join(prod_private_subnetids),
         )
-        if prod_private_subnet_ids.value_as_list:
-            prodprivate_subnet_ids = [
-                Fn.select(i, prod_private_subnet_ids.value_as_list)
-                for i in range(len(prod_private_subnet_ids.value_as_list))
-            ]
-        else:
-            prodprivate_subnet_ids = []
+
+        # prodprivate_subnet_ids = [
+        #         Fn.select(i, prod_private_subnet_ids.value_as_list)
+        #         for i in range(len(prod_private_subnet_ids.value_as_list))
+        #     ]
 
         prod_public_subnet_ids = CfnParameter(
             self,
             "ProdPublicSubnetIds",
             type="List<AWS::EC2::Subnet::Id>",
             description="A list of public subnet IDs within the VPC.",
-            default=None,
+            default=",".join(prod_public_subnetids),
         )
 
-        if prod_public_subnet_ids.value_as_list:
-            prodpublic_subnet_ids = [
-                Fn.select(i, prod_public_subnet_ids.value_as_list)
-                for i in range(len(prod_public_subnet_ids.value_as_list))
-            ]
-        else:
-            prodpublic_subnet_ids = []
+        # prodpublic_subnet_ids = [
+        #         Fn.select(i, prod_public_subnet_ids.value_as_list)
+        #         for i in range(len(prod_public_subnet_ids.value_as_list))
+        #     ]
+
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -340,9 +324,9 @@ class Product(servicecatalog.ProductStack):
             prod_region=prod_region,
             deployment_region=Aws.REGION,
             preprod_vpc_id=preprod_vpc_id,
-            preprod_private_subnet_ids=preprod_private_subnet_ids,
-            preprod_public_subnet_ids=preprod_public_subnet_ids,
+            preprod_private_subnet_ids=pre_prod_private_subnetids,
+            preprod_public_subnet_ids=pre_prod_public_subnetids,
             prod_vpc_id=prodvpc_id,
-            prod_private_subnet_ids=prodprivate_subnet_ids,
-            prod_public_subnet_ids=prodpublic_subnet_ids,
+            prod_private_subnet_ids=prod_private_subnetids,
+            prod_public_subnet_ids=prod_public_subnetids,
         )
