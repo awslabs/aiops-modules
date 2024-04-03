@@ -12,12 +12,11 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 
 # airflow sagemaker operators
-from airflow.contrib.operators.sagemaker_training_operator \
-    import SageMakerTrainingOperator
-from airflow.contrib.operators.sagemaker_tuning_operator \
-    import SageMakerTuningOperator
-from airflow.contrib.operators.sagemaker_transform_operator \
-    import SageMakerTransformOperator
+from airflow.providers.amazon.aws.operators.sagemaker import (
+    SageMakerTrainingOperator,
+    SageMakerTuningOperator,
+    SageMakerTransformOperator
+)
 from airflow.contrib.hooks.aws_hook import AwsHook
 
 # sagemaker sdk
