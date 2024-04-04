@@ -19,6 +19,12 @@ The template contains SageMaker Pipeline to train a model on Abalone dataset usi
 
 ![Basic Multi-Account Template](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/diagrams/mlops-sm-project-general-architecture.jpg)
 
+#### Batch Inference Template
+
+This project template contains SageMaker pipeline that performs batch inference.
+
+![Batch Inference Template](docs/_static/batch-inference-template.png "Batch Inference Template Architecture")
+
 ## Inputs and outputs:
 ### Required inputs:
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
