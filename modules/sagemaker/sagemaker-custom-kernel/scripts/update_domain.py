@@ -47,9 +47,9 @@ def update_domain():
         merged_distinct_custom_images = list(
             dict((v["AppImageConfigName"], v) for v in existing_custom_images).values(),
         )
-        default_user_settings["KernelGatewayAppSettings"][
-            "CustomImages"
-        ] = merged_distinct_custom_images
+        default_user_settings["KernelGatewayAppSettings"]["CustomImages"] = (
+            merged_distinct_custom_images
+        )
 
         print(
             f"Updating Sagemaker Studio Domain - {sm_studio_domain_name} ({sm_studio_domain_id})"
