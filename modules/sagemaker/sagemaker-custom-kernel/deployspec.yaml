@@ -1,0 +1,29 @@
+publishGenericEnvVariables: True
+deploy:
+  phases:
+    install:
+      commands:
+        - npm install -g aws-cdk@2.114.1
+        - pip install -r requirements.txt
+        - apt-get install gettext-base
+    build:
+      commands:
+        - export REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$SEEDFARMER_PARAMETER_ECR_REPO_NAME
+        - export IMAGE_URI=$REPOSITORY_URI:latest
+        - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
+        - cat cdk-exports.json
+        # Create SageMaker Kernel Image
+        - python scripts/update_domain.py
+        # Export metadata
+        - seedfarmer metadata convert -f cdk-exports.json || true
+destroy:
+  phases:
+    install:
+      commands:
+        - npm install -g aws-cdk@2.114.1
+        - pip install -r requirements.txt
+    build:
+      commands:
+        - cdk destroy --force --app "python app.py"
+
+build_type: BUILD_GENERAL1_LARGE
