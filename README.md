@@ -43,6 +43,14 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
 | [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 
+
+### MWAA Modules
+
+| Type                                                                    | Description                                                                                                                                                                                       |
+|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  [Amazon Managed Workflows for Apache Airflow (MWAA) Module](https://github.com/awslabs/idf-modules/blob/main/modules/orchestration/mwaa/README.md)  |  Deploys an Amazon MWAA module   |
+|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs    |
+
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
