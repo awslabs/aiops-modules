@@ -38,6 +38,7 @@ destroy:
       - pip install -r requirements.txt
     build:
       commands:
+      - export MLOPS_BUCKET=$(echo ${MLOPS_MODULE_METADATA} | jq -r ".MlOpsBucket")
       - aws s3 rm --recursive s3://$MLOPS_PARAMETER_DAG_BUCKET_NAME/$MLOPS_PARAMETER_DAG_PATH/mlops/
       - aws s3 rm --recursive s3://$MLOPS_BUCKET/
       - cdk destroy --force --app "python app.py"

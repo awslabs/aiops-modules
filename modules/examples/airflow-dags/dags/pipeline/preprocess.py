@@ -38,7 +38,7 @@ def preprocess(s3_in_url,
         print("preprocessing data from {}".format(s3_in_url))
         # read s3 url into pandas dataframe
         # pandas internally uses s3fs to read s3 file directory
-        df = pd.read_csv(s3_in_url, delimiter, error_bad_lines=False)
+        df = pd.read_csv(s3_in_url, delimiter=delimiter, on_bad_lines="skip")
 
         # limit dataframe to customer_id, product_id, and star_rating
         # `product_title` will be useful validating recommendations

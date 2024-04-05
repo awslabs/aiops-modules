@@ -3,6 +3,9 @@ import json
 import requests
 from datetime import datetime
 
+import os, sys
+sys.path.append(os.path.dirname(__file__))
+
 # airflow operators
 import airflow
 from airflow.models import DAG
@@ -53,9 +56,12 @@ def is_hpo_enabled():
 
 
 def get_sagemaker_role_arn(role_name, region_name):
-    iam = boto3.client('iam', region_name=region_name)
-    response = iam.get_role(RoleName=role_name)
-    return response["Role"]["Arn"]
+    sts            = boto3.client('sts')
+    account_id = sts.get_caller_identity()["Account"]
+    # iam = boto3.client('iam', region_name=region_name)
+    # response = iam.get_role(RoleName=role_name)
+    role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
+    return role_arn
 
 # =============================================================================
 # setting up training, tuning and transform configuration
@@ -77,7 +83,7 @@ hpo_enabled = is_hpo_enabled()
 
 # create estimator
 fm_estimator = Estimator(
-    image_name=container,
+    image_uri=container,
     role=role,
     sagemaker_session=sagemaker.session.Session(sess),
     **config["train_model"]["estimator_config"]
@@ -139,7 +145,6 @@ init = DummyOperator(
 preprocess_task = PythonOperator(
     task_id='preprocessing',
     dag=dag,
-    provide_context=False,
     python_callable=preprocess.preprocess,
     op_kwargs=config["preprocess_data"])
 
@@ -147,7 +152,6 @@ preprocess_task = PythonOperator(
 prepare_task = PythonOperator(
     task_id='preparing',
     dag=dag,
-    provide_context=False,
     python_callable=prepare.prepare,
     op_kwargs=config["prepare_data"]
 )
