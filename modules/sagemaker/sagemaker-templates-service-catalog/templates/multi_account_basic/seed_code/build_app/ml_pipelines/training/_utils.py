@@ -4,14 +4,14 @@
 import logging
 from typing import Any, Dict, List
 
-import boto3
+import sagemaker.session
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
 
 
 def resolve_ecr_uri_from_image_versions(
-    sagemaker_session: boto3.Session, image_versions: List[Dict[str, Any]], image_name: str
+    sagemaker_session: sagemaker.session.Session, image_versions: List[Dict[str, Any]], image_name: str
 ) -> Any:
     """Gets ECR URI from image versions
     Args:
@@ -34,7 +34,7 @@ def resolve_ecr_uri_from_image_versions(
     return None
 
 
-def resolve_ecr_uri(sagemaker_session: boto3.Session, image_arn: str) -> Any:
+def resolve_ecr_uri(sagemaker_session: sagemaker.session.Session, image_arn: str) -> Any:
     """Gets the ECR URI from the image name
 
     Args:
