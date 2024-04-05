@@ -10,19 +10,19 @@ parameters:
   - name: studio-domain-id
     valueFrom:
       moduleMetadata:
-        group: sagemaker
+        group: sagemaker-studio
         name: studio
         key: StudioDomainId
   - name: studio-domain-name
     valueFrom:
       moduleMetadata:
-        group: sagemaker
+        group: sagemaker-studio
         name: studio
         key: StudioDomainName
   - name: studio-execution-role-arn
     valueFrom:
       moduleMetadata:
-        group: sagemaker
+        group: sagemaker-studio
         name: studio
         key: SageMakerExecutionRoleArn
   - name: sagemaker-image-name
