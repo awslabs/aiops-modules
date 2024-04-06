@@ -12,12 +12,18 @@ import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
 
-from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
-from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import DeployPipelineConstruct
+from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import (
+    BuildPipelineConstruct,
+)
+from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import (
+    DeployPipelineConstruct,
+)
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone data."
+    DESCRIPTION: str = (
+        "Creates a SageMaker pipeline which trains a model on Abalone data."
+    )
     TEMPLATE_NAME: str = "Train Model on Abalone Data"
 
     def __init__(
@@ -27,7 +33,7 @@ class Product(servicecatalog.ProductStack):
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
         prod_account_id: str,
-        preprod_account_id:str,
+        preprod_account_id: str,
         preprod_region: str,
         prod_region: str,
         dev_vpc_id: str,
@@ -53,15 +59,14 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
-
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
 
         # cross account model registry resource policy
         model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
         model_package_arn = (
-        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-        f"{model_package_group_name}/*"
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+            f"{model_package_group_name}/*"
         )
         model_package_group_arn = (
             f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"

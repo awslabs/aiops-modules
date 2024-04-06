@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any,List
+from typing import Any, List
 
 import constructs
 from aws_cdk import Aws, Stack, Tags
@@ -38,7 +38,9 @@ class EndpointConfigProductionVariant(StageYamlDataClassConfig):  # type:ignore[
     instance_type: str = "ml.m5.2xlarge"
     variant_name: str = "AllTraffic"
 
-    FILE_PATH: Path = create_file_path_field("endpoint-config.yml", path_is_absolute=True)
+    FILE_PATH: Path = create_file_path_field(
+        "endpoint-config.yml", path_is_absolute=True
+    )
 
     def get_endpoint_config_production_variant(
         self, model_name: str
@@ -74,7 +76,7 @@ class DeployEndpointStack(Stack):
         self,
         scope: constructs.Construct,
         id: str,
-        vpc_id:str,
+        vpc_id: str,
         subnet_ids: List[str],
         **kwargs: Any,
     ):
@@ -99,7 +101,9 @@ class DeployEndpointStack(Stack):
                             "kms:DescribeKey",
                         ],
                         effect=iam.Effect.ALLOW,
-                        resources=[f"arn:aws:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"],
+                        resources=[
+                            f"arn:aws:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"
+                        ],
                     ),
                 ]
             ),
@@ -142,7 +146,9 @@ class DeployEndpointStack(Stack):
             execution_role_arn=model_execution_role.role_arn,
             model_name=model_name,
             containers=[
-                sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
+                sagemaker.CfnModel.ContainerDefinitionProperty(
+                    model_package_name=latest_approved_model_package
+                )
             ],
         )
 

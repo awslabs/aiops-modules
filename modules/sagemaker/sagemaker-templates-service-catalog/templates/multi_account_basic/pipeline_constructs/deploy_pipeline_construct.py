@@ -35,9 +35,9 @@ class DeployPipelineConstruct(Construct):
         deployment_region: str,
         dev_vpc_id: str,
         dev_subnet_ids: List[str],
-        preprod_vpc_id: str ,
+        preprod_vpc_id: str,
         preprod_subnet_ids: List[str],
-        prod_vpc_id: str ,
+        prod_vpc_id: str,
         prod_subnet_ids: List[str],
         **kwargs: Any,
     ) -> None:
@@ -57,7 +57,9 @@ class DeployPipelineConstruct(Construct):
             ),
         )
         aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-id", project_id)
-        aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-name", project_name)
+        aws_cdk.Tags.of(deploy_app_repository).add(
+            "sagemaker:project-name", project_name
+        )
 
         cdk_synth_build_role = iam.Role(
             self,
@@ -123,22 +125,50 @@ class DeployPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
+                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(
+                        value=model_package_group_name
+                    ),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(
+                        value=s3_artifact.bucket_arn
+                    ),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
-                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(value=deployment_region),
-                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(value=Aws.ACCOUNT_ID),
+                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
+                        value=project_name
+                    ),
+                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(
+                        value=deployment_region
+                    ),
+                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=Aws.ACCOUNT_ID
+                    ),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
-                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=dev_subnet_ids),
-                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=preprod_account),
-                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(value=preprod_region),
-                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=prod_account),
-                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
-                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=preprod_vpc_id),
-                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=preprod_subnet_ids),
-                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
-                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=prod_subnet_ids),
+                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=dev_subnet_ids
+                    ),
+                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=preprod_account
+                    ),
+                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(
+                        value=preprod_region
+                    ),
+                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=prod_account
+                    ),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(
+                        value=prod_region
+                    ),
+                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
+                        value=preprod_vpc_id
+                    ),
+                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=preprod_subnet_ids
+                    ),
+                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
+                        value=prod_vpc_id
+                    ),
+                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=prod_subnet_ids
+                    ),
                 },
             ),
         )
@@ -193,22 +223,50 @@ class DeployPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
+                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(
+                        value=model_package_group_name
+                    ),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(
+                        value=s3_artifact.bucket_arn
+                    ),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
-                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(value=deployment_region),
-                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(value=Aws.ACCOUNT_ID),
+                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
+                        value=project_name
+                    ),
+                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(
+                        value=deployment_region
+                    ),
+                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=Aws.ACCOUNT_ID
+                    ),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
-                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=dev_subnet_ids),
-                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=preprod_account),
-                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(value=preprod_region),
-                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(value=prod_account),
-                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
-                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=preprod_vpc_id),
-                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=preprod_subnet_ids),
-                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
-                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=prod_subnet_ids),
+                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=dev_subnet_ids
+                    ),
+                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=preprod_account
+                    ),
+                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(
+                        value=preprod_region
+                    ),
+                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
+                        value=prod_account
+                    ),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(
+                        value=prod_region
+                    ),
+                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
+                        value=preprod_vpc_id
+                    ),
+                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=preprod_subnet_ids
+                    ),
+                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
+                        value=prod_vpc_id
+                    ),
+                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
+                        value=prod_subnet_ids
+                    ),
                 },
             ),
         )

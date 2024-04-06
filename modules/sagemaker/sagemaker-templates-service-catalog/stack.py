@@ -27,9 +27,9 @@ class ServiceCatalogStack(Stack):
         prod_region: str,
         dev_vpc_id: str,
         dev_subnet_ids: str,
-        pre_prod_vpc_id: str ,
+        pre_prod_vpc_id: str,
         pre_prod_subnet_ids: List[str],
-        prod_vpc_id: str ,
+        prod_vpc_id: str,
         prod_subnet_ids: List[str],
         **kwargs: Any,
     ) -> None:
@@ -66,10 +66,14 @@ class ServiceCatalogStack(Stack):
                 iam.ServicePrincipal("cloudformation.amazonaws.com"),
                 iam.ArnPrincipal(portfolio_access_role.role_arn),
             ),
-            managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")],
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")
+            ],
         )
 
-        templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
+        templates_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "templates"
+        )
         for template_name in next(os.walk(templates_dir))[1]:
             if template_name == "__pycache__":
                 continue
@@ -78,7 +82,9 @@ class ServiceCatalogStack(Stack):
                 template_name=template_name,
             )
 
-            product_stack_module = importlib.import_module(f"templates.{template_name}.product_stack")
+            product_stack_module = importlib.import_module(
+                f"templates.{template_name}.product_stack"
+            )
             product_stack: servicecatalog.ProductStack = product_stack_module.Product(
                 self,
                 f"{template_name}ProductStack",
@@ -97,7 +103,9 @@ class ServiceCatalogStack(Stack):
             )
 
             product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)
-            product_description: Optional[str] = getattr(product_stack, "DESCRIPTION", None)
+            product_description: Optional[str] = getattr(
+                product_stack, "DESCRIPTION", None
+            )
 
             product = servicecatalog.CloudFormationProduct(
                 self,
@@ -141,6 +149,7 @@ class ServiceCatalogStack(Stack):
                     ),
                 ],
             )
+
     def upload_assets(
         self,
         portfolio_access_role: iam.IRole,
