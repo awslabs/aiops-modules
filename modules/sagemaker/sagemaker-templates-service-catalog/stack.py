@@ -3,7 +3,7 @@
 
 import importlib
 import os
-from typing import Any, Optional, Tuple, List
+from typing import Any, List, Optional, Tuple
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
@@ -21,12 +21,16 @@ class ServiceCatalogStack(Stack):
         portfolio_name: str,
         portfolio_owner: str,
         portfolio_access_role_arn: str,
-        pre_prod_vpcid: str ,
-        pre_prod_private_subnetids: List[str],
-        pre_prod_public_subnetids: List[str],
-        prod_vpcid: str ,
-        prod_private_subnetids: List[str],
-        prod_public_subnetids: List[str],
+        prod_account_id: str,
+        preprod_account_id: str,
+        preprod_region: str,
+        prod_region: str,
+        dev_vpc_id: str,
+        dev_subnet_ids: str,
+        pre_prod_vpc_id: str ,
+        pre_prod_subnet_ids: List[str],
+        prod_vpc_id: str ,
+        prod_subnet_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -67,6 +71,8 @@ class ServiceCatalogStack(Stack):
 
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
+            if template_name == "__pycache__":
+                continue
             build_app_asset, deploy_app_asset = self.upload_assets(
                 portfolio_access_role=portfolio_access_role,
                 template_name=template_name,
@@ -76,12 +82,16 @@ class ServiceCatalogStack(Stack):
             product_stack: servicecatalog.ProductStack = product_stack_module.Product(
                 self,
                 f"{template_name}ProductStack",
-                pre_prod_vpcid=pre_prod_vpcid,
-                pre_prod_private_subnetids=pre_prod_private_subnetids,
-                pre_prod_public_subnetids=pre_prod_public_subnetids,
-                prod_vpcid=prod_vpcid,
-                prod_private_subnetids=prod_private_subnetids,
-                prod_public_subnetids=prod_public_subnetids,
+                prod_account_id=prod_account_id,
+                preprod_account_id=preprod_account_id,
+                preprod_region=preprod_region,
+                prod_region=prod_region,
+                dev_vpc_id=dev_vpc_id,
+                dev_subnet_ids=dev_subnet_ids,
+                pre_prod_vpc_id=pre_prod_vpc_id,
+                pre_prod_subnet_ids=pre_prod_subnet_ids,
+                prod_vpc_id=prod_vpc_id,
+                prod_subnet_ids=prod_subnet_ids,
                 build_app_asset=build_app_asset,
                 deploy_app_asset=deploy_app_asset,
             )

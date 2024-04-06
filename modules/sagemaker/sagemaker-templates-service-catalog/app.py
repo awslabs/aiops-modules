@@ -15,7 +15,16 @@ app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 
 DEFAULT_PORTFOLIO_NAME = "MLOps SageMaker Project Templates"
 DEFAULT_PORTFOLIO_OWNER = "administrator"
-
+DEFAULT_DEV_VPCID = ""
+DEV_SUBNET_IDS = ""
+PRE_PROD_VPC_ID = ""
+PRE_PROD_SUBNET_IDS = ""
+PROD_VPC_ID = ""
+PROD_SUBNET_IDS = ""
+PRE_PROD_ACCOUNT_ID = "366396142806"
+PROD_ACCOUNT_ID = "366396142806"
+PRE_PROD_REGION = "us-west-2"
+PROD_REGION = "us-west-2"
 
 def _param(name: str) -> str:
     return f"SEEDFARMER_PARAMETER_{name}"
@@ -29,12 +38,22 @@ environment = aws_cdk.Environment(
 portfolio_name = os.getenv(_param("PORTFOLIO_NAME"), DEFAULT_PORTFOLIO_NAME)
 portfolio_owner = os.getenv(_param("PORTFOLIO_OWNER"), DEFAULT_PORTFOLIO_OWNER)
 portfolio_access_role_arn = os.getenv(_param("PORTFOLIO_ACCESS_ROLE_ARN"))
-pre_prod_vpc_id = os.getenv(_param("PRE_PROD_VPC_ID"))
-pre_prod_private_subnet_ids = os.getenv(_param("PRE_PROD_PRIVATE_SUBNET_IDS"), "subnet-0b0b482eb3c8d1093,subnet-06871fc0a01b37291").split(",")
-pre_prod_public_subnet_ids = os.getenv(_param("PRE_PROD_PUBLIC_SUBNET_IDS"), "subnet-006c070eb830ae59d,subnet-0da90f3194a1c76de").split(",")
-prod_vpc_id = os.getenv(_param("PROD_VPC_ID"),'vpc-02e5ecf77ca03e093')
-prod_private_subnet_ids = os.getenv(_param("PROD_PRIVATE_SUBNET_IDS"), "subnet-0b0b482eb3c8d1093,subnet-06871fc0a01b37291").split(",")
-prod_public_subnet_ids = os.getenv(_param("PROD_PUBLIC_SUBNET_IDS"), "subnet-006c070eb830ae59d,subnet-0da90f3194a1c76de").split(",")
+
+pre_prod_account_id = os.getenv(_param("PRE_PROD_ACCOUNT_ID"),PRE_PROD_ACCOUNT_ID)
+prod_account_id = os.getenv(_param("PROD_ACCOUNT_ID"),PROD_ACCOUNT_ID)
+
+pre_prod_region = os.getenv(_param("PRE_PROD_REGION"),PRE_PROD_REGION)
+prod_region = os.getenv(_param("PROD_REGION"),PROD_REGION)
+
+
+dev_vpc_id = os.getenv(_param("DEV_VPC_ID"),DEFAULT_DEV_VPCID)
+dev_subnet_ids = os.getenv(_param("DEV_SUBNET_IDS"),DEV_SUBNET_IDS).split(",")
+
+pre_prod_vpc_id = os.getenv(_param("PRE_PROD_VPC_ID"),PRE_PROD_VPC_ID)
+pre_prod_subnet_ids = os.getenv(_param("PRE_PROD_SUBNET_IDS"),PRE_PROD_SUBNET_IDS).split(",")
+
+prod_vpc_id = os.getenv(_param("PROD_VPC_ID"),PROD_VPC_ID)
+prod_subnet_ids = os.getenv(_param("PROD_SUBNET_IDS"),PROD_SUBNET_IDS).split(",")
 
 if not portfolio_access_role_arn:
     raise ValueError("Missing input parameter portfolio-access-role-arn")
@@ -47,12 +66,16 @@ stack = ServiceCatalogStack(
     portfolio_name=portfolio_name,
     portfolio_owner=portfolio_owner,
     portfolio_access_role_arn=portfolio_access_role_arn,
-    pre_prod_vpcid=pre_prod_vpc_id,
-    pre_prod_private_subnetids=pre_prod_private_subnet_ids,
-    pre_prod_public_subnetids=pre_prod_public_subnet_ids,
-    prod_vpcid=prod_vpc_id,
-    prod_private_subnetids=prod_private_subnet_ids,
-    prod_public_subnetids=prod_public_subnet_ids,
+    prod_account_id=prod_account_id,
+    preprod_account_id=pre_prod_account_id,
+    preprod_region = pre_prod_region,
+    prod_region = prod_region,
+    dev_vpc_id=dev_vpc_id,
+    dev_subnet_ids=dev_subnet_ids,
+    pre_prod_vpc_id=pre_prod_vpc_id,
+    pre_prod_subnet_ids=pre_prod_subnet_ids,
+    prod_vpc_id=prod_vpc_id,
+    prod_subnet_ids=prod_subnet_ids,
 )
 
 

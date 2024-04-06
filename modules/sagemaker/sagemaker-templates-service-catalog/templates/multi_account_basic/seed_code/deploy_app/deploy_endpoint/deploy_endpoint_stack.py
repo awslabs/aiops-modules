@@ -4,7 +4,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any,List
 
 import constructs
 from aws_cdk import Aws, Stack, Tags
@@ -74,6 +74,8 @@ class DeployEndpointStack(Stack):
         self,
         scope: constructs.Construct,
         id: str,
+        vpc_id:str,
+        subnet_ids: List[str],
         **kwargs: Any,
     ):
         super().__init__(scope, id, **kwargs)
@@ -169,6 +171,13 @@ class DeployEndpointStack(Stack):
             ),
         )
 
+        vpc_config = None
+        if subnet_ids:
+            vpc_config = sagemaker.CfnEndpointConfig.VpcConfigProperty(
+                subnets=[subnet.subnet_id for subnet in subnet_ids],
+                security_group_ids=[],  # No security groups
+            )
+
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
             "EndpointConfig",
@@ -179,6 +188,7 @@ class DeployEndpointStack(Stack):
                     model.model_name  # type: ignore[arg-type]
                 )
             ],
+            vpc_config=vpc_config,
         )
 
         endpoint_config.add_depends_on(model)

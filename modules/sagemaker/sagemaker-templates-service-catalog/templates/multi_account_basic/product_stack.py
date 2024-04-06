@@ -1,6 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from typing import List
+
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
@@ -8,12 +10,11 @@ import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
-from aws_cdk import Fn
 from constructs import Construct
-from typing import List
+
 from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import DeployPipelineConstruct
-import json
+
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone data."
@@ -25,12 +26,16 @@ class Product(servicecatalog.ProductStack):
         id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
-        pre_prod_vpcid: str,
-        pre_prod_private_subnetids: List[str],
-        pre_prod_public_subnetids: List[str],
-        prod_vpcid: str,
-        prod_private_subnetids: List[str],
-        prod_public_subnetids: List[str],
+        prod_account_id: str,
+        preprod_account_id:str,
+        preprod_region: str,
+        prod_region: str,
+        dev_vpc_id: str,
+        dev_subnet_ids: List[str],
+        pre_prod_vpc_id: str,
+        pre_prod_subnet_ids: List[str],
+        prod_vpc_id: str,
+        prod_subnet_ids: List[str],
     ) -> None:
         super().__init__(scope, id)
 
@@ -48,100 +53,20 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
-        preprod_account_id = CfnParameter(
-            self,
-            "PreprodAccountId",
-            type="String",
-            description="Pre-prod account id.",
-        ).value_as_string
-
-        preprod_region = CfnParameter(
-            self,
-            "PreprodRegion",
-            type="String",
-            description="Pre-prod region.",
-        ).value_as_string
-
-        prod_account_id = CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            description="Prod account id.",
-        ).value_as_string
-
-        prod_region = CfnParameter(
-            self,
-            "ProdRegion",
-            type="String",
-            description="Prod region.",
-        ).value_as_string
-
-        preprod_vpc_id = CfnParameter(
-            self,
-            "PreprodVpcId",
-            type="AWS::EC2::VPC::Id",
-            description="The ID of the VPC to be used.",
-            default=pre_prod_vpcid,
-        ).value_as_string
-
-        pre_prod_private_subnet_ids = CfnParameter(
-            self,
-            "PreprodPrivateSubnetIds",
-            type="List<AWS::EC2::Subnet::Id>",
-            description="A list of private subnet IDs within the VPC.",
-            default=",".join(pre_prod_private_subnetids),
-        )
-
-        pre_prod_public_subnet_ids = CfnParameter(
-            self,
-            "PreprodPublicSubnetIds",
-            type="List<AWS::EC2::Subnet::Id>",
-            description="A list of public subnet IDs within the VPC.",
-            default=",".join(pre_prod_public_subnetids),
-        )
-
-        # preprod_public_subnet_ids = [
-        #         Fn.select(i, pre_prod_public_subnet_ids.value_as_list)
-        #         for i in range(len(pre_prod_public_subnet_ids.value_as_list))
-        #     ]
-
-        prodvpc_id = CfnParameter(
-            self,
-            "ProdVpcId",
-            type="AWS::EC2::VPC::Id",
-            description="The ID of the VPC to be used.",
-            default=prod_vpcid,
-        ).value_as_string
-
-        prod_private_subnet_ids = CfnParameter(
-            self,
-            "ProdPrivateSubnetIds",
-            type="List<AWS::EC2::Subnet::Id>",
-            description="A list of private subnet IDs within the VPC.",
-            default=",".join(prod_private_subnetids),
-        )
-
-        # prodprivate_subnet_ids = [
-        #         Fn.select(i, prod_private_subnet_ids.value_as_list)
-        #         for i in range(len(prod_private_subnet_ids.value_as_list))
-        #     ]
-
-        prod_public_subnet_ids = CfnParameter(
-            self,
-            "ProdPublicSubnetIds",
-            type="List<AWS::EC2::Subnet::Id>",
-            description="A list of public subnet IDs within the VPC.",
-            default=",".join(prod_public_subnetids),
-        )
-
-        # prodpublic_subnet_ids = [
-        #         Fn.select(i, prod_public_subnet_ids.value_as_list)
-        #         for i in range(len(prod_public_subnet_ids.value_as_list))
-        #     ]
-
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+
+        # cross account model registry resource policy
+        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
+        model_package_arn = (
+        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+        f"{model_package_group_name}/*"
+        )
+        model_package_group_arn = (
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+            f"{model_package_group_name}"
+        )
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -232,10 +157,7 @@ class Product(servicecatalog.ProductStack):
                     actions=[
                         "sagemaker:DescribeModelPackageGroup",
                     ],
-                    resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-                        f"{model_package_group_name}"
-                    ],
+                    resources=[model_package_group_arn],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),
                         iam.AccountPrincipal(prod_account_id),
@@ -249,10 +171,7 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:UpdateModelPackage",
                         "sagemaker:CreateModel",
                     ],
-                    resources=[
-                        f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-                        f"{model_package_group_name}/*"
-                    ],
+                    resources=[model_package_arn],
                     principals=[
                         iam.AccountPrincipal(preprod_account_id),
                         iam.AccountPrincipal(prod_account_id),
@@ -315,6 +234,7 @@ class Product(servicecatalog.ProductStack):
             "deploy",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
+            s3_artifact=s3_artifact,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
@@ -323,10 +243,10 @@ class Product(servicecatalog.ProductStack):
             prod_account=prod_account_id,
             prod_region=prod_region,
             deployment_region=Aws.REGION,
-            preprod_vpc_id=preprod_vpc_id,
-            preprod_private_subnet_ids=pre_prod_private_subnetids,
-            preprod_public_subnet_ids=pre_prod_public_subnetids,
-            prod_vpc_id=prodvpc_id,
-            prod_private_subnet_ids=prod_private_subnetids,
-            prod_public_subnet_ids=prod_public_subnetids,
+            dev_vpc_id=dev_vpc_id,
+            dev_subnet_ids=dev_subnet_ids,
+            preprod_vpc_id=pre_prod_vpc_id,
+            preprod_subnet_ids=pre_prod_subnet_ids,
+            prod_vpc_id=prod_vpc_id,
+            prod_subnet_ids=prod_subnet_ids,
         )

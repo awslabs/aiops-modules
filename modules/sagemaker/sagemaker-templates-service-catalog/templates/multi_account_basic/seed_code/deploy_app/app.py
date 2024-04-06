@@ -23,6 +23,12 @@ from config.constants import (
     PREPROD_REGION,
     PROD_ACCOUNT,
     PROD_REGION,
+    DEV_VPC_ID,
+    DEV_SUBNET_IDS,
+    PRE_PROD_VPC_ID,
+    PRE_PROD_SUBNET_IDS,
+    PROD_VPC_ID,
+    PROD_SUBNET_IDS
 )
 from deploy_endpoint.deploy_endpoint_stack import DeployEndpointStack
 
@@ -32,8 +38,12 @@ dev_env = cdk.Environment(account=DEPLOYMENT_ACCOUNT, region=DEPLOYMENT_REGION)
 preprod_env = cdk.Environment(account=PREPROD_ACCOUNT, region=PREPROD_REGION)
 prod_env = cdk.Environment(account=PROD_ACCOUNT, region=PROD_REGION)
 
-DeployEndpointStack(app, "dev", env=dev_env)
-DeployEndpointStack(app, "preprod", env=preprod_env)
-DeployEndpointStack(app, "prod", env=prod_env)
+# DeployEndpointStack(app, "dev", env=dev_env)
+# DeployEndpointStack(app, "preprod", env=preprod_env)
+# DeployEndpointStack(app, "prod", env=prod_env)
+DeployEndpointStack(app, "dev", vpc_id=DEV_VPC_ID, subnet_ids=DEV_SUBNET_IDS, env=dev_env)
+DeployEndpointStack(app, "preprod", vpc_id=PRE_PROD_VPC_ID, subnet_ids=PRE_PROD_SUBNET_IDS, env=preprod_env)
+DeployEndpointStack(app, "prod", vpc_id=PROD_VPC_ID, subnet_ids=PROD_SUBNET_IDS, env=prod_env)
+
 
 app.synth()
