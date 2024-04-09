@@ -33,18 +33,18 @@ def stack(stack_defaults) -> cdk.Stack:
     portfolio_owner = "owner"
     portfolio_access_role_arn = "arn:aws:iam::xxxxxxxxxxxx:role/role"
     dev_vpc_id = "vpc"
-    dev_subnet_ids = (["sub"],)
-    dev_security_group_ids = (["sg"],)
-    pre_prod_account_id = ("pre_prod_account_id",)
-    pre_prod_region = ("us-east-1",)
-    pre_prod_vpc_id = ("vpc",)
-    pre_prod_subnet_ids = (["sub"],)
-    pre_prod_security_group_ids = (["sg"],)
-    prod_account_id = ("prod_account_id",)
-    prod_region = ("us-east-1",)
-    prod_vpc_id = ("vpc",)
-    prod_subnet_ids = (["sub"],)
-    prod_security_group_ids = (["sg"],)
+    dev_subnet_ids = ["sub"]
+    dev_security_group_ids = ["sg"]
+    pre_prod_account_id = "pre_prod_account_id"
+    pre_prod_region = "us-east-1"
+    pre_prod_vpc_id = "vpc"
+    pre_prod_subnet_ids = ["sub"]
+    pre_prod_security_group_ids = ["sg"]
+    prod_account_id = "prod_account_id"
+    prod_region = "us-east-1"
+    prod_vpc_id = "vpc"
+    prod_subnet_ids = ["sub"]
+    prod_security_group_ids = ["sg"]
 
     return stack.ServiceCatalogStack(
         app,
