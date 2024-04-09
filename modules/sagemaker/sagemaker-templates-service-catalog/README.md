@@ -32,6 +32,19 @@ This project template contains SageMaker pipeline that performs batch inference.
 ### Optional Inputs:
   - `portfolio-name` - name of the Service Catalog Portfolio
   - `portfolio-owner` - owner of the Service Catalog Portfolio
+  - `dev-vpc-id` - id of VPC in dev environment
+  - `dev-subnet-ids` - list of subnet ids
+  - `dev-security-group-ids` - list of security group ids
+  - `pre-prod-account-id` - pre-prod account id
+  - `pre-prod-region` - pre-prod region
+  - `pre-prod-vpc-id` - id of VPC in pre-prod environment
+  - `pre-prod-subnet-ids` - list of subnet ids
+  - `pre-prod-security-group-ids` - list of security group ids
+  - `prod-account-id` - prod account id
+  - `prod-region` - prod region
+  - `prod-vpc-id` - id of VPC in prod environment
+  - `prod-subnet-ids` - list of subnet ids
+  - `prod-security-group-ids` - list of security group ids
 
 ### Sample manifest declaration
 

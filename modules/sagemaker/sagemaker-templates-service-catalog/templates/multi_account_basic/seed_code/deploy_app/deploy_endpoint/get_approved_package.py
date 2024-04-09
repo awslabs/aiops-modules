@@ -6,13 +6,13 @@ from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
-from config.constants import DEPLOYMENT_REGION, MODEL_PACKAGE_GROUP_NAME
+from config.constants import DEV_REGION, MODEL_PACKAGE_GROUP_NAME
 
 """Initialise Logger class"""
 logger = Logger(name="deploy_stack")
 
 """Initialise boto3 SDK resources"""
-sm_client = boto3.client("sagemaker", region_name=DEPLOYMENT_REGION)
+sm_client = boto3.client("sagemaker", region_name=DEV_REGION)
 
 
 def get_approved_package() -> Any:

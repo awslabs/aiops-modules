@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import json
 from typing import Any, List
 
 import aws_cdk
@@ -28,17 +29,21 @@ class DeployPipelineConstruct(Construct):
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
-        preprod_account: str,
-        preprod_region: str,
-        prod_account: str,
-        prod_region: str,
-        deployment_region: str,
         dev_vpc_id: str,
         dev_subnet_ids: List[str],
-        preprod_vpc_id: str,
-        preprod_subnet_ids: List[str],
+        dev_security_group_ids: List[str],
+        pre_prod_account_id: str,
+        pre_prod_region: str,
+        pre_prod_vpc_id: str,
+        pre_prod_subnet_ids: List[str],
+        pre_prod_security_group_ids: List[str],
+        prod_account_id: str,
+        prod_region: str,
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
+        prod_security_group_ids: List[str],
+        dev_account_id: str = Aws.ACCOUNT_ID,
+        dev_region: str = Aws.REGION,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -57,50 +62,62 @@ class DeployPipelineConstruct(Construct):
             ),
         )
         aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-id", project_id)
-        aws_cdk.Tags.of(deploy_app_repository).add(
-            "sagemaker:project-name", project_name
-        )
+        aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-name", project_name)
 
         cdk_synth_build_role = iam.Role(
             self,
             "CodeBuildRole",
             assumed_by=iam.ServicePrincipal("codebuild.amazonaws.com"),
             path="/service-role/",
-        )
-
-        cdk_synth_build_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=["sagemaker:ListModelPackages"],
-                resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-                    f"{project_name}-{project_id}*",
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-                    f"{project_name}-{project_id}/*",
-                ],
-            )
-        )
-
-        cdk_synth_build_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=["ssm:GetParameter"],
-                resources=[
-                    f"arn:{Aws.PARTITION}:ssm:{Aws.REGION}:{Aws.ACCOUNT_ID}:parameter/*",
-                ],
-            )
-        )
-
-        cdk_synth_build_role.add_to_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "kms:Encrypt",
-                    "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
-                    "kms:Decrypt",
-                    "kms:DescribeKey",
-                ],
-                effect=iam.Effect.ALLOW,
-                resources=[f"arn:aws:kms:{Aws.REGION}:{Aws.ACCOUNT_ID}:key/*"],
-            ),
+            inline_policies={
+                "ListModelPackages": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=["sagemaker:ListModelPackages"],
+                            resources=[
+                                f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package-group/"
+                                f"{project_name}-{project_id}*",
+                                f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package/"
+                                f"{project_name}-{project_id}/*",
+                            ],
+                        )
+                    ]
+                ),
+                "KMS": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "kms:Encrypt",
+                                "kms:ReEncrypt*",
+                                "kms:GenerateDataKey*",
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=[f"arn:aws:kms:{dev_region}:{dev_account_id}:key/*"],
+                        ),
+                    ]
+                ),
+                "EC2": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "ec2:CreateNetworkInterface",
+                                "ec2:CreateNetworkInterfacePermission",
+                                "ec2:DeleteNetworkInterface",
+                                "ec2:DeleteNetworkInterfacePermission",
+                                "ec2:DescribeNetworkInterfaces",
+                                "ec2:DescribeVpcs",
+                                "ec2:DescribeDhcpOptions",
+                                "ec2:DescribeSubnets",
+                                "ec2:DescribeSecurityGroups",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=["*"],
+                        )
+                    ]
+                ),
+            },
         )
 
         cdk_synth_build = codebuild.PipelineProject(
@@ -115,7 +132,7 @@ class DeployPipelineConstruct(Construct):
                             "commands": [
                                 "npm install -g aws-cdk",
                                 "pip install -r requirements.txt",
-                                'cdk synth --no-lookups --app "python app.py"',
+                                'cdk synth --app "python app.py"',
                             ]
                         }
                     },
@@ -125,49 +142,30 @@ class DeployPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(
-                        value=model_package_group_name
-                    ),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.bucket_arn
-                    ),
+                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
-                        value=project_name
-                    ),
-                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(
-                        value=deployment_region
-                    ),
-                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=Aws.ACCOUNT_ID
-                    ),
+                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
-                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=dev_subnet_ids
+                    "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
+                    "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
+                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(dev_subnet_ids)),
+                    "DEV_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
+                        value=json.dumps(dev_security_group_ids)
                     ),
-                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=preprod_account
+                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_vpc_id),
+                    "PRE_PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_account_id),
+                    "PRE_PROD_REGION": codebuild.BuildEnvironmentVariable(value=pre_prod_region),
+                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(pre_prod_subnet_ids)),
+                    "PRE_PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
+                        value=json.dumps(pre_prod_security_group_ids)
                     ),
-                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(
-                        value=preprod_region
-                    ),
-                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=prod_account
-                    ),
-                    "PROD_REGION": codebuild.BuildEnvironmentVariable(
-                        value=prod_region
-                    ),
-                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
-                        value=preprod_vpc_id
-                    ),
-                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=preprod_subnet_ids
-                    ),
-                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
-                        value=prod_vpc_id
-                    ),
-                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=prod_subnet_ids
+                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
+                    "PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=prod_account_id),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
+                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
+                    "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
+                        value=json.dumps(prod_security_group_ids)
                     ),
                 },
             ),
@@ -223,50 +221,27 @@ class DeployPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(
-                        value=model_package_group_name
-                    ),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.bucket_arn
-                    ),
+                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(
-                        value=project_name
-                    ),
-                    "DEPLOYMENT_REGION": codebuild.BuildEnvironmentVariable(
-                        value=deployment_region
-                    ),
-                    "DEV_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=Aws.ACCOUNT_ID
-                    ),
+                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
+                    "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
+                    "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
-                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=dev_subnet_ids
+                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=dev_subnet_ids),
+                    "DEV_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=dev_security_group_ids),
+                    "PRE_PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_account_id),
+                    "PRE_PROD_REGION": codebuild.BuildEnvironmentVariable(value=pre_prod_region),
+                    "PRE_RPOD_VPC_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_vpc_id),
+                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=pre_prod_subnet_ids),
+                    "PRE_PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
+                        value=pre_prod_security_group_ids
                     ),
-                    "PREPROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=preprod_account
-                    ),
-                    "PREPROD_REGION": codebuild.BuildEnvironmentVariable(
-                        value=preprod_region
-                    ),
-                    "PROD_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                        value=prod_account
-                    ),
-                    "PROD_REGION": codebuild.BuildEnvironmentVariable(
-                        value=prod_region
-                    ),
-                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
-                        value=preprod_vpc_id
-                    ),
-                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=preprod_subnet_ids
-                    ),
-                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(
-                        value=prod_vpc_id
-                    ),
-                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(
-                        value=prod_subnet_ids
-                    ),
+                    "PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=prod_account_id),
+                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
+                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
+                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=prod_subnet_ids),
+                    "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=prod_security_group_ids),
                 },
             ),
         )
@@ -332,14 +307,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "DevActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/"
-                        f"cdk-hnb659fds-deploy-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
+                        f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/"
+                        f"cdk-hnb659fds-deploy-role-{dev_account_id}-{dev_region}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "DevDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/"
-                        f"cdk-hnb659fds-cfn-exec-role-{Aws.ACCOUNT_ID}-{Aws.REGION}",
+                        f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{dev_account_id}-{dev_region}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -367,14 +342,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "PreProdActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/"
-                        f"cdk-hnb659fds-deploy-role-{preprod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
+                        f"cdk-hnb659fds-deploy-role-{pre_prod_account_id}-{pre_prod_region}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "PreProdDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{preprod_account}:role/"
-                        f"cdk-hnb659fds-cfn-exec-role-{preprod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{pre_prod_account_id}-{pre_prod_region}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -402,14 +377,14 @@ class DeployPipelineConstruct(Construct):
                     role=iam.Role.from_role_arn(
                         self,
                         "ProdActionRole",
-                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/"
-                        f"cdk-hnb659fds-deploy-role-{prod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
+                        f"cdk-hnb659fds-deploy-role-{prod_account_id}-{prod_region}",
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "ProdDeploymentRole",
-                        f"arn:{Aws.PARTITION}:iam::{prod_account}:role/"
-                        f"cdk-hnb659fds-cfn-exec-role-{prod_account}-{deployment_region}",
+                        f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
+                        f"cdk-hnb659fds-cfn-exec-role-{prod_account_id}-{prod_region}",
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,

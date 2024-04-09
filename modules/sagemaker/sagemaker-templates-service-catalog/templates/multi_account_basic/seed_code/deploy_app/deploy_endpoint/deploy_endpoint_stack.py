@@ -8,13 +8,14 @@ from typing import Any, List
 
 import constructs
 from aws_cdk import Aws, Stack, Tags
+from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
-    DEPLOYMENT_ACCOUNT,
+    DEV_ACCOUNT_ID,
     ECR_REPO_ARN,
     MODEL_BUCKET_ARN,
     MODEL_PACKAGE_GROUP_NAME,
@@ -38,9 +39,7 @@ class EndpointConfigProductionVariant(StageYamlDataClassConfig):  # type:ignore[
     instance_type: str = "ml.m5.2xlarge"
     variant_name: str = "AllTraffic"
 
-    FILE_PATH: Path = create_file_path_field(
-        "endpoint-config.yml", path_is_absolute=True
-    )
+    FILE_PATH: Path = create_file_path_field("endpoint-config.yml", path_is_absolute=True)
 
     def get_endpoint_config_production_variant(
         self, model_name: str
@@ -78,6 +77,7 @@ class DeployEndpointStack(Stack):
         id: str,
         vpc_id: str,
         subnet_ids: List[str],
+        security_group_ids: List[str],
         **kwargs: Any,
     ):
         super().__init__(scope, id, **kwargs)
@@ -101,9 +101,7 @@ class DeployEndpointStack(Stack):
                             "kms:DescribeKey",
                         ],
                         effect=iam.Effect.ALLOW,
-                        resources=[
-                            f"arn:aws:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"
-                        ],
+                        resources=[f"arn:aws:kms:{Aws.REGION}:{DEV_ACCOUNT_ID}:key/*"],
                     ),
                 ]
             ),
@@ -146,9 +144,7 @@ class DeployEndpointStack(Stack):
             execution_role_arn=model_execution_role.role_arn,
             model_name=model_name,
             containers=[
-                sagemaker.CfnModel.ContainerDefinitionProperty(
-                    model_package_name=latest_approved_model_package
-                )
+                sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
             ],
         )
 
@@ -179,9 +175,14 @@ class DeployEndpointStack(Stack):
 
         vpc_config = None
         if subnet_ids:
+            if not security_group_ids:  # Create a security group if not provided
+                vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
+
+                security_group_ids = [ec2.SecurityGroup(self, "Security Group", vpc=vpc).security_group_id]
+
             vpc_config = sagemaker.CfnEndpointConfig.VpcConfigProperty(
-                subnets=[subnet.subnet_id for subnet in subnet_ids],
-                security_group_ids=[],  # No security groups
+                subnets=subnet_ids,
+                security_group_ids=security_group_ids,
             )
 
         endpoint_config = sagemaker.CfnEndpointConfig(

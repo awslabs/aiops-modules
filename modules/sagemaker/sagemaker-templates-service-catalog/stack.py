@@ -21,16 +21,19 @@ class ServiceCatalogStack(Stack):
         portfolio_name: str,
         portfolio_owner: str,
         portfolio_access_role_arn: str,
-        prod_account_id: str,
-        preprod_account_id: str,
-        preprod_region: str,
-        prod_region: str,
         dev_vpc_id: str,
-        dev_subnet_ids: str,
+        dev_subnet_ids: List[str],
+        dev_security_group_ids: List[str],
+        pre_prod_account_id: str,
+        pre_prod_region: str,
         pre_prod_vpc_id: str,
         pre_prod_subnet_ids: List[str],
+        pre_prod_security_group_ids: List[str],
+        prod_account_id: str,
+        prod_region: str,
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
+        prod_security_group_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -66,14 +69,10 @@ class ServiceCatalogStack(Stack):
                 iam.ServicePrincipal("cloudformation.amazonaws.com"),
                 iam.ArnPrincipal(portfolio_access_role.role_arn),
             ),
-            managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")
-            ],
+            managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")],
         )
 
-        templates_dir = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "templates"
-        )
+        templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
             if template_name == "__pycache__":
                 continue
@@ -82,30 +81,29 @@ class ServiceCatalogStack(Stack):
                 template_name=template_name,
             )
 
-            product_stack_module = importlib.import_module(
-                f"templates.{template_name}.product_stack"
-            )
+            product_stack_module = importlib.import_module(f"templates.{template_name}.product_stack")
             product_stack: servicecatalog.ProductStack = product_stack_module.Product(
                 self,
                 f"{template_name}ProductStack",
-                prod_account_id=prod_account_id,
-                preprod_account_id=preprod_account_id,
-                preprod_region=preprod_region,
-                prod_region=prod_region,
-                dev_vpc_id=dev_vpc_id,
-                dev_subnet_ids=dev_subnet_ids,
-                pre_prod_vpc_id=pre_prod_vpc_id,
-                pre_prod_subnet_ids=pre_prod_subnet_ids,
-                prod_vpc_id=prod_vpc_id,
-                prod_subnet_ids=prod_subnet_ids,
                 build_app_asset=build_app_asset,
                 deploy_app_asset=deploy_app_asset,
+                dev_vpc_id=dev_vpc_id,
+                dev_subnet_ids=dev_subnet_ids,
+                dev_security_group_ids=dev_security_group_ids,
+                pre_prod_vpc_id=pre_prod_vpc_id,
+                pre_prod_account_id=pre_prod_account_id,
+                pre_prod_region=pre_prod_region,
+                pre_prod_subnet_ids=pre_prod_subnet_ids,
+                pre_prod_security_group_ids=pre_prod_security_group_ids,
+                prod_vpc_id=prod_vpc_id,
+                prod_account_id=prod_account_id,
+                prod_region=prod_region,
+                prod_subnet_ids=prod_subnet_ids,
+                prod_security_group_ids=prod_security_group_ids,
             )
 
             product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)
-            product_description: Optional[str] = getattr(
-                product_stack, "DESCRIPTION", None
-            )
+            product_description: Optional[str] = getattr(product_stack, "DESCRIPTION", None)
 
             product = servicecatalog.CloudFormationProduct(
                 self,
