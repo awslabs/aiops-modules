@@ -44,7 +44,6 @@ class Product(servicecatalog.ProductStack):
         prod_subnet_ids: List[str],
     ) -> None:
         super().__init__(scope, id)
-
         sagemaker_project_name = CfnParameter(
             self,
             "SageMakerProjectName",
@@ -91,6 +90,15 @@ class Product(servicecatalog.ProductStack):
             ),
         )
 
+        if preprod_account_id:
+            pre_prod_account_id = preprod_account_id
+        else:
+            pre_prod_account_id = Aws.ACCOUNT_ID
+
+        if prod_account_id:
+            prod_accountid = prod_account_id
+        else:
+            prod_accountid = Aws.ACCOUNT_ID
         # allow cross account access to the kms key
         kms_key.add_to_resource_policy(
             iam.PolicyStatement(
@@ -105,8 +113,8 @@ class Product(servicecatalog.ProductStack):
                     "*",
                 ],
                 principals=[
-                    iam.AccountPrincipal(preprod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
+                    iam.AccountPrincipal(pre_prod_account_id),
+                    iam.AccountPrincipal(prod_accountid),
                 ],
             )
         )
@@ -146,8 +154,8 @@ class Product(servicecatalog.ProductStack):
                     s3_artifact.bucket_arn,
                 ],
                 principals=[
-                    iam.AccountPrincipal(preprod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
+                    iam.AccountPrincipal(pre_prod_account_id),
+                    iam.AccountPrincipal(prod_accountid),
                 ],
             )
         )
@@ -164,8 +172,8 @@ class Product(servicecatalog.ProductStack):
                     ],
                     resources=[model_package_group_arn],
                     principals=[
-                        iam.AccountPrincipal(preprod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.AccountPrincipal(pre_prod_account_id),
+                        iam.AccountPrincipal(prod_accountid),
                     ],
                 ),
                 iam.PolicyStatement(
@@ -178,8 +186,8 @@ class Product(servicecatalog.ProductStack):
                     ],
                     resources=[model_package_arn],
                     principals=[
-                        iam.AccountPrincipal(preprod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.AccountPrincipal(pre_prod_account_id),
+                        iam.AccountPrincipal(prod_accountid),
                     ],
                 ),
             ]
@@ -243,9 +251,9 @@ class Product(servicecatalog.ProductStack):
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
-            preprod_account=preprod_account_id,
+            preprod_account=pre_prod_account_id,
             preprod_region=preprod_region,
-            prod_account=prod_account_id,
+            prod_account=prod_accountid,
             prod_region=prod_region,
             deployment_region=Aws.REGION,
             dev_vpc_id=dev_vpc_id,
