@@ -36,7 +36,7 @@ from sagemaker.workflow.steps import ProcessingStep, TrainingStep
 logger = logging.getLogger(__name__)
 
 
-def get_session(region: str, default_bucket: Optional[str]) -> boto3.Session:
+def get_session(region: str, default_bucket: Optional[str]) -> sagemaker.session.Session:
     """Gets the sagemaker session based on the region.
 
     Args:

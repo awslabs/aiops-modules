@@ -27,7 +27,7 @@ botocore==1.34.40
     #   s3transfer
 cattrs==23.2.3
     # via jsii
-cdk-ecr-deployment==3.0.31
+cdk-ecr-deployment==3.0.42
     # via -r requirements.in
 cdk-nag==2.28.27
     # via -r requirements.in
@@ -44,7 +44,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsii==1.94.0
+jsii==1.96.0
     # via
     #   aws-cdk-asset-awscli-v1
     #   aws-cdk-asset-kubectl-v20
