@@ -106,12 +106,16 @@ class CustomKernelStack(Stack):
         )
         app_image_config.node.add_dependency(image_version)
 
-        NagSuppressions.add_resource_suppressions(
-            self.sagemaker_studio_image_role,
+        NagSuppressions.add_stack_suppressions(
+            self,
             suppressions=[
                 NagPackSuppression(
                     id="AwsSolutions-IAM4",
                     reason="Image Role needs Sagemaker Full Access",
+                    applies_to=[
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/AmazonSageMakerFullAccess",
+                    ],
                 ),
                 NagPackSuppression(
                     id="AwsSolutions-IAM5",
