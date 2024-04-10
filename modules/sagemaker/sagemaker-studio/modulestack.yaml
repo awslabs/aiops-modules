@@ -30,8 +30,8 @@ Resources:
               - "elasticfilesystem:DeleteMountTarget"
               - "elasticfilesystem:DeleteFileSystem"
             Resource:
-              - !Sub "arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/*"
-              - !Sub "arn:aws:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:access-point/*"
+              - !Sub "arn:${AWS::Partition}:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:file-system/*"
+              - !Sub "arn:${AWS::Partition}:elasticfilesystem:${AWS::Region}:${AWS::AccountId}:access-point/*"
           - Effect: Allow
             Action:
               - "elasticfilesystem:Describe*"

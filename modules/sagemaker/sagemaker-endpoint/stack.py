@@ -94,7 +94,7 @@ class DeployEndpointStack(Stack):
                         "kms:Decrypt",
                         "kms:DescribeKey",
                     ],
-                    resources=[f"arn:aws:kms:{self.region}:{self.account}:key/*"],
+                    resources=[f"arn:{self.partition}:kms:{self.region}:{self.account}:key/*"],
                 ),
             )
 
