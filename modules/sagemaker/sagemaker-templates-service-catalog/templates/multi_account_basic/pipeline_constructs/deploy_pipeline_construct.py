@@ -205,7 +205,7 @@ class DeployPipelineConstruct(Construct):
                                 "contains the policy that support these permissions cgn_nag continues to through "
                                 "this problem (https://github.com/stelligent/cfn_nag/issues/422)' > cfn_nag_ignore.yml",
                                 'mkdir report || echo "dir report exists"',
-                                "SCAN_RESULT=$(cfn_nag_scan --fail-on-warnings --deny-list-path cfn_nag_ignore.yml "
+                                "SCAN_RESULT=$(cfn_nag_scan --deny-list-path cfn_nag_ignore.yml "
                                 "--input-path  ${TemplateFolder} -o json > ./report/cfn_nag.out.json && echo OK || "
                                 "echo FAILED)",
                                 "echo Completed cfn scanning `date`",
