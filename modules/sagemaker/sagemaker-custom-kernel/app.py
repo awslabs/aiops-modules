@@ -26,19 +26,13 @@ def _param(name: str) -> str:
     return f"SEEDFARMER_PARAMETER_{name}"
 
 
-sagemaker_image_name = os.getenv(
-    _param("SAGEMAKER_IMAGE_NAME"), DEFAULT_SAGEMAKER_IMAGE_NAME
-)
+sagemaker_image_name = os.getenv(_param("SAGEMAKER_IMAGE_NAME"), DEFAULT_SAGEMAKER_IMAGE_NAME)
 ecr_repo_name = os.getenv(_param("ECR_REPO_NAME"))  # type: ignore
-app_image_config_name = os.getenv(
-    _param("APP_IMAGE_CONFIG_NAME"), DEFAULT_APP_IMAGE_CONFIG_NAME
-)
+app_image_config_name = os.getenv(_param("APP_IMAGE_CONFIG_NAME"), DEFAULT_APP_IMAGE_CONFIG_NAME)
 custom_kernel_name = os.getenv(_param("CUSTOM_KERNEL_NAME"), DEFAULT_CUSTOM_KERNEL_NAME)
 kernel_user_uid = os.getenv(_param("KERNEL_USER_UID"), DEFAULT_USER_UID)
 kernel_user_gid = os.getenv(_param("KERNEL_USER_GID"), DEFAULT_USER_GID)
-mount_path = os.getenv(
-    _param("KERNEL_USER_HOME_MOUNT_PATH"), DEFAULT_KERNEL_USER_HOME_MOUNT_PATH
-)
+mount_path = os.getenv(_param("KERNEL_USER_HOME_MOUNT_PATH"), DEFAULT_KERNEL_USER_HOME_MOUNT_PATH)
 sm_studio_domain_id = os.getenv(_param("STUDIO_DOMAIN_ID"))
 sm_studio_domain_name = os.getenv(_param("STUDIO_DOMAIN_NAME"))
 

@@ -34,9 +34,7 @@ class CustomKernelStack(Stack):
         Tags.of(self).add(key="Deployment", value=app_prefix[:64])
 
         # ECR Image deployment
-        repo = ecr.Repository.from_repository_name(
-            self, id=f"{app_prefix}-ecr-repo", repository_name=ecr_repo_name
-        )
+        repo = ecr.Repository.from_repository_name(self, id=f"{app_prefix}-ecr-repo", repository_name=ecr_repo_name)
 
         local_image = DockerImageAsset(
             self,
@@ -62,9 +60,7 @@ class CustomKernelStack(Stack):
             role_name=f"{app_prefix}-image-role",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "AmazonSageMakerFullAccess"
-                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
             ],
         )
 
