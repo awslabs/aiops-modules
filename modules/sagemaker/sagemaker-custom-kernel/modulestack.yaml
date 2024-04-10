@@ -36,12 +36,12 @@ Resources:
               - "sagemaker:DescribeDomain"
               - "sagemaker:UpdateDomain"
             Resource:
-              - !Sub "arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:domain/${StudioDomainId}"
+              - !Sub "arn:${AWS::Partition}:sagemaker:${AWS::Region}:${AWS::AccountId}:domain/${StudioDomainId}"
           - Effect: Allow
             Action:
               - "iam:PassRole"
             Resource:
-              - !Sub "arn:aws:iam::${AWS::AccountId}:role/${ProjectName}-${DeploymentName}-${ModuleName}-image-role"
+              - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${ProjectName}-${DeploymentName}-${ModuleName}-image-role"
               - !Ref StudioExecutionRoleArn
           - Action:
               - "ecr:*LayerUpload"
@@ -55,7 +55,7 @@ Resources:
               - "ecr:UploadLayerPart"
             Effect: Allow
             Resource:
-              - !Sub "arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ECRRepoName}"
+              - !Sub "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ECRRepoName}"
         Version: 2012-10-17
       PolicyName: "mlops-modulespecific-policy"
       Roles: [!Ref RoleName]

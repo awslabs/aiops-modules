@@ -97,7 +97,7 @@ class DeployEndpointStack(Stack):
                             "kms:DescribeKey",
                         ],
                         effect=iam.Effect.ALLOW,
-                        resources=[f"arn:aws:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"],
+                        resources=[f"arn:{Aws.PARTITION}:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"],
                     ),
                 ]
             ),
