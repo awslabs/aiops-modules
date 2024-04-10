@@ -107,22 +107,16 @@ class CustomKernelStack(Stack):
         )
         app_image_config.node.add_dependency(image_version)
 
-        Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
-        NagSuppressions.add_stack_suppressions(
-            self,
-            apply_to_nested_stacks=True,
+        NagSuppressions.add_resource_suppressions(
+            self.sagemaker_studio_image_role,
             suppressions=[
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM4",
-                        "reason": "Image Role needs Sagemaker Full Access",
-                    }
+                    id="AwsSolutions-IAM4",
+                    reason="Image Role needs Sagemaker Full Access",
                 ),
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM5",
-                        "reason": "ECR Deployment Service Role needs Full Access",
-                    }
+                    id="AwsSolutions-IAM5",
+                    reason="ECR Deployment Service Role needs Full Access",
                 ),
             ],
         )

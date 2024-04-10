@@ -4,6 +4,7 @@
 import os
 
 import aws_cdk as cdk
+import cdk_nag
 from aws_cdk import CfnOutput
 
 from stack import CustomKernelStack
@@ -79,5 +80,7 @@ CfnOutput(
         }
     ),
 )
+
+cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()
