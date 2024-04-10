@@ -38,7 +38,7 @@ export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
             new PolicyStatement({
               effect: Effect.ALLOW,
               actions: ["s3:GetObject", "s3:ListBucket"],
-              resources: ["arn:aws:s3:::jumpstart-*"],
+              resources: [`arn:${this.partition}:s3:::jumpstart-*`],
             }),
             new PolicyStatement({
               effect: Effect.ALLOW,
