@@ -4,8 +4,7 @@
 import os
 from typing import Any
 
-import cdk_nag
-from aws_cdk import Aspects, Stack, Tags
+from aws_cdk import Stack, Tags
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_sagemaker as sagemaker
