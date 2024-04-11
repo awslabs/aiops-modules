@@ -1,0 +1,37 @@
+{
+  "name": "sagemaker-fm-endpoint",
+  "version": "0.1.0",
+  "bin": {
+    "sagemaker-fm-endpoint": "bin/sagemaker-fm-endpoint.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "check-format": "prettier --ignore-path .gitignore --check \"**/*.+(js|ts|json)\"",
+    "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx,.json --fix",
+    "check-lint": "npx eslint . --ext .js,.jsx,.ts,.tsx,.json"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/node": "20.7.1",
+    "aws-cdk": "2.130.0",
+    "cdk-nag": "^2.28.55",
+    "cypress": "^13.6.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "~5.2.2",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0"
+  },
+  "dependencies": {
+    "@cdklabs/generative-ai-cdk-constructs": "^0.1.74",
+    "aws-cdk-lib": "^2.130.0",
+    "constructs": "^10.3.0",
+    "source-map-support": "^0.5.21"
+  }
+}
