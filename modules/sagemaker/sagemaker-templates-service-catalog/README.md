@@ -32,6 +32,19 @@ This project template contains SageMaker pipeline that performs batch inference.
 ### Optional Inputs:
   - `portfolio-name` - name of the Service Catalog Portfolio
   - `portfolio-owner` - owner of the Service Catalog Portfolio
+  - `dev-vpc-id` - id of VPC in dev environment
+  - `dev-subnet-ids` - list of subnet ids
+  - `dev-security-group-ids` - list of security group ids
+  - `pre-prod-account-id` - pre-prod account id
+  - `pre-prod-region` - pre-prod region
+  - `pre-prod-vpc-id` - id of VPC in pre-prod environment
+  - `pre-prod-subnet-ids` - list of subnet ids
+  - `pre-prod-security-group-ids` - list of security group ids
+  - `prod-account-id` - prod account id
+  - `prod-region` - prod region
+  - `prod-vpc-id` - id of VPC in prod environment
+  - `prod-subnet-ids` - list of subnet ids
+  - `prod-security-group-ids` - list of security group ids
 
 ### Sample manifest declaration
 
@@ -46,6 +59,61 @@ parameters:
         group: sagemaker-studio
         name: studio
         key: LeadDataScientistRoleArn
+  # Below are the optional properties passed to the multi-account CI/CD deployment template
+  - name: dev-account-id
+    valueFrom:
+      envVariable: PRIMARY_ACCOUNT
+  - name: dev-region
+    valueFrom:
+      envVariable: PRIMARY_REGION
+  - name: dev-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: pre-prod-account-id
+    valueFrom:
+      envVariable: PRE_PROD_ACCOUNT
+  - name: pre-prod-region
+    valueFrom:
+      envVariable: PRE_PROD_REGION
+  - name: pre-prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: VpcId
+  - name: pre-prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: PrivateSubnetIds
+  - name: prod-account-id
+    valueFrom:
+      envVariable: PROD_ACCOUNT
+  - name: prod-region
+    valueFrom:
+      envVariable: PROD_REGION
+  - name: prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: VpcId
+  - name: prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: PrivateSubnetIds
 ```
 
 ### Outputs (module metadata):

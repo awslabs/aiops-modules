@@ -1,6 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from typing import Any, List
+
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
@@ -10,13 +12,22 @@ import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
 
-from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
-from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import DeployPipelineConstruct
+from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import (
+    BuildPipelineConstruct,
+)
+from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import (
+    DeployPipelineConstruct,
+)
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone data."
-    TEMPLATE_NAME: str = "Train Model on Abalone Data"
+    DESCRIPTION: str = (
+        "Creates a SageMaker pipeline which trains a model on Abalone dataset and "
+        "deploys a model endpoint to dev, pre-prod, and prod environments."
+    )
+    TEMPLATE_NAME: str = (
+        "Train a model on Abalone dataset using XGBoost and deploy to dev, pre-prod, and prod environments"
+    )
 
     def __init__(
         self,
@@ -24,6 +35,20 @@ class Product(servicecatalog.ProductStack):
         id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
+        dev_vpc_id: str,
+        dev_subnet_ids: List[str],
+        dev_security_group_ids: List[str],
+        pre_prod_account_id: str,
+        pre_prod_region: str,
+        pre_prod_vpc_id: str,
+        pre_prod_subnet_ids: List[str],
+        pre_prod_security_group_ids: List[str],
+        prod_account_id: str,
+        prod_region: str,
+        prod_vpc_id: str,
+        prod_subnet_ids: List[str],
+        prod_security_group_ids: List[str],
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
 
@@ -41,36 +66,24 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
-        preprod_account_id = CfnParameter(
-            self,
-            "PreprodAccountId",
-            type="String",
-            description="Pre-prod account id.",
-        ).value_as_string
-
-        preprod_region = CfnParameter(
-            self,
-            "PreprodRegion",
-            type="String",
-            description="Pre-prod region.",
-        ).value_as_string
-
-        prod_account_id = CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            description="Prod account id.",
-        ).value_as_string
-
-        prod_region = CfnParameter(
-            self,
-            "ProdRegion",
-            type="String",
-            description="Prod region.",
-        ).value_as_string
-
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+
+        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
+        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
+        pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
+        prod_region = Aws.REGION if not prod_region else prod_region
+
+        # cross account model registry resource policy
+        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
+        model_package_arn = (
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+            f"{model_package_group_name}/*"
+        )
+        model_package_group_arn = (
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+            f"{model_package_group_name}"
+        )
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -104,7 +117,7 @@ class Product(servicecatalog.ProductStack):
                     "*",
                 ],
                 principals=[
-                    iam.AccountPrincipal(preprod_account_id),
+                    iam.AccountPrincipal(pre_prod_account_id),
                     iam.AccountPrincipal(prod_account_id),
                 ],
             )
@@ -145,23 +158,15 @@ class Product(servicecatalog.ProductStack):
                     s3_artifact.bucket_arn,
                 ],
                 principals=[
-                    iam.AccountPrincipal(preprod_account_id),
+                    iam.AccountPrincipal(pre_prod_account_id),
                     iam.AccountPrincipal(prod_account_id),
                 ],
             )
         )
 
-        # cross account model registry resource policy
         model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-        model_package_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-            f"{model_package_group_name}/*"
-        )
-        model_package_group_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-            f"{model_package_group_name}"
-        )
 
+        # cross account model registry resource policy
         model_package_group_policy = iam.PolicyDocument(
             statements=[
                 iam.PolicyStatement(
@@ -171,7 +176,7 @@ class Product(servicecatalog.ProductStack):
                     ],
                     resources=[model_package_group_arn],
                     principals=[
-                        iam.AccountPrincipal(preprod_account_id),
+                        iam.AccountPrincipal(pre_prod_account_id),
                         iam.AccountPrincipal(prod_account_id),
                     ],
                 ),
@@ -185,7 +190,7 @@ class Product(servicecatalog.ProductStack):
                     ],
                     resources=[model_package_arn],
                     principals=[
-                        iam.AccountPrincipal(preprod_account_id),
+                        iam.AccountPrincipal(pre_prod_account_id),
                         iam.AccountPrincipal(prod_account_id),
                     ],
                 ),
@@ -250,9 +255,17 @@ class Product(servicecatalog.ProductStack):
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
-            preprod_account=preprod_account_id,
-            preprod_region=preprod_region,
-            prod_account=prod_account_id,
+            dev_vpc_id=dev_vpc_id,
+            dev_subnet_ids=dev_subnet_ids,
+            dev_security_group_ids=dev_security_group_ids,
+            pre_prod_account_id=pre_prod_account_id,
+            pre_prod_region=pre_prod_region,
+            pre_prod_vpc_id=pre_prod_vpc_id,
+            pre_prod_subnet_ids=pre_prod_subnet_ids,
+            pre_prod_security_group_ids=pre_prod_security_group_ids,
+            prod_account_id=prod_account_id,
             prod_region=prod_region,
-            deployment_region=Aws.REGION,
+            prod_vpc_id=prod_vpc_id,
+            prod_subnet_ids=prod_subnet_ids,
+            prod_security_group_ids=prod_security_group_ids,
         )

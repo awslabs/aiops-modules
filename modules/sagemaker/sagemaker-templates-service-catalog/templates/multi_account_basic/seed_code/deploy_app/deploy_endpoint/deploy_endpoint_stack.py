@@ -4,17 +4,18 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 import constructs
 from aws_cdk import Aws, Stack, Tags
+from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
-    DEPLOYMENT_ACCOUNT,
+    DEV_ACCOUNT_ID,
     ECR_REPO_ARN,
     MODEL_BUCKET_ARN,
     MODEL_PACKAGE_GROUP_NAME,
@@ -74,6 +75,9 @@ class DeployEndpointStack(Stack):
         self,
         scope: constructs.Construct,
         id: str,
+        vpc_id: str,
+        subnet_ids: List[str],
+        security_group_ids: List[str],
         **kwargs: Any,
     ):
         super().__init__(scope, id, **kwargs)
@@ -97,7 +101,24 @@ class DeployEndpointStack(Stack):
                             "kms:DescribeKey",
                         ],
                         effect=iam.Effect.ALLOW,
-                        resources=[f"arn:{Aws.PARTITION}:kms:{Aws.REGION}:{DEPLOYMENT_ACCOUNT}:key/*"],
+                        resources=[f"arn:{Aws.PARTITION}:kms:{Aws.REGION}:{DEV_ACCOUNT_ID}:key/*"],
+                    ),
+                    iam.PolicyStatement(
+                        actions=[
+                            "ec2:CreateNetworkInterface",
+                            "ec2:CreateNetworkInterfacePermission",
+                            "ec2:DeleteNetworkInterface",
+                            "ec2:DeleteNetworkInterfacePermission",
+                            "ec2:DescribeNetworkInterfaces",
+                            "ec2:DescribeVpcs",
+                            "ec2:DescribeVpnGateways",
+                            "ec2:DescribeDhcpOptions",
+                            "ec2:DescribeRouteTables",
+                            "ec2:DescribeSubnets",
+                            "ec2:DescribeSecurityGroups",
+                        ],
+                        effect=iam.Effect.ALLOW,
+                        resources=["*"],
                     ),
                 ]
             ),
@@ -134,6 +155,18 @@ class DeployEndpointStack(Stack):
         # Sagemaker Model
         model_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-{timestamp}"
 
+        vpc_config = None
+        if subnet_ids:
+            if not security_group_ids:  # Create a security group if not provided
+                vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
+
+                security_group_ids = [ec2.SecurityGroup(self, "Security Group", vpc=vpc).security_group_id]
+
+            vpc_config = sagemaker.CfnModel.VpcConfigProperty(
+                subnets=subnet_ids,
+                security_group_ids=security_group_ids,
+            )
+
         model = sagemaker.CfnModel(
             self,
             "Model",
@@ -142,6 +175,7 @@ class DeployEndpointStack(Stack):
             containers=[
                 sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
             ],
+            vpc_config=vpc_config,
         )
 
         # Sagemaker Endpoint Config

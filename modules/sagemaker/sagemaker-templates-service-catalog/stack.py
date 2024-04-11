@@ -3,7 +3,7 @@
 
 import importlib
 import os
-from typing import Any, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
@@ -21,6 +21,19 @@ class ServiceCatalogStack(Stack):
         portfolio_name: str,
         portfolio_owner: str,
         portfolio_access_role_arn: str,
+        dev_vpc_id: str,
+        dev_subnet_ids: List[str],
+        dev_security_group_ids: List[str],
+        pre_prod_account_id: str,
+        pre_prod_region: str,
+        pre_prod_vpc_id: str,
+        pre_prod_subnet_ids: List[str],
+        pre_prod_security_group_ids: List[str],
+        prod_account_id: str,
+        prod_region: str,
+        prod_vpc_id: str,
+        prod_subnet_ids: List[str],
+        prod_security_group_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -63,7 +76,6 @@ class ServiceCatalogStack(Stack):
         for template_name in next(os.walk(templates_dir))[1]:
             if template_name == "__pycache__":
                 continue
-
             build_app_asset, deploy_app_asset = self.upload_assets(
                 portfolio_access_role=portfolio_access_role,
                 template_name=template_name,
@@ -75,6 +87,19 @@ class ServiceCatalogStack(Stack):
                 f"{template_name}ProductStack",
                 build_app_asset=build_app_asset,
                 deploy_app_asset=deploy_app_asset,
+                dev_vpc_id=dev_vpc_id,
+                dev_subnet_ids=dev_subnet_ids,
+                dev_security_group_ids=dev_security_group_ids,
+                pre_prod_vpc_id=pre_prod_vpc_id,
+                pre_prod_account_id=pre_prod_account_id,
+                pre_prod_region=pre_prod_region,
+                pre_prod_subnet_ids=pre_prod_subnet_ids,
+                pre_prod_security_group_ids=pre_prod_security_group_ids,
+                prod_vpc_id=prod_vpc_id,
+                prod_account_id=prod_account_id,
+                prod_region=prod_region,
+                prod_subnet_ids=prod_subnet_ids,
+                prod_security_group_ids=prod_security_group_ids,
             )
 
             product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)

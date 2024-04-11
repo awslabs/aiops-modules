@@ -32,6 +32,19 @@ def stack(stack_defaults) -> cdk.Stack:
     portfolio_name = "portfolio"
     portfolio_owner = "owner"
     portfolio_access_role_arn = "arn:aws:iam::xxxxxxxxxxxx:role/role"
+    dev_vpc_id = "vpc"
+    dev_subnet_ids = ["sub"]
+    dev_security_group_ids = ["sg"]
+    pre_prod_account_id = "pre_prod_account_id"
+    pre_prod_region = "us-east-1"
+    pre_prod_vpc_id = "vpc"
+    pre_prod_subnet_ids = ["sub"]
+    pre_prod_security_group_ids = ["sg"]
+    prod_account_id = "prod_account_id"
+    prod_region = "us-east-1"
+    prod_vpc_id = "vpc"
+    prod_subnet_ids = ["sub"]
+    prod_security_group_ids = ["sg"]
 
     return stack.ServiceCatalogStack(
         app,
@@ -39,6 +52,19 @@ def stack(stack_defaults) -> cdk.Stack:
         portfolio_name=portfolio_name,
         portfolio_owner=portfolio_owner,
         portfolio_access_role_arn=portfolio_access_role_arn,
+        dev_vpc_id=dev_vpc_id,
+        dev_subnet_ids=dev_subnet_ids,
+        dev_security_group_ids=dev_security_group_ids,
+        pre_prod_account_id=pre_prod_account_id,
+        pre_prod_region=pre_prod_region,
+        pre_prod_vpc_id=pre_prod_vpc_id,
+        pre_prod_subnet_ids=pre_prod_subnet_ids,
+        pre_prod_security_group_ids=pre_prod_security_group_ids,
+        prod_account_id=prod_account_id,
+        prod_region=prod_region,
+        prod_vpc_id=prod_vpc_id,
+        prod_subnet_ids=prod_subnet_ids,
+        prod_security_group_ids=prod_security_group_ids,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

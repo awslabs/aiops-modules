@@ -23,9 +23,9 @@ class Product(servicecatalog.ProductStack):
         deploy_app_asset: None,
         **kwargs: Any,
     ) -> None:
-        super().__init__(scope, construct_id, **kwargs)
+        super().__init__(scope, construct_id)
 
-        # Define required parmeters
+        # Define required parameters
         sagemaker_project_name = aws_cdk.CfnParameter(
             self,
             "SageMakerProjectName",
