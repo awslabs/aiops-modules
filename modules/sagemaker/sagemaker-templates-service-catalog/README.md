@@ -59,6 +59,61 @@ parameters:
         group: sagemaker-studio
         name: studio
         key: LeadDataScientistRoleArn
+  # Below are the optional properties passed to the multi-account CI/CD deployment template
+  - name: dev-account-id
+    valueFrom:
+      envVariable: PRIMARY_ACCOUNT
+  - name: dev-region
+    valueFrom:
+      envVariable: PRIMARY_REGION
+  - name: dev-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: pre-prod-account-id
+    valueFrom:
+      envVariable: PRE_PROD_ACCOUNT
+  - name: pre-prod-region
+    valueFrom:
+      envVariable: PRE_PROD_REGION
+  - name: pre-prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: VpcId
+  - name: pre-prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: PrivateSubnetIds
+  - name: prod-account-id
+    valueFrom:
+      envVariable: PROD_ACCOUNT
+  - name: prod-region
+    valueFrom:
+      envVariable: PROD_REGION
+  - name: prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: VpcId
+  - name: prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: PrivateSubnetIds
 ```
 
 ### Outputs (module metadata):
