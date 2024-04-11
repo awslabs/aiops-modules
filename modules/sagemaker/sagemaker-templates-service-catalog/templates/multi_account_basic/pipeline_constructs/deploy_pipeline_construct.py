@@ -94,7 +94,7 @@ class DeployPipelineConstruct(Construct):
                                 "kms:DescribeKey",
                             ],
                             effect=iam.Effect.ALLOW,
-                            resources=[f"arn:aws:kms:{dev_region}:{dev_account_id}:key/*"],
+                            resources=[f"arn:{Aws.PARTITION}:kms:{dev_region}:{dev_account_id}:key/*"],
                         ),
                     ]
                 ),
@@ -119,7 +119,7 @@ class DeployPipelineConstruct(Construct):
                         )
                     ]
                 ),
-            },
+            }
         )
 
         cdk_synth_build = codebuild.PipelineProject(

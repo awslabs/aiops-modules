@@ -12,9 +12,7 @@ module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
 
 # Module Parameters
 image_name = os.getenv("SEEDFARMER_PARAMETER_SAGEMAKER_IMAGE_NAME", "echo-kernel")
-app_image_config_name = os.getenv(
-    "SEEDFARMER_PARAMETER_APP_IMAGE_CONFIG_NAME", "echo-kernel"
-)
+app_image_config_name = os.getenv("SEEDFARMER_PARAMETER_APP_IMAGE_CONFIG_NAME", "echo-kernel")
 sm_studio_domain_id = os.environ.get("SEEDFARMER_PARAMETER_STUDIO_DOMAIN_ID")
 sm_studio_domain_name = os.environ.get("SEEDFARMER_PARAMETER_STUDIO_DOMAIN_NAME")
 
@@ -47,13 +45,9 @@ def update_domain():
         merged_distinct_custom_images = list(
             dict((v["AppImageConfigName"], v) for v in existing_custom_images).values(),
         )
-        default_user_settings["KernelGatewayAppSettings"]["CustomImages"] = (
-            merged_distinct_custom_images
-        )
+        default_user_settings["KernelGatewayAppSettings"]["CustomImages"] = merged_distinct_custom_images
 
-        print(
-            f"Updating Sagemaker Studio Domain - {sm_studio_domain_name} ({sm_studio_domain_id})"
-        )
+        print(f"Updating Sagemaker Studio Domain - {sm_studio_domain_name} ({sm_studio_domain_id})")
         print(default_user_settings)
         sm_client.update_domain(
             DomainId=sm_studio_domain_id,

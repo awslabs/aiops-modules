@@ -4,8 +4,7 @@
 import os
 from typing import Any
 
-import cdk_nag
-from aws_cdk import Aspects, Stack, Tags
+from aws_cdk import Stack, Tags
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_sagemaker as sagemaker
@@ -35,9 +34,7 @@ class CustomKernelStack(Stack):
         Tags.of(self).add(key="Deployment", value=app_prefix[:64])
 
         # ECR Image deployment
-        repo = ecr.Repository.from_repository_name(
-            self, id=f"{app_prefix}-ecr-repo", repository_name=ecr_repo_name
-        )
+        repo = ecr.Repository.from_repository_name(self, id=f"{app_prefix}-ecr-repo", repository_name=ecr_repo_name)
 
         local_image = DockerImageAsset(
             self,
@@ -63,9 +60,7 @@ class CustomKernelStack(Stack):
             role_name=f"{app_prefix}-image-role",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "AmazonSageMakerFullAccess"
-                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
             ],
         )
 
@@ -107,22 +102,20 @@ class CustomKernelStack(Stack):
         )
         app_image_config.node.add_dependency(image_version)
 
-        Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
         NagSuppressions.add_stack_suppressions(
             self,
-            apply_to_nested_stacks=True,
             suppressions=[
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM4",
-                        "reason": "Image Role needs Sagemaker Full Access",
-                    }
+                    id="AwsSolutions-IAM4",
+                    reason="Image Role needs Sagemaker Full Access",
+                    applies_to=[
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/AmazonSageMakerFullAccess",
+                    ],
                 ),
                 NagPackSuppression(
-                    **{
-                        "id": "AwsSolutions-IAM5",
-                        "reason": "ECR Deployment Service Role needs Full Access",
-                    }
+                    id="AwsSolutions-IAM5",
+                    reason="ECR Deployment Service Role needs Full Access",
                 ),
             ],
         )

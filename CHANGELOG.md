@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - update MySQL instance to use T3 instance type
 - upgrade `cdk_ecr_deployment` version to fix the deprecated `go1.x` lambda runtime
+- add support for other AWS partitions
 
 ### **Removed**
 

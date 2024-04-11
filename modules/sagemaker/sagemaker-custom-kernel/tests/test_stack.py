@@ -5,8 +5,9 @@ import os
 import sys
 
 import aws_cdk as cdk
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
+from aws_cdk.assertions import Annotations, Match, Template
 
 
 @pytest.fixture(scope="function")
@@ -20,7 +21,8 @@ def stack_defaults():
         del sys.modules["stack"]
 
 
-def test_synthesize_stack(stack_defaults):
+@pytest.fixture(scope="function")
+def stack(stack_defaults) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -36,7 +38,7 @@ def test_synthesize_stack(stack_defaults):
     kernel_user_gid = 100
     mount_path = "/root"
 
-    stack = stack.CustomKernelStack(
+    return stack.CustomKernelStack(
         app,
         app_prefix,
         env=cdk.Environment(
@@ -53,9 +55,21 @@ def test_synthesize_stack(stack_defaults):
         mount_path=mount_path,
     )
 
+
+def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::IAM::Role", 2)
     template.resource_count_is("AWS::SageMaker::Image", 1)
     template.resource_count_is("AWS::SageMaker::ImageVersion", 1)
     template.resource_count_is("AWS::SageMaker::AppImageConfig", 1)
+
+
+def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
