@@ -119,7 +119,7 @@ class DeployPipelineConstruct(Construct):
                         )
                     ]
                 ),
-            }
+            },
         )
 
         cdk_synth_build = codebuild.PipelineProject(
