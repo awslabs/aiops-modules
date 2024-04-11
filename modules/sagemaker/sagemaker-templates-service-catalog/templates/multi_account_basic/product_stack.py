@@ -71,6 +71,8 @@ class Product(servicecatalog.ProductStack):
 
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
+        pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
+        prod_region = Aws.REGION if not prod_region else prod_region
 
         # cross account model registry resource policy
         model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
