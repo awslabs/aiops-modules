@@ -1,2 +1,6 @@
-**/*.js
-**/*.d.ts
+index.js
+index.d.ts
+lib/**/*.js
+lib/**/*.d.ts
+test/**/*.js
+test/**/*.d.ts
