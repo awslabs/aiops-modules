@@ -31,7 +31,7 @@ columns = [
 class_labels = [" - 50000.", " 50000+."]
 
 
-def print_shape(df):
+def print_shape(df: pd.DataFrame) -> None:
     negative_examples, positive_examples = np.bincount(df["income"])
     print(
         "Data shape: {}, {} positive examples, {} negative examples".format(
