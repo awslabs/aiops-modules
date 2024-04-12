@@ -1,6 +1,6 @@
-# MLOps Modules
+# AIOps Modules
 
-MLOps modules is a collection of resuable Infrastructure as Code (IAC) modules that works with [SeedFarmer CLI](https://github.com/awslabs/seed-farmer). Please see the [DOCS](https://seed-farmer.readthedocs.io/en/latest/) for all things seed-farmer.
+AIOps modules is a collection of resuable Infrastructure as Code (IAC) modules that works with [SeedFarmer CLI](https://github.com/awslabs/seed-farmer). Please see the [DOCS](https://seed-farmer.readthedocs.io/en/latest/) for all things seed-farmer.
 
 The modules in this repository are decoupled from each other and can be aggregated together using GitOps (manifest file) principles provided by `seedfarmer` and achieve the desired use cases. It removes the undifferentiated heavy lifting for an end user by providing hardended modules and enables them to focus on building business on top of them.
 
@@ -23,12 +23,14 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### SageMaker Modules
 
-| Type                                                                                                                      | Description                                                                                                                                                                    |
-|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Type                                                                                                                      | Description                                                                                                                                                                   |
+|---------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)                                                   | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config |
-| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)                                               | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                           |
-| [SageMaker Project Templates via Service Catalog Module](modules/sagemaker/sagemaker-templates-service-catalog/README.md) | Provisions SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog                                      |
-| [SageMaker Notebook Instance Module](modules/sagemaker/sagemaker-notebook/README.md)                                      | Creates secure SageMaker Notebook Instance for the Data Scientist, clones the source code to the workspace                                                                     |
+| [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)                                               | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                          |
+| [SageMaker Project Templates via Service Catalog Module](modules/sagemaker/sagemaker-templates-service-catalog/README.md) | Provisions SageMaker Project Templates for an organization. The templates are available using SageMaker Studio Classic or Service Catalog                                     |
+| [SageMaker Notebook Instance Module](modules/sagemaker/sagemaker-notebook/README.md)                                      | Creates secure SageMaker Notebook Instance for the Data Scientist, clones the source code to the workspace                                                                    |
+| [SageMaker Custom Kernel Module](modules/sagemaker/sagemaker-custom-kernel/README.md)                                     | Builds custom kernel for SageMaker Studio from a Dockerfile                                                                                                              |
+
 
 ### Mlflow Modules
 

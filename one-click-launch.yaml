@@ -13,7 +13,7 @@ Resources:
               Service: codebuild.amazonaws.com
 
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSCodeBuildAdminAccess
       Policies:
         - PolicyName: create
           PolicyDocument:
@@ -39,9 +39,9 @@ Resources:
               - cloudformation:DeleteStack
               - cloudformation:DeleteChangeSet
               Resource:
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
             - Sid: IAM
               Effect: Allow
               Action:
@@ -55,8 +55,8 @@ Resources:
               - iam:getRolePolicy
               - iam:TagRole
               Resource:
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-*
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/seedfarmer-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-*
             - Sid: ECR
               Effect: Allow
               Action:
@@ -67,7 +67,7 @@ Resources:
               - ecr:PutLifecyclePolicy
               - ecr:PutImageTagMutability
               - ecr:List*
-              Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
+              Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
             - Sid: S3
               Effect: Allow
               Action:
@@ -91,14 +91,14 @@ Resources:
               - ssm:PutParameter
               - ssm:DeleteParameter
               - ssm:GetParameters
-              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
+              Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
             - Sid: SecretsManager
               Effect: Allow
               Action:
               - secretsmanager:CreateSecret
               - secretsmanager:DeleteSecret
               Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
+              - !Sub "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
             - Sid: Password
               Effect: Allow
               Action:
@@ -112,8 +112,8 @@ Resources:
               - es:List*
               - es:ESHttpGet
               Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:*"
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain:*"
+              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:*"
+              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:domain:*"
         - PolicyName: delete
           PolicyDocument:
             Version: "2012-10-17"
@@ -130,10 +130,10 @@ Resources:
               - cloudformation:DeleteStack
               - cloudformation:DeleteChangeSet
               Resource:
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
-              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/mlops*              
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/mlops*              
             - Sid: IAM
               Effect: Allow
               Action:
@@ -150,10 +150,10 @@ Resources:
               - iam:List*
               - iam:DeletePolicy
               Resource:
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/cdk-*
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/seedfarmer-*
-              - !Sub arn:aws:iam::${AWS::AccountId}:role/codeseeder-*
-              - !Sub arn:aws:iam::${AWS::AccountId}:policy/codeseeder-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/codeseeder-*
+              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/codeseeder-*
             - Sid: ECR
               Effect: Allow
               Action:
@@ -164,7 +164,7 @@ Resources:
               - ecr:PutLifecyclePolicy
               - ecr:PutImageTagMutability
               - ecr:List*
-              Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
+              Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
             - Sid: S3KMS
               Effect: Allow
               Action:
@@ -194,14 +194,14 @@ Resources:
               - ssm:PutParameter
               - ssm:DeleteParameter
               - ssm:GetParameters
-              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
+              Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
             - Sid: SecretsManager
               Effect: Allow
               Action:
               - secretsmanager:CreateSecret
               - secretsmanager:DeleteSecret
               Resource:
-              - !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
+              - !Sub "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
             - Sid: Password
               Effect: Allow
               Action:
@@ -215,8 +215,8 @@ Resources:
               - es:List*
               - es:ESHttpGet
               Resource: 
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:*"
-              - !Sub "arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain:*"
+              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:*"
+              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:domain:*"
             - Sid: S3DeleteCodeseeder
               Effect: Allow
               Action:
@@ -224,16 +224,16 @@ Resources:
               - s3:PutObject
               - s3:PutObjectAcl
               Resource: 
-              - !Sub "arn:aws:s3:::codeseeder-mlops-${AWS::AccountId}-*"
-              - !Sub "arn:aws:s3:::codeseeder-mlops-${AWS::AccountId}-*/*"
-              - "arn:aws:s3:::mlops*"
-              - "arn:aws:s3:::mlops*/*"
+              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*"
+              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*/*"
+              - !Sub "arn:${AWS::Partition}:s3:::mlops*"
+              - !Sub "arn:${AWS::Partition}:s3:::mlops*/*"
             - Sid: CodebuildCleanup
               Effect: Allow
               Action:
               - codebuild:DeleteProject
               Resource: 
-              - !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/codeseeder-mlops"
+              - !Sub "arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/codeseeder-mlops"
   CreateUpdateCodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -472,4 +472,4 @@ Resources:
               - logs:CreateLogGroup
               - logs:CreateLogStream
               - logs:PutLogEvents
-            Resource: arn:aws:logs:*:*:*
+            Resource: !Sub arn:${AWS::Partition}:logs:*:*:*
