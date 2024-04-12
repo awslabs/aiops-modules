@@ -7,33 +7,27 @@ import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_s3_assets as s3_assets
-import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
+from aws_cdk import Aws, CfnParameter, RemovalPolicy, Tags
 from constructs import Construct
 
-from templates.multi_account_basic.pipeline_constructs.build_pipeline_construct import (
-    BuildPipelineConstruct,
-)
-from templates.multi_account_basic.pipeline_constructs.deploy_pipeline_construct import (
+from templates.model_deploy.pipeline_constructs.deploy_pipeline_construct import (
     DeployPipelineConstruct,
 )
 
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = (
-        "Creates a SageMaker pipeline which trains a model on Abalone dataset and "
-        "deploys a model endpoint to dev, pre-prod, and prod environments."
+        "Creates a CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
     )
     TEMPLATE_NAME: str = (
-        "Train a model on Abalone dataset using XGBoost and deploy to dev, pre-prod, and prod environments"
+        "Model deployment pipeline that deploys to dev, pre-prod, and prod"
     )
 
     def __init__(
         self,
         scope: Construct,
         id: str,
-        build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
         dev_vpc_id: str,
         dev_subnet_ids: List[str],
@@ -66,6 +60,14 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
+        model_package_group_name = CfnParameter(
+            self,
+            "ModelPackageGroupName",
+            type="String",
+            description="Name of the model package group.",
+        ).value_as_string
+
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
 
@@ -73,17 +75,6 @@ class Product(servicecatalog.ProductStack):
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
         pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
         prod_region = Aws.REGION if not prod_region else prod_region
-
-        # cross account model registry resource policy
-        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-        model_package_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-            f"{model_package_group_name}/*"
-        )
-        model_package_group_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-            f"{model_package_group_name}"
-        )
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -164,51 +155,6 @@ class Product(servicecatalog.ProductStack):
             )
         )
 
-        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-
-        # cross account model registry resource policy
-        model_package_group_policy = iam.PolicyDocument(
-            statements=[
-                iam.PolicyStatement(
-                    sid="ModelPackageGroup",
-                    actions=[
-                        "sagemaker:DescribeModelPackageGroup",
-                    ],
-                    resources=[model_package_group_arn],
-                    principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
-                    ],
-                ),
-                iam.PolicyStatement(
-                    sid="ModelPackage",
-                    actions=[
-                        "sagemaker:DescribeModelPackage",
-                        "sagemaker:ListModelPackages",
-                        "sagemaker:UpdateModelPackage",
-                        "sagemaker:CreateModel",
-                    ],
-                    resources=[model_package_arn],
-                    principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
-                    ],
-                ),
-            ]
-        ).to_json()
-
-        sagemaker.CfnModelPackageGroup(
-            self,
-            "Model Package Group",
-            model_package_group_name=model_package_group_name,
-            model_package_group_description=f"Model Package Group for {sagemaker_project_name}",
-            model_package_group_policy=model_package_group_policy,
-            tags=[
-                CfnTag(key="sagemaker:project-id", value=sagemaker_project_id),
-                CfnTag(key="sagemaker:project-name", value=sagemaker_project_name),
-            ],
-        )
-
         kms_key = kms.Key(
             self,
             "Pipeline Bucket KMS Key",
@@ -233,17 +179,6 @@ class Product(servicecatalog.ProductStack):
             encryption_key=kms_key,
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,
-        )
-
-        BuildPipelineConstruct(
-            self,
-            "build",
-            project_name=sagemaker_project_name,
-            project_id=sagemaker_project_id,
-            s3_artifact=s3_artifact,
-            pipeline_artifact_bucket=pipeline_artifact_bucket,
-            model_package_group_name=model_package_group_name,
-            repo_asset=build_app_asset,
         )
 
         DeployPipelineConstruct(
