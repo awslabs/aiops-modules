@@ -1,4 +1,4 @@
---constraint https://raw.githubusercontent.com/awslabs/mlops-modules/main/data/mwaa/requirements/constraint-requirements.txt
+--constraint https://raw.githubusercontent.com/awslabs/aiops-modules/main/data/mwaa/requirements/constraint-requirements.txt
 
 aiobotocore==2.11.2 
 aioitertools==0.11.0 
