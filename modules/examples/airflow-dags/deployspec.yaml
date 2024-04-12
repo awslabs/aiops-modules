@@ -1,8 +1,9 @@
+publishGenericEnvVariables: true
 deploy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.20.0
+      - npm install -g aws-cdk@2.126.0
       - pip install -r requirements.txt
     build:
       commands:
@@ -34,7 +35,7 @@ destroy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.20.0
+      - npm install -g aws-cdk@2.126.0
       - pip install -r requirements.txt
     build:
       commands:
