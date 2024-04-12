@@ -10,27 +10,23 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   const moduleName = "fm-endpoint";
   const huggingFaceModelID = "HUGGINGFACE_LLM_MISTRAL_7B_2_1_0";
   const instanceType = "ml.g5.2xlarge";
-  const deepLearningContainerImage =
-    "huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04";
+  const deepLearningContainerImage = "huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04";
   const vpcId = "vpc-123";
   const subnetIds = ["sub1", "sub2"];
   const account = "123456789";
   const region = "us-east-1";
 
-  const stack = new SagemakerHuggingFaceEndpointStack(
-    app,
-    `${projectName}-${deploymentName}-${moduleName}`,
-    {
-      projectName,
-      deploymentName,
-      moduleName,
-      huggingFaceModelID,
-      instanceType,
-      vpcId,
-      subnetIds,
-      env: { account, region },
-    },
-  );
+  const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
+    projectName,
+    deploymentName,
+    moduleName,
+    huggingFaceModelID,
+    instanceType,
+    deepLearningContainerImage,
+    vpcId,
+    subnetIds,
+    env: { account, region },
+  });
 
   test("Synth stack", () => {
     const template = Template.fromStack(stack);
@@ -41,10 +37,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   });
 
   test("No CDK Nag Errors", () => {
-    const errors = Annotations.fromStack(stack).findError(
-      "*",
-      Match.stringLikeRegexp("AwsSolutions-.*"),
-    );
+    const errors = Annotations.fromStack(stack).findError("*", Match.stringLikeRegexp("AwsSolutions-.*"));
     expect(errors).toHaveLength(0);
   });
 });

@@ -25,11 +25,7 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
   huggingFaceEndpoint: HuggingFaceSageMakerEndpoint;
   role: iam.Role;
 
-  constructor(
-    scope: Construct,
-    id: string,
-    props: SagemakerHuggingFaceEndpointStackProps,
-  ) {
+  constructor(scope: Construct, id: string, props: SagemakerHuggingFaceEndpointStackProps) {
     super(scope, id, props);
 
     this.role = new iam.Role(this, "Role", {
@@ -83,32 +79,23 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       };
     }
 
-    const containerImageRepoName =
-      props.deepLearningContainerImage.split(":")[0];
+    const containerImageRepoName = props.deepLearningContainerImage.split(":")[0];
     const containerImageTag = props.deepLearningContainerImage.split(":")[1];
 
-    this.huggingFaceEndpoint = new HuggingFaceSageMakerEndpoint(
-      this,
-      "HuggingFace Endpoint",
-      {
-        modelId: props.huggingFaceModelID,
-        instanceType: SageMakerInstanceType.of(props.instanceType),
-        container: DeepLearningContainerImage.fromDeepLearningContainerImage(
-          containerImageRepoName,
-          containerImageTag,
-        ),
-        role: this.role,
-        vpcConfig: vpcConfig,
-      },
-    );
+    this.huggingFaceEndpoint = new HuggingFaceSageMakerEndpoint(this, "HuggingFace Endpoint", {
+      modelId: props.huggingFaceModelID,
+      instanceType: SageMakerInstanceType.of(props.instanceType),
+      container: DeepLearningContainerImage.fromDeepLearningContainerImage(containerImageRepoName, containerImageTag),
+      role: this.role,
+      vpcConfig: vpcConfig,
+    });
 
     cdk_nag.NagSuppressions.addResourceSuppressions(
       this.role,
       [
         {
           id: "AwsSolutions-IAM5",
-          reason:
-            "Resource access restriced to S3 buckets (with a prefix) and ECR images",
+          reason: "Resource access restriced to S3 buckets (with a prefix) and ECR images",
         },
       ],
       true,
