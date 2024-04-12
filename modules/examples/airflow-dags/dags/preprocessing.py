@@ -4,15 +4,15 @@ import warnings
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import (
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import ( 
     StandardScaler,
     OneHotEncoder,
     KBinsDiscretizer,
 )
-from sklearn.compose import make_column_transformer
+from sklearn.compose import make_column_transformer 
 
-from sklearn.exceptions import DataConversionWarning
+from sklearn.exceptions import DataConversionWarning 
 
 warnings.filterwarnings(action="ignore", category=DataConversionWarning)
 
@@ -31,7 +31,7 @@ columns = [
 class_labels = [" - 50000.", " 50000+."]
 
 
-def print_shape(df: pd.DataFrame) -> None:
+def print_shape(df): # type: ignore[no-untyped-def]
     negative_examples, positive_examples = np.bincount(df["income"])
     print(
         "Data shape: {}, {} positive examples, {} negative examples".format(

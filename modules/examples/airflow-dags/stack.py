@@ -8,7 +8,7 @@ import aws_cdk.aws_iam as aws_iam
 import cdk_nag
 import aws_cdk.aws_s3 as aws_s3
 from aws_cdk import Aspects, Stack, Tags, RemovalPolicy, Aws
-from cdk_nag import NagSuppressions
+from cdk_nag import NagSuppressions, NagPackSuppression
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -150,24 +150,28 @@ class DagResources(Stack):
 
         Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
 
-        NagSuppressions.add_stack_suppressions(
-            self,
-            [
-                {
-                    "id": "AwsSolutions-S1",
-                    "reason": "Logs are disabled for demo purposes",
-                },
-                {
-                    "id": "AwsSolutions-S5",
-                    "reason": "No OAI needed - no one is accessing this data without explicit permissions",
-                },
-                {
-                    "id": "AwsSolutions-IAM5",
-                    "reason": "Resource access restriced to MLOPS resources",
-                },
-                {
-                    "id": "AwsSolutions-IAM4",
-                    "reason": "Managed Policies are for service account roles only",
-                },
-            ],
-        )
+        NagSuppressions.add_resource_suppressions(
+                self.model_execution_role,
+                apply_to_children=True,
+                suppressions=[
+                    NagPackSuppression(
+                        id="AwsSolutions-S1",
+                        reason="Logs are disabled for demo purposes",
+                    ),
+                    NagPackSuppression(
+                        id="AwsSolutions-S5",
+                        reason="No OAI needed - no one is accessing this data without explicit permissions",
+                    ),
+                    NagPackSuppression(
+                        id="AwsSolutions-IAM5",
+                        reason="Resource access restriced to MLOPS resources.",
+                    ),
+                    NagPackSuppression(
+                        id="AwsSolutions-IAM4",
+                        reason="Managed Policies are for service account roles only",
+                    ),
+                ],
+            )
+        
+
+        

@@ -35,7 +35,7 @@ model_path = f"s3://{MLOPS_DATA_BUCKET}/train/models/"
 eval_output_s3_path = f"s3://{MLOPS_DATA_BUCKET}/eval/output"
 
 
-def get_assume_role_session(role_arn):
+def get_assume_role_session(role_arn): # type: ignore[no-untyped-def]
     sts = boto3.client("sts")
     response = sts.assume_role(RoleArn=role_arn, RoleSessionName="AssumeRoleSession1")
     credentials = response["Credentials"]
@@ -46,7 +46,7 @@ def get_assume_role_session(role_arn):
     )
 
 
-def pre_processing():
+def pre_processing(): # type: ignore[no-untyped-def]
     sess = Session(
         boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
         default_bucket=MLOPS_DATA_BUCKET,
@@ -88,7 +88,7 @@ def pre_processing():
     )
 
 
-def training():
+def training(): # type: ignore[no-untyped-def]
     sess = Session(
         boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
         default_bucket=MLOPS_DATA_BUCKET,
@@ -114,7 +114,7 @@ def training():
     return model_data_s3_uri
 
 
-def evaluation(model_path):
+def evaluation(model_path): # type: ignore[no-untyped-def]
     sess = Session(
         boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
         default_bucket=MLOPS_DATA_BUCKET,
