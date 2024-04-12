@@ -151,7 +151,7 @@ class DagResources(Stack):
         Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
 
         NagSuppressions.add_resource_suppressions(
-            self.model_execution_role,
+            self.mwaa_exec_role,
             apply_to_children=True,
             suppressions=[
                 NagPackSuppression(

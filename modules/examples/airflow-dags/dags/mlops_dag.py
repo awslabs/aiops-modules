@@ -47,8 +47,9 @@ def get_assume_role_session(role_arn):  # type: ignore[no-untyped-def]
 
 
 def pre_processing():  # type: ignore[no-untyped-def]
+    boto_session = get_assume_role_session(DAG_EXECUTION_ROLE)  # type: ignore[no-untyped-call]
     sess = Session(
-        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        boto_session=boto_session,
         default_bucket=MLOPS_DATA_BUCKET,
     )
 
@@ -89,8 +90,9 @@ def pre_processing():  # type: ignore[no-untyped-def]
 
 
 def training():  # type: ignore[no-untyped-def]
+    boto_session = get_assume_role_session(DAG_EXECUTION_ROLE)  # type: ignore[no-untyped-call]
     sess = Session(
-        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        boto_session=boto_session,
         default_bucket=MLOPS_DATA_BUCKET,
     )
     sklearn = SKLearn(
@@ -115,8 +117,9 @@ def training():  # type: ignore[no-untyped-def]
 
 
 def evaluation(model_path):  # type: ignore[no-untyped-def]
+    boto_session = get_assume_role_session(DAG_EXECUTION_ROLE)  # type: ignore[no-untyped-call]
     sess = Session(
-        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        boto_session=boto_session,
         default_bucket=MLOPS_DATA_BUCKET,
     )
 

@@ -50,8 +50,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  [Amazon Managed Workflows for Apache Airflow (MWAA) Module](https://github.com/awslabs/idf-modules/blob/main/modules/orchestration/mwaa/README.md)  |  Deploys an Amazon MWAA module   |
-|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs    |
+|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
 
 ### Industry Data Framework (IDF) Modules
 
