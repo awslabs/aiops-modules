@@ -33,8 +33,15 @@ class DagResources(Stack):
         self.module_name = module_name
         self.mwaa_exec_role = mwaa_exec_role
 
-        super().__init__(scope, id, description="This stack deploys Example DAGs resources for MLOps", **kwargs)
-        Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=f"mlops-{deployment_name}")
+        super().__init__(
+            scope,
+            id,
+            description="This stack deploys Example DAGs resources for MLOps",
+            **kwargs,
+        )
+        Tags.of(scope=cast(IConstruct, self)).add(
+            key="Deployment", value=f"mlops-{deployment_name}"
+        )
         dep_mod = f"{project_name}-{deployment_name}-{module_name}"
         account: str = Aws.ACCOUNT_ID
         region: str = Aws.REGION
@@ -66,7 +73,11 @@ class DagResources(Stack):
         )
 
         managed_policies = (
-            [aws_iam.ManagedPolicy.from_managed_policy_arn(self, "bucket-policy", bucket_policy_arn)]
+            [
+                aws_iam.ManagedPolicy.from_managed_policy_arn(
+                    self, "bucket-policy", bucket_policy_arn
+                )
+            ]
             if bucket_policy_arn
             else []
         )
@@ -92,15 +103,27 @@ class DagResources(Stack):
             path="/",
         )
 
-        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"))
-        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess"))
+        dag_role.add_managed_policy(
+            aws_iam.ManagedPolicy.from_aws_managed_policy_name(
+                "AmazonSageMakerFullAccess"
+            )
+        )
+        dag_role.add_managed_policy(
+            aws_iam.ManagedPolicy.from_aws_managed_policy_name(
+                "CloudWatchLogsFullAccess"
+            )
+        )
 
         # Define the IAM role
         sagemaker_execution_role = aws_iam.Role(
             self,
             "SageMakerExecutionRole",
             assumed_by=aws_iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            managed_policies=[aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")],
+            managed_policies=[
+                aws_iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonSageMakerFullAccess"
+                )
+            ],
             path="/",
             role_name=f"SageMakerExecutionRole-{self.stack_name}",
         )
@@ -108,12 +131,18 @@ class DagResources(Stack):
         # Add policy to allow access to S3 bucket
         sagemaker_execution_role.add_to_policy(
             aws_iam.PolicyStatement(
-                actions=["s3:*"], resources=[mlops_assets_bucket.bucket_arn, f"{mlops_assets_bucket.bucket_arn}/*"]
+                actions=["s3:*"],
+                resources=[
+                    mlops_assets_bucket.bucket_arn,
+                    f"{mlops_assets_bucket.bucket_arn}/*",
+                ],
             )
         )
 
         dag_role.add_to_policy(
-            aws_iam.PolicyStatement(actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn])
+            aws_iam.PolicyStatement(
+                actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn]
+            )
         )
 
         self.dag_role = dag_role

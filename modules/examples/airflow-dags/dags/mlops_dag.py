@@ -26,7 +26,9 @@ default_args = {
 }
 dag = DAG("SciKitLearn_MLOps", default_args=default_args, schedule_interval=None)
 
-pre_processing_input = f"s3://sagemaker-sample-data-{os.environ['AWS_REGION']}/processing/census"
+pre_processing_input = (
+    f"s3://sagemaker-sample-data-{os.environ['AWS_REGION']}/processing/census"
+)
 test_data_s3_path = f"s3://{MLOPS_DATA_BUCKET}/processing/test"
 train_data_s3_path = f"s3://{MLOPS_DATA_BUCKET}/processing/train"
 model_path = f"s3://{MLOPS_DATA_BUCKET}/train/models/"
@@ -45,7 +47,10 @@ def get_assume_role_session(role_arn):
 
 
 def pre_processing():
-    sess = Session(boto_session=get_assume_role_session(DAG_EXECUTION_ROLE), default_bucket=MLOPS_DATA_BUCKET)
+    sess = Session(
+        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        default_bucket=MLOPS_DATA_BUCKET,
+    )
 
     sklearn_processor = SKLearnProcessor(
         framework_version="0.20.0",
@@ -84,8 +89,10 @@ def pre_processing():
 
 
 def training():
-
-    sess = Session(boto_session=get_assume_role_session(DAG_EXECUTION_ROLE), default_bucket=MLOPS_DATA_BUCKET)
+    sess = Session(
+        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        default_bucket=MLOPS_DATA_BUCKET,
+    )
     sklearn = SKLearn(
         entry_point=os.path.join(os.path.dirname(__file__), "train.py"),
         framework_version="0.20.0",
@@ -108,7 +115,10 @@ def training():
 
 
 def evaluation(model_path):
-    sess = Session(boto_session=get_assume_role_session(DAG_EXECUTION_ROLE), default_bucket=MLOPS_DATA_BUCKET)
+    sess = Session(
+        boto_session=get_assume_role_session(DAG_EXECUTION_ROLE),
+        default_bucket=MLOPS_DATA_BUCKET,
+    )
 
     sklearn_processor = SKLearnProcessor(
         framework_version="0.20.0",
@@ -121,11 +131,15 @@ def evaluation(model_path):
         code=os.path.join(os.path.dirname(__file__), "evaluation.py"),
         inputs=[
             ProcessingInput(source=model_path, destination="/opt/ml/processing/model"),
-            ProcessingInput(source=test_data_s3_path, destination="/opt/ml/processing/test"),
+            ProcessingInput(
+                source=test_data_s3_path, destination="/opt/ml/processing/test"
+            ),
         ],
         outputs=[
             ProcessingOutput(
-                output_name="evaluation", destination=eval_output_s3_path, source="/opt/ml/processing/evaluation"
+                output_name="evaluation",
+                destination=eval_output_s3_path,
+                source="/opt/ml/processing/evaluation",
             )
         ],
     )

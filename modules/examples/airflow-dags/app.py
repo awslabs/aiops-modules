@@ -36,9 +36,13 @@ stack = DagResources(
 CfnOutput(
     scope=stack,
     id="metadata",
-    value=stack.to_json_string({"DagRoleArn": stack.dag_role.role_arn,
-                                "MlOpsBucket": stack.mlops_assets_bucket.bucket_name,
-                                "SageMakerExecutionRole": stack.sagemaker_execution_role.role_arn}),
+    value=stack.to_json_string(
+        {
+            "DagRoleArn": stack.dag_role.role_arn,
+            "MlOpsBucket": stack.mlops_assets_bucket.bucket_name,
+            "SageMakerExecutionRole": stack.sagemaker_execution_role.role_arn,
+        }
+    ),
 )
 
 app.synth(force=True)

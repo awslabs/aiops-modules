@@ -30,7 +30,9 @@ if __name__ == "__main__":
 
     print("Classification report:\n{}".format(report_dict))
 
-    evaluation_output_path = os.path.join("/opt/ml/processing/evaluation", "evaluation.json")
+    evaluation_output_path = os.path.join(
+        "/opt/ml/processing/evaluation", "evaluation.json"
+    )
     print("Saving classification report to {}".format(evaluation_output_path))
 
     with open(evaluation_output_path, "w") as f:
