@@ -1,9 +1,6 @@
 {
   "name": "sagemaker-fm-endpoint",
   "version": "0.1.0",
-  "bin": {
-    "sagemaker-fm-endpoint": "bin/sagemaker-fm-endpoint.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
