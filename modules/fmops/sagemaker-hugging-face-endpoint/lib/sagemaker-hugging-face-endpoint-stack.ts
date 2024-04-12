@@ -79,8 +79,9 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       };
     }
 
-    const containerImageRepoName = props.deepLearningContainerImage.split(":")[0];
-    const containerImageTag = props.deepLearningContainerImage.split(":")[1];
+    const [containerImageRepoName, containerImageTag] = SagemakerHuggingFaceEndpointStack.parseContainerImage(
+      props.deepLearningContainerImage,
+    );
 
     this.huggingFaceEndpoint = new HuggingFaceSageMakerEndpoint(this, "HuggingFace Endpoint", {
       modelId: props.huggingFaceModelID,
@@ -100,5 +101,14 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       ],
       true,
     );
+  }
+
+  static parseContainerImage(deepLearningContainerImage: string): [string, string] {
+    const parts = deepLearningContainerImage.split(":");
+    if (parts.length !== 2) {
+      throw new Error(`Invalid container image: ${deepLearningContainerImage}`);
+    }
+
+    return [parts[0], parts[1]];
   }
 }

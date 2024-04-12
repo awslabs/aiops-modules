@@ -44,6 +44,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | Type                                                                                                            | Description                                                     |
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
 | [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
+| [SageMaker HuggingFace Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker HuggingFace Foundation Model. |
 
 ### Industry Data Framework (IDF) Modules
 
