@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-custom-kernel` module
 - added batch inference project template to `sagemaker-templates-service-catalog` module
 - added EFS removal policy to `mlflow-fargate` module
+- added `sagemaker-hugging-face-endpoint` module
 
 ### **Changed**
 
