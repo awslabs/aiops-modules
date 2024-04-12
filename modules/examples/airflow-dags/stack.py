@@ -5,9 +5,8 @@ import logging
 from typing import Any, Optional, cast
 
 import aws_cdk.aws_iam as aws_iam
-import cdk_nag
 import aws_cdk.aws_s3 as aws_s3
-from aws_cdk import Aspects, Stack, Tags, RemovalPolicy, Aws
+from aws_cdk import Stack, Tags, RemovalPolicy, Aws
 from cdk_nag import NagSuppressions, NagPackSuppression
 from constructs import Construct, IConstruct
 
@@ -148,10 +147,8 @@ class DagResources(Stack):
         self.dag_role = dag_role
         self.sagemaker_execution_role = sagemaker_execution_role
 
-        Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
-
         NagSuppressions.add_resource_suppressions(
-            self.mwaa_exec_role,
+            self,
             apply_to_children=True,
             suppressions=[
                 NagPackSuppression(
