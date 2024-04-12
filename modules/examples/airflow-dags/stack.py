@@ -57,7 +57,10 @@ class DagResources(Stack):
                 aws_iam.PolicyStatement(
                     actions=["s3:List*", "s3:Get*", "s3:Put*"],
                     effect=aws_iam.Effect.ALLOW,
-                    resources=[mlops_assets_bucket.bucket_arn],
+                    resources=[
+                        mlops_assets_bucket.bucket_arn,
+                        f"{mlops_assets_bucket.bucket_arn}/*",
+                    ],
                 )
             ]
         )
@@ -70,7 +73,7 @@ class DagResources(Stack):
 
         # Role with Permission Boundary
         r_name = f"mlops-{self.deployment_name}-{self.module_name}-dag-role"
-        self.dag_role = aws_iam.Role(
+        dag_role = aws_iam.Role(
             self,
             f"dag-role-{self.deployment_name}-{self.module_name}",
             assumed_by=aws_iam.ArnPrincipal(self.mwaa_exec_role),
@@ -89,6 +92,9 @@ class DagResources(Stack):
             path="/",
         )
 
+        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"))
+        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess"))
+
         # Define the IAM role
         sagemaker_execution_role = aws_iam.Role(
             self,
@@ -106,6 +112,11 @@ class DagResources(Stack):
             )
         )
 
+        dag_role.add_to_policy(
+            aws_iam.PolicyStatement(actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn])
+        )
+
+        self.dag_role = dag_role
         self.sagemaker_execution_role = sagemaker_execution_role
 
         Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
@@ -128,6 +139,6 @@ class DagResources(Stack):
                 {
                     "id": "AwsSolutions-IAM4",
                     "reason": "Managed Policies are for service account roles only",
-                }
+                },
             ],
         )
