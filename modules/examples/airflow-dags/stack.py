@@ -151,27 +151,24 @@ class DagResources(Stack):
         Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
 
         NagSuppressions.add_resource_suppressions(
-                self.model_execution_role,
-                apply_to_children=True,
-                suppressions=[
-                    NagPackSuppression(
-                        id="AwsSolutions-S1",
-                        reason="Logs are disabled for demo purposes",
-                    ),
-                    NagPackSuppression(
-                        id="AwsSolutions-S5",
-                        reason="No OAI needed - no one is accessing this data without explicit permissions",
-                    ),
-                    NagPackSuppression(
-                        id="AwsSolutions-IAM5",
-                        reason="Resource access restriced to MLOPS resources.",
-                    ),
-                    NagPackSuppression(
-                        id="AwsSolutions-IAM4",
-                        reason="Managed Policies are for service account roles only",
-                    ),
-                ],
-            )
-        
-
-        
+            self.model_execution_role,
+            apply_to_children=True,
+            suppressions=[
+                NagPackSuppression(
+                    id="AwsSolutions-S1",
+                    reason="Logs are disabled for demo purposes",
+                ),
+                NagPackSuppression(
+                    id="AwsSolutions-S5",
+                    reason="No OAI needed - no one is accessing this data without explicit permissions",
+                ),
+                NagPackSuppression(
+                    id="AwsSolutions-IAM5",
+                    reason="Resource access restriced to MLOPS resources.",
+                ),
+                NagPackSuppression(
+                    id="AwsSolutions-IAM4",
+                    reason="Managed Policies are for service account roles only",
+                ),
+            ],
+        )
