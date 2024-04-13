@@ -7,14 +7,14 @@ import aws_cdk
 from aws_cdk import App, CfnOutput
 from stack import DagResources
 
-project_name = os.getenv("MLOPS_PROJECT_NAME", "")
-deployment_name = os.getenv("MLOPS_DEPLOYMENT_NAME", "")
-module_name = os.getenv("MLOPS_MODULE_NAME", "")
+project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
+deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
+module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
 app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 
-mwaa_exec_role = os.getenv("MLOPS_PARAMETER_MWAA_EXEC_ROLE_ARN", "")
-bucket_policy_arn = os.getenv("MLOPS_PARAMETER_BUCKET_POLICY_ARN")
-permission_boundary_arn = os.getenv("MLOPS_PERMISSION_BOUNDARY_ARN")
+mwaa_exec_role = os.getenv("SEEDFARMER_PARAMETER_MWAA_EXEC_ROLE_ARN", "")
+bucket_policy_arn = os.getenv("SEEDFARMER_PARAMETER_BUCKET_POLICY_ARN")
+permission_boundary_arn = os.getenv("SEEDFARMER_PERMISSION_BOUNDARY_ARN")
 
 app = App()
 
