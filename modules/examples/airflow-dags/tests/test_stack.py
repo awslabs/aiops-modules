@@ -49,8 +49,8 @@ def stack_model_package_input() -> cdk.Stack:
 
 
 @pytest.fixture(params=["stack_model_package_input"], scope="function")
-def stack(request, stack_model_package_input) -> cdk.Stack:
-    return request.getfixturevalue(request.param)
+def stack(request, stack_model_package_input) -> cdk.Stack:  # type: ignore[no-untyped-def]
+    return request.getfixturevalue(request.param)  # type: ignore[no-any-return]
 
 
 def test_synthesize_stack(stack: cdk.Stack) -> None:
