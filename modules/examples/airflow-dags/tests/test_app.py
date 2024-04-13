@@ -3,6 +3,7 @@ import sys
 
 import pytest
 
+
 @pytest.fixture(scope="function")
 def stack_defaults():
     os.environ["SEEDFARMER_PROJECT_NAME"] = "test-project"
