@@ -479,7 +479,7 @@ opentelemetry-semantic-conventions==0.43b0
 opsgenie-sdk==2.1.5
 oracledb==2.0.1
 ordered-set==4.1.0
-orjson==3.9.10
+orjson==3.9.15
 oss2==2.18.4
 packaging==23.2
 pandas-gbq==0.20.0
