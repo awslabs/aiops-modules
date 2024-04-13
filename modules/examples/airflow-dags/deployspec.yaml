@@ -1,0 +1,45 @@
+publishGenericEnvVariables: true
+deploy:
+  phases:
+    install:
+      commands:
+      - npm install -g aws-cdk@2.137.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      - >
+        echo "SEEDFARMER_MODULE_METADATA: ${SEEDFARMER_MODULE_METADATA}"
+      - >
+        echo "SEEDFARMER_PARAMETER_DAG_BUCKET_NAME: ${SEEDFARMER_PARAMETER_DAG_BUCKET_NAME}"
+      - >
+        echo "SEEDFARMER_PARAMETER_DAG_PATH: ${SEEDFARMER_PARAMETER_DAG_PATH}"
+      - >
+        echo "SEEDFARMER_PARAMETER_MWAA_EXEC_ROLE_ARN: ${SEEDFARMER_PARAMETER_MWAA_EXEC_ROLE_ARN}"
+      - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
+      - export SEEDFARMER_MODULE_METADATA=$(python -c "import json; file=open('cdk-exports.json'); print(json.load(file)['${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}']['metadata'])")
+      - export MLOPS_BUCKET=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".MlOpsBucket")
+      - export DAG_IAM_ROLE=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".DagRoleArn")
+      - export SAGEMAKER_IAM_ROLE=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".SageMakerExecutionRole")
+      - >
+        echo "MLOPS_BUCKET: ${MLOPS_BUCKET}"
+      - >
+        echo "DAG_IAM_ROLE: ${DAG_IAM_ROLE}"
+      - >
+        echo "SAGEMAKER_IAM_ROLE: ${SAGEMAKER_IAM_ROLE}"
+      - sed -i "s/MLOPS_S3_BUCKET/${MLOPS_BUCKET}/g" dags/config.py
+      - sed -i "s/AWS_REGION_NAME/${AWS_DEFAULT_REGION}/g" dags/config.py
+      - sed -i "s~DAG_IAM_ROLE~${DAG_IAM_ROLE}~g" dags/config.py
+      - sed -i "s~SAGEMAKER_IAM_ROLE~${SAGEMAKER_IAM_ROLE}~g" dags/config.py
+      - aws s3 cp --recursive dags/ s3://$SEEDFARMER_PARAMETER_DAG_BUCKET_NAME/$SEEDFARMER_PARAMETER_DAG_PATH/mlops/
+destroy:
+  phases:
+    install:
+      commands:
+      - npm install -g aws-cdk@2.137.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      - export MLOPS_BUCKET=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".MlOpsBucket")
+      - aws s3 rm --recursive s3://$SEEDFARMER_PARAMETER_DAG_BUCKET_NAME/$SEEDFARMER_PARAMETER_DAG_PATH/mlops/
+      - aws s3 rm --recursive s3://$MLOPS_BUCKET/
+      - cdk destroy --force --app "python app.py"
