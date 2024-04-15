@@ -84,32 +84,28 @@ class Product(servicecatalog.ProductStack):
                         effect=iam.Effect.ALLOW,
                         resources=["*"],
                         principals=[iam.AccountRootPrincipal()],
+                    ),
+                    iam.PolicyStatement(
+                        actions=[
+                            "kms:Encrypt",
+                            "kms:Decrypt",
+                            "kms:ReEncrypt*",
+                            "kms:GenerateDataKey*",
+                            "kms:DescribeKey",
+                        ],
+                        resources=[
+                            "*",
+                        ],
+                        principals=[
+                            iam.AccountPrincipal(pre_prod_account_id),
+                            iam.AccountPrincipal(prod_account_id),
+                        ],
                     )
                 ]
             ),
         )
 
-        # allow cross account access to the kms key
-        kms_key.add_to_resource_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "kms:Encrypt",
-                    "kms:Decrypt",
-                    "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
-                    "kms:DescribeKey",
-                ],
-                resources=[
-                    "*",
-                ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
-            )
-        )
-
-        s3_artifact = s3.Bucket(
+        model_bucket = s3.Bucket(
             self,
             "S3 Artifact",
             bucket_name=f"mlops-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
@@ -120,13 +116,13 @@ class Product(servicecatalog.ProductStack):
         )
 
         # DEV account access to objects in the bucket
-        s3_artifact.add_to_resource_policy(
+        model_bucket.add_to_resource_policy(
             iam.PolicyStatement(
                 sid="AddDevPermissions",
                 actions=["s3:*"],
                 resources=[
-                    s3_artifact.arn_for_objects(key_pattern="*"),
-                    s3_artifact.bucket_arn,
+                    model_bucket.arn_for_objects(key_pattern="*"),
+                    model_bucket.bucket_arn,
                 ],
                 principals=[
                     iam.AccountRootPrincipal(),
@@ -135,13 +131,13 @@ class Product(servicecatalog.ProductStack):
         )
 
         # PROD account access to objects in the bucket
-        s3_artifact.add_to_resource_policy(
+        model_bucket.add_to_resource_policy(
             iam.PolicyStatement(
                 sid="AddCrossAccountPermissions",
                 actions=["s3:List*", "s3:Get*", "s3:Put*"],
                 resources=[
-                    s3_artifact.arn_for_objects(key_pattern="*"),
-                    s3_artifact.bucket_arn,
+                    model_bucket.arn_for_objects(key_pattern="*"),
+                    model_bucket.bucket_arn,
                 ],
                 principals=[
                     iam.AccountPrincipal(pre_prod_account_id),
@@ -226,8 +222,8 @@ class Product(servicecatalog.ProductStack):
             "build",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
-            s3_artifact=s3_artifact,
-            pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
+            model_bucket=model_bucket,
+            pipeline_artifact_bucket=pipeline_artifact_bucket,
             repo_asset=build_app_asset,
         )

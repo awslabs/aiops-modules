@@ -67,6 +67,13 @@ class Product(servicecatalog.ProductStack):
             description="Name of the model package group.",
         ).value_as_string
 
+        model_bucket_name = CfnParameter(
+            self,
+            "ModelBucketName",
+            type="String",
+            description="Name of the bucket that stores model artifacts.",
+        ).value_as_string
+
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -76,84 +83,8 @@ class Product(servicecatalog.ProductStack):
         pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
         prod_region = Aws.REGION if not prod_region else prod_region
 
-        # create kms key to be used by the assets bucket
-        kms_key = kms.Key(
-            self,
-            "Artifacts Bucket KMS Key",
-            description="key used for encryption of data in Amazon S3",
-            enable_key_rotation=True,
-            policy=iam.PolicyDocument(
-                statements=[
-                    iam.PolicyStatement(
-                        actions=["kms:*"],
-                        effect=iam.Effect.ALLOW,
-                        resources=["*"],
-                        principals=[iam.AccountRootPrincipal()],
-                    )
-                ]
-            ),
-        )
-
-        # allow cross account access to the kms key
-        kms_key.add_to_resource_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "kms:Encrypt",
-                    "kms:Decrypt",
-                    "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
-                    "kms:DescribeKey",
-                ],
-                resources=[
-                    "*",
-                ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
-            )
-        )
-
-        s3_artifact = s3.Bucket(
-            self,
-            "S3 Artifact",
-            bucket_name=f"mlops-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
-            encryption_key=kms_key,
-            versioned=True,
-            removal_policy=RemovalPolicy.DESTROY,
-            enforce_ssl=True,  # Blocks insecure requests to the bucket
-        )
-
-        # DEV account access to objects in the bucket
-        s3_artifact.add_to_resource_policy(
-            iam.PolicyStatement(
-                sid="AddDevPermissions",
-                actions=["s3:*"],
-                resources=[
-                    s3_artifact.arn_for_objects(key_pattern="*"),
-                    s3_artifact.bucket_arn,
-                ],
-                principals=[
-                    iam.AccountRootPrincipal(),
-                ],
-            )
-        )
-
-        # PROD account access to objects in the bucket
-        s3_artifact.add_to_resource_policy(
-            iam.PolicyStatement(
-                sid="AddCrossAccountPermissions",
-                actions=["s3:List*", "s3:Get*", "s3:Put*"],
-                resources=[
-                    s3_artifact.arn_for_objects(key_pattern="*"),
-                    s3_artifact.bucket_arn,
-                ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
-            )
-        )
+        # Import model bucket
+        model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
         kms_key = kms.Key(
             self,
@@ -174,7 +105,7 @@ class Product(servicecatalog.ProductStack):
 
         pipeline_artifact_bucket = s3.Bucket(
             self,
-            "Pipeline Bucket",
+            "PipelineBucket",
             bucket_name=f"pipeline-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
             encryption_key=kms_key,
             versioned=True,
@@ -186,7 +117,7 @@ class Product(servicecatalog.ProductStack):
             "deploy",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
-            s3_artifact=s3_artifact,
+            model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
             repo_asset=deploy_app_asset,
