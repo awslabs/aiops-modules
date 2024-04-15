@@ -76,9 +76,9 @@ class DeployPipelineConstruct(Construct):
                             actions=["sagemaker:ListModelPackages"],
                             resources=[
                                 f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package-group/"
-                                f"{project_name}-{project_id}*",
+                                f"{model_package_group_name}",
                                 f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package/"
-                                f"{project_name}-{project_id}/*",
+                                f"{model_package_group_name}/*",
                             ],
                         )
                     ]
