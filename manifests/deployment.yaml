@@ -18,6 +18,10 @@ groups:
     path: manifests/fmops-modules.yaml
   - name: sagemaker-kernels
     path: manifests/kernels-modules.yaml
+  - name: mwaa
+    path: manifests/mwaa-modules.yaml
+  - name: mwaa-dags
+    path: manifests/mwaa-dag-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
