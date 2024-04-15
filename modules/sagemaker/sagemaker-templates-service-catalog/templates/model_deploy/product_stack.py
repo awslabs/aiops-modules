@@ -17,12 +17,8 @@ from templates.model_deploy.pipeline_constructs.deploy_pipeline_construct import
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = (
-        "Creates a CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
-    )
-    TEMPLATE_NAME: str = (
-        "Model deployment pipeline that deploys to dev, pre-prod, and prod"
-    )
+    DESCRIPTION: str = "Creates a CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
+    TEMPLATE_NAME: str = "Model deployment pipeline that deploys to dev, pre-prod, and prod"
 
     def __init__(
         self,
@@ -73,7 +69,6 @@ class Product(servicecatalog.ProductStack):
             type="String",
             description="Name of the bucket that stores model artifacts.",
         ).value_as_string
-
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)

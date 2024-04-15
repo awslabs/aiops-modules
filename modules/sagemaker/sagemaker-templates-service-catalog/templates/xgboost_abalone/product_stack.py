@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List
+from typing import Any
 
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
@@ -18,12 +18,8 @@ from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct impo
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = (
-        "Creates a SageMaker pipeline which trains a model on Abalone dataset."
-    )
-    TEMPLATE_NAME: str = (
-        "Train a model on Abalone dataset using XGBoost"
-    )
+    DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone dataset."
+    TEMPLATE_NAME: str = "Train a model on Abalone dataset using XGBoost"
 
     def __init__(
         self,
@@ -100,7 +96,7 @@ class Product(servicecatalog.ProductStack):
                             iam.AccountPrincipal(pre_prod_account_id),
                             iam.AccountPrincipal(prod_account_id),
                         ],
-                    )
+                    ),
                 ]
             ),
         )
