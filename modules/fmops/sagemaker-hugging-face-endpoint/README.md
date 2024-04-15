@@ -2,7 +2,7 @@
 
 ## Description
 
-Deploys an endpoint for a foundation model from [Hugging Face](https://huggingface.co/).
+Deploys an endpoint for a foundation model supported by [Hugging Face LLM Inference Containers for Amazon SageMaker](https://huggingface.co/blog/sagemaker-huggingface-llm). 
 
 The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/generative-ai-cdk-constructs/tree/main).
 
