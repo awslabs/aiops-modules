@@ -152,44 +152,47 @@ class ServiceCatalogStack(Stack):
         self,
         portfolio_access_role: iam.IRole,
         template_name: str,
-    ) -> Tuple[s3_assets.Asset, Optional[s3_assets.Asset]]:
+    ) -> Tuple[Optional[s3_assets.Asset], Optional[s3_assets.Asset]]:
         # Create the build and deployment asset as an output to pass to pipeline stack
         zip_image = DockerImage.from_build("images/zip-image")
 
-        build_app_asset = s3_assets.Asset(
-            self,
-            f"{template_name}BuildAsset",
-            path=f"templates/{template_name}/seed_code/build_app/",
-            bundling=BundlingOptions(
-                image=zip_image,
-                command=[
-                    "sh",
-                    "-c",
-                    """zip -r /asset-output/build_app.zip .""",
-                ],
-                output_type=BundlingOutput.ARCHIVED,
-            ),
-        )
-        build_app_asset.grant_read(grantee=portfolio_access_role)
+        build_path = f"templates/{template_name}/seed_code/build_app/"
+        deploy_path = f"templates/{template_name}/seed_code/deploy_app/"
+        build_app_asset = None
+        deploy_app_asset = None
 
-        # check if there is a deploy_app folder
-        if not os.path.isdir(f"templates/{template_name}/seed_code/deploy_app/"):
-            return build_app_asset, None
+        if os.path.isdir(build_path):
+            build_app_asset = s3_assets.Asset(
+                self,
+                f"{template_name}BuildAsset",
+                path=f"templates/{template_name}/seed_code/build_app/",
+                bundling=BundlingOptions(
+                    image=zip_image,
+                    command=[
+                        "sh",
+                        "-c",
+                        """zip -r /asset-output/build_app.zip .""",
+                    ],
+                    output_type=BundlingOutput.ARCHIVED,
+                ),
+            )
+            build_app_asset.grant_read(grantee=portfolio_access_role)
 
-        deploy_app_asset = s3_assets.Asset(
-            self,
-            f"{template_name}DeployAsset",
-            path=f"templates/{template_name}/seed_code/deploy_app/",
-            bundling=BundlingOptions(
-                image=zip_image,
-                command=[
-                    "sh",
-                    "-c",
-                    """zip -r /asset-output/deploy_app.zip .""",
-                ],
-                output_type=BundlingOutput.ARCHIVED,
-            ),
-        )
-        deploy_app_asset.grant_read(grantee=portfolio_access_role)
+        if os.path.isdir(deploy_path):
+            deploy_app_asset = s3_assets.Asset(
+                self,
+                f"{template_name}DeployAsset",
+                path=f"templates/{template_name}/seed_code/deploy_app/",
+                bundling=BundlingOptions(
+                    image=zip_image,
+                    command=[
+                        "sh",
+                        "-c",
+                        """zip -r /asset-output/deploy_app.zip .""",
+                    ],
+                    output_type=BundlingOutput.ARCHIVED,
+                ),
+            )
+            deploy_app_asset.grant_read(grantee=portfolio_access_role)
 
         return build_app_asset, deploy_app_asset
