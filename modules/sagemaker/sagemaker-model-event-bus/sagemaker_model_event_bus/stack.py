@@ -48,9 +48,9 @@ class SagemakerModelEventBusStack(Stack):
     def setup_resources(self) -> None:
         """Deploy resources."""
 
-        self.event_bus = self.create_event_bus()
+        self.event_bus = self.setup_event_bus()
 
-    def create_event_bus(self) -> events.EventBus:
+    def setup_event_bus(self) -> events.EventBus:
         """Create an Amazon EventBridge bus."""
         event_bus = events.EventBus(
             scope=self,
@@ -90,14 +90,6 @@ class SagemakerModelEventBusStack(Stack):
         }
 
         for key, value in metadata.items():
-            CfnOutput(
-                scope=self,
-                id=key,
-                value=value,
-            )
+            CfnOutput(scope=self, id=key, value=value)
 
-        CfnOutput(
-            scope=self,
-            id="metadata",
-            value=self.to_json_string(metadata),
-        )
+        CfnOutput(scope=self, id="metadata", value=self.to_json_string(metadata))

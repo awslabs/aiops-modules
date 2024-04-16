@@ -8,12 +8,25 @@ groups:
     path: examples/manifests/networking-modules.yaml
   - name: sagemaker-endpoints
     path: examples/manifests/sagemaker-endpoints-modules.yaml
+  - name: events
+    path: manifests/sagemaker-model-event-bus.yaml
+  - name: registry
+    path: manifests/sagemaker-model-package-group-modules.yaml
+  - name: promote-models
+    path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
       valueFrom:
         envVariable: PRIMARY_ACCOUNT
     default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
+  - alias: tooling
+    accountId:
+      valueFrom:
+        envVariable: TOOLING_ACCOUNT
     regionMappings:
       - region: us-east-1
         default: true

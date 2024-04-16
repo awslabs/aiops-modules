@@ -18,7 +18,7 @@ This module creates an Amazon EventBridge Bus for cross-account events.
 
 #### Optional
 
-- `source_accounts`: A list of account ids which shall have write access to the eventbridge bus. Defaults None.
+- `source_accounts`: A list of account ids which shall have write access to the event bridge bus. Defaults None.
 - `tags`: A dictionary of tags. Defaults None.
 
 ### Sample manifest declaration

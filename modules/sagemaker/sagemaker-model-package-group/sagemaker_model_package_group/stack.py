@@ -71,11 +71,11 @@ class SagemakerModelPackageGroupStack(Stack):
     def setup_resources(self) -> None:
         """Deploy resources."""
 
-        self.model_package_group = self.create_model_package_group()
+        self.model_package_group = self.setup_model_package_group()
 
         self.event_rule = self.setup_events()
 
-    def create_model_package_group(self) -> sagemaker.CfnModelPackageGroup:
+    def setup_model_package_group(self) -> sagemaker.CfnModelPackageGroup:
         """Create a Model Package Group."""
         model_package_group_policy = self.get_model_package_group_resource_policy()
 
@@ -207,14 +207,6 @@ class SagemakerModelPackageGroupStack(Stack):
             ] = self.event_rule.rule_arn
 
         for key, value in metadata.items():
-            CfnOutput(
-                scope=self,
-                id=key,
-                value=value,
-            )
+            CfnOutput(scope=self, id=key, value=value)
 
-        CfnOutput(
-            scope=self,
-            id="metadata",
-            value=self.to_json_string(metadata),
-        )
+        CfnOutput(scope=self, id="metadata", value=self.to_json_string(metadata))
