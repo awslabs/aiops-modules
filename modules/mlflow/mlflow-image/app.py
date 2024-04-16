@@ -4,6 +4,7 @@
 import os
 
 import aws_cdk
+import cdk_nag
 
 from stack import MlflowImagePublishingStack
 
@@ -50,5 +51,7 @@ aws_cdk.CfnOutput(
         }
     ),
 )
+
+aws_cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()

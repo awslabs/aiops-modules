@@ -4,8 +4,9 @@ from unittest import mock
 
 import aws_cdk as cdk
 import botocore.session
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
+from aws_cdk.assertions import Annotations, Match, Template
 from botocore.stub import Stubber
 
 
@@ -19,7 +20,8 @@ def stack_defaults() -> None:
         del sys.modules["stack"]
 
 
-def test_synthesize_stack_model_package_input() -> None:
+@pytest.fixture(scope="function")
+def stack_model_package_input() -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -27,7 +29,6 @@ def test_synthesize_stack_model_package_input() -> None:
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
-    app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
@@ -35,10 +36,9 @@ def test_synthesize_stack_model_package_input() -> None:
     model_package_arn = "example-arn"
     model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
 
-    endpoint_stack = stack.DeployEndpointStack(
+    return stack.DeployEndpointStack(
         scope=app,
-        id=app_prefix,
-        app_prefix=app_prefix,
+        id=f"{project_name}-{dep_name}-{mod_name}",
         sagemaker_project_id=sagemaker_project_id,
         sagemaker_project_name=sagemaker_project_name,
         model_package_arn=model_package_arn,
@@ -58,12 +58,10 @@ def test_synthesize_stack_model_package_input() -> None:
         },
     )
 
-    template = Template.from_stack(endpoint_stack)
-    template.resource_count_is("AWS::SageMaker::Endpoint", 1)
 
-
+@pytest.fixture(scope="function")
 @mock.patch("scripts.get_approved_package.boto3.client")
-def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_defaults) -> None:
+def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -71,7 +69,6 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
-    app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
@@ -101,10 +98,9 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
         }
         stubber.add_response("list_model_packages", response, expected_params)
 
-        endpoint_stack = stack.DeployEndpointStack(
+        return stack.DeployEndpointStack(
             scope=app,
-            id=app_prefix,
-            app_prefix=app_prefix,
+            id=f"{project_name}-{dep_name}-{mod_name}",
             sagemaker_project_id=sagemaker_project_id,
             sagemaker_project_name=sagemaker_project_name,
             model_package_arn=None,
@@ -124,5 +120,22 @@ def test_synthesize_stack_latest_approved_model_package(mock_s3_client, stack_de
             },
         )
 
-    template = Template.from_stack(endpoint_stack)
+
+@pytest.fixture(params=["stack_model_package_input", "stack_latest_approved_model_package"], scope="function")
+def stack(request, stack_model_package_input, stack_latest_approved_model_package) -> cdk.Stack:
+    return request.getfixturevalue(request.param)
+
+
+def test_synthesize_stack(stack: cdk.Stack) -> None:
+    template = Template.from_stack(stack)
     template.resource_count_is("AWS::SageMaker::Endpoint", 1)
+
+
+def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"

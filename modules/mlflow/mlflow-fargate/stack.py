@@ -41,13 +41,14 @@ class MlflowFargateStack(cdk.Stack):
         rds_settings: Optional[RDSSettings],
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
+        efs_removal_policy: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
         cdk.Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
 
-        role = iam.Role(
+        task_role = iam.Role(
             self,
             "TaskRole",
             assumed_by=iam.ServicePrincipal(service="ecs-tasks.amazonaws.com"),
@@ -58,7 +59,7 @@ class MlflowFargateStack(cdk.Stack):
 
         # Grant artifacts bucket read-write permissions
         model_bucket = s3.Bucket.from_bucket_name(self, "ArtifactsBucket", bucket_name=artifacts_bucket_name)
-        model_bucket.grant_read_write(role)
+        model_bucket.grant_read_write(task_role)
 
         vpc = ec2.Vpc.from_lookup(self, "Vpc", vpc_id=vpc_id)
         subnets = [ec2.Subnet.from_subnet_id(self, f"Subnet {subnet_id}", subnet_id) for subnet_id in subnet_ids]
@@ -76,7 +77,7 @@ class MlflowFargateStack(cdk.Stack):
         task_definition = ecs.FargateTaskDefinition(
             self,
             "MlflowTask",
-            task_role=role,
+            task_role=task_role,
             cpu=task_cpu_units,
             memory_limit_mib=task_memory_limit_mb,
         )
@@ -120,6 +121,7 @@ class MlflowFargateStack(cdk.Stack):
                     ),
                 ]
             ),
+            removal_policy=cdk.RemovalPolicy.DESTROY if efs_removal_policy == "DESTROY" else cdk.RemovalPolicy.RETAIN,
         )
         self.fs = fs
 
@@ -172,8 +174,8 @@ class MlflowFargateStack(cdk.Stack):
         fs.connections.allow_default_port_from(fargate_service.service.connections)
 
         # Setup security group
-        fargate_securigy_group = fargate_service.service.connections.security_groups[0]
-        fargate_securigy_group.add_ingress_rule(
+        fargate_security_group = fargate_service.service.connections.security_groups[0]
+        fargate_security_group.add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.tcp(5000),
             description="Allow inbound from VPC for mlflow",
@@ -185,7 +187,7 @@ class MlflowFargateStack(cdk.Stack):
                 self, "RDS Security Group", rds_settings["security_group_id"]
             )
             rds_security_group.add_ingress_rule(
-                peer=ec2.Peer.security_group_id(fargate_securigy_group.security_group_id),
+                peer=ec2.Peer.security_group_id(fargate_security_group.security_group_id),
                 connection=ec2.Port.tcp(rds_settings["port"]),
                 description="Allow inbound access to RDS for mlflow",
             )
@@ -199,12 +201,10 @@ class MlflowFargateStack(cdk.Stack):
             scale_out_cooldown=cdk.Duration.seconds(60),
         )
 
-        # Add CDK nag solutions checks
-        cdk.Aspects.of(self).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
-
-        cdk_nag.NagSuppressions.add_stack_suppressions(
-            self,
-            apply_to_nested_stacks=True,
+        # Add CDK nag suppressions
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            [task_role, task_definition.execution_role],  # type: ignore[list-item]
+            apply_to_children=True,
             suppressions=[
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-IAM4",
@@ -214,10 +214,20 @@ class MlflowFargateStack(cdk.Stack):
                     id="AwsSolutions-IAM5",
                     reason="Resource access restricted to resources",
                 ),
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            task_definition,
+            suppressions=[
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-ECS2",
                     reason="Not passing secrets via env variables",
                 ),
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            lb_access_logs_bucket,
+            suppressions=[
                 cdk_nag.NagPackSuppression(
                     id="AwsSolutions-S1",
                     reason="Access logs not required for access logs bucket",

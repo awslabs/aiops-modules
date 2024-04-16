@@ -6,6 +6,7 @@ import os
 from typing import cast
 
 import aws_cdk
+import cdk_nag
 from aws_cdk import CfnOutput
 
 from stack import SagemakerStudioStack
@@ -79,5 +80,7 @@ CfnOutput(
         }
     ),
 )
+
+aws_cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 app.synth()

@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+### **Added**
+
+- added VPC/subnets/sg config for multi-account project template to `sagemaker-templates-service-catalog` module
+- added `sagemaker-custom-kernel` module
+- added batch inference project template to `sagemaker-templates-service-catalog` module
+- added EFS removal policy to `mlflow-fargate` module
+- added `mwaa` module with example dag which demonstrates the MLOps in Airflow
+
+### **Changed**
+
+- split `xgboost_abalone` and `model_deploy` project templates in `sagemaker-templates-service-catalog` module
+- add support for other AWS partitions
+- update MySQL instance to use T3 instance type
+- upgrade `cdk_ecr_deployment` version to fix the deprecated `go1.x` lambda runtime
+
+### **Removed**
+
+- remove AmazonSageMakerFullAccess from `multi_account_basic` template in the `sagemaker-templates-service-catalog` module
+- remove AmazonSageMakerFullAccess from `sagemaker-endpoint` module
+
 ## v1.0.0
 
 ### **Added**

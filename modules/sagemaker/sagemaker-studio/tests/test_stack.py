@@ -5,22 +5,23 @@ import os
 import sys
 
 import aws_cdk as cdk
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
+from aws_cdk.assertions import Annotations, Match, Template
 
 
 @pytest.fixture(scope="function")
-def stack_defaults():
+def stack_defaults() -> None:
     os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
     os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
     # Unload the app import so that subsequent tests don't reuse
-
     if "stack" in sys.modules:
         del sys.modules["stack"]
 
 
-def test_synthesize_stack(stack_defaults):
+@pytest.fixture(scope="function")
+def stack(stack_defaults, enable_custom_sagemaker_projects: bool) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -33,9 +34,8 @@ def test_synthesize_stack(stack_defaults):
     lead_data_science_users = ["lead-ds-user-1"]
     app_image_config_name = None
     image_name = None
-    enable_custom_sagemaker_projects = False
 
-    stack = stack.SagemakerStudioStack(
+    return stack.SagemakerStudioStack(
         app,
         f"{project_name}-{dep_name}-{mod_name}",
         project_name=project_name,
@@ -56,9 +56,23 @@ def test_synthesize_stack(stack_defaults):
         enable_custom_sagemaker_projects=enable_custom_sagemaker_projects,
     )
 
+
+@pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
+def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::SageMaker::Domain", 1)
     template.resource_count_is("AWS::SageMaker::UserProfile", 2)
     template.resource_count_is("AWS::EC2::SecurityGroup", 1)
-    template.resource_count_is("AWS::IAM::Role", 3)
+    template.resource_count_is("AWS::IAM::Role", 5 if enable_custom_sagemaker_projects else 3)
+
+
+@pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
+def test_no_cdk_nag_errors(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"

@@ -32,7 +32,7 @@ class SMRoles(Construct):
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
                     actions=["iam:PassRole"],
-                    resources=[f"arn:aws:iam::{Aws.ACCOUNT_ID}:role/cdk*"],
+                    resources=[f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/cdk*"],
                 ),
             ],
         )
@@ -173,21 +173,21 @@ class SMRoles(Construct):
                         "s3:GetBucketLocation",
                     ],
                     resources=[
-                        "arn:aws:s3:::{}*/*".format(s3_bucket_prefix),
-                        "arn:aws:s3:::{}*".format(s3_bucket_prefix),
-                        "arn:aws:s3:::cdk*/*",
-                        "arn:aws:s3:::cdk*",
-                        "arn:aws:s3:::sagemaker*",
-                        "arn:aws:s3:::sagemaker*/*",
+                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*/*",
+                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*",
+                        f"arn:{Aws.PARTITION}:s3:::cdk*/*",
+                        f"arn:{Aws.PARTITION}:s3:::cdk*",
+                        f"arn:{Aws.PARTITION}:s3:::sagemaker*",
+                        f"arn:{Aws.PARTITION}:s3:::sagemaker*/*",
                     ],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
                     actions=["s3:ListBucket"],
                     resources=[
-                        "arn:aws:s3:::{}*".format(s3_bucket_prefix),
-                        "arn:aws:s3:::cdk*",
-                        "arn:aws:s3:::sagemaker*",
+                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*",
+                        f"arn:{Aws.PARTITION}:s3:::cdk*",
+                        f"arn:{Aws.PARTITION}:s3:::sagemaker*",
                     ],
                 ),
                 iam.PolicyStatement(

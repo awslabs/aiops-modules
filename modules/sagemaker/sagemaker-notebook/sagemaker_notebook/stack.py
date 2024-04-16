@@ -6,6 +6,7 @@ import aws_cdk.aws_ec2 as ec2
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_sagemaker as sagemaker
+import cdk_nag
 from aws_cdk import CfnOutput, Stack, Tags
 from constructs import Construct
 
@@ -94,6 +95,36 @@ class SagemakerNotebookStack(Stack):
         self.setup_outputs()
 
         self.setup_tags()
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            self.role,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM4",
+                    reason="Managed Policies are for src account roles only",
+                ),
+            ],
+        )
+        if not kms_key_arn:
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                self.sm_notebook,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-SM2",
+                        reason="Customers have the option to disable encryption",
+                    ),
+                ],
+            )
+        if direct_internet_access:
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                self.sm_notebook,
+                suppressions=[
+                    cdk_nag.NagPackSuppression(
+                        id="AwsSolutions-SM3",
+                        reason="Customers have the option to enable direct internet access",
+                    ),
+                ],
+            )
 
     def setup_resources(self) -> None:
         """Deploy resources."""
