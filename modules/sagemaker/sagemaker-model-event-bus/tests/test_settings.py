@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from sagemaker_model_event_bus.settings import ApplicationSettings
 
 

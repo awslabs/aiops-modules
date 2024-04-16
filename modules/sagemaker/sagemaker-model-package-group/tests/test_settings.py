@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from sagemaker_model_package_group.settings import ApplicationSettings
 
 

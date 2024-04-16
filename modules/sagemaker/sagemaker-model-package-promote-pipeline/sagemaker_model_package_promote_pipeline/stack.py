@@ -212,6 +212,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             ),
         }
 
+        cmd = "python3 script/get_model.py -p $MODEL_ARTIFACTS_PATH -o $MODEL_METADATA_PATH -g $MODEL_PACKAGE_GROUP_ARN"
         build_spec = {
             "version": "0.2",
             "phases": {
@@ -222,9 +223,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
                     ],
                 },
                 "build": {
-                    "commands": [
-                        "python3 script/get_model.py -p $MODEL_ARTIFACTS_PATH -o $MODEL_METADATA_PATH -g $MODEL_PACKAGE_GROUP_ARN",
-                    ],
+                    "commands": [cmd],
                 },
             },
             "artifacts": {
@@ -240,7 +239,10 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             "BuildProject",
             build_spec=codebuild.BuildSpec.from_object(build_spec),
             environment_variables=env_vars,
-            description="Get model metadata and model artifacts from the latest approved model in a SageMaker Model Package Group.",
+            description=(
+                "Get model metadata and artifacts from the latest",
+                "approved model in a SageMaker Model Package Group.",
+            ),
             timeout=cdk.Duration.minutes(30),
             role=role,
             environment=codebuild.BuildEnvironment(

@@ -10,6 +10,7 @@ import aws_cdk.aws_s3_deployment as s3deploy
 import aws_cdk.aws_sagemaker as sagemaker
 from aws_cdk import CfnOutput, RemovalPolicy, Stack
 from constructs import Construct
+
 from stack.models import ModelMetadata
 
 
