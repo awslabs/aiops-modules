@@ -6,7 +6,7 @@ import os
 import pathlib
 import shutil
 import tempfile
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from urllib.parse import unquote, urlparse
 
 import boto3
@@ -18,7 +18,7 @@ def get_latest_model_from_model_registry(
     boto3_session: Any,
     model_package_group_name: str,
     status_approval: Optional[str],
-) -> Optional[dict]:
+) -> Optional[Dict[str, Any]]:
     """Get the latest registered model from SageMaker model registry
 
     Parameters
@@ -54,10 +54,10 @@ def get_latest_model_from_model_registry(
         approved_model_package = next(iter(models), None)
 
         if approved_model_package:
-            return sm_client.describe_model_package(
+            model: Dict[str, Any] = sm_client.describe_model_package(
                 ModelPackageName=approved_model_package["ModelPackageArn"]
             )
-
+            return model
     return None
 
 
@@ -150,7 +150,7 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def main():
+def main():  # type: ignore
     args = parse_args()
 
     boto3_session = boto3.Session(profile_name=args.profile_name)
@@ -220,4 +220,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore

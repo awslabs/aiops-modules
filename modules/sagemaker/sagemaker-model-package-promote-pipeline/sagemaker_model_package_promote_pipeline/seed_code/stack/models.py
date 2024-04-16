@@ -385,7 +385,9 @@ class ModelPackageProperty(CdkBaseModel):
     )
 
     @field_serializer("last_modified_time")
-    def serialize_last_modified_time(self, dt: Optional[datetime], _info):
+    def serialize_last_modified_time(
+        self, dt: Optional[datetime], _info: Any
+    ) -> Optional[str]:
         """Convert datetime to string."""
         return dt.isoformat() if dt else None
 

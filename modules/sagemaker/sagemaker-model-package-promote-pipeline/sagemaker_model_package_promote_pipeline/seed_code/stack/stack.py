@@ -1,7 +1,7 @@
 """Sagemaker Model Package stack."""
 import json
 import string
-from typing import Optional
+from typing import Any, Optional
 
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
@@ -26,7 +26,7 @@ class SagemakerModelPackageStack(Stack):
         retain_on_delete: bool = True,
         model_package_group_name: Optional[str] = None,
         kms_key_arn: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Create a Sagemaker Model Package.
 
@@ -194,8 +194,8 @@ class SagemakerModelPackageStack(Stack):
         with open(self.model_metadata_path, "r") as f:
             model_config = f.read()
 
-        model_metadata = string.Template(model_config)
-        model_metadata = model_metadata.safe_substitute(bucket_name=self.bucket_name)
+        template = string.Template(model_config)
+        model_metadata = template.safe_substitute(bucket_name=self.bucket_name)
         model_metadata = json.loads(model_metadata)
 
         settings = ModelMetadata(**model_metadata)

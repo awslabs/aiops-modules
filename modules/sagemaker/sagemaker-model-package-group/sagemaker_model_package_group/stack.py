@@ -1,5 +1,5 @@
 """Seedfarmer module to deploy a SageMaker Model Package Group."""
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import aws_cdk.aws_events as events
 import aws_cdk.aws_events_targets as events_targets
@@ -91,7 +91,7 @@ class SagemakerModelPackageGroupStack(Stack):
 
         return model_package_group
 
-    def get_model_package_group_resource_policy(self) -> Optional[dict]:
+    def get_model_package_group_resource_policy(self) -> Optional[Dict[str, Any]]:
         """Get a resource policy to enable cross account access into Sagemaker Model Package Group.
 
         Returns

@@ -239,10 +239,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             "BuildProject",
             build_spec=codebuild.BuildSpec.from_object(build_spec),
             environment_variables=env_vars,
-            description=(
-                "Get model metadata and artifacts from the latest",
-                "approved model in a SageMaker Model Package Group.",
-            ),
+            description="Get latest approved model metadata and artifacts from a a SageMaker Model Package Group",
             timeout=cdk.Duration.minutes(30),
             role=role,
             environment=codebuild.BuildEnvironment(
@@ -372,7 +369,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
 
         event_pattern = events.EventPattern(
             source=["aws.sagemaker"],
-            account=[self.source_account],
+            account=[self.source_account] if self.source_account else None,
             detail_type=["SageMaker Model Package State Change"],
             detail={
                 "ModelPackageGroupName": [self.source_model_package_group_name],
