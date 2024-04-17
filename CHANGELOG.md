@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added batch inference project template to `sagemaker-templates-service-catalog` module
 - added EFS removal policy to `mlflow-fargate` module
 - added `mwaa` module with example dag which demonstrates the MLOps in Airflow
+- added `sagemaker-hugging-face-endpoint` module
 
 ### **Changed**
 
