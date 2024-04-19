@@ -43,19 +43,6 @@ Resources:
             Resource:
               - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${ProjectName}-${DeploymentName}-${ModuleName}-image-role"
               - !Ref StudioExecutionRoleArn
-          - Action:
-              - "ecr:*LayerUpload"
-              - "ecr:Batch*"
-              - "ecr:Create*"
-              - "ecr:Delete*"
-              - "ecr:Describe*"
-              - "ecr:Get*"
-              - "ecr:List*"
-              - "ecr:Put*"
-              - "ecr:UploadLayerPart"
-            Effect: Allow
-            Resource:
-              - !Sub "arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/${ECRRepoName}"
         Version: 2012-10-17
       PolicyName: "mlops-modulespecific-policy"
       Roles: [!Ref RoleName]
