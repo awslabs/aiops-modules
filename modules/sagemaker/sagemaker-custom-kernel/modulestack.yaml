@@ -17,9 +17,6 @@ Parameters:
   StudioExecutionRoleArn:
     Type: String
     Description: The name of the Sagemaker Studio IAM Role
-  ECRRepoName:
-    Type: String
-    Description: The name of the ECR repository
   StudioDomainId:
     Type: String
     Description: The id of the SageMaker Studio Domain
