@@ -19,9 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-model-event-bus` module.
 - added `sagemaker-model-package-group` module.
 - added `sagemaker-model-package-promote-pipeline` module.
+- added `sagemaker-hugging-face-endpoint` module
 
 ### **Changed**
 
+- update `sagemaker-custom-kernel` module IAM permissions
 - split `xgboost_abalone` and `model_deploy` project templates in `sagemaker-templates-service-catalog` module
 - add support for other AWS partitions
 - update MySQL instance to use T3 instance type
