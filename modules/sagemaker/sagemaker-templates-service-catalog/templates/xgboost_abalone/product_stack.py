@@ -27,12 +27,14 @@ class Product(servicecatalog.ProductStack):
         id: str,
         build_app_asset: s3_assets.Asset,
         pre_prod_account_id: str,
-        pre_prod_region: str,
         prod_account_id: str,
-        prod_region: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
+
+        dev_account_id = Aws.ACCOUNT_ID
+        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
+        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         sagemaker_project_name = CfnParameter(
             self,
@@ -48,12 +50,24 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
+        pre_prod_account_id = CfnParameter(
+            self,
+            "PreProdAccountId",
+            type="String",
+            description="Pre-prod AWS account id.. Required for cross-account model registry permissions.",
+            default=pre_prod_account_id,
+        ).value_as_string
+
+        prod_account_id = CfnParameter(
+            self,
+            "ProdAccountId",
+            type="String",
+            description="Prod AWS account id. Required for cross-account model registry permissions.",
+            default=prod_account_id,
+        ).value_as_string
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
-
-        dev_account_id = Aws.ACCOUNT_ID
-        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
-        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
