@@ -28,7 +28,7 @@ parameters:
         key: PrivateSubnetIds
   - name: pre-prod-account-id
     valueFrom:
-      envVariable: PRIMARY_ACCOUNT
+      envVariable: SECONDARY_ACCOUNT
   - name: pre-prod-region
     valueFrom:
       envVariable: PRIMARY_REGION
@@ -36,17 +36,17 @@ parameters:
     valueFrom:
       moduleMetadata:
         group: networking
-        name: networking
+        name: networking-secondary
         key: VpcId
   - name: pre-prod-subnet-ids
     valueFrom:
       moduleMetadata:
         group: networking
-        name: networking
+        name: networking-secondary
         key: PrivateSubnetIds
   - name: prod-account-id
     valueFrom:
-      envVariable: PRIMARY_ACCOUNT
+      envVariable: SECONDARY_ACCOUNT
   - name: prod-region
     valueFrom:
       envVariable: PRIMARY_REGION
@@ -54,11 +54,11 @@ parameters:
     valueFrom:
       moduleMetadata:
         group: networking
-        name: networking
+        name: networking-secondary
         key: VpcId
   - name: prod-subnet-ids
     valueFrom:
       moduleMetadata:
         group: networking
-        name: networking
+        name: networking-secondary
         key: PrivateSubnetIds
