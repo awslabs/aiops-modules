@@ -443,7 +443,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
                         sid="GrantS3ReadOnlyPermissions",
                         actions=["s3:ListBucket", "s3:GetObject*"],
                         effect=iam.Effect.ALLOW,
-                        resources=["arn:aws:s3:::*"],
+                        resources=[f"arn:{self.partition}:s3:::*"],
                         conditions={
                             "StringEquals": {"s3:ResourceAccount": self.source_account}
                         },
@@ -457,7 +457,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
                         ],
                         effect=iam.Effect.ALLOW,
                         resources=[
-                            f"arn:aws:sagemaker:{self.region}:{self.source_account}:model-package/*",
+                            f"arn:{self.partition}:sagemaker:{self.region}:{self.source_account}:model-package/*",
                             self.source_model_package_group_arn,
                         ],
                     ),

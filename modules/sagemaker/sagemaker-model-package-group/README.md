@@ -18,9 +18,9 @@ This module creates a SageMaker Model Package Group to register and version Sage
 
 #### Optional
 
-- `retain_on_delete`: Wether or not to retain resources on delete. Defaults True.
+- `retain_on_delete`: Whether or not to retain resources on delete. Default True.
 - `target_event_bus_arn`: The event bus arn in to send events model package group state change events to. It can be a bus located in another account. Defaults None.
-- `model_package_group_description`: The model package group description. Defaults None.
+- `model_package_group_description`: The model package group description. Default None.
 - `target_account_ids`: A list of account ids which shall have read-only access to the model package group. Defaults None.
 - `sagemaker_project_id`: SageMaker project ID.
 - `sagemaker_project_name`: SageMaker project name.

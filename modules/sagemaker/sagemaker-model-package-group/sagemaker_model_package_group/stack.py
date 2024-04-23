@@ -101,8 +101,10 @@ class SagemakerModelPackageGroupStack(Stack):
         if not self.target_account_ids:
             return None
 
-        sagemaker_arn = f"arn:aws:sagemaker:{self.region}:{self.account}"
-        target_accounts = [f"arn:aws:iam::{a}:root" for a in self.target_account_ids]
+        sagemaker_arn = f"arn:{self.partition}:sagemaker:{self.region}:{self.account}"
+        target_accounts = [
+            f"arn:{self.partition}:iam::{a}:root" for a in self.target_account_ids
+        ]
 
         model_package_group_policy = {
             "Version": "2012-10-17",
