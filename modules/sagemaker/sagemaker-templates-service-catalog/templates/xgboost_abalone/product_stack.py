@@ -161,9 +161,9 @@ class Product(servicecatalog.ProductStack):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:aws:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:aws:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:aws:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
                     ],
                 ),
                 iam.PolicyStatement(
@@ -181,9 +181,9 @@ class Product(servicecatalog.ProductStack):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:aws:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:aws:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:aws:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
                     ],
                 ),
             ]
