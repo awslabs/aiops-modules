@@ -1,5 +1,6 @@
 name: sagemaker-custom-kernel
 path: modules/sagemaker/sagemaker-custom-kernel/
+targetAccount: primary
 parameters:
   - name: ecr-repo-name
     valueFrom:
