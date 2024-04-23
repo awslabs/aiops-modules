@@ -314,12 +314,14 @@ class DeployPipelineConstruct(Construct):
                         "DevActionRole",
                         f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/"
                         f"cdk-hnb659fds-deploy-role-{dev_account_id}-{dev_region}",
+                        # mutable=False,
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "DevDeploymentRole",
                         f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/"
                         f"cdk-hnb659fds-cfn-exec-role-{dev_account_id}-{dev_region}",
+                        # mutable=False,
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -349,12 +351,14 @@ class DeployPipelineConstruct(Construct):
                         "PreProdActionRole",
                         f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
                         f"cdk-hnb659fds-deploy-role-{pre_prod_account_id}-{pre_prod_region}",
+                        mutable=False,
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "PreProdDeploymentRole",
                         f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
                         f"cdk-hnb659fds-cfn-exec-role-{pre_prod_account_id}-{pre_prod_region}",
+                        mutable=False,
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -384,12 +388,14 @@ class DeployPipelineConstruct(Construct):
                         "ProdActionRole",
                         f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
                         f"cdk-hnb659fds-deploy-role-{prod_account_id}-{prod_region}",
+                        mutable=False,
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "ProdDeploymentRole",
                         f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
                         f"cdk-hnb659fds-cfn-exec-role-{prod_account_id}-{prod_region}",
+                        mutable=False,
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,

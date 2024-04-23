@@ -51,21 +51,13 @@ class Product(servicecatalog.ProductStack):
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
 
+        dev_account_id = Aws.ACCOUNT_ID
+        dev_region = Aws.REGION
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
         pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
         prod_region = Aws.REGION if not prod_region else prod_region
-
-        # cross account model registry resource policy
         model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-        model_package_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-            f"{model_package_group_name}/*"
-        )
-        model_package_group_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-            f"{model_package_group_name}"
-        )
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -152,10 +144,16 @@ class Product(servicecatalog.ProductStack):
                     actions=[
                         "sagemaker:DescribeModelPackageGroup",
                     ],
-                    resources=[model_package_group_arn],
+                    resources=[
+                        (
+                            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+                            f"{model_package_group_name}"
+                        )
+                    ],
                     principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.ArnPrincipal(f"arn:aws:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:aws:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:aws:iam::{prod_account_id}:root"),
                     ],
                 ),
                 iam.PolicyStatement(
@@ -166,10 +164,16 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:UpdateModelPackage",
                         "sagemaker:CreateModel",
                     ],
-                    resources=[model_package_arn],
+                    resources=[
+                        (
+                            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                            f"{model_package_group_name}/*"
+                        )
+                    ],
                     principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.ArnPrincipal(f"arn:aws:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:aws:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:aws:iam::{prod_account_id}:root"),
                     ],
                 ),
             ]
