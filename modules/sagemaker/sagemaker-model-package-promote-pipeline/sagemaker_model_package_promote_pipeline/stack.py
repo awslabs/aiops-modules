@@ -90,15 +90,9 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
     def setup_resources(self) -> None:
         """Deploy resources."""
 
-        self.target_bucket = s3.Bucket.from_bucket_name(
-            self, "TargetBucket", self.target_bucket_name
-        )
+        self.target_bucket = s3.Bucket.from_bucket_name(self, "TargetBucket", self.target_bucket_name)
 
-        self.kms_key = (
-            kms.Key.from_key_arn(self, "KMSKey", self.kms_key_arn)
-            if self.kms_key_arn
-            else None
-        )
+        self.kms_key = kms.Key.from_key_arn(self, "KMSKey", self.kms_key_arn) if self.kms_key_arn else None
 
         self.code_asset = self.setup_code_assets()
         self.pipeline = self.setup_pipeline()
@@ -106,9 +100,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
 
     def setup_tags(self) -> None:
         """Add cdk.Tags to all resources."""
-        cdk.Tags.of(self).add(
-            "sagemaker:deployment-stage", cdk.Stack.of(self).stack_name
-        )
+        cdk.Tags.of(self).add("sagemaker:deployment-stage", cdk.Stack.of(self).stack_name)
 
         if self.sagemaker_project_id:
             cdk.Tags.of(self).add("sagemaker:project-id", self.sagemaker_project_id)
@@ -159,9 +151,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
         # Build Stage
         build_stage = pipeline.add_stage(stage_name="Build")
         build_artifact = codepipeline.Artifact()
-        build_project = self.setup_pipeline_build_project(
-            metadata_path=metadata_path, artifacts_path=artifacts_path
-        )
+        build_project = self.setup_pipeline_build_project(metadata_path=metadata_path, artifacts_path=artifacts_path)
         build_action = codepipeline_actions.CodeBuildAction(
             action_name="BuildAction",
             input=source_artifact,
@@ -184,9 +174,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
 
         return pipeline
 
-    def setup_pipeline_build_project(
-        self, metadata_path: str, artifacts_path: str
-    ) -> codebuild.PipelineProject:
+    def setup_pipeline_build_project(self, metadata_path: str, artifacts_path: str) -> codebuild.PipelineProject:
         """Setup a build project
 
         Parameters
@@ -201,15 +189,9 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             A PipelineProject instance.
         """
         env_vars = {
-            "MODEL_PACKAGE_GROUP_ARN": codebuild.BuildEnvironmentVariable(
-                value=self.source_model_package_group_arn
-            ),
-            "MODEL_METADATA_PATH": codebuild.BuildEnvironmentVariable(
-                value=metadata_path
-            ),
-            "MODEL_ARTIFACTS_PATH": codebuild.BuildEnvironmentVariable(
-                value=artifacts_path
-            ),
+            "MODEL_PACKAGE_GROUP_ARN": codebuild.BuildEnvironmentVariable(value=self.source_model_package_group_arn),
+            "MODEL_METADATA_PATH": codebuild.BuildEnvironmentVariable(value=metadata_path),
+            "MODEL_ARTIFACTS_PATH": codebuild.BuildEnvironmentVariable(value=artifacts_path),
         }
 
         cmd = "python3 script/get_model.py -p $MODEL_ARTIFACTS_PATH -o $MODEL_METADATA_PATH -g $MODEL_PACKAGE_GROUP_ARN"
@@ -242,16 +224,12 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             description="Get latest approved model metadata and artifacts from a a SageMaker Model Package Group",
             timeout=cdk.Duration.minutes(30),
             role=role,
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_7_0
-            ),
+            environment=codebuild.BuildEnvironment(build_image=codebuild.LinuxBuildImage.STANDARD_7_0),
         )
 
         return build_project
 
-    def setup_pipeline_deploy_project(
-        self, metadata_path: str
-    ) -> codebuild.PipelineProject:
+    def setup_pipeline_deploy_project(self, metadata_path: str) -> codebuild.PipelineProject:
         """Setup a deploy project
 
         Parameters
@@ -264,21 +242,11 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             A PipelineProject instance.
         """
         env_vars = {
-            "app_prefix": codebuild.BuildEnvironmentVariable(
-                value=f"{self.pipeline_name}-DeployProject"
-            ),
-            "model_metadata_path": codebuild.BuildEnvironmentVariable(
-                value=metadata_path
-            ),
-            "bucket_name": codebuild.BuildEnvironmentVariable(
-                value=self.target_bucket.bucket_name
-            ),
-            "retain_on_delete": codebuild.BuildEnvironmentVariable(
-                value=self.retain_on_delete
-            ),
-            "CDK_DEFAULT_ACCOUNT": codebuild.BuildEnvironmentVariable(
-                value=self.account
-            ),
+            "app_prefix": codebuild.BuildEnvironmentVariable(value=f"{self.pipeline_name}-DeployProject"),
+            "model_metadata_path": codebuild.BuildEnvironmentVariable(value=metadata_path),
+            "bucket_name": codebuild.BuildEnvironmentVariable(value=self.target_bucket.bucket_name),
+            "retain_on_delete": codebuild.BuildEnvironmentVariable(value=self.retain_on_delete),
+            "CDK_DEFAULT_ACCOUNT": codebuild.BuildEnvironmentVariable(value=self.account),
             "CDK_DEFAULT_REGION": codebuild.BuildEnvironmentVariable(value=self.region),
         }
 
@@ -288,9 +256,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             )
 
         if self.kms_key:
-            env_vars["kms_key_arn"] = codebuild.BuildEnvironmentVariable(
-                value=self.kms_key.key_arn
-            )
+            env_vars["kms_key_arn"] = codebuild.BuildEnvironmentVariable(value=self.kms_key.key_arn)
 
         build_spec = {
             "version": "0.2",
@@ -315,9 +281,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             description="Deploy model metadata and model artifacts to another SageMaker Model Package Group.",
             timeout=cdk.Duration.minutes(30),
             role=role,
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_7_0
-            ),
+            environment=codebuild.BuildEnvironment(build_image=codebuild.LinuxBuildImage.STANDARD_7_0),
         )
 
         return project
@@ -363,9 +327,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
         if not self.event_bus_name:
             return None
 
-        eventbus = events.EventBus.from_event_bus_name(
-            scope=self, id="EventBus", event_bus_name=self.event_bus_name
-        )
+        eventbus = events.EventBus.from_event_bus_name(scope=self, id="EventBus", event_bus_name=self.event_bus_name)
 
         event_pattern = events.EventPattern(
             source=["aws.sagemaker"],
@@ -444,9 +406,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
                         actions=["s3:ListBucket", "s3:GetObject*"],
                         effect=iam.Effect.ALLOW,
                         resources=[f"arn:{self.partition}:s3:::*"],
-                        conditions={
-                            "StringEquals": {"s3:ResourceAccount": self.source_account}
-                        },
+                        conditions={"StringEquals": {"s3:ResourceAccount": self.source_account}},
                     ),
                     iam.PolicyStatement(
                         sid="GrantSageMakerModelPkgReadOnlyPermissions",
@@ -486,9 +446,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
                 sid="GrantAssumeRoleOnCDKRoles",
                 actions=["sts:AssumeRole"],
                 effect=iam.Effect.ALLOW,
-                resources=[
-                    f"arn:{self.partition}:iam::{self.account}:role/cdk-*-{self.account}-{self.region}"
-                ],
+                resources=[f"arn:{self.partition}:iam::{self.account}:role/cdk-*-{self.account}-{self.region}"],
             )
         )
 

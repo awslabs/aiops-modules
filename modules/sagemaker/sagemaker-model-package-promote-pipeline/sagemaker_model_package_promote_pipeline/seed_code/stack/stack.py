@@ -55,9 +55,7 @@ class SagemakerModelPackageStack(Stack):
 
         self.kms_key_arn = kms_key_arn
         self.retain_on_delete = retain_on_delete
-        self.removal_policy = (
-            RemovalPolicy.RETAIN if retain_on_delete else RemovalPolicy.DESTROY
-        )
+        self.removal_policy = RemovalPolicy.RETAIN if retain_on_delete else RemovalPolicy.DESTROY
 
         self.model_metadata = self.load_model_metadata()
         if not self.model_metadata.model:
@@ -65,9 +63,7 @@ class SagemakerModelPackageStack(Stack):
 
         # Upd model package group name in metadata
         if model_package_group_name:
-            self.model_metadata.model.model_package_group_name = (
-                model_package_group_name
-            )
+            self.model_metadata.model.model_package_group_name = model_package_group_name
 
         self.setup_resources()
 
@@ -77,17 +73,11 @@ class SagemakerModelPackageStack(Stack):
         """Setups outputs and metadata."""
         metadata = {}
         if self.model_package.attr_model_package_arn:
-            metadata[
-                "SagemakerModelPackageArn"
-            ] = self.model_package.attr_model_package_arn
+            metadata["SagemakerModelPackageArn"] = self.model_package.attr_model_package_arn
         if self.model_package.model_package_name:
-            metadata[
-                "SagemakerModelPackageName"
-            ] = self.model_package.model_package_name
+            metadata["SagemakerModelPackageName"] = self.model_package.model_package_name
         if self.model_package.model_package_group_name:
-            metadata[
-                "SagemakerModelPackageGroupName"
-            ] = self.model_package.model_package_group_name
+            metadata["SagemakerModelPackageGroupName"] = self.model_package.model_package_group_name
 
         for key, value in metadata.items():
             CfnOutput(scope=self, id=key, value=value)
@@ -123,9 +113,7 @@ class SagemakerModelPackageStack(Stack):
         """
         artifacts = self.deploy_model_artifacts()
 
-        model_package = sagemaker.CfnModelPackage(
-            self, "ModelPackage", **self.model_metadata.model.model_dump()
-        )
+        model_package = sagemaker.CfnModelPackage(self, "ModelPackage", **self.model_metadata.model.model_dump())
 
         model_package.node.add_dependency(artifacts)
 
@@ -145,9 +133,7 @@ class SagemakerModelPackageStack(Stack):
             "BucketDeploymentRole",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
-                iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "service-role/AWSLambdaVPCAccessExecutionRole"
-                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaVPCAccessExecutionRole"),
             ],
         )
 

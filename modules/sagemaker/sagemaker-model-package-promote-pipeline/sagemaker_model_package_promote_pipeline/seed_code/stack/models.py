@@ -49,9 +49,7 @@ class ModelPackageContainerDefinitionProperty(CdkModel):
 class InferenceSpecificationProperty(CdkModel):
     """Inference Specification settings."""
 
-    containers: List[ModelPackageContainerDefinitionProperty] = Field(
-        alias="Containers"
-    )
+    containers: List[ModelPackageContainerDefinitionProperty] = Field(alias="Containers")
     supported_content_types: List[str] = Field(alias="SupportedContentTypes")
     supported_response_mime_types: List[str] = Field(
         alias="SupportedResponseMIMETypes",
@@ -66,9 +64,7 @@ class InferenceSpecificationProperty(CdkModel):
     )
 
 
-class AdditionalInferenceSpecificationDefinitionProperty(
-    InferenceSpecificationProperty
-):
+class AdditionalInferenceSpecificationDefinitionProperty(InferenceSpecificationProperty):
     """AdditionalInferenceSpecificationDefinitionProperty."""
 
     name: str = Field(alias="Name")
@@ -107,46 +103,30 @@ class DriftCheckExplainabilityProperty(CdkModel):
     """DriftCheckExplainabilityProperty."""
 
     config_file: Optional[FileSourceProperty] = Field(default=None, alias="ConfigFile")
-    constraints: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Constraints"
-    )
+    constraints: Optional[MetricsSourceProperty] = Field(default=None, alias="Constraints")
 
 
 class DriftCheckModelDataQualityProperty(CdkModel):
     """DriftCheckModelDataQualityProperty."""
 
-    constraints: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Constraints"
-    )
-    statistics: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Statistics"
-    )
+    constraints: Optional[MetricsSourceProperty] = Field(default=None, alias="Constraints")
+    statistics: Optional[MetricsSourceProperty] = Field(default=None, alias="Statistics")
 
 
 class DriftCheckModelQualityProperty(CdkModel):
     """DriftCheckModelQualityProperty."""
 
-    constraints: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Constraints"
-    )
-    statistics: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Statistics"
-    )
+    constraints: Optional[MetricsSourceProperty] = Field(default=None, alias="Constraints")
+    statistics: Optional[MetricsSourceProperty] = Field(default=None, alias="Statistics")
 
 
 class DriftCheckBaselinesProperty(CdkModel):
     """DriftCheckBaselinesProperty."""
 
     bias: Optional[DriftCheckBiasProperty] = Field(default=None, alias="Bias")
-    explainability: Optional[DriftCheckExplainabilityProperty] = Field(
-        default=None, alias="Explainability"
-    )
-    model_data_quality: Optional[DriftCheckModelDataQualityProperty] = Field(
-        default=None, alias="ModelDataQuality"
-    )
-    model_quality: Optional[DriftCheckModelQualityProperty] = Field(
-        default=None, alias="ModelQuality"
-    )
+    explainability: Optional[DriftCheckExplainabilityProperty] = Field(default=None, alias="Explainability")
+    model_data_quality: Optional[DriftCheckModelDataQualityProperty] = Field(default=None, alias="ModelDataQuality")
+    model_quality: Optional[DriftCheckModelQualityProperty] = Field(default=None, alias="ModelQuality")
 
 
 class MetadataPropertiesProperty(CdkModel):
@@ -165,9 +145,7 @@ class BiasProperty(CdkModel):
         default=None,
         alias="PostTrainingReport",
     )
-    pre_training_report: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="PreTrainingReport"
-    )
+    pre_training_report: Optional[MetricsSourceProperty] = Field(default=None, alias="PreTrainingReport")
     report: Optional[MetricsSourceProperty] = Field(default=None, alias="Report")
 
 
@@ -180,38 +158,24 @@ class ExplainabilityProperty(CdkModel):
 class ModelDataQualityProperty(CdkModel):
     """ModelDataQualityProperty."""
 
-    constraints: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Constraints"
-    )
-    statistics: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Statistics"
-    )
+    constraints: Optional[MetricsSourceProperty] = Field(default=None, alias="Constraints")
+    statistics: Optional[MetricsSourceProperty] = Field(default=None, alias="Statistics")
 
 
 class ModelQualityProperty(CdkModel):
     """ModelQualityProperty."""
 
-    constraints: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Constraints"
-    )
-    statistics: Optional[MetricsSourceProperty] = Field(
-        default=None, alias="Statistics"
-    )
+    constraints: Optional[MetricsSourceProperty] = Field(default=None, alias="Constraints")
+    statistics: Optional[MetricsSourceProperty] = Field(default=None, alias="Statistics")
 
 
 class ModelMetricsProperty(CdkModel):
     """ModelMetricsProperty."""
 
     bias: Optional[BiasProperty] = Field(default=None, alias="Bias")
-    explainability: Optional[ExplainabilityProperty] = Field(
-        default=None, alias="Explainability"
-    )
-    model_data_quality: Optional[ModelDataQualityProperty] = Field(
-        default=None, alias="ModelDataQuality"
-    )
-    model_quality: Optional[ModelQualityProperty] = Field(
-        default=None, alias="ModelQuality"
-    )
+    explainability: Optional[ExplainabilityProperty] = Field(default=None, alias="Explainability")
+    model_data_quality: Optional[ModelDataQualityProperty] = Field(default=None, alias="ModelDataQuality")
+    model_quality: Optional[ModelQualityProperty] = Field(default=None, alias="ModelQuality")
 
 
 class ModelPackageStatusItemProperty(CdkModel):
@@ -254,9 +218,7 @@ class S3DataSourceProperty(CdkModel):
 class DataSourceProperty(CdkModel):
     """DataSourceProperty."""
 
-    s3_data_source: Optional[S3DataSourceProperty] = Field(
-        default=None, alias="S3DataSource"
-    )
+    s3_data_source: Optional[S3DataSourceProperty] = Field(default=None, alias="S3DataSource")
 
 
 class TransformInputProperty(CdkModel):
@@ -288,12 +250,8 @@ class TransformResourcesProperty(CdkModel):
 class TransformJobDefinitionProperty(CdkModel):
     """TransformJobDefinitionProperty."""
 
-    transform_input: TransformInputProperty = Field(
-        default=None, alias="TransformInput"
-    )
-    transform_output: TransformOutputProperty = Field(
-        default=None, alias="TransformOutput"
-    )
+    transform_input: TransformInputProperty = Field(default=None, alias="TransformInput")
+    transform_output: TransformOutputProperty = Field(default=None, alias="TransformOutput")
     transform_resources: TransformResourcesProperty = Field(
         default=None,
         alias="TransformResources",
@@ -311,17 +269,13 @@ class ValidationProfileProperty(CdkModel):
     """ValidationProfileProperty."""
 
     profile_name: str = Field(alias="ProfileName")
-    transform_job_definition: TransformJobDefinitionProperty = Field(
-        alias="TransformJobDefinition"
-    )
+    transform_job_definition: TransformJobDefinitionProperty = Field(alias="TransformJobDefinition")
 
 
 class ValidationSpecificationProperty(CdkModel):
     """ValidationSpecificationProperty."""
 
-    validation_profiles: List[ValidationProfileProperty] = Field(
-        alias="ValidationProfiles"
-    )
+    validation_profiles: List[ValidationProfileProperty] = Field(alias="ValidationProfiles")
     validation_role: str = Field(alias="ValidationRole")
 
 
@@ -329,65 +283,41 @@ class ModelPackageProperty(CdkBaseModel):
     """Model Package settings."""
 
     model_package_name: Optional[str] = Field(default=None, alias="ModelPackageName")
-    model_package_group_name: Optional[str] = Field(
-        default=None, alias="ModelPackageGroupName"
-    )
-    model_package_version: Optional[int] = Field(
-        default=None, alias="ModelPackageVersion"
-    )
-    model_package_description: Optional[str] = Field(
-        default=None, alias="ModelPackageDescription"
-    )
+    model_package_group_name: Optional[str] = Field(default=None, alias="ModelPackageGroupName")
+    model_package_version: Optional[int] = Field(default=None, alias="ModelPackageVersion")
+    model_package_description: Optional[str] = Field(default=None, alias="ModelPackageDescription")
 
     inference_specification: Optional[InferenceSpecificationProperty] = Field(
         default=None, alias="InferenceSpecification"
     )
 
-    additional_inference_specifications: Optional[
-        List[AdditionalInferenceSpecificationDefinitionProperty]
-    ] = Field(default=None, alias="AdditionalInferenceSpecifications")
-    approval_description: Optional[str] = Field(
-        default=None, alias="ApprovalDescription"
+    additional_inference_specifications: Optional[List[AdditionalInferenceSpecificationDefinitionProperty]] = Field(
+        default=None, alias="AdditionalInferenceSpecifications"
     )
-    certify_for_marketplace: Optional[bool] = Field(
-        default=None, alias="CertifyForMarketplace"
-    )
-    customer_metadata_properties: Optional[Dict[str, str]] = Field(
-        default=None, alias="CustomerMetadataProperties"
-    )
+    approval_description: Optional[str] = Field(default=None, alias="ApprovalDescription")
+    certify_for_marketplace: Optional[bool] = Field(default=None, alias="CertifyForMarketplace")
+    customer_metadata_properties: Optional[Dict[str, str]] = Field(default=None, alias="CustomerMetadataProperties")
     domain: Optional[str] = Field(default=None, alias="Domain")
-    drift_check_baselines: Optional[DriftCheckBaselinesProperty] = Field(
-        default=None, alias="DriftCheckBaselines"
-    )
-    last_modified_time: Optional[datetime] = Field(
-        default=None, alias="LastModifiedTime"
-    )
+    drift_check_baselines: Optional[DriftCheckBaselinesProperty] = Field(default=None, alias="DriftCheckBaselines")
+    last_modified_time: Optional[datetime] = Field(default=None, alias="LastModifiedTime")
 
-    metadata_properties: Optional[MetadataPropertiesProperty] = Field(
-        default=None, alias="MetadataProperties"
-    )
-    model_approval_status: Optional[str] = Field(
-        default=None, alias="ModelApprovalStatus"
-    )
-    model_metrics: Optional[ModelMetricsProperty] = Field(
-        default=None, alias="ModelMetrics"
-    )
+    metadata_properties: Optional[MetadataPropertiesProperty] = Field(default=None, alias="MetadataProperties")
+    model_approval_status: Optional[str] = Field(default=None, alias="ModelApprovalStatus")
+    model_metrics: Optional[ModelMetricsProperty] = Field(default=None, alias="ModelMetrics")
     model_package_status_details: Optional[ModelPackageStatusDetailsProperty] = Field(
         default=None, alias="ModelPackageStatusDetails"
     )
     sample_payload_url: Optional[str] = Field(default=None, alias="SamplePayloadUrl")
-    source_algorithm_specification: Optional[
-        SourceAlgorithmSpecificationProperty
-    ] = Field(default=None, alias="SourceAlgorithmSpecification")
+    source_algorithm_specification: Optional[SourceAlgorithmSpecificationProperty] = Field(
+        default=None, alias="SourceAlgorithmSpecification"
+    )
     task: Optional[str] = Field(default=None, alias="Task")
     validation_specification: Optional[ValidationSpecificationProperty] = Field(
         default=None, alias="ValidationSpecification"
     )
 
     @field_serializer("last_modified_time")
-    def serialize_last_modified_time(
-        self, dt: Optional[datetime], _info: Any
-    ) -> Optional[str]:
+    def serialize_last_modified_time(self, dt: Optional[datetime], _info: Any) -> Optional[str]:
         """Convert datetime to string."""
         return dt.isoformat() if dt else None
 

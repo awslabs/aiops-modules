@@ -54,9 +54,7 @@ class SagemakerModelPackageGroupStack(Stack):
         self.target_account_ids = target_account_ids
         self.model_package_group_name = model_package_group_name
 
-        self.removal_policy = (
-            RemovalPolicy.RETAIN if retain_on_delete else RemovalPolicy.DESTROY
-        )
+        self.removal_policy = RemovalPolicy.RETAIN if retain_on_delete else RemovalPolicy.DESTROY
 
         self.model_package_group_description = model_package_group_description
         self.sagemaker_project_name = sagemaker_project_name
@@ -102,9 +100,7 @@ class SagemakerModelPackageGroupStack(Stack):
             return None
 
         sagemaker_arn = f"arn:{self.partition}:sagemaker:{self.region}:{self.account}"
-        target_accounts = [
-            f"arn:{self.partition}:iam::{a}:root" for a in self.target_account_ids
-        ]
+        target_accounts = [f"arn:{self.partition}:iam::{a}:root" for a in self.target_account_ids]
 
         model_package_group_policy = {
             "Version": "2012-10-17",
@@ -204,9 +200,7 @@ class SagemakerModelPackageGroupStack(Stack):
         }
 
         if self.event_rule:
-            metadata[
-                "SagemakerModelPackageGroupEventRuleArn"
-            ] = self.event_rule.rule_arn
+            metadata["SagemakerModelPackageGroupEventRuleArn"] = self.event_rule.rule_arn
 
         for key, value in metadata.items():
             CfnOutput(scope=self, id=key, value=value)

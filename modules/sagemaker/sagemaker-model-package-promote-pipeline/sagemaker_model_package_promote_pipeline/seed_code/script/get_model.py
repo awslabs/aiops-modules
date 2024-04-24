@@ -174,9 +174,7 @@ def main():  # type: ignore
     logging.info("Downloading model artifacts")
     flatten_metadata = flatten(model_metadata, separator="___")
 
-    tmp_dir = os.path.join(
-        tempfile.gettempdir(), "model_artifacts", args.model_package_group
-    )
+    tmp_dir = os.path.join(tempfile.gettempdir(), "model_artifacts", args.model_package_group)
     downloaded_files = []
     for k, v in flatten_metadata.items():
         if not (isinstance(v, str) and v.startswith("s3://")):
