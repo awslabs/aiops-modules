@@ -1,6 +1,6 @@
 name: mlflow-image
 path: modules/mlflow/mlflow-image
-targetAccount: primary
+# targetAccount: primary
 parameters:
   - name: ecr-repository-name
     valueFrom:

@@ -146,7 +146,7 @@ class PipelineStack(cdk.Stack):
                 commands=[
                     "npm install -g aws-cdk",
                     "python -m pip install -r requirements.txt",
-                    "cdk synth"
+                    "cdk synth --app \"python app.py\" "
                 ],
                 env=ENV,
             ),

@@ -1,6 +1,6 @@
 name: dags
 path: modules/examples/airflow-dags/
-targetAccount: primary
+# targetAccount: primary
 parameters:
   - name: dag-bucket-name
     valueFrom:

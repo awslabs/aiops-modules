@@ -111,7 +111,7 @@ class Product(servicecatalog.ProductStack):
                              "commands": [
                                 "npm install -g aws-cdk",
                                 "python -m pip install -r requirements.txt",
-                                "cdk deploy --all --require-approval never"
+                                "cdk deploy --require-approval never --app \"python app.py\" "
                              ]
                         }
                     }
@@ -147,7 +147,7 @@ class Product(servicecatalog.ProductStack):
                         value=json.dumps(prod_security_group_ids)
                     ),
                 },
-            ),
+            ),            
         )
 
         project.role.attach_inline_policy(
@@ -195,4 +195,17 @@ class Product(servicecatalog.ProductStack):
             )
         )
 
-        # TODO: Add one-time build trigger on CB creation
+        # Create a CodeBuild trigger on the CodeCommit repository
+        # trigger = codebuild.Trigger.from_repository(repository)
+        # project.add_trigger(trigger)
+
+
+        # # TODO: Add one-time build trigger on CB creation
+        # trigger = codebuild.Trigger(
+        #     self, "CodeCommitTrigger",
+        #     trigger_pattern=codebuild.TriggerPattern.all_commits(),
+        #     batch_enabled=False,
+        #     run_order=1,
+        #     project=project,
+        #     trigger_on_push=True  # Add this line to trigger an initial build
+        # )
