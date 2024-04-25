@@ -1,6 +1,6 @@
 # SageMaker Studio Infrastructure
 
-This module contains the resources that are required to deploy the SageMaker Studio infrastructure. It defines the setup for Amazon SageMaker Studio Domain and creates SageMaker Studio User Profiles for Data Scientists and Lead Data Scientists.
+This module contains the resources that are required to deploy the SageMaker Studio infrastructure. It defines the setup for Amazon SageMaker Studio Domain and creates SageMaker Studio User Profiles for Data Scientists and Lead Data Scientists. The module supports IAM and SSO authentication.
 
 **NOTE** To effectively use this repository you would need to have a good understanding around AWS networking services, AWS CloudFormation and AWS CDK.
 - [SageMaker studio Infrastructure](#sagemaker-studio-infrastructure)
@@ -22,7 +22,9 @@ This module contains the resources that are required to deploy the SageMaker Stu
 This module handles the deployment of the following resources:
 
 1. SageMaker Studio Domain requires, along with
-2. IAM roles which would be linked to SM Studio user profiles. User Profile creating process is managed by manifests files in `manifests/shared-infra/mlops-modules.yaml`. You can simply add new entries in the list to create a new user. The user will be linked to a role depending on which group you add them to (`data_science_users` or `lead_data_science_users`).
+2. IAM roles which would be linked to SM Studio user profiles. User Profile creating process is managed by manifests files in `manifests/sagemaker-studio-modules.yaml`. You can simply add new entries in the list to create a new user. The user will be linked to a role depending on which group you add them to (`data_science_users` or `lead_data_science_users`).
+
+Note: If using SSO auth, the usernames must match valid users in your directory.
 
 ```
   - name: data_science_users
@@ -42,10 +44,11 @@ This module handles the deployment of the following resources:
 ### Optional Inputs:
   - `studio_domain_name` - name of the SageMaker Studio Domain
   - `studio_bucket_name` - name of the bucket used by studio
+  - `auth_mode` - `IAM` or `SSO`. Defaults to `IAM`. Note: to use `SSO` auth type AWS Identity Center must be enabled and your usernames must match valid usernames of users in your directory.
   - `app_image_config_name` - custom kernel app config name
   - `image_name` - custom kernel image name
-  - `data_science_users` - a list of data science user names to create
-  - `lead_data_science_users` - a list of lead data science user names to create
+  - `data_science_users` - a list of data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
+  - `lead_data_science_users` - a list of lead data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
   - `retain_efs` - True | False -- if set to True, the EFS volume will persist after domain deletion.  Default is True
   - `enable_custom_sagemaker_projects` - True | False -- if set to True, custom sagemaker projects will be enabled for the data science and lead data science users.  Default is False
 
