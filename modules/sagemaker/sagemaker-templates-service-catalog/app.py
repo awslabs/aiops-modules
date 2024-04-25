@@ -53,7 +53,7 @@ dev_security_group_ids = json.loads(os.getenv(_param("DEV_SECURITY_GROUP_IDS"), 
 
 pre_prod_account_id = os.getenv(_param("PRE_PROD_ACCOUNT_ID"), DEFAULT_PRE_PROD_ACCOUNT_ID)
 pre_prod_region = os.getenv(_param("PRE_PROD_REGION"), DEFAULT_PRE_PROD_REGION)
-pre_prod_vpc_id = os.getenv(_param("DEV_VPC_ID"), DEFAULT_PRE_PROD_VPC_ID)
+pre_prod_vpc_id = os.getenv(_param("PRE_PROD_VPC_ID"), DEFAULT_PRE_PROD_VPC_ID)
 pre_prod_subnet_ids = json.loads(os.getenv(_param("PRE_PROD_SUBNET_IDS"), DEFAULT_PRE_PROD_SUBNET_IDS))
 pre_prod_security_group_ids = json.loads(
     os.getenv(_param("PRE_PROD_SECURITY_GROUP_IDS"), DEFAULT_PROD_SECURITY_GROUP_IDS)
