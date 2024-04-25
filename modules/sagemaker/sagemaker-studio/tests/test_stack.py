@@ -21,7 +21,7 @@ def stack_defaults() -> None:
 
 
 @pytest.fixture(scope="function")
-def stack(stack_defaults, enable_custom_sagemaker_projects: bool) -> cdk.Stack:
+def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -54,11 +54,13 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool) -> cdk.Stack:
         app_image_config_name=app_image_config_name,
         image_name=image_name,
         enable_custom_sagemaker_projects=enable_custom_sagemaker_projects,
+        auth_mode=auth_mode,
     )
 
 
+@pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
-def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
+def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::SageMaker::Domain", 1)
@@ -67,8 +69,9 @@ def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bo
     template.resource_count_is("AWS::IAM::Role", 5 if enable_custom_sagemaker_projects else 3)
 
 
+@pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
-def test_no_cdk_nag_errors(stack: cdk.Stack, enable_custom_sagemaker_projects: bool) -> None:
+def test_no_cdk_nag_errors(stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str) -> None:
     cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
 
     nag_errors = Annotations.from_stack(stack).find_error(
