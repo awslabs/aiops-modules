@@ -24,7 +24,7 @@ This module handles the deployment of the following resources:
 1. SageMaker Studio Domain requires, along with
 2. IAM roles which would be linked to SM Studio user profiles. User Profile creating process is managed by manifests files in `manifests/sagemaker-studio-modules.yaml`. You can simply add new entries in the list to create a new user. The user will be linked to a role depending on which group you add them to (`data_science_users` or `lead_data_science_users`).
 
-Note: If using SSO auth, the usernames must match valid users in your directory.
+Note: If using SSO auth, the account must be set up with IAM Identity Center and usernames must match valid users in your directory. More details in [User Guide](https://docs.aws.amazon.com/sagemaker/latest/dg/onboard-sso-users.html).
 
 ```
   - name: data_science_users
