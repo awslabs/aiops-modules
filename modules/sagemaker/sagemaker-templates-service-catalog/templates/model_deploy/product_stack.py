@@ -40,6 +40,11 @@ class Product(servicecatalog.ProductStack):
     ) -> None:
         super().__init__(scope, id)
 
+        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
+        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
+        pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
+        prod_region = Aws.REGION if not prod_region else prod_region
+
         sagemaker_project_name = CfnParameter(
             self,
             "SageMakerProjectName",
@@ -66,6 +71,38 @@ class Product(servicecatalog.ProductStack):
             "ModelBucketName",
             type="String",
             description="Name of the bucket that stores model artifacts.",
+        ).value_as_string
+
+        pre_prod_account_id = CfnParameter(
+            self,
+            "PreProdAccountId",
+            type="String",
+            description="Pre-prod AWS account id.",
+            default=pre_prod_account_id,
+        ).value_as_string
+
+        pre_prod_region = CfnParameter(
+            self,
+            "PreProdRegion",
+            type="String",
+            description="Pre-prod region name.",
+            default=pre_prod_region,
+        ).value_as_string
+
+        prod_account_id = CfnParameter(
+            self,
+            "ProdAccountId",
+            type="String",
+            description="Prod AWS account id.",
+            default=prod_account_id,
+        ).value_as_string
+
+        prod_region = CfnParameter(
+            self,
+            "ProdRegion",
+            type="String",
+            description="Prod region name.",
+            default=prod_region,
         ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)

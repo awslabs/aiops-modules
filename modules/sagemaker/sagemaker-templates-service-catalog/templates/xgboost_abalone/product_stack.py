@@ -27,12 +27,14 @@ class Product(servicecatalog.ProductStack):
         id: str,
         build_app_asset: s3_assets.Asset,
         pre_prod_account_id: str,
-        pre_prod_region: str,
         prod_account_id: str,
-        prod_region: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
+
+        dev_account_id = Aws.ACCOUNT_ID
+        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
+        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         sagemaker_project_name = CfnParameter(
             self,
@@ -48,24 +50,24 @@ class Product(servicecatalog.ProductStack):
             description="Service generated Id of the project.",
         ).value_as_string
 
+        pre_prod_account_id = CfnParameter(
+            self,
+            "PreProdAccountId",
+            type="String",
+            description="Pre-prod AWS account id.. Required for cross-account model registry permissions.",
+            default=pre_prod_account_id,
+        ).value_as_string
+
+        prod_account_id = CfnParameter(
+            self,
+            "ProdAccountId",
+            type="String",
+            description="Prod AWS account id. Required for cross-account model registry permissions.",
+            default=prod_account_id,
+        ).value_as_string
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
-
-        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
-        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
-        pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
-        prod_region = Aws.REGION if not prod_region else prod_region
-
-        # cross account model registry resource policy
-        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
-        model_package_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-            f"{model_package_group_name}/*"
-        )
-        model_package_group_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
-            f"{model_package_group_name}"
-        )
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -152,10 +154,16 @@ class Product(servicecatalog.ProductStack):
                     actions=[
                         "sagemaker:DescribeModelPackageGroup",
                     ],
-                    resources=[model_package_group_arn],
+                    resources=[
+                        (
+                            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
+                            f"{model_package_group_name}"
+                        )
+                    ],
                     principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
                     ],
                 ),
                 iam.PolicyStatement(
@@ -166,10 +174,16 @@ class Product(servicecatalog.ProductStack):
                         "sagemaker:UpdateModelPackage",
                         "sagemaker:CreateModel",
                     ],
-                    resources=[model_package_arn],
+                    resources=[
+                        (
+                            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
+                            f"{model_package_group_name}/*"
+                        )
+                    ],
                     principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
                     ],
                 ),
             ]
