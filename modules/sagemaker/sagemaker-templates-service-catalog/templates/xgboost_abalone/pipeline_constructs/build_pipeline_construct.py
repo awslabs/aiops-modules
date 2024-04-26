@@ -23,9 +23,9 @@ class BuildPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
-        s3_artifact: s3.IBucket,
-        pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
+        model_bucket: s3.IBucket,
+        pipeline_artifact_bucket: s3.IBucket,
         repo_asset: s3_assets.Asset,
         **kwargs: Any,
     ) -> None:
@@ -108,7 +108,7 @@ class BuildPipelineConstruct(Construct):
         )
 
         cloudwatch.Metric.grant_put_metric_data(sagemaker_policy)
-        s3_artifact.grant_read_write(sagemaker_policy)
+        model_bucket.grant_read_write(sagemaker_policy)
         sagemaker_seedcode_bucket.grant_read_write(sagemaker_policy)
 
         sagemaker_execution_role.grant_pass_role(codebuild_role)
@@ -239,9 +239,9 @@ class BuildPipelineConstruct(Construct):
                     "SAGEMAKER_PIPELINE_ROLE_ARN": codebuild.BuildEnvironmentVariable(
                         value=sagemaker_execution_role.role_arn,
                     ),
-                    "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_name),
+                    "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_name),
                     "ARTIFACT_BUCKET_KMS_ID": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.encryption_key.key_id  # type: ignore[union-attr]
+                        value=model_bucket.encryption_key.key_id  # type: ignore[union-attr]
                     ),
                 },
             ),

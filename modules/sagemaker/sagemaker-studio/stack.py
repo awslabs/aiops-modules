@@ -35,6 +35,7 @@ class SagemakerStudioStack(Stack):
         app_image_config_name: str,
         image_name: str,
         enable_custom_sagemaker_projects: bool,
+        auth_mode: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -75,6 +76,7 @@ class SagemakerStudioStack(Stack):
             subnet_ids=[subnet.subnet_id for subnet in self.subnets],
             app_image_config_name=app_image_config_name,
             image_name=image_name,
+            auth_mode=auth_mode,
         )
 
         if enable_custom_sagemaker_projects:
@@ -95,6 +97,8 @@ class SagemakerStudioStack(Stack):
                 user_settings=sagemaker.CfnUserProfile.UserSettingsProperty(
                     execution_role=self.sm_roles.data_scientist_role.role_arn,
                 ),
+                single_sign_on_user_identifier="UserName" if auth_mode == "SSO" else None,
+                single_sign_on_user_value=user if auth_mode == "SSO" else None,
             )
             for user in data_science_users
         ]
@@ -108,6 +112,8 @@ class SagemakerStudioStack(Stack):
                 user_settings=sagemaker.CfnUserProfile.UserSettingsProperty(
                     execution_role=self.sm_roles.lead_data_scientist_role.role_arn,
                 ),
+                single_sign_on_user_identifier="UserName" if auth_mode == "SSO" else None,
+                single_sign_on_user_value=user if auth_mode == "SSO" else None,
             )
             for user in lead_data_science_users
         ]
@@ -201,6 +207,7 @@ class SagemakerStudioStack(Stack):
         vpc_id: str,
         app_image_config_name: str,
         image_name: str,
+        auth_mode: str,
     ) -> sagemaker.CfnDomain:
         """
         Create the SageMaker Studio Domain
@@ -228,7 +235,7 @@ class SagemakerStudioStack(Stack):
         return sagemaker.CfnDomain(
             self,
             "sagemaker-domain",
-            auth_mode="IAM",
+            auth_mode=auth_mode,
             app_network_access_type="VpcOnly",
             default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(
                 execution_role=sagemaker_studio_role.role_arn,

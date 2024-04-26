@@ -25,7 +25,7 @@ class DeployPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
-        s3_artifact: s3.IBucket,
+        model_bucket: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
         repo_asset: s3_assets.Asset,
@@ -76,9 +76,9 @@ class DeployPipelineConstruct(Construct):
                             actions=["sagemaker:ListModelPackages"],
                             resources=[
                                 f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package-group/"
-                                f"{project_name}-{project_id}*",
+                                f"{model_package_group_name}",
                                 f"arn:{Aws.PARTITION}:sagemaker:{dev_region}:{dev_account_id}:model-package/"
-                                f"{project_name}-{project_id}/*",
+                                f"{model_package_group_name}/*",
                             ],
                         )
                     ]
@@ -122,6 +122,9 @@ class DeployPipelineConstruct(Construct):
             },
         )
 
+        # Allow to pull artifacts from model bucket
+        model_bucket.grant_read_write(cdk_synth_build_role)
+
         cdk_synth_build = codebuild.PipelineProject(
             self,
             "CDKSynthBuild",
@@ -145,7 +148,7 @@ class DeployPipelineConstruct(Construct):
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
@@ -224,7 +227,7 @@ class DeployPipelineConstruct(Construct):
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_arn),
+                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
@@ -346,12 +349,14 @@ class DeployPipelineConstruct(Construct):
                         "PreProdActionRole",
                         f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
                         f"cdk-hnb659fds-deploy-role-{pre_prod_account_id}-{pre_prod_region}",
+                        mutable=False,
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "PreProdDeploymentRole",
                         f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/"
                         f"cdk-hnb659fds-cfn-exec-role-{pre_prod_account_id}-{pre_prod_region}",
+                        mutable=False,
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,
@@ -381,12 +386,14 @@ class DeployPipelineConstruct(Construct):
                         "ProdActionRole",
                         f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
                         f"cdk-hnb659fds-deploy-role-{prod_account_id}-{prod_region}",
+                        mutable=False,
                     ),
                     deployment_role=iam.Role.from_role_arn(
                         self,
                         "ProdDeploymentRole",
                         f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/"
                         f"cdk-hnb659fds-cfn-exec-role-{prod_account_id}-{prod_region}",
+                        mutable=False,
                     ),
                     cfn_capabilities=[
                         CfnCapabilities.AUTO_EXPAND,

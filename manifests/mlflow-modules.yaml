@@ -1,5 +1,6 @@
 name: mlflow-fargate
 path: modules/mlflow/mlflow-fargate
+targetAccount: primary
 parameters:
   - name: vpc-id
     valueFrom:
