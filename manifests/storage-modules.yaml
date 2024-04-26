@@ -54,3 +54,25 @@ parameters:
     value: 30
   - name: removal-policy
     value: DESTROY
+---
+name: opensearch
+path: git::https://github.com/awslabs/idf-modules.git//modules/opensearch/
+targetAccount: primary
+targetRegion: us-east-1
+parameters:
+  - name: encryption-type
+    value: SSE
+  - name: retention-type
+    value: RETAIN
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: basic-networking
+        key: VpcId
+  - name: private-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: basic-networking
+        key: PrivateSubnetIds
