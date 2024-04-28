@@ -30,6 +30,8 @@ DEFAULT_VARIANT_NAME = "AllTraffic"
 DEFAULT_INITIAL_INSTANCE_COUNT = 1
 DEFAULT_INITIAL_VARIANT_WEIGHT = 1
 DEFAULT_INSTANCE_TYPE = "ml.m4.xlarge"
+DEFAULT_SCALING_MIN_INSTANCE_COUNT = 1
+DEFAULT_SCALING_MAX_INSTANCE_COUNT = 10
 
 environment = aws_cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -49,6 +51,9 @@ variant_name = os.getenv(_param("VARIANT_NAME"), DEFAULT_VARIANT_NAME)
 initial_instance_count = int(os.getenv(_param("INITIAL_INSTANCE_COUNT"), DEFAULT_INITIAL_INSTANCE_COUNT))
 initial_variant_weight = int(os.getenv(_param("INITIAL_VARIANT_WEIGHT"), DEFAULT_INITIAL_VARIANT_WEIGHT))
 instance_type = os.getenv(_param("INSTANCE_TYPE"), DEFAULT_INSTANCE_TYPE)
+managed_instance_scaling = bool(os.getenv(_param("MANAGED_INSTANCE_SCALING"), False))
+scaling_min_instance_count = int(os.getenv(_param("SCALING_MIN_INSTANCE_COUNT"), DEFAULT_SCALING_MIN_INSTANCE_COUNT))
+scaling_max_instance_count = int(os.getenv(_param("SCALING_MAX_INSTANCE_COUNT"), DEFAULT_SCALING_MAX_INSTANCE_COUNT))
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -76,6 +81,9 @@ stack = DeployEndpointStack(
         "instance_type": instance_type,
         "variant_name": variant_name,
     },
+    managed_instance_scaling=managed_instance_scaling,
+    scaling_min_instance_count=scaling_min_instance_count,
+    scaling_max_instance_count=scaling_max_instance_count,
     env=environment,
 )
 
