@@ -23,12 +23,13 @@ class RAGResources(Stack):
              description=" This stack creates resources for the LLM - QA RAG ",
              **kwargs)
 
+        print(os_domain_endpoint)
         # get an existing OpenSearch provisioned cluster
         os_domain = os.Domain.from_domain_endpoint(
             self,
             'osdomain',
             # domain_arn=open_search_domain_arn, #'arn:aws:es:us-east-1:098191324367:domain/osforqadomain',
-            domain_endpoint= os_domain_endpoint ,#'https://vpc-osforqadomain-du6zvbtupkxxsk3oouvjc5tkqy.us-east-1.es.amazonaws.com',
+            domain_endpoint= "https://" + os_domain_endpoint ,#'https://vpc-osforqadomain-du6zvbtupkxxsk3oouvjc5tkqy.us-east-1.es.amazonaws.com',
         )
 
         # get an existing userpool

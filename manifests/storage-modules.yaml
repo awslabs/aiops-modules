@@ -57,7 +57,7 @@ parameters:
     value: DESTROY
 ---
 name: opensearch
-path: git::https://github.com/awslabs/idf-modules.git//modules/opensearch/
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/opensearch/
 targetAccount: primary
 targetRegion: us-east-1
 parameters:
@@ -69,11 +69,11 @@ parameters:
     valueFrom:
       moduleMetadata:
         group: networking
-        name: basic-networking
+        name: networking
         key: VpcId
   - name: private-subnet-ids
     valueFrom:
       moduleMetadata:
         group: networking
-        name: basic-networking
+        name: networking
         key: PrivateSubnetIds
