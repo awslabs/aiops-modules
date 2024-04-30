@@ -4,7 +4,7 @@ import aws_cdk as cdk
 from constructs import Construct
 from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
-from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep
+from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep, CodeBuildStep
 
 import config.constants as constants
 from .deploy_endpoint_stack import DeployEndpointStack
@@ -72,6 +72,50 @@ class ProdStage(cdk.Stage):
         )
 
 
+def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
+    return iam.Policy(
+        scope,
+        identifier,
+        statements=[
+            iam.PolicyStatement(
+                sid="ModelPackageGroup",
+                actions=[
+                    "sagemaker:DescribeModelPackageGroup",
+                ],
+                resources=["*"],
+            ),
+            iam.PolicyStatement(
+                sid="ModelPackage",
+                actions=[
+                    "sagemaker:DescribeModelPackage",
+                    "sagemaker:ListModelPackages",
+                    "sagemaker:UpdateModelPackage",
+                    "sagemaker:CreateModel",
+                ],
+                resources=["*"],
+            ),
+            iam.PolicyStatement(
+                actions=[
+                    "sts:AssumeRole",
+                ],
+                effect=iam.Effect.ALLOW,
+                resources=[
+                    # TODO: this is clearly over-permissive
+                    f"arn:{cdk.Aws.PARTITION}:iam::{constants.DEV_ACCOUNT_ID}:role/*",
+                    f"arn:{cdk.Aws.PARTITION}:iam::{constants.PRE_PROD_ACCOUNT_ID}:role/cdk*",
+                    f"arn:{cdk.Aws.PARTITION}:iam::{constants.PROD_ACCOUNT_ID}:role/cdk*",
+                ],
+            ),
+            iam.PolicyStatement(
+                actions=["ssm:GetParameter"],
+                resources=[
+                    f"arn:{cdk.Aws.PARTITION}:ssm:{constants.DEV_REGION}:{constants.DEV_ACCOUNT_ID}:parameter/*",
+                    f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PRE_PROD_REGION}:{constants.PRE_PROD_ACCOUNT_ID}:parameter/*",
+                    f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PROD_REGION}:{constants.PROD_ACCOUNT_ID}:parameter/*",
+                ],
+            )
+        ]
+    )
 class PipelineStack(cdk.Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -91,64 +135,35 @@ class PipelineStack(cdk.Stack):
         )
 
         codepipeline_role.attach_inline_policy(
-            iam.Policy(
-                self,
-                "Policy",
-                statements=[
-                    iam.PolicyStatement(
-                        sid="ModelPackageGroup",
-                        actions=[
-                            "sagemaker:DescribeModelPackageGroup",
-                        ],
-                        resources=["*"],
-                    ),
-                    iam.PolicyStatement(
-                        sid="ModelPackage",
-                        actions=[
-                            "sagemaker:DescribeModelPackage",
-                            "sagemaker:ListModelPackages",
-                            "sagemaker:UpdateModelPackage",
-                            "sagemaker:CreateModel",
-                        ],
-                        resources=["*"],
-                    ),
-                    iam.PolicyStatement(
-                        actions=[
-                            "sts:AssumeRole",
-                        ],
-                        effect=iam.Effect.ALLOW,
-                        resources=[
-                            # TODO: this is clearly over-permissive
-                            f"arn:{cdk.Aws.PARTITION}:iam::{constants.DEV_ACCOUNT_ID}:role/*",
-                            f"arn:{cdk.Aws.PARTITION}:iam::{constants.PRE_PROD_ACCOUNT_ID}:role/cdk*",
-                            f"arn:{cdk.Aws.PARTITION}:iam::{constants.PROD_ACCOUNT_ID}:role/cdk*",
-                        ],
-                    ),
-                    iam.PolicyStatement(
-                        actions=["ssm:GetParameter"],
-                        resources=[
-                            f"arn:{cdk.Aws.PARTITION}:ssm:{constants.DEV_REGION}:{constants.DEV_ACCOUNT_ID}:parameter/*",
-                            f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PRE_PROD_REGION}:{constants.PRE_PROD_ACCOUNT_ID}:parameter/*",
-                            f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PROD_REGION}:{constants.PROD_ACCOUNT_ID}:parameter/*",
-                        ],
-                    )
-                ],
-            )
+            create_inline_policy(self, "DeployPipelinePolicy")
+        )
+        
+        synth_codebuild_role = iam.Role(
+            self,
+            "SynthStageRole",
+            assumed_by=iam.ServicePrincipal("codebuild.amazonaws.com"),
+            path="/service-role/",
+        )
+        synth_codebuild_role.attach_inline_policy(
+            create_inline_policy(self, "SynthStagePolicy")
         )
 
         pipeline =  CodePipeline(
             self,
             "Pipeline",
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
-            synth=ShellStep(
+            synth=CodeBuildStep(
                 "Synth",
                 input=CodePipelineSource.code_commit(repository=repository, branch="main"),
-                commands=[
+                install_commands=[
                     "npm install -g aws-cdk",
+                ],
+                commands=[
                     "python -m pip install -r requirements.txt",
                     "cdk synth --app \"python app.py\" "
                 ],
-                env=ENV,
+                role=synth_codebuild_role,
+                env=ENV
             ),
             cross_account_keys=True,
             self_mutation=True,
