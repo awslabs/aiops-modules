@@ -21,6 +21,7 @@ DEFAULT_STUDIO_BUCKET_NAME = f"{app_prefix}-bucket"
 DEFAULT_CUSTOM_KERNEL_APP_CONFIG_NAME = None
 DEFAULT_CUSTOM_KERNEL_IMAGE_NAME = None
 DEFAULT_ENABLE_CUSTOM_SAGEMAKER_PROJECTS = False
+DEFAULT_AUTH_MODE = "IAM"
 
 
 def _param(name: str) -> str:
@@ -36,6 +37,7 @@ image_name = os.getenv(_param("CUSTOM_KERNEL_IMAGE_NAME"), DEFAULT_CUSTOM_KERNEL
 enable_custom_sagemaker_projects = bool(
     os.getenv(_param("ENABLE_CUSTOM_SAGEMAKER_PROJECTS"), DEFAULT_ENABLE_CUSTOM_SAGEMAKER_PROJECTS)
 )
+auth_mode = os.getenv(_param("AUTH_MODE"), DEFAULT_AUTH_MODE)
 
 environment = aws_cdk.Environment(
     account=os.environ["CDK_DEFAULT_ACCOUNT"],
@@ -44,6 +46,10 @@ environment = aws_cdk.Environment(
 
 data_science_users = json.loads(os.getenv(_param("DATA_SCIENCE_USERS"), "[]"))
 lead_data_science_users = json.loads(os.getenv(_param("LEAD_DATA_SCIENCE_USERS"), "[]"))
+
+if auth_mode not in {"IAM", "SSO"}:
+    raise ValueError("Auth mode must be either `IAM` or `SSO`")
+
 
 app = aws_cdk.App()
 stack = SagemakerStudioStack(
@@ -62,6 +68,7 @@ stack = SagemakerStudioStack(
     app_image_config_name=cast(str, app_image_config_name),
     image_name=cast(str, image_name),
     enable_custom_sagemaker_projects=enable_custom_sagemaker_projects,
+    auth_mode=auth_mode,
 )
 
 

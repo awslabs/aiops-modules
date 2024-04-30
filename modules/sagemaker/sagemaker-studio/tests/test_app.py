@@ -51,3 +51,10 @@ def test_private_subnet_ids(stack_defaults):
         import app  # noqa: F401
 
         assert os.environ["SEEDFARMER_PARAMETER_PRIVATE_SUBNET_IDS"] == ["subnet-12345", "subnet-54321"]
+
+
+def test_auth_mode(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_AUTH_MODE"] = "DUMMY"
+
+    with pytest.raises(Exception, match="Auth mode must be either `IAM` or `SSO`"):
+        import app  # noqa: F401
