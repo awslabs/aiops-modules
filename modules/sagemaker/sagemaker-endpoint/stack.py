@@ -36,6 +36,9 @@ class DeployEndpointStack(Stack):
         model_artifacts_bucket_arn: Optional[str],
         ecr_repo_arn: Optional[str],
         endpoint_config_prod_variant: Dict[str, Any],
+        managed_instance_scaling: bool,
+        scaling_min_instance_count: int,
+        scaling_max_instance_count: int,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -171,6 +174,12 @@ class DeployEndpointStack(Stack):
                 sagemaker.CfnEndpointConfig.ProductionVariantProperty(
                     model_name=model_name,
                     **endpoint_config_prod_variant,
+                    managed_instance_scaling=sagemaker.CfnEndpointConfig.ManagedInstanceScalingProperty(
+                        max_instance_count=scaling_max_instance_count,
+                        min_instance_count=scaling_min_instance_count,
+                    )
+                    if managed_instance_scaling
+                    else None,
                 )
             ],
         )
