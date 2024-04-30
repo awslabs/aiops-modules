@@ -1,4 +1,0 @@
-initial_instance_count: 1
-initial_variant_weight: 1
-instance_type: "ml.g5.2xlarge"
-variant_name: "AllTraffic"
