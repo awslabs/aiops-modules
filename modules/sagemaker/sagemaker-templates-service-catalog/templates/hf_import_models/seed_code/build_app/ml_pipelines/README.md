@@ -4,4 +4,5 @@ This folder contains SageMaker Pipeline definitions and helper scripts to either
 
 Those files are generic and can be reused to call any SageMaker Pipeline.
 
-Each SageMaker Pipeline definition should be be treated as a modul inside its own folder, for example here the "training" pipeline, contained inside `training/`.
+Each SageMaker Pipeline definition should be be treated as a module inside its own folder, for example here the 
+"training" pipeline, contained inside `training/`.
