@@ -15,6 +15,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 import aws_cdk
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, Tags
@@ -24,7 +25,6 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
-from typing import List
 
 from templates.hf_import_models.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 
