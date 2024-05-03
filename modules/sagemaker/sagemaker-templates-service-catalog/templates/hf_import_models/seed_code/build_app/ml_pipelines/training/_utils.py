@@ -24,7 +24,8 @@ from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
 
 
-def resolve_ecr_uri_from_image_versions(sagemaker_session: sagemaker.session.Session, image_versions: List[Dict[str, Any]], image_name: str
+def resolve_ecr_uri_from_image_versions(
+    sagemaker_session: sagemaker.session.Session, image_versions: List[Dict[str, Any]], image_name: str
 ) -> Any:
     """Gets ECR URI from image versions
     Args:

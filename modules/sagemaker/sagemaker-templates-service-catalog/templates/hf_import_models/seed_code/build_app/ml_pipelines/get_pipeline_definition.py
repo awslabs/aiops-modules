@@ -26,7 +26,7 @@ import sys
 from ml_pipelines._utils import get_pipeline_driver
 
 
-def main() -> None:   # pragma: no cover
+def main() -> None:  # pragma: no cover
     """The main harness that gets the pipeline definition JSON.
 
     Prints the json to stdout or saves to file.

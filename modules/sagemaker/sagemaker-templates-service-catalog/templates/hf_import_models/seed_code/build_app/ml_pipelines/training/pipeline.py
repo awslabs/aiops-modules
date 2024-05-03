@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-
 from typing import Any, Optional
 
 import boto3
@@ -33,7 +32,7 @@ def get_acess_token_from_secret(secretid: str, secret_region: str) -> str:
     return secret_value
 
 
-ACCESS_TOKEN = get_acess_token_from_secret(ACCESS_TOKEN_SECRET,SECRET_REGION)
+ACCESS_TOKEN = get_acess_token_from_secret(ACCESS_TOKEN_SECRET, SECRET_REGION)
 
 
 def get_session(region: str, default_bucket: Optional[str]) -> sagemaker.session.Session:

@@ -250,7 +250,7 @@ class BuildPipelineConstruct(Construct):
                     ),
                     "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_name),
                     "ARTIFACT_BUCKET_KMS_ID": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.encryption_key.key_id # type: ignore[union-attr]
+                        value=s3_artifact.encryption_key.key_id  # type: ignore[union-attr]
                     ),
                     "HUGGING_FACE_ACCESS_TOKEN_SECRET": codebuild.BuildEnvironmentVariable(
                         value=hf_access_token_secret
