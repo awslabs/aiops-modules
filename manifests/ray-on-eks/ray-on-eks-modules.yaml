@@ -1,0 +1,36 @@
+name: ray-on-eks
+path: modules/eks/ray-on-eks
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: EksOpenidIssuer
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterOpenIdConnectIssuer
+  - name: EksClusterSecurityGroupId
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterSecurityGroupId
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
