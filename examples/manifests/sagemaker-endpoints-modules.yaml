@@ -23,3 +23,7 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: managed_instance_scaling
+    value: True
+  - name: scaling_max_instance_count
+    value: 10
