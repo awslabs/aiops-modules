@@ -17,7 +17,7 @@ ACCESS_TOKEN_SECRET = os.environ["HUGGING_FACE_ACCESS_TOKEN_SECRET"]  # read tok
 SECRET_REGION = os.environ["AWS_REGION"]
 
 
-def get_acess_token_from_secret(secretid: str, secret_region: str) -> str:
+def get_acess_token_from_secret(secretid: str, secret_region: str) -> Any:
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(service_name="secretsmanager", region_name=secret_region)
@@ -61,13 +61,13 @@ def get_session(region: str, default_bucket: Optional[str]) -> sagemaker.session
 
 
 def get_pipeline(
-    region,
-    hugging_face_model_id,
-    role=None,
-    default_bucket=None,
-    model_package_group_name="AbalonePackageGroup",
-    pipeline_name="AbalonePipeline",
-    project_id="SageMakerProjectId",
+    region: str,
+    hugging_face_model_id: str,
+    role: Optional[str] = None,
+    default_bucket: Optional[str] = None,
+    model_package_group_name: str = "AbalonePackageGroup",
+    pipeline_name: str = "AbalonePipeline",
+    project_id: str = "SageMakerProjectId",
 ) -> Any:
     sagemaker_session = get_session(region, default_bucket)
     if role is None:

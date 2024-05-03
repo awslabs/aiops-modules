@@ -121,9 +121,9 @@ class BuildPipelineConstruct(Construct):
                 ]
             ),
         )
-        sagemaker_principal = iam.AccountPrincipal(Aws.ACCOUNT_ID).with_policy_statements(sagemaker_policy)
+
         cloudwatch.Metric.grant_put_metric_data(sagemaker_policy)
-        sagemaker_execution_role.grant_pass_role(sagemaker_principal)
+        sagemaker_execution_role.grant_pass_role(sagemaker_policy)  # type: ignore[arg-type]
         s3_artifact.grant_read_write(sagemaker_policy)
         sagemaker_seedcode_bucket.grant_read_write(sagemaker_policy)
 

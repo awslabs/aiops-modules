@@ -48,7 +48,7 @@ def resolve_ecr_uri_from_image_versions(
     return None
 
 
-def resolve_ecr_uri(sagemaker_session, image_arn):
+def resolve_ecr_uri(sagemaker_session: sagemaker.session.Session, image_arn: str) -> Any:
     """Gets the ECR URI from the image name
 
     Args:
