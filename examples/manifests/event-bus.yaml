@@ -1,5 +1,5 @@
 name: event-bus
-path: modules/sagemaker/sagemaker-model-event-bus
+path: examples/modules/events/event-bus
 targetAccount: tooling
 parameters:
   - name: event_bus_name

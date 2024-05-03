@@ -1,4 +1,4 @@
-# SageMaker Model Event Bus
+# Event Bus
 
 ## Description
 
@@ -6,7 +6,7 @@ This module creates an Amazon EventBridge Bus for cross-account events.
 
 ### Architecture
 
-![SageMaker Model Event Bus Architecture](docs/_static/architecture.drawio.png "SageMaker Model Event Bus Architecture")
+![Event Bus Architecture](docs/_static/architecture.drawio.png "Event Bus Architecture")
 
 ## Inputs/Outputs
 
@@ -24,8 +24,8 @@ This module creates an Amazon EventBridge Bus for cross-account events.
 ### Sample manifest declaration
 
 ```yaml
-name: sagemaker-model-event-bus
-path: modules/sagemaker/sagemaker-model-event-bus/sagemaker_model_event_bus
+name: event-bus
+path: examples/modules/events/event-bus
 targetAccount: primary
 parameters:
   - name: event_bus_name

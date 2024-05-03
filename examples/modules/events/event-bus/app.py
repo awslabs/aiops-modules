@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Create a Sagemaker Model Event Bus Stack."""
+"""Create a Event Bus Stack."""
 
 import aws_cdk as cdk
 
-from sagemaker_model_event_bus.settings import ApplicationSettings
-from sagemaker_model_event_bus.stack import SagemakerModelEventBusStack
+from event_bus.settings import ApplicationSettings
+from event_bus.stack import EventBusStack
 
 # Load application settings from env vars.
 app_settings = ApplicationSettings()
@@ -16,7 +16,7 @@ env = cdk.Environment(
 
 app = cdk.App()
 
-stack = SagemakerModelEventBusStack(
+stack = EventBusStack(
     scope=app,
     construct_id=app_settings.settings.app_prefix,
     env=env,

@@ -1,4 +1,4 @@
-"""Seedfarmer module to deploy an EventBridge Bus for SageMaker Model Package events."""
+"""Seedfarmer module to deploy an EventBridge Bus."""
 
 from typing import Any, Dict, List, Optional
 
@@ -8,7 +8,7 @@ from aws_cdk import aws_iam as iam
 from constructs import Construct
 
 
-class SagemakerModelEventBusStack(Stack):
+class EventBusStack(Stack):
     """Create an EventBridge Bus."""
 
     def __init__(
@@ -78,8 +78,6 @@ class SagemakerModelEventBusStack(Stack):
 
     def setup_tags(self) -> None:
         """Add tags to all resources."""
-        Tags.of(self).add("sagemaker:deployment-stage", Stack.of(self).stack_name)
-
         for k, v in (self.additional_tags or {}).items():
             Tags.of(self).add(k, v)
 

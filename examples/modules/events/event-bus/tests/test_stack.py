@@ -3,7 +3,7 @@ from aws_cdk.assertions import Template
 
 
 def test_synthesize_stack() -> None:
-    from sagemaker_model_event_bus import stack
+    from event_bus import stack
 
     app = cdk.App()
 
@@ -12,7 +12,7 @@ def test_synthesize_stack() -> None:
     mod_name = "test-module"
     app_prefix = f"{project_name}-{dep_name}-{mod_name}"
 
-    stack = stack.SagemakerModelEventBusStack(
+    stack = stack.EventBusStack(
         scope=app,
         construct_id=app_prefix,
         env=cdk.Environment(account="111111111111", region="us-east-1"),

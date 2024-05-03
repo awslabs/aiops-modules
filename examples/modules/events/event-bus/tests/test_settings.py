@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from sagemaker_model_event_bus.settings import ApplicationSettings
+from event_bus.settings import ApplicationSettings
 
 
 def test_settings_inputs(env_defaults) -> None:
