@@ -13,9 +13,9 @@ def stack_defaults():
     os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
     os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
-    os.environ[
-        "SEEDFARMER_PARAMETER_source_model_package_group_arn"
-    ] = "arn:aws:sagemaker:us-east-1:111111111111:model-package-group/dummy123"
+    os.environ["SEEDFARMER_PARAMETER_source_model_package_group_arn"] = (
+        "arn:aws:sagemaker:us-east-1:111111111111:model-package-group/dummy123"
+    )
     os.environ["SEEDFARMER_PARAMETER_target_bucket_name"] = "dummy321"
 
     # Unload the app import so that subsequent tests don't reuse

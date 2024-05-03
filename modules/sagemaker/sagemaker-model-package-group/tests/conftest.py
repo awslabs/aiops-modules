@@ -14,9 +14,9 @@ def env_defaults():
 
     os.environ["SEEDFARMER_PARAMETER_model_package_group_name"] = "dummy123"
     os.environ["SEEDFARMER_PARAMETER_retain_on_delete"] = "False"
-    os.environ[
-        "SEEDFARMER_PARAMETER_target_event_bus_arn"
-    ] = "arn:aws:events:xx-xxxxx-xx:xxxxxxxxxxxx:event-bus/default"
+    os.environ["SEEDFARMER_PARAMETER_target_event_bus_arn"] = (
+        "arn:aws:events:xx-xxxxx-xx:xxxxxxxxxxxx:event-bus/default"
+    )
     os.environ["SEEDFARMER_PARAMETER_model_package_group_description"] = "dummy123"
     os.environ["SEEDFARMER_PARAMETER_target_account_ids"] = '["dummy123"]'
     os.environ["SEEDFARMER_PARAMETER_sagemaker_project_id"] = "dummy321"

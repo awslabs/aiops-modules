@@ -1,4 +1,5 @@
 """Seedfarmer module to deploy an EventBridge Bus for SageMaker Model Package events."""
+
 from typing import Any, Dict, List, Optional
 
 import aws_cdk.aws_events as events

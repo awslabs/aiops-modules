@@ -1,4 +1,5 @@
 """Seedfarmer module to deploy a SageMaker Model Package Group."""
+
 from typing import Any, Dict, List, Optional
 
 import aws_cdk.aws_events as events

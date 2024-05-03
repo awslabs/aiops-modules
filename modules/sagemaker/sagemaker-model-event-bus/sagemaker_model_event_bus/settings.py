@@ -1,4 +1,5 @@
 """Defines the stack settings."""
+
 from abc import ABC
 from typing import Dict, List, Optional
 

@@ -1,4 +1,5 @@
 """Sagemaker Model Package stack."""
+
 import json
 import string
 from typing import Any, Optional

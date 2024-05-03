@@ -1,4 +1,5 @@
 """Sagemaker Model Package models."""
+
 from abc import ABC
 from datetime import datetime
 from typing import Any, Dict, List, Optional

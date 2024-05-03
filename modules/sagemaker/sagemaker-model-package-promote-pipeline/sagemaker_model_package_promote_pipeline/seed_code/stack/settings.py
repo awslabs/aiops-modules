@@ -1,4 +1,5 @@
 """Sagemaker Model Package settings."""
+
 from abc import ABC
 from typing import Optional
 

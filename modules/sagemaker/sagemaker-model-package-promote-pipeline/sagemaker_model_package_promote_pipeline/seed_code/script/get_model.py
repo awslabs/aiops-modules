@@ -1,4 +1,5 @@
 """A module to get Sagemaker Models metadata and artifacts."""
+
 import argparse
 import json
 import logging
