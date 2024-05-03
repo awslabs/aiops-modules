@@ -18,7 +18,7 @@ class RAGResources(Stack):
                  vpc_id: str,
                  cognito_pool_id: str ,
                  os_domain_endpoint: str,
-                 **kwargs):
+                 **kwargs) -> None:
         super().__init__ \
             (scope,
              id,
@@ -32,7 +32,7 @@ class RAGResources(Stack):
             'osdomain',
             domain_endpoint= "https://" + os_domain_endpoint ,
         )
-
+        self.os_domain = os_domain
         # get vpc from vpc id
 
         vpc = ec2.Vpc.from_lookup(
@@ -57,3 +57,5 @@ class RAGResources(Stack):
             open_search_index_name='qa-appsync-index',
             cognito_user_pool=user_pool_loaded,
         )
+
+        self.rag_resource = rag_source

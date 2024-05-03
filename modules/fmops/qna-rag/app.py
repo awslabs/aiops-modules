@@ -34,4 +34,15 @@ stack = RAGResources(
     ),
 )
 
+aws_cdk.CfnOutput(
+    scope=stack,
+    id="metadata",
+    value=stack.to_json_string(
+        {
+            "GraphqlApiId": stack.rag_resource.graphql_api.api_id,
+            "GraphqlArn": stack.rag_resource.graphql_api.arn
+        }
+    ),
+)
+
 app.synth(force=True)

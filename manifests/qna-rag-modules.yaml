@@ -1,8 +1,8 @@
-name: llm-rag
-path: modules/examples/llm-rag
+name: qna-rag
+path: modules/fmops/qna-rag
 parameters:
   - name: cognito-pool-id
-    value: us-east-1_ilYpIJibO
+    value: us-east-1_XXXXX
   - name: os-domain-endpoint
     valueFrom:
       moduleMetadata:
