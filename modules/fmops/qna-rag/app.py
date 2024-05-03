@@ -4,7 +4,7 @@
 import os
 
 import aws_cdk
-from aws_cdk import App, CfnOutput
+from aws_cdk import App
 from stack import RAGResources
 
 
@@ -19,6 +19,16 @@ app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 vpc_id = os.getenv(_param("VPC_ID"))
 cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
 os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
+
+
+if not vpc_id:
+    raise ValueError("Missing input parameter vpc-id")
+
+if not cognito_pool_id:
+    raise ValueError("Missing input parameter cognito-pool-id")
+
+if not os_domain_endpoint:
+    raise ValueError("Missing input parameter os-domain-endpoint")
 
 app = App()
 
@@ -40,7 +50,7 @@ aws_cdk.CfnOutput(
     value=stack.to_json_string(
         {
             "GraphqlApiId": stack.rag_resource.graphql_api.api_id,
-            "GraphqlArn": stack.rag_resource.graphql_api.arn
+            "GraphqlArn": stack.rag_resource.graphql_api.arn,
         }
     ),
 )

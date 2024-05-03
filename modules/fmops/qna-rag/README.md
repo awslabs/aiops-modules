@@ -18,9 +18,6 @@ The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/ge
 
 - `cognito-pool-id` - ID of the cognito user pool, used to secure GraphQl API
 - `os-domain-endpoint` - Open Search doamin url used as knowledge base
-
-#### Optional
-
 - `vpc-id` - VPC id
 
 ### Module Metadata Outputs

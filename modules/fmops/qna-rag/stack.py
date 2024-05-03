@@ -12,25 +12,28 @@ from aws_cdk import (
 
 
 class RAGResources(Stack):
-    def __init__(self,
-                 scope: Construct,
-                 id: str,
-                 vpc_id: str,
-                 cognito_pool_id: str ,
-                 os_domain_endpoint: str,
-                 **kwargs) -> None:
-        super().__init__ \
-            (scope,
-             id,
-             description=" This stack creates resources for the LLM - QA RAG ",
-             **kwargs)
+    def __init__(
+        self,
+        scope: Construct,
+        id: str,
+        vpc_id: str,
+        cognito_pool_id: str,
+        os_domain_endpoint: str,
+        **kwargs,
+    ) -> None:
+        super().__init__(
+            scope,
+            id,
+            description=" This stack creates resources for the LLM - QA RAG ",
+            **kwargs,
+        )
 
         print(os_domain_endpoint)
         # get an existing OpenSearch provisioned cluster
         os_domain = os.Domain.from_domain_endpoint(
             self,
-            'osdomain',
-            domain_endpoint= "https://" + os_domain_endpoint ,
+            "osdomain",
+            domain_endpoint="https://" + os_domain_endpoint,
         )
         self.os_domain = os_domain
         # get vpc from vpc id
@@ -45,16 +48,16 @@ class RAGResources(Stack):
         cognito_pool_id = cognito_pool_id
         user_pool_loaded = cognito.UserPool.from_user_pool_id(
             self,
-            'myuserpool',
+            "myuserpool",
             user_pool_id=cognito_pool_id,
         )
 
         rag_source = QaAppsyncOpensearch(
             self,
-            'QaAppsyncOpensearch',
+            "QaAppsyncOpensearch",
             existing_vpc=vpc,
             existing_opensearch_domain=os_domain,
-            open_search_index_name='qa-appsync-index',
+            open_search_index_name="qa-appsync-index",
             cognito_user_pool=user_pool_loaded,
         )
 
