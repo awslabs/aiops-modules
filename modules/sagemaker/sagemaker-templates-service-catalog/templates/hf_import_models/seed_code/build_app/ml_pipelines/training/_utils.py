@@ -16,13 +16,16 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import logging
+from typing import Any, Dict, List
 
+import sagemaker.session
 from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_ecr_uri_from_image_versions(sagemaker_session, image_versions, image_name):
+def resolve_ecr_uri_from_image_versions(sagemaker_session: sagemaker.session.Session, image_versions: List[Dict[str, Any]], image_name: str
+) -> Any:
     """Gets ECR URI from image versions
     Args:
         sagemaker_session: boto3 session for sagemaker client

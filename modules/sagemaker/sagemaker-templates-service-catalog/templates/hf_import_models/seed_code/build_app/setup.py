@@ -49,7 +49,7 @@ setuptools.setup(
     description=about["__description__"],
     version=about["__version__"],
     author=about["__author__"],
-    author_email=["__author_email__"],
+    author_email=about["__author_email__"],
     long_description=readme,
     long_description_content_type="text/markdown",
     url=about["__url__"],

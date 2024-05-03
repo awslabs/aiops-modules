@@ -26,7 +26,7 @@ import sys
 from ml_pipelines._utils import convert_struct, get_pipeline_custom_tags, get_pipeline_driver
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     """The main harness that creates or updates and runs the pipeline.
 
     Creates or updates the pipeline and runs it.

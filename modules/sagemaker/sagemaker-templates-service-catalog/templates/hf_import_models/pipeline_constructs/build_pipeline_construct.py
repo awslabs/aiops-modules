@@ -121,8 +121,9 @@ class BuildPipelineConstruct(Construct):
                 ]
             ),
         )
+        sagemaker_principal = iam.AccountPrincipal(Aws.ACCOUNT_ID).with_policy_statements(sagemaker_policy)
         cloudwatch.Metric.grant_put_metric_data(sagemaker_policy)
-        sagemaker_execution_role.grant_pass_role(sagemaker_policy)
+        sagemaker_execution_role.grant_pass_role(sagemaker_principal)
         s3_artifact.grant_read_write(sagemaker_policy)
         sagemaker_seedcode_bucket.grant_read_write(sagemaker_policy)
 
@@ -249,7 +250,7 @@ class BuildPipelineConstruct(Construct):
                     ),
                     "ARTIFACT_BUCKET": codebuild.BuildEnvironmentVariable(value=s3_artifact.bucket_name),
                     "ARTIFACT_BUCKET_KMS_ID": codebuild.BuildEnvironmentVariable(
-                        value=s3_artifact.encryption_key.key_id
+                        value=s3_artifact.encryption_key.key_id # type: ignore[union-attr]
                     ),
                     "HUGGING_FACE_ACCESS_TOKEN_SECRET": codebuild.BuildEnvironmentVariable(
                         value=hf_access_token_secret

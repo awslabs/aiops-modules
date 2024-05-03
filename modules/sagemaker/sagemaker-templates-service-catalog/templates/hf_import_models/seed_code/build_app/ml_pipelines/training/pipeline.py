@@ -2,6 +2,8 @@ import json
 import logging
 import os
 
+from typing import Any, Optional
+
 import boto3
 import sagemaker
 import sagemaker.session
@@ -13,10 +15,10 @@ from sagemaker.workflow.step_collections import RegisterModel
 
 logger = logging.getLogger(__name__)
 ACCESS_TOKEN_SECRET = os.environ["HUGGING_FACE_ACCESS_TOKEN_SECRET"]  # read token from secret using boto3
-secret_region = os.environ["AWS_REGION"]
+SECRET_REGION = os.environ["AWS_REGION"]
 
 
-def get_acess_token_from_secret(secretid: str, secret_region: str):
+def get_acess_token_from_secret(secretid: str, secret_region: str) -> str:
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(service_name="secretsmanager", region_name=secret_region)
@@ -31,10 +33,10 @@ def get_acess_token_from_secret(secretid: str, secret_region: str):
     return secret_value
 
 
-ACCESS_TOKEN = get_acess_token_from_secret(ACCESS_TOKEN_SECRET)
+ACCESS_TOKEN = get_acess_token_from_secret(ACCESS_TOKEN_SECRET,SECRET_REGION)
 
 
-def get_session(region, default_bucket):
+def get_session(region: str, default_bucket: Optional[str]) -> sagemaker.session.Session:
     """Gets the sagemaker session based on the region.
 
     Args:
@@ -67,7 +69,7 @@ def get_pipeline(
     model_package_group_name="AbalonePackageGroup",
     pipeline_name="AbalonePipeline",
     project_id="SageMakerProjectId",
-):
+) -> Any:
     sagemaker_session = get_session(region, default_bucket)
     if role is None:
         role = sagemaker.session.get_execution_role(sagemaker_session)
