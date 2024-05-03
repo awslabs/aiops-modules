@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- added managed autoscaling config to `sagemaker-endpoint` module
 - added SSO support in `sagemaker-studio` module
 - added VPC/subnets/sg config for multi-account project template to `sagemaker-templates-service-catalog` module
 - added `sagemaker-custom-kernel` module
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-model-package-group` module.
 - added `sagemaker-model-package-promote-pipeline` module.
 - added `sagemaker-hugging-face-endpoint` module
+- added `hf_import_models` template to import hugging face models
 
 ### **Changed**
 

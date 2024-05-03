@@ -35,6 +35,9 @@ def stack_model_package_input() -> cdk.Stack:
     vpc_id = "vpc-12345"
     model_package_arn = "example-arn"
     model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
+    managed_instance_scaling = True
+    scaling_min_instance_count = 1
+    scaling_max_instance_count = 2
 
     return stack.DeployEndpointStack(
         scope=app,
@@ -48,14 +51,17 @@ def stack_model_package_input() -> cdk.Stack:
         subnet_ids=[],
         model_artifacts_bucket_arn=model_artifacts_bucket_arn,
         ecr_repo_arn=None,
-        env=cdk.Environment(
-            account=os.environ["CDK_DEFAULT_ACCOUNT"],
-            region=os.environ["CDK_DEFAULT_REGION"],
-        ),
         endpoint_config_prod_variant={
             "initial_variant_weight": 1,
             "variant_name": "AllTraffic",
         },
+        managed_instance_scaling=managed_instance_scaling,
+        scaling_min_instance_count=scaling_min_instance_count,
+        scaling_max_instance_count=scaling_max_instance_count,
+        env=cdk.Environment(
+            account=os.environ["CDK_DEFAULT_ACCOUNT"],
+            region=os.environ["CDK_DEFAULT_REGION"],
+        ),
     )
 
 
@@ -75,6 +81,9 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
     vpc_id = "vpc-12345"
     model_package_group_name = "example-group"
     model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
+    managed_instance_scaling = True
+    scaling_min_instance_count = 1
+    scaling_max_instance_count = 2
 
     sagemaker_client = botocore.session.get_session().create_client("sagemaker", region_name="us-east-1")
     mock_s3_client.return_value = sagemaker_client
@@ -110,14 +119,17 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
             subnet_ids=[],
             model_artifacts_bucket_arn=model_artifacts_bucket_arn,
             ecr_repo_arn=None,
-            env=cdk.Environment(
-                account=os.environ["CDK_DEFAULT_ACCOUNT"],
-                region=os.environ["CDK_DEFAULT_REGION"],
-            ),
             endpoint_config_prod_variant={
                 "initial_variant_weight": 1,
                 "variant_name": "AllTraffic",
             },
+            managed_instance_scaling=managed_instance_scaling,
+            scaling_min_instance_count=scaling_min_instance_count,
+            scaling_max_instance_count=scaling_max_instance_count,
+            env=cdk.Environment(
+                account=os.environ["CDK_DEFAULT_ACCOUNT"],
+                region=os.environ["CDK_DEFAULT_REGION"],
+            ),
         )
 
 
