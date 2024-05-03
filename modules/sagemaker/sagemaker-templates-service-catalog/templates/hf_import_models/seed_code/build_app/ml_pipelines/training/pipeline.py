@@ -5,13 +5,33 @@ import os
 import boto3
 import sagemaker
 import sagemaker.session
+from botocore.exceptions import ClientError
 from sagemaker.huggingface import HuggingFaceModel, get_huggingface_llm_image_uri
 from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.step_collections import RegisterModel
 
 logger = logging.getLogger(__name__)
-ACCESS_TOKEN = os.environ["HUGGING_FACE_ACCESS_TOKEN"]
+ACCESS_TOKEN_SECRET = os.environ["HUGGING_FACE_ACCESS_TOKEN_SECRET"]  # read token from secret using boto3
+secret_region = os.environ["AWS_REGION"]
+
+
+def get_acess_token_from_secret(secretid: str, secret_region: str):
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(service_name="secretsmanager", region_name=secret_region)
+
+    try:
+        get_secret_value_response = client.get_secret_value(SecretId=secretid)
+    except ClientError as e:
+        raise e
+
+    # Get the secret value
+    secret_value = get_secret_value_response["SecretString"]
+    return secret_value
+
+
+ACCESS_TOKEN = get_acess_token_from_secret(ACCESS_TOKEN_SECRET)
 
 
 def get_session(region, default_bucket):

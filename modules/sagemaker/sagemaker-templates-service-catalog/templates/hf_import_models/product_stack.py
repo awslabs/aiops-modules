@@ -15,6 +15,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from typing import Any
 
 import aws_cdk
 import aws_cdk.aws_servicecatalog as servicecatalog
@@ -39,7 +40,7 @@ class Product(servicecatalog.ProductStack):
         construct_id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
@@ -80,12 +81,12 @@ class Product(servicecatalog.ProductStack):
             description="Prod account id.",
         ).value_as_string
 
-        hf_access_token = aws_cdk.CfnParameter(
+        hf_access_token_secret = aws_cdk.CfnParameter(
             self,
-            "HFAccessToken",
+            "HFAccessTokenSecret",
             type="String",
             min_length=1,
-            description="Hugging Face Access Token",
+            description="AWS Secret Of Hugging Face Access Token",
         ).value_as_string
 
         hf_model_id = aws_cdk.CfnParameter(
@@ -210,6 +211,6 @@ class Product(servicecatalog.ProductStack):
             s3_artifact=s3_artifact,
             repo_asset=build_app_asset,
             model_package_group_name=model_package_group_name,
-            hf_access_token=hf_access_token,
+            hf_access_token_secret=hf_access_token_secret,
             hf_model_id=hf_model_id,
         )

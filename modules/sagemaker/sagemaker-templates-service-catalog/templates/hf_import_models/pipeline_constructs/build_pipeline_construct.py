@@ -15,6 +15,8 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+from typing import Any
+
 import aws_cdk
 from aws_cdk import Aws
 from aws_cdk import aws_cloudwatch as cloudwatch
@@ -38,9 +40,9 @@ class BuildPipelineConstruct(Construct):
         s3_artifact: s3.IBucket,
         repo_asset: s3_assets.Asset,
         model_package_group_name: str,
-        hf_access_token: str,
+        hf_access_token_secret: str,
         hf_model_id: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -249,7 +251,9 @@ class BuildPipelineConstruct(Construct):
                     "ARTIFACT_BUCKET_KMS_ID": codebuild.BuildEnvironmentVariable(
                         value=s3_artifact.encryption_key.key_id
                     ),
-                    "HUGGING_FACE_ACCESS_TOKEN": codebuild.BuildEnvironmentVariable(value=hf_access_token),
+                    "HUGGING_FACE_ACCESS_TOKEN_SECRET": codebuild.BuildEnvironmentVariable(
+                        value=hf_access_token_secret
+                    ),  # pass secret
                     "HUGGING_FACE_MODEL_ID": codebuild.BuildEnvironmentVariable(value=hf_model_id),
                 },
             ),
