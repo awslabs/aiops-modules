@@ -25,7 +25,7 @@ This module creates an Amazon EventBridge Bus for cross-account events.
 
 ```yaml
 name: event-bus
-path: examples/modules/events/event-bus
+path: modules/examples/events/event-bus
 targetAccount: primary
 parameters:
   - name: event_bus_name
@@ -49,5 +49,3 @@ parameters:
   "EventBusName": "mlops-bus",
 }
 ```
-
-
