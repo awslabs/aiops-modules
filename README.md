@@ -63,4 +63,4 @@ The modules in this repository are compatible with [Industry Data Framework (IDF
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|------------------------------------------------------------------------|
-|  [Event Bus Module](modules/examples/events/event-busREADME.md)        |  Creates an Amazon EventBridge Bus for cross-account events.           |
+|  [Event Bus Module](modules/examples/events/event-bus/README.md)        |  Creates an Amazon EventBridge Bus for cross-account events.           |
