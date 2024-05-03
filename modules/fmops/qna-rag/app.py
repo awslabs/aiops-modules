@@ -16,7 +16,7 @@ project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
 deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
 module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
 app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-
+vpc_id = os.getenv(_param("VPC_ID"))
 cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
 os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
 
@@ -25,6 +25,7 @@ app = App()
 stack = RAGResources(
     scope=app,
     id=app_prefix,
+    vpc_id=vpc_id,
     cognito_pool_id=cognito_pool_id,
     os_domain_endpoint=os_domain_endpoint,
     env=aws_cdk.Environment(

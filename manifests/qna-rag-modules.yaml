@@ -2,10 +2,16 @@ name: llm-rag
 path: modules/examples/llm-rag
 parameters:
   - name: cognito-pool-id
-    value: ap-south-1_LtGUQv2Kx
+    value: us-east-1_ilYpIJibO
   - name: os-domain-endpoint
     valueFrom:
       moduleMetadata:
         group: storage
         name: opensearch
         key: OpenSearchDomainEndpoint
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
