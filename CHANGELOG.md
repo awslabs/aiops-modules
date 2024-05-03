@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added EFS removal policy to `mlflow-fargate` module
 - added `mwaa` module with example dag which demonstrates the MLOps in Airflow
 - added `sagemaker-hugging-face-endpoint` module
+- added `hf_import_models` template to import hugging face models
 
 ### **Changed**
 
