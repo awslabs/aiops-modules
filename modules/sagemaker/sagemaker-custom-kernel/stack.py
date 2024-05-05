@@ -56,8 +56,7 @@ class CustomKernelStack(Stack):
         # SageMaker Studio Image Role
         self.sagemaker_studio_image_role = iam.Role(
             self,
-            f"{app_prefix}-image-role",
-            role_name=f"{app_prefix}-image-role",
+            "ImageRole",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"),
@@ -67,7 +66,7 @@ class CustomKernelStack(Stack):
         # Image
         image = sagemaker.CfnImage(
             self,
-            f"{app_prefix}-image",
+            "Image",
             image_name=sagemaker_image_name,
             image_role_arn=self.sagemaker_studio_image_role.role_arn,
         )
@@ -76,7 +75,7 @@ class CustomKernelStack(Stack):
         # Image Version
         image_version = sagemaker.CfnImageVersion(
             self,
-            f"{app_prefix}-image-version",
+            "ImageVersion",
             image_name=sagemaker_image_name,
             base_image=self.image_uri,
         )
@@ -85,7 +84,7 @@ class CustomKernelStack(Stack):
         # App Image Config
         app_image_config = sagemaker.CfnAppImageConfig(
             self,
-            f"{app_prefix}-app-image-config",
+            f"AppConfig",
             app_image_config_name=app_image_config_name,
             kernel_gateway_image_config=sagemaker.CfnAppImageConfig.KernelGatewayImageConfigProperty(
                 kernel_specs=[
