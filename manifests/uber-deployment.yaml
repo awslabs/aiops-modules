@@ -29,5 +29,5 @@ targetAccountMappings:
         envVariable: PRIMARY_ACCOUNT
     default: true
     regionMappings:
-      - region: us-east-2
+      - region: us-east-1
         default: true
