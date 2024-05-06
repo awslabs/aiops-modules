@@ -84,7 +84,7 @@ class CustomKernelStack(Stack):
         # App Image Config
         app_image_config = sagemaker.CfnAppImageConfig(
             self,
-            f"AppConfig",
+            "AppConfig",
             app_image_config_name=app_image_config_name,
             kernel_gateway_image_config=sagemaker.CfnAppImageConfig.KernelGatewayImageConfigProperty(
                 kernel_specs=[
