@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- reogranized manifests by use-case
 - add account/region props for project templates in `sagemaker-templates-service-catalog` module
 - fix `sagemaker-templates-service-catalog` model deploy role lookup issue & abalone_xgboost model registry permissions
 - update `sagemaker-custom-kernel` module IAM permissions

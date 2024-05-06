@@ -24,7 +24,7 @@ path: modules/fmops/sagemaker-hugging-face-endpoint
 targetAccount: primary
 parameters:
   - name: hugging-face-model-id
-    value: mistralai/Mistral-7B-Instruct-v0.1
+    value: mistralai/Mixtral-8x7B-Instruct-v0.1
   - name: instance-type
     value: ml.g5.2xlarge
   - name: deep-learning-container-image

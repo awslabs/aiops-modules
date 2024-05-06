@@ -5,13 +5,13 @@
 1. Clone the repository and checkout a release branch using the below command:
 
 ```
-git clone --origin upstream --branch release/1.0.0 https://github.com/awslabs/mlops-modules
+git clone --origin upstream --branch release/1.0.0 https://github.com/awslabs/aiops-modules
 ```
 The release version can be replaced with the version of interest.
 
-2. Move into the `mlops-modules` repository:
+2. Move into the `aiops-modules` repository:
 ```
-cd mlops-modules
+cd aiops-modules
 ```
 3. Create and activate a Virtual environment
 ```
@@ -44,9 +44,18 @@ seedfarmer bootstrap toolchain --project mlops --trusted-principal ${ADMIN_ROLE_
 
 ## Deployment
 
-Note: if you are deploying into a region different from `us-east-1`, change the `regionMappings` in `manifests/deployment.yaml`.
+Pick the manifest to deploy. Manifests are located in `mainfests/` directory. For example, to deploy SageMaker mlops manifests, run:
+
+!Note: if you are deploying into a region different from `us-east-1`, change the `regionMappings` in `deployment.yaml`.
 ```
-seedfarmer apply manifests/deployment.yaml
+seedfarmer apply manifests/mlops-sagemaker/deployment.yaml
+```
+
+To deploy an uber-manifest containing all modules, run:
+
+Note: this is an uber-manifest that contains all modules. It may take a while to deploy.
+```
+seedfarmer apply manifests/uber-deployment.yaml
 ```
 ## Clean-up
 
