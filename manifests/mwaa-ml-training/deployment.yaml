@@ -1,0 +1,19 @@
+name: mlops-mwaa
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/mwaa-ml-training/networking-modules.yaml
+  - name: mwaa
+    path: manifests/mwaa-ml-training/mwaa-modules.yaml
+  - name: mwaa-dags
+    path: manifests/mwaa-ml-training/mwaa-dag-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true

@@ -14,9 +14,9 @@ deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
 module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
 app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 
-DEFAULT_APP_IMAGE_CONFIG_NAME = f"{project_name}-{deployment_name}-app-config"
-DEFAULT_SAGEMAKER_IMAGE_NAME = "echo-kernel"
-DEFAULT_CUSTOM_KERNEL_NAME = "echo-kernel"
+DEFAULT_APP_IMAGE_CONFIG_NAME = f"{app_prefix}-app-config"
+DEFAULT_SAGEMAKER_IMAGE_NAME = f"{app_prefix}-echo-kernel"
+DEFAULT_CUSTOM_KERNEL_NAME = f"{app_prefix}-echo-kernel"
 DEFAULT_USER_UID = 1000
 DEFAULT_USER_GID = 100
 DEFAULT_KERNEL_USER_HOME_MOUNT_PATH = "/home/sagemaker-user"
