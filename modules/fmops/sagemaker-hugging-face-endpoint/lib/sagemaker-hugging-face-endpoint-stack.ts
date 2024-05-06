@@ -95,7 +95,7 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       vpcConfig: vpcConfig,
       environment: {
         ...hfTokenEnvironmentVars,
-      }
+      },
     });
 
     cdk_nag.NagSuppressions.addResourceSuppressions(
