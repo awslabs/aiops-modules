@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as secrets from "aws-cdk-lib/aws-secretsmanager";
 import * as sagemaker from "aws-cdk-lib/aws-sagemaker";
 import {
   DeepLearningContainerImage,
@@ -19,6 +20,7 @@ interface SagemakerHuggingFaceEndpointStackProps extends cdk.StackProps {
   deepLearningContainerImage: string;
   vpcId?: string | undefined;
   subnetIds: string[];
+  hfTokenSecretName?: string;
 }
 
 export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
@@ -83,12 +85,17 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       props.deepLearningContainerImage,
     );
 
+    const hfTokenEnvironmentVars = this.getSecretTokenVars(props.hfTokenSecretName);
+
     this.huggingFaceEndpoint = new HuggingFaceSageMakerEndpoint(this, "HuggingFace Endpoint", {
       modelId: props.huggingFaceModelID,
       instanceType: SageMakerInstanceType.of(props.instanceType),
       container: DeepLearningContainerImage.fromDeepLearningContainerImage(containerImageRepoName, containerImageTag),
       role: this.role,
       vpcConfig: vpcConfig,
+      environment: {
+        ...hfTokenEnvironmentVars,
+      }
     });
 
     cdk_nag.NagSuppressions.addResourceSuppressions(
@@ -110,5 +117,17 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
     }
 
     return [parts[0], parts[1]];
+  }
+
+  getSecretTokenVars(tokenSecretName: string | undefined): { [key: string]: string } {
+    if (!tokenSecretName) {
+      return {};
+    }
+
+    const secret = secrets.Secret.fromSecretNameV2(this, "HFTokenSecret", tokenSecretName);
+    const token = secret.secretValueFromJson("TOKEN").toString();
+    return {
+      HUGGING_FACE_HUB_TOKEN: token,
+    };
   }
 }
