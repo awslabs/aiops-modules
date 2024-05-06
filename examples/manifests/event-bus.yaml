@@ -1,5 +1,5 @@
 name: event-bus
-path: modules/examples/events/event-bus
+path: modules/examples/event-bus
 targetAccount: tooling
 parameters:
   - name: event_bus_name
