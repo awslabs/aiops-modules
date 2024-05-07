@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+from typing import cast
 
 from aws_cdk import App, CfnOutput, Environment
 
@@ -19,13 +20,13 @@ def _param(name: str) -> str:
     return f"SEEDFARMER_PARAMETER_{name}"
 
 
-eks_cluster_name = os.getenv(_param("EKS_CLUSTER_NAME"))
-eks_admin_role_arn = os.getenv(_param("EKS_CLUSTER_ADMIN_ROLE_ARN"))
-eks_oidc_provider_arn = os.getenv(_param("EKS_OIDC_ARN"))
-eks_openid_issuer = os.getenv(_param("EKS_OPENID_ISSUER"))
-eks_cluster_endpoint = os.getenv(_param("EKS_CLUSTER_ENDPOINT"))
-eks_cert_auth_data = os.getenv(_param("EKS_CERT_AUTH_DATA"))
-namespace = os.getenv(_param("NAMESPACE"))
+eks_cluster_name = cast(str, os.getenv(_param("EKS_CLUSTER_NAME")))
+eks_admin_role_arn = cast(str, os.getenv(_param("EKS_CLUSTER_ADMIN_ROLE_ARN")))
+eks_oidc_provider_arn = cast(str, os.getenv(_param("EKS_OIDC_ARN")))
+eks_openid_issuer = cast(str, os.getenv(_param("EKS_OPENID_ISSUER")))
+eks_cluster_endpoint = cast(str, os.getenv(_param("EKS_CLUSTER_ENDPOINT")))
+eks_cert_auth_data = cast(str, os.getenv(_param("EKS_CERT_AUTH_DATA")))
+namespace = cast(str, os.getenv(_param("NAMESPACE")))
 
 app = App()
 env = Environment(
