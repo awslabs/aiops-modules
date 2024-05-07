@@ -1,4 +1,5 @@
 import * as cdk from "aws-cdk-lib";
+import * as secrets from "aws-cdk-lib/aws-secretsmanager";
 import { Annotations, Match, Template } from "aws-cdk-lib/assertions";
 import { SagemakerHuggingFaceEndpointStack } from "../lib/sagemaker-hugging-face-endpoint-stack";
 
@@ -16,6 +17,15 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   const account = "123456789";
   const region = "us-east-1";
 
+  const setupStack = new cdk.Stack(app, "setupStack", { env: { account, region } });
+  const secret = new secrets.Secret(setupStack, "secret", {
+    secretName: `${projectName}-${deploymentName}-${moduleName}`,
+    generateSecretString: {
+      secretStringTemplate: JSON.stringify({}),
+      generateStringKey: "TOKEN",
+    },
+  });
+
   const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
     projectName,
     deploymentName,
@@ -25,6 +35,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
     deepLearningContainerImage,
     vpcId,
     subnetIds,
+    hfTokenSecretName: secret.secretName,
     env: { account, region },
   });
 
@@ -34,6 +45,18 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
     template.hasResource("AWS::SageMaker::Endpoint", {});
     template.hasResource("AWS::IAM::Role", {});
     template.hasResource("AWS::EC2::SecurityGroup", {});
+  });
+
+  test("Hugging Face Token", () => {
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties("AWS::SageMaker::Model", {
+      PrimaryContainer: {
+        Environment: {
+          HUGGING_FACE_HUB_TOKEN: Match.anyValue(),
+        },
+      },
+    });
   });
 
   test("No CDK Nag Errors", () => {
