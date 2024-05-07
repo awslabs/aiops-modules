@@ -18,28 +18,3 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
----
-name: hugging-face-mistral-endpoint
-path: modules/fmops/sagemaker-hugging-face-endpoint
-targetAccount: primary
-parameters:
-  - name: hugging-face-model-id
-    value: mistralai/Mistral-7B-Instruct-v0.1
-  - name: instance-type
-    value: ml.g5.2xlarge
-  - name: deep-learning-container-image
-    value: huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04
-  - name: hugging-face-token-secret-name
-    value: aiops/huggingface-token
-  - name: vpc_id
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: VpcId
-  - name: subnet_ids
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: PrivateSubnetIds
