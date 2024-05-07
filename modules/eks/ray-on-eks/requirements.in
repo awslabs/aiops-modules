@@ -1,6 +1,5 @@
-aws-cdk-lib~=2.128.0
-cdk-nag==2.12.29
-constructs==10.0.91
+aws-cdk-lib~=2.140.0
+cdk-nag~=2.28.110
 boto3~=1.21.0
-python-dotenv~=0.20.0
-typing-extensions==4.7.1
+python-dotenv~=0.21.0
+typing-extensions~=4.6.1
