@@ -60,7 +60,7 @@ class RayOnEKS(Stack):
             release="kuberay-operator",
             repository="https://ray-project.github.io/kuberay-helm/",
             namespace=namespace_name,
-            version="1.1.0",
+            version="1.0.0",
             wait=True,
         )
 
@@ -70,7 +70,7 @@ class RayOnEKS(Stack):
             release="ray-cluster",
             repository="https://ray-project.github.io/kuberay-helm/",
             namespace=namespace_name,
-            version="1.1.0",
+            version="1.0.0",
             wait=True,
             values={
                 "image": {
@@ -101,12 +101,8 @@ class RayOnEKS(Stack):
                             "name": "RAY_LOG_TO_STDERR",
                             "value": "1",
                         },
-                        {
-                            # workaround for protobuf protoc >= 3.19.0 issue
-                            "name": "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION",
-                            "value": "python",
-                        }
-                    ]
+                    ],
+                    # "command": ["python -c \"import ray; ray.init(); print(ray.cluster_resources())\""],
                 },
                 "worker": {
                     "resources": {
@@ -134,11 +130,6 @@ class RayOnEKS(Stack):
                             "name": "RAY_LOG_TO_STDERR",
                             "value": "1",
                         },
-                        {
-                            # workaround for protobuf protoc >= 3.19.0 issue
-                            "name": "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION",
-                            "value": "python",
-                        }
                     ]
                 },
             },
