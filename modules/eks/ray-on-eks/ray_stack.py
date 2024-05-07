@@ -76,7 +76,7 @@ class RayOnEKS(Stack):
                 "image": {
                     "repository": "rayproject/ray-ml",
                     "tag": "2.20.0",
-                    "pullPolicy": "IfNotPresent"
+                    "pullPolicy": "IfNotPresent",
                 },
                 "head": {
                     "resources": {
@@ -87,7 +87,7 @@ class RayOnEKS(Stack):
                         "requests": {
                             "cpu": "4",
                             "memory": "12G",
-                        }
+                        },
                     },
                     "tolerations": [
                         {
@@ -113,7 +113,7 @@ class RayOnEKS(Stack):
                         "requests": {
                             "cpu": "4",
                             "memory": "12G",
-                        }
+                        },
                     },
                     "tolerations": [
                         {
@@ -130,7 +130,7 @@ class RayOnEKS(Stack):
                             "name": "RAY_LOG_TO_STDERR",
                             "value": "1",
                         },
-                    ]
+                    ],
                 },
             },
         )
