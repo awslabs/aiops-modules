@@ -53,4 +53,4 @@ def test_os_security_group(stack_defaults):
     with pytest.raises(
         ValueError, match="Missing input parameter os-security-group-id"
     ):
-        pass
+        import app  # noqa: F401
