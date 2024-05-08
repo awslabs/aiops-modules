@@ -46,6 +46,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
 | [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 | [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
+| [AppSync Question and Answering RAG Model Endpoint Module](modules/fmops/qna-rag/README.md) | Creates an Graphql endpoint for a Question and answering RAG model using custom input knowledge base
 
 
 ### MWAA Modules

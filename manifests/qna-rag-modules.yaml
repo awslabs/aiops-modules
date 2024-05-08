@@ -1,0 +1,23 @@
+name: qna-rag
+path: modules/fmops/qna-rag
+parameters:
+  - name: cognito-pool-id
+    value: us-east-1-XXXXX
+  - name: os-domain-endpoint
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: opensearch
+        key: OpenSearchDomainEndpoint
+  - name: os-security-group-id
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: opensearch
+        key: OpenSearchSecurityGroupId
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId

@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-model-package-promote-pipeline` module.
 - added `sagemaker-hugging-face-endpoint` module
 - added `hf_import_models` template to import hugging face models
+- added `qna-rag` module
 
 ### **Changed**
 
