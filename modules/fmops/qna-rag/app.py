@@ -19,6 +19,7 @@ app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 vpc_id = os.getenv(_param("VPC_ID"))
 cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
 os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
+os_security_group_id = os.getenv(_param("OS_SECURITY_GROUP_ID"))
 
 
 if not vpc_id:
@@ -30,6 +31,9 @@ if not cognito_pool_id:
 if not os_domain_endpoint:
     raise ValueError("Missing input parameter os-domain-endpoint")
 
+if not os_security_group_id:
+    raise ValueError("Missing input parameter os-security-group-id")
+
 app = App()
 
 stack = RAGResources(
@@ -38,6 +42,7 @@ stack = RAGResources(
     vpc_id=vpc_id,
     cognito_pool_id=cognito_pool_id,
     os_domain_endpoint=os_domain_endpoint,
+    os_security_group_id=os_security_group_id,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],

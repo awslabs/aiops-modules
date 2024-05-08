@@ -15,6 +15,7 @@ def stack_defaults() -> None:
     os.environ["SEEDFARMER_PARAMETER_VPC_ID"] = "vpc-12345"
     os.environ["SEEDFARMER_PARAMETER_COGNITO_POOL_ID"] = "12345"
     os.environ["SEEDFARMER_PARAMETER_OS_DOMAIN_ENDPOINT"] = "sample-endpoint.com"
+    os.environ["SEEDFARMER_PARAMETER_OS_SECURITY_GROUP_ID"] = "sg-1234abcd"
 
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
@@ -44,3 +45,12 @@ def test_os_domain_endpoint(stack_defaults):
 
     with pytest.raises(ValueError, match="Missing input parameter os-domain-endpoint"):
         import app  # noqa: F401
+
+
+def test_os_security_group(stack_defaults):
+    del os.environ["SEEDFARMER_PARAMETER_OS_SECURITY_GROUP_ID"]
+
+    with pytest.raises(
+        ValueError, match="Missing input parameter os-security-group-id"
+    ):
+        pass

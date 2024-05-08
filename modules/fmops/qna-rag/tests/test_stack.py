@@ -30,6 +30,7 @@ def stack_model_package_input() -> cdk.Stack:
     vpc_id = "vpc-123"
     cognito_pool_id = "us-east-1_XXXXX"
     os_domain_endpoint = "sample-endpoint.com"
+    os_security_group_id = "sg-a1b2c3d4"
 
     return stack.RAGResources(
         scope=app,
@@ -37,6 +38,7 @@ def stack_model_package_input() -> cdk.Stack:
         vpc_id=vpc_id,
         cognito_pool_id=cognito_pool_id,
         os_domain_endpoint=os_domain_endpoint,
+        os_security_group_id=os_security_group_id,
         env=cdk.Environment(
             account="111111111111",
             region="us-east-1",

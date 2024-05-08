@@ -19,6 +19,7 @@ class RAGResources(Stack):
         vpc_id: str,
         cognito_pool_id: str,
         os_domain_endpoint: str,
+        os_security_group_id: str,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -27,8 +28,6 @@ class RAGResources(Stack):
             description=" This stack creates resources for the LLM - QA RAG ",
             **kwargs,
         )
-
-        print(os_domain_endpoint)
         # get an existing OpenSearch provisioned cluster
         os_domain = os.Domain.from_domain_endpoint(
             self,
@@ -37,7 +36,6 @@ class RAGResources(Stack):
         )
         self.os_domain = os_domain
         # get vpc from vpc id
-
         vpc = ec2.Vpc.from_lookup(
             self,
             "VPC",
@@ -59,6 +57,17 @@ class RAGResources(Stack):
             existing_opensearch_domain=os_domain,
             open_search_index_name="qa-appsync-index",
             cognito_user_pool=user_pool_loaded,
+        )
+
+        security_group = rag_source.security_group
+
+        os_security_group = ec2.SecurityGroup.from_security_group_id(
+            self, "OSSecurityGroup", os_security_group_id
+        )
+        os_security_group.add_ingress_rule(
+            peer=security_group,
+            connection=ec2.Port.tcp(443),
+            description="Allow inbound HTTPS to open search from question answering lambda",
         )
 
         self.rag_resource = rag_source
