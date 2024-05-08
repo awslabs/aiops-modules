@@ -17,6 +17,8 @@ const deepLearningContainerImage: string = process.env.SEEDFARMER_PARAMETER_DEEP
 const vpcId: string | undefined = process.env.SEEDFARMER_PARAMETER_VPC_ID;
 const subnetIds: string[] = JSON.parse(process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string));
 
+const hfTokenSecretName: string | undefined = process.env.SEEDFARMER_PARAMETER_HUGGING_FACE_TOKEN_SECRET_NAME;
+
 const app = new cdk.App();
 
 const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
@@ -28,6 +30,7 @@ const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deplo
   deepLearningContainerImage,
   vpcId,
   subnetIds,
+  hfTokenSecretName,
   env: { account, region },
 });
 
