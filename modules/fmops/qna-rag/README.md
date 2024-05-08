@@ -42,10 +42,17 @@ parameters:
         group: storage
         name: opensearch
         key: OpenSearchDomainEndpoint
+  - name: os-security-group-id
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: opensearch
+        key: OpenSearchSecurityGroupId
   - name: vpc-id
     valueFrom:
       moduleMetadata:
         group: networking
         name: networking
         key: VpcId
+
 ```
