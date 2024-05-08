@@ -181,9 +181,8 @@ class Product(servicecatalog.ProductStack):
                     pipeline_artifact_bucket.bucket_arn,
                 ],
                 principals=[
-                    iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
-                    iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
-                    iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
+                    iam.AccountPrincipal(pre_prod_account_id),
+                    iam.AccountPrincipal(prod_account_id),
                 ],
             )
         )
