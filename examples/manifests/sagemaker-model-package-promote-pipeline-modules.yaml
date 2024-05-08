@@ -1,0 +1,24 @@
+name: rappi-b2
+path: modules/sagemaker/sagemaker-model-package-promote-pipeline
+targetAccount: tooling
+parameters:
+  - name: source_model_package_group_arn
+    valueFrom:
+      moduleMetadata:
+        group: registry
+        name: source-model-package-group
+        key: SagemakerModelPackageGroupArn
+  - name: target_bucket_name
+    value: my-bucket-name
+  - name: event_bus_name
+    valueFrom:
+      moduleMetadata:
+        group: events
+        name: event-bus
+        key: EventBusName
+  - name: target_model_package_group_name
+    valueFrom:
+      moduleMetadata:
+        group: registry
+        name: target-model-package-group
+        key: SagemakerModelPackageGroupName

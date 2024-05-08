@@ -1,0 +1,10 @@
+name: event-bus
+path: modules/examples/event-bus
+targetAccount: tooling
+parameters:
+  - name: event_bus_name
+    value: mlops-bus
+  - name: source_accounts
+    value: '["123123123123"]' # Accounts that must have permissions to put events (source accounts)
+  - name: tags
+    value: '{"test": "test"}'

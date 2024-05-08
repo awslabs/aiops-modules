@@ -26,6 +26,14 @@ This project template contains SageMaker pipeline that performs batch inference.
 
 ![Batch Inference Template](docs/_static/batch-inference-template.png "Batch Inference Template Architecture")
 
+#### Huggingface Model Import Template
+
+This project template contains SageMaker pipeline that imports a hugging face model based on model id and access 
+token inputs.
+
+![Huggingface model import template](docs/_static/huggingface-model-import.png "Hugging Face Model Import Template 
+Architecture")
+
 #### Multi-account Model Deployment Template
 
 The template contains an example CI/CD pipeline to deploy the model endpoints to multiple AWS accounts. 
