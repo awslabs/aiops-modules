@@ -40,6 +40,7 @@ class Product(servicecatalog.ProductStack):
     ) -> None:
         super().__init__(scope, id)
 
+        dev_account_id = Aws.ACCOUNT_ID
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
         pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
@@ -185,6 +186,35 @@ class Product(servicecatalog.ProductStack):
                     ),
                 },
             ),            
+        )
+        # Block non-SSL
+        pipeline_artifact_bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="AllowSSLOnly",
+                actions=["s3:*"],
+                effect=iam.Effect.DENY,
+                resources=[
+                    pipeline_artifact_bucket.bucket_arn,
+                    pipeline_artifact_bucket.arn_for_objects(key_pattern="*"),
+                ],
+                conditions={"Bool": {"aws:SecureTransport": "false"}},
+                principals=[iam.AnyPrincipal()],
+            )
+        )
+        # Add cross-account access
+        pipeline_artifact_bucket.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="CrossAccountPermissions",
+                actions=["s3:List*", "s3:Get*", "s3:Put*"],
+                resources=[
+                    pipeline_artifact_bucket.arn_for_objects(key_pattern="*"),
+                    pipeline_artifact_bucket.bucket_arn,
+                ],
+                principals=[
+                    iam.AccountPrincipal(pre_prod_account_id),
+                    iam.AccountPrincipal(prod_account_id),
+                ],
+            )
         )
 
         project.role.attach_inline_policy(

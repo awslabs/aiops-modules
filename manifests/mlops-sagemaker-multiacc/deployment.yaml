@@ -1,0 +1,37 @@
+name: mlops-sagemaker
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/mlops-sagemaker/networking-modules.yaml
+  - name: storage
+    path: manifests/mlops-sagemaker/storage-modules.yaml
+  - name: sagemaker-studio
+    path: manifests/mlops-sagemaker/sagemaker-studio-modules.yaml
+  - name: sagemaker-templates
+    path: manifests/mlops-sagemaker/sagemaker-templates-modules.yaml
+  - name: sagemaker-kernels
+    path: manifests/mlops-sagemaker/kernels-modules.yaml
+targetAccountMappings:
+  - alias: dev
+    accountId:
+      valueFrom:
+        envVariable: DEV_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
+  - alias: pre-prod
+    accountId:
+      valueFrom:
+        envVariable: PRE_PROD_ACCOUNT
+    regionMappings:
+      - region: us-east-1
+        default: true
+  - alias: prod
+    accountId:
+      valueFrom:
+        envVariable: PROD_ACCOUNT
+    regionMappings:
+      - region: us-east-1
+        default: true
