@@ -22,8 +22,6 @@ groups:
     path: manifests/mwaa-modules.yaml
   - name: mwaa-dags
     path: manifests/mwaa-dag-modules.yaml
-  - name: qna-rag
-    path: manifests/qna-rag-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
