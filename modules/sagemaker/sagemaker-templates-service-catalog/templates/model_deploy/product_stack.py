@@ -8,6 +8,8 @@ from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as targets
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, Tags
@@ -138,9 +140,11 @@ class Product(servicecatalog.ProductStack):
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
+        CodePipelineDeployProjectName="CodePipelineDeployProject"
+
         project = codebuild.Project(
             self,
-            "DeployProject",
+            CodePipelineDeployProjectName,
             build_spec=codebuild.BuildSpec.from_object(
                 {
                      "version": "0.2",
@@ -187,36 +191,6 @@ class Product(servicecatalog.ProductStack):
                 },
             ),            
         )
-        # Block non-SSL
-        pipeline_artifact_bucket.add_to_resource_policy(
-            iam.PolicyStatement(
-                sid="AllowSSLOnly",
-                actions=["s3:*"],
-                effect=iam.Effect.DENY,
-                resources=[
-                    pipeline_artifact_bucket.bucket_arn,
-                    pipeline_artifact_bucket.arn_for_objects(key_pattern="*"),
-                ],
-                conditions={"Bool": {"aws:SecureTransport": "false"}},
-                principals=[iam.AnyPrincipal()],
-            )
-        )
-        # Add cross-account access
-        pipeline_artifact_bucket.add_to_resource_policy(
-            iam.PolicyStatement(
-                sid="CrossAccountPermissions",
-                actions=["s3:List*", "s3:Get*", "s3:Put*"],
-                resources=[
-                    pipeline_artifact_bucket.arn_for_objects(key_pattern="*"),
-                    pipeline_artifact_bucket.bucket_arn,
-                ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
-            )
-        )
-
         project.role.attach_inline_policy(
             iam.Policy(
                 self,
@@ -262,17 +236,19 @@ class Product(servicecatalog.ProductStack):
             )
         )
 
-        # Create a CodeBuild trigger on the CodeCommit repository
-        # trigger = codebuild.Trigger.from_repository(repository)
-        # project.add_trigger(trigger)
-
-
-        # # TODO: Add one-time build trigger on CB creation
-        # trigger = codebuild.Trigger(
-        #     self, "CodeCommitTrigger",
-        #     trigger_pattern=codebuild.TriggerPattern.all_commits(),
-        #     batch_enabled=False,
-        #     run_order=1,
-        #     project=project,
-        #     trigger_on_push=True  # Add this line to trigger an initial build
-        # )
+        # Create a CloudWatch Event Rule to trigger the CodeBuild project
+        build_project_event_rule = events.Rule(
+            self,
+            "BuildProjectEventRule",
+            description="Trigger the CodeBuild project when it's created",
+            event_pattern=events.EventPattern(
+                source=["aws.codebuild"],
+                detail_type=["CodeBuild Build Project State Change"],
+                detail={
+                    "project-name": [CodePipelineDeployProjectName],
+                    "build-status": ["SUCCEEDED"],
+                },
+            ),
+        )
+        # Add the CodeBuild project as a target for the CloudWatch Event Rule
+        build_project_event_rule.add_target(targets.CodeBuildProject(project))
