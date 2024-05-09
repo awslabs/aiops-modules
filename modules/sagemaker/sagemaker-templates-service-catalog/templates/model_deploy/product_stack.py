@@ -42,7 +42,6 @@ class Product(servicecatalog.ProductStack):
     ) -> None:
         super().__init__(scope, id)
 
-        dev_account_id = Aws.ACCOUNT_ID
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
         pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
