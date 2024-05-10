@@ -19,7 +19,7 @@ from typing import Any
 
 import aws_cdk
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, Tags
+from aws_cdk import Aws, CfnOutput, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
@@ -213,4 +213,16 @@ class Product(servicecatalog.ProductStack):
             model_package_group_name=model_package_group_name,
             hf_access_token_secret=hf_access_token_secret,
             hf_model_id=hf_model_id,
+        )
+
+        CfnOutput(
+            self,
+            "Model Bucket Name",
+            value=s3_artifact.bucket_name,
+        )
+
+        CfnOutput(
+            self,
+            "Model Package Group Name",
+            value=model_package_group_name,
         )

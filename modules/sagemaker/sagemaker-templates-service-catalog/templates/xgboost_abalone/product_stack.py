@@ -9,7 +9,7 @@ import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnParameter, CfnTag, RemovalPolicy, Tags
+from aws_cdk import Aws, CfnOutput, CfnParameter, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
 
 from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct import (
@@ -236,4 +236,16 @@ class Product(servicecatalog.ProductStack):
             model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             repo_asset=build_app_asset,
+        )
+
+        CfnOutput(
+            self,
+            "Model Bucket Name",
+            value=model_bucket.bucket_name,
+        )
+
+        CfnOutput(
+            self,
+            "Model Package Group Name",
+            value=model_package_group_name,
         )
