@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added multi-acc sagemaker-mlops manifest example
+
+### **Changed**
+- fixed model deploy cross-account permissions
+- added bucket and model package group names as stack outputs in the `sagemaker-templates` module
+
+## v1.1.0
+
+### **Added**
 
 - added managed autoscaling config to `sagemaker-endpoint` module
 - added SSO support in `sagemaker-studio` module

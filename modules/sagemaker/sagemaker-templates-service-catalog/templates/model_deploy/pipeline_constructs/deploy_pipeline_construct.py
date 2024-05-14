@@ -119,6 +119,21 @@ class DeployPipelineConstruct(Construct):
                         )
                     ]
                 ),
+                "STS": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "sts:AssumeRole",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=[
+                                f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/cdk-*",
+                                f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/cdk-*",
+                                f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/cdk-*",
+                            ],
+                        )
+                    ]
+                ),
             },
         )
 
