@@ -4,8 +4,10 @@
 import logging
 from typing import Any, cast
 
-from aws_cdk import Stack, Tags
+from aws_cdk import Duration, Stack, Tags
 from aws_cdk import aws_eks as eks
+from aws_cdk import aws_stepfunctions as sfn
+from aws_cdk import aws_logs as logs
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -26,6 +28,8 @@ class RayOnEKS(Stack):
         eks_cluster_endpoint: str,
         eks_cert_auth_data: str,
         namespace_name: str,
+        service_account_role,
+        ray_image_uri: str,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -102,7 +106,6 @@ class RayOnEKS(Stack):
                             "value": "1",
                         },
                     ],
-                    # "command": ["python -c \"import ray; ray.init(); print(ray.cluster_resources())\""],
                 },
                 "worker": {
                     "resources": {
@@ -133,4 +136,67 @@ class RayOnEKS(Stack):
                     ],
                 },
             },
+        )
+
+        sfn_body = {
+            "apiVerson": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "namespace": namespace_name,
+                "name.$": "States.Format('pytorch-training-{}', $$.Execution.Name)",
+            },
+            "spec": {
+                "backoffLimit": 1,
+                "template": {
+                    "spec": {
+                        "restartPolicy": "OnFailure",
+                        "serviceAccountName": module_name,
+                        "containers": [
+                            {
+                                "name": "ray-ml-benchmark-pytorch",
+                                "image": ray_image_uri,
+                                "imagePullPolicy": "Always",
+                                "env": [
+                                    {
+                                        "name": "TRAINING_JOB_ID",
+                                        "value.$": "States.Format('ray-pytorch-{}', $$.Execution.Name)",
+                                    }
+                                ],
+                                # "resources": {"limits": {"nvidia.com/gpu": 1}},
+                            }
+                        ],
+                        # "nodeSelector": {"usage": "gpu"}
+                    },
+                },
+            },
+        }
+
+        self.log_group = logs.LogGroup(self, "EKSJobLogGroup")
+
+        sm = sfn.StateMachine(
+            self,
+            "EKSJobStepFunction",
+            definition_body=sfn.DefinitionBody.from_chainable(
+                sfn.Chain.start(
+                    sfn.CustomState(
+                        self,
+                        "EksJob",
+                        state_json={
+                            "Type": "Task",
+                            "Resource": "arn:aws:states:::eks:runJob.sync",
+                            "Parameters": {
+                                "ClusterName": eks_cluster_name,
+                                "Namespace": namespace_name,
+                                "CertificateAuthority": eks_cert_auth_data,
+                                "Endpoint": eks_cluster_endpoint,
+                                "LogOptions": {"RetrieveLogs": True},
+                                "Job": sfn_body,
+                            },
+                        },
+                    )
+                )
+            ),
+            timeout=Duration.minutes(30),
+            logs=sfn.LogOptions(destination=self.log_group, level=sfn.LogLevel.ALL),
+            role=service_account_role,
         )

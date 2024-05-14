@@ -17,7 +17,7 @@ deploy:
       - |
         eksctl get iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
         && echo "IAM Identity Mapping already found" \
-        || eksctl create iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} --username ${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_MODULE_NAME}-${SEEDFARMER_MODULE_NAME}
+        || eksctl create iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} --username ${SEEDFARMER_MODULE_NAME}
       # Un-Assume the EKS_CLUSTER_ADMIN_ROLE or the rest of the deploy will faile
       - unset AWS_ACCESS_KEY_ID && unset AWS_SECRET_ACCESS_KEY && unset AWS_SESSION_TOKEN
 destroy:

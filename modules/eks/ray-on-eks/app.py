@@ -27,6 +27,7 @@ eks_openid_issuer = cast(str, os.getenv(_param("EKS_OPENID_ISSUER")))
 eks_cluster_endpoint = cast(str, os.getenv(_param("EKS_CLUSTER_ENDPOINT")))
 eks_cert_auth_data = cast(str, os.getenv(_param("EKS_CERT_AUTH_DATA")))
 namespace = cast(str, os.getenv(_param("NAMESPACE")))
+ray_image_uri = os.getenv(_param("RAY_IMAGE_URI"))
 
 app = App()
 env = Environment(
@@ -44,7 +45,7 @@ rbac_stack = RbacStack(
     eks_admin_role_arn=eks_admin_role_arn,
     eks_oidc_arn=eks_oidc_provider_arn,
     eks_openid_issuer=eks_openid_issuer,
-    namespace=namespace,
+    namespace_name=namespace,
     env=env,
 )
 
@@ -60,6 +61,8 @@ ray_on_eks_stack = RayOnEKS(
     eks_cluster_endpoint=eks_cluster_endpoint,
     eks_cert_auth_data=eks_cert_auth_data,
     namespace_name=namespace,
+    service_account_role=rbac_stack.service_account_role,
+    ray_image_uri=ray_image_uri,
     env=env,
 )
 

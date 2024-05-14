@@ -26,13 +26,13 @@ class RbacStack(Stack):
         eks_admin_role_arn: str,
         eks_oidc_arn: str,
         eks_openid_issuer: str,
-        namespace: str,
+        namespace_name: str,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
         self.deployment_name = deployment_name
         self.module_name = module_name
-        self.namespace = namespace
+        self.namespace_name = namespace_name
 
         super().__init__(
             scope,
@@ -67,14 +67,14 @@ class RbacStack(Stack):
                 {
                     "apiVersion": "v1",
                     "kind": "Namespace",
-                    "metadata": {"name": self.namespace},
+                    "metadata": {"name": self.namespace_name},
                 }
             ],
             overwrite=True,  # Create if not exists
         )
 
         service_account = eks_cluster.add_service_account(
-            "service-account", name=module_name, namespace=namespace
+            "service-account", name=module_name, namespace=namespace_name
         )
         self.service_account_role = service_account.role
 
@@ -87,134 +87,110 @@ class RbacStack(Stack):
                     principals=[iam.ServicePrincipal("states.amazonaws.com")],
                 )
             )
+        service_account_role.add_to_policy(
+            iam.PolicyStatement(
+                effect=iam.Effect.ALLOW,
+                actions=["*"],
+                resources=["*"],
+            )
+        )
 
-        # Create k8s role for Ray
-        rayrole = eks_cluster.add_manifest(
-            "RayRole",
+        rbac_role = eks_cluster.add_manifest(
+            "rbac-role",
             {
                 "apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "Role",
-                "metadata": {"name": "ray-containers", "namespace": self.namespace},
-                "rules": [
-                    {"apiGroups": [""], "resources": ["namespaces"], "verbs": ["get"]},
-                    {
-                        "apiGroups": [""],
-                        "resources": [
-                            "serviceaccounts",
-                            "services",
-                            "configmaps",
-                            "events",
-                            "pods",
-                            "pods/log",
-                        ],
-                        "verbs": [
-                            "get",
-                            "list",
-                            "watch",
-                            "describe",
-                            "create",
-                            "edit",
-                            "delete",
-                            "deletecollection",
-                            "annotate",
-                            "patch",
-                            "label",
-                        ],
-                    },
-                    {
-                        "apiGroups": [""],
-                        "resources": ["secrets"],
-                        "verbs": ["create", "patch", "delete", "watch"],
-                    },
-                    {
-                        "apiGroups": ["apps"],
-                        "resources": ["statefulsets", "deployments"],
-                        "verbs": [
-                            "get",
-                            "list",
-                            "watch",
-                            "describe",
-                            "create",
-                            "edit",
-                            "delete",
-                            "annotate",
-                            "patch",
-                            "label",
-                        ],
-                    },
-                    {
-                        "apiGroups": ["batch"],
-                        "resources": ["jobs"],
-                        "verbs": [
-                            "get",
-                            "list",
-                            "watch",
-                            "describe",
-                            "create",
-                            "edit",
-                            "delete",
-                            "annotate",
-                            "patch",
-                            "label",
-                        ],
-                    },
-                    {
-                        "apiGroups": ["extensions"],
-                        "resources": ["ingresses"],
-                        "verbs": [
-                            "get",
-                            "list",
-                            "watch",
-                            "describe",
-                            "create",
-                            "edit",
-                            "delete",
-                            "annotate",
-                            "patch",
-                            "label",
-                        ],
-                    },
-                    {
-                        "apiGroups": ["rbac.authorization.k8s.io"],
-                        "resources": ["roles", "rolebindings"],
-                        "verbs": [
-                            "get",
-                            "list",
-                            "watch",
-                            "describe",
-                            "create",
-                            "edit",
-                            "delete",
-                            "deletecollection",
-                            "annotate",
-                            "patch",
-                            "label",
-                        ],
-                    },
-                ],
+                "metadata": {
+                    "name": "module-owner",
+                    "namespace": namespace_name,
+                },
+                "rules": [{"apiGroups": ["*"], "resources": ["*"], "verbs": ["*"]}],
             },
         )
-        rayrole.node.add_dependency(eks_namespace)
+        rbac_role.node.add_dependency(eks_namespace)
 
-        # Bind K8s role to user
-        rayrolebind = eks_cluster.add_manifest(
-            "RayRoleBind",
+        rbac_role_binding = eks_cluster.add_manifest(
+            "rbac-role-binding",
             {
                 "apiVersion": "rbac.authorization.k8s.io/v1",
                 "kind": "RoleBinding",
-                "metadata": {"name": "ray-containers", "namespace": self.namespace},
-                "subjects": [
-                    {
-                        "kind": "User",
-                        "name": "ray-containers",
-                        "apiGroup": "rbac.authorization.k8s.io",
-                    }
-                ],
+                "metadata": {"name": module_name, "namespace": namespace_name},
                 "roleRef": {
-                    "kind": "Role",
-                    "name": "ray-containers",
                     "apiGroup": "rbac.authorization.k8s.io",
+                    "kind": "Role",
+                    "name": "module-owner",
                 },
+                "subjects": [
+                    {"kind": "User", "name": f"{module_name}"},
+                    {
+                        "kind": "ServiceAccount",
+                        "name": module_name,
+                        "namespace": namespace_name,
+                    },
+                ],
             },
         )
-        rayrolebind.node.add_dependency(rayrole)
+        rbac_role_binding.node.add_dependency(service_account)
+
+        rbac_role = eks_cluster.add_manifest(
+            "rbac-role-default",
+            {
+                "apiVersion": "rbac.authorization.k8s.io/v1",
+                "kind": "Role",
+                "metadata": {"name": "default-access", "namespace": "default"},
+                "rules": [
+                    {
+                        "apiGroups": ["*"],
+                        "resources": ["*"],
+                        "verbs": ["get", "list", "watch"],
+                    }
+                ],
+            },
+        )
+        rbac_role.node.add_dependency(eks_namespace)
+
+        rbac_role_binding = eks_cluster.add_manifest(
+            "rbac-role-binding-default",
+            {
+                "apiVersion": "rbac.authorization.k8s.io/v1",
+                "kind": "RoleBinding",
+                "metadata": {"name": "default-access", "namespace": "default"},
+                "roleRef": {
+                    "apiGroup": "rbac.authorization.k8s.io",
+                    "kind": "Role",
+                    "name": "default-access",
+                },
+                "subjects": [
+                    {"kind": "User", "name": f"{module_name}"},
+                    {
+                        "kind": "ServiceAccount",
+                        "name": module_name,
+                        "namespace": namespace_name,
+                    },
+                ],
+            },
+        )
+        rbac_role_binding.node.add_dependency(service_account)
+
+        rbac_cluster_role_binding = eks_cluster.add_manifest(
+            "rbac-cluster-role-binding",
+            {
+                "apiVersion": "rbac.authorization.k8s.io/v1",
+                "kind": "ClusterRoleBinding",
+                "metadata": {"name": f"system-access-{module_name}"},
+                "roleRef": {
+                    "apiGroup": "rbac.authorization.k8s.io",
+                    "kind": "ClusterRole",
+                    "name": "system-access",
+                },
+                "subjects": [
+                    {"kind": "User", "name": f"{module_name}"},
+                    {
+                        "kind": "ServiceAccount",
+                        "name": module_name,
+                        "namespace": namespace_name,
+                    },
+                ],
+            },
+        )
+        rbac_cluster_role_binding.node.add_dependency(service_account)
