@@ -46,7 +46,7 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
-  - name: ImageUri
+  - name: RayImageUri
     valueFrom:
       moduleMetadata:
         group: images
