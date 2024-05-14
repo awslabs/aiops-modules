@@ -13,6 +13,12 @@ parameters:
         group: core
         name: eks
         key: EksClusterName
+  - name: EksClusterEndpoint
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterEndpoint
   - name: EksOidcArn
     valueFrom:
       moduleMetadata:
@@ -25,6 +31,12 @@ parameters:
         group: core
         name: eks
         key: EksClusterOpenIdConnectIssuer
+  - name: EksCertAuthData
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterCertAuthData
   - name: EksClusterSecurityGroupId
     valueFrom:
       moduleMetadata:
@@ -34,3 +46,9 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
+  - name: ImageUri
+    valueFrom:
+      moduleMetadata:
+        group: images
+        name: ray-benchmark
+        key: RayImageUri

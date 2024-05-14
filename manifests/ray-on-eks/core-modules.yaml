@@ -47,8 +47,8 @@ parameters:
           eks_node_min_quantity: 0
           eks_node_disk_size: 100
           eks_node_instance_type: "g4dn.xlarge"
-          eks_node_labels:
-            usage: gpu
+          # eks_node_labels:
+          #   usage: gpu
           use_gpu_ami: True
       eks_node_spot: False
       eks_secrets_envelope_encryption: False

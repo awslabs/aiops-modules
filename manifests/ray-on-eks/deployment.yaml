@@ -6,6 +6,8 @@ groups:
     path: manifests/ray-on-eks/base-modules.yaml
   - name: core
     path: manifests/ray-on-eks/core-modules.yaml
+  - name: images
+    path: manifests/ray-on-eks/image-modules.yaml
   - name: ray-on-eks
     path: manifests/ray-on-eks/ray-on-eks-modules.yaml
 targetAccountMappings:
