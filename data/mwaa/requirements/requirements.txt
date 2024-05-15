@@ -14,7 +14,7 @@ pathos==0.3.2
 pox==0.3.4 
 ppft==1.7.6.8
 s3fs==2023.12.2 
-sagemaker==2.214.3 
+sagemaker==2.218.0 
 schema==0.7.5 
 scipy==1.13.0
 smdebug-rulesconfig==1.0.1 
