@@ -19,4 +19,4 @@ schema==0.7.5
 scipy==1.13.0
 smdebug-rulesconfig==1.0.1 
 tblib==3.0.0 
-tqdm==4.66.1
+tqdm==4.66.3

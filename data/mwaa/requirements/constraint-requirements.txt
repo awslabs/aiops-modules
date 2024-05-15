@@ -659,7 +659,7 @@ tomli_w==1.0.0
 tomlkit==0.12.3
 tornado==6.4
 towncrier==23.11.0
-tqdm==4.66.1
+tqdm==4.66.3
 traitlets==5.14.1
 trino==0.327.0
 trove-classifiers==2024.1.8
