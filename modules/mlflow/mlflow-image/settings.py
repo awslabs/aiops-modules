@@ -1,6 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
+from typing import Dict, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -27,6 +28,8 @@ class SeedFarmerParameters(CdkBaseSettings):
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
     ecr_repository_name: str
+
+    tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

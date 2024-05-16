@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, Optional, cast
+from typing import Any, Dict, List, Optional, cast
 
 import aws_cdk as cdk
 import cdk_nag
@@ -29,7 +29,6 @@ class MlflowFargateStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        app_prefix: str,
         vpc_id: str,
         subnet_ids: List[str],
         ecs_cluster_name: Optional[str],
@@ -43,11 +42,10 @@ class MlflowFargateStack(cdk.Stack):
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
         efs_removal_policy: str,
+        tags: Optional[Dict[str, str]],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
-
-        cdk.Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
 
         task_role = iam.Role(
             self,

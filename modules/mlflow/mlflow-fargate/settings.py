@@ -1,7 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -42,6 +42,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     lb_access_logs_bucket_name: Optional[str] = Field(default=None)
     lb_access_logs_bucket_prefix: Optional[str] = Field(default=None)
     efs_removal_policy: str = Field(default="RETAIN")
+    tags: Optional[Dict[str, str]] = Field(default=None)
 
     rds_hostname: Optional[str] = Field(default=None)
     rds_port: Optional[int] = Field(default=None)

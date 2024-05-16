@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-from typing import Any, cast
+from typing import Any, Dict, Optional, cast
 
 import aws_cdk as cdk
 import cdk_ecr_deployment as ecr_deployment
@@ -17,13 +17,14 @@ class MlflowImagePublishingStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        app_prefix: str,
         ecr_repo_name: str,
+        tags: Optional[Dict[str, str]],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        cdk.Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
+        # for tag in tags:
+        #     cdk.Tags.of(scope=cast(IConstruct, self)).add(key=tag, value=tags[tag])
 
         repo = ecr.Repository.from_repository_name(self, "ECR", repository_name=ecr_repo_name)
 
