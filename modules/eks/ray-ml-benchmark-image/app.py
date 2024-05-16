@@ -1,43 +1,23 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import os
-
 import aws_cdk
 import cdk_nag
 
+from settings import ApplicationSettings
 from stack import RayImagePublishingStack
 
-
-def _param(name: str) -> str:
-    return f"SEEDFARMER_PARAMETER_{name}"
-
-
-project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
-deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
-module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
-app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-
-environment = aws_cdk.Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"],
-    region=os.environ["CDK_DEFAULT_REGION"],
-)
-
-ecr_repo_name = os.getenv(_param("ECR_REPOSITORY_NAME"))
-
-if not ecr_repo_name:
-    raise ValueError("Missing input parameter ecr-repository-name")
-
+app_settings = ApplicationSettings()
 
 app = aws_cdk.App()
 stack = RayImagePublishingStack(
     scope=app,
-    id=app_prefix,
-    app_prefix=app_prefix,
-    ecr_repo_name=ecr_repo_name,
+    id=app_settings.settings.app_prefix,
+    app_prefix=app_settings.settings.app_prefix,
+    ecr_repo_name=app_settings.parameters.ecr_repository_name,
     env=aws_cdk.Environment(
-        account=os.environ["CDK_DEFAULT_ACCOUNT"],
-        region=os.environ["CDK_DEFAULT_REGION"],
+        account=app_settings.default.account,
+        region=app_settings.default.region,
     ),
 )
 
