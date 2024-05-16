@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, List, Optional
 
 import aws_cdk as cdk
 import cdk_nag
@@ -13,7 +13,7 @@ from aws_cdk import aws_efs as efs
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
-from constructs import Construct, IConstruct
+from constructs import Construct
 from typing_extensions import TypedDict
 
 
@@ -42,7 +42,6 @@ class MlflowFargateStack(cdk.Stack):
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
         efs_removal_policy: str,
-        tags: Optional[Dict[str, str]],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)

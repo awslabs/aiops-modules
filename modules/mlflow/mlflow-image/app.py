@@ -15,7 +15,6 @@ stack = MlflowImagePublishingStack(
     scope=app,
     id=app_settings.settings.app_prefix,
     ecr_repo_name=app_settings.parameters.ecr_repository_name,
-    tags=app_settings.parameters.tags,
     env=aws_cdk.Environment(
         account=app_settings.default.account,
         region=app_settings.default.region,
