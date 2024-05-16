@@ -27,7 +27,7 @@ eks_openid_issuer = cast(str, os.getenv(_param("EKS_OPENID_ISSUER")))
 eks_cluster_endpoint = cast(str, os.getenv(_param("EKS_CLUSTER_ENDPOINT")))
 eks_cert_auth_data = cast(str, os.getenv(_param("EKS_CERT_AUTH_DATA")))
 namespace = cast(str, os.getenv(_param("NAMESPACE")))
-ray_image_uri = os.getenv(_param("RAY_IMAGE_URI"))
+ray_image_uri = cast(str, os.getenv(_param("RAY_IMAGE_URI")))
 
 app = App()
 env = Environment(

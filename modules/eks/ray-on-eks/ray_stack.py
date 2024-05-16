@@ -78,9 +78,16 @@ class RayOnEKS(Stack):
             wait=True,
             values={
                 "image": {
-                    "repository": "rayproject/ray-ml",
+                    # "repository": "rayproject/ray-ml",
+                    "repository": ray_image_uri,
                     "tag": "2.20.0",
                     "pullPolicy": "IfNotPresent",
+                    # "volumeMounts": [
+                    #     {
+                    #         "name": "persistent-storage",
+                    #         "mountPath": "/data",
+                    #     }
+                    # ],
                 },
                 "head": {
                     "resources": {
@@ -126,6 +133,7 @@ class RayOnEKS(Stack):
                         }
                     ],
                     "replicas": "0",
+                    # "numOfHosts": "1",  # new in 1.1.0
                     "minReplicas": "0",
                     "maxReplicas": "30",
                     "containerEnv": [
@@ -134,6 +142,14 @@ class RayOnEKS(Stack):
                             "value": "1",
                         },
                     ],
+                    # "volumes": [
+                    #     {
+                    #         "name": "persistent-storage",
+                    #         "persistentVolumeClaim": {
+                    #             "claimName": pvc_name,
+                    #         },
+                    #     }
+                    # ],
                 },
             },
         )
@@ -143,7 +159,7 @@ class RayOnEKS(Stack):
             "kind": "Job",
             "metadata": {
                 "namespace": namespace_name,
-                "name.$": "States.Format('pytorch-training-{}', $$.Execution.Name)",
+                "name.$": "States.Format('ray-pytorch-{}', $$.Execution.Name)",
             },
             "spec": {
                 "backoffLimit": 1,
@@ -173,7 +189,7 @@ class RayOnEKS(Stack):
 
         self.log_group = logs.LogGroup(self, "EKSJobLogGroup")
 
-        sm = sfn.StateMachine(
+        sfn.StateMachine(
             self,
             "EKSJobStepFunction",
             definition_body=sfn.DefinitionBody.from_chainable(

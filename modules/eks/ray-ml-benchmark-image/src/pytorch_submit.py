@@ -1,8 +1,6 @@
 from ray.job_submission import JobSubmissionClient
 
-address = "http://127.0.0.1:8266"
-
-client = JobSubmissionClient(address)
+client = JobSubmissionClient()
 
 kick_off_pytorch_benchmark = (
     "ray --version\n"
