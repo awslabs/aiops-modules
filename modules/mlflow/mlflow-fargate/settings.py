@@ -1,6 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
+from typing import List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -29,37 +30,35 @@ class SeedFarmerParameters(CdkBaseSettings):
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
     vpc_id: str
-    subnet_ids: list[str]
+    subnet_ids: List[str]
     ecr_repository_name: str
     artifacts_bucket_name: str
 
-    ecs_cluster_name: str | None = Field(default=None)
-    service_name: str | None = Field(default=None)
+    ecs_cluster_name: Optional[str] = Field(default=None)
+    service_name: Optional[str] = Field(default=None)
     task_cpu_units: int = Field(default=4 * 1024)
     task_memory_limit_mb: int = Field(default=8 * 1024)
     autoscale_max_capacity: int = Field(default=10)
-    lb_access_logs_bucket_name: str | None = Field(default=None)
-    lb_access_logs_bucket_prefix: str | None = Field(default=None)
+    lb_access_logs_bucket_name: Optional[str] = Field(default=None)
+    lb_access_logs_bucket_prefix: Optional[str] = Field(default=None)
     efs_removal_policy: str = Field(default="RETAIN")
 
-    rds_hostname: str | None = Field(default=None)
-    rds_port: int | None = Field(default=None)
-    rds_security_group_id: str | None = Field(default=None)
-    rds_credentials_secret_arn: str | None = Field(default=None)
+    rds_hostname: Optional[str] = Field(default=None)
+    rds_port: Optional[int] = Field(default=None)
+    rds_security_group_id: Optional[str] = Field(default=None)
+    rds_credentials_secret_arn: Optional[str] = Field(default=None)
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
-    def rds_settings(self) -> RDSSettings | None:
-        rds_values = [self.rds_hostname, self.rds_port, self.rds_security_group_id, self.rds_credentials_secret_arn]
-
-        if all(rds_values):
+    def rds_settings(self) -> Optional[RDSSettings]:
+        if self.rds_hostname and self.rds_port and self.rds_security_group_id and self.rds_credentials_secret_arn:
             return RDSSettings(
                 hostname=self.rds_hostname,
                 port=self.rds_port,
                 security_group_id=self.rds_security_group_id,
                 credentials_secret_arn=self.rds_credentials_secret_arn,
             )
-        elif not any(rds_values):
+        elif not (self.rds_hostname or self.rds_port or self.rds_security_group_id or self.rds_credentials_secret_arn):
             return None
         else:
             raise ValueError(
@@ -81,7 +80,7 @@ class SeedFarmerSettings(CdkBaseSettings):
     deployment_name: str = Field(default="")
     module_name: str = Field(default="")
 
-    @computed_field
+    @computed_field  # type: ignore[misc]
     @property
     def app_prefix(self) -> str:
         """Application prefix."""
