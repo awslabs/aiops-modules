@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, Optional, TypedDict, cast
+from typing import Any, List, Optional, cast
 
 import aws_cdk as cdk
 import cdk_nag
@@ -14,6 +14,7 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
 from constructs import Construct, IConstruct
+from typing_extensions import TypedDict
 
 
 class RDSSettings(TypedDict):
