@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added `ray-on-eks`, `ray-ml-benchmark-image` modules, and `manifests/ray-on-eks` manifests
 - added multi-acc sagemaker-mlops manifest example
 
 ### **Changed**
