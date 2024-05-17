@@ -2,6 +2,7 @@ import os
 import sys
 
 import pytest
+from pydantic import ValidationError
 
 
 @pytest.fixture(scope="function")
@@ -26,5 +27,5 @@ def test_app(stack_defaults):
 def test_vpc_id(stack_defaults):
     del os.environ["SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME"]
 
-    with pytest.raises(Exception, match="Missing input parameter ecr-repository-name"):
+    with pytest.raises(ValidationError):
         import app  # noqa: F401
