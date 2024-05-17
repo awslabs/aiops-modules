@@ -40,8 +40,8 @@ class SagemakerStudioStack(Stack):
 
         self.subnets = [ec2.Subnet.from_subnet_id(self, f"SUBNET-{subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
-        domain_name = studio_domain_name or f"{id}-studio-domain"
-        s3_bucket_prefix = studio_bucket_name or f"{id}-bucket"
+        domain_name = studio_domain_name or f"{construct_id}-studio-domain"
+        s3_bucket_prefix = studio_bucket_name or f"{construct_id}-bucket"
 
         # create roles to be used for sagemaker user profiles and attached to sagemaker studio domain
         self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, kwargs["env"])
