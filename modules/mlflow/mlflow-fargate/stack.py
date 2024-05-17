@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, Optional, TypedDict, cast
+from typing import Any, List, Optional
 
 import aws_cdk as cdk
 import cdk_nag
@@ -13,7 +13,8 @@ from aws_cdk import aws_efs as efs
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_rds as rds
 from aws_cdk import aws_s3 as s3
-from constructs import Construct, IConstruct
+from constructs import Construct
+from typing_extensions import TypedDict
 
 
 class RDSSettings(TypedDict):
@@ -28,7 +29,6 @@ class MlflowFargateStack(cdk.Stack):
         self,
         scope: Construct,
         id: str,
-        app_prefix: str,
         vpc_id: str,
         subnet_ids: List[str],
         ecs_cluster_name: Optional[str],
@@ -45,8 +45,6 @@ class MlflowFargateStack(cdk.Stack):
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
-
-        cdk.Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=app_prefix[:64])
 
         task_role = iam.Role(
             self,
