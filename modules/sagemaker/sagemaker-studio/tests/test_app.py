@@ -16,7 +16,7 @@ def stack_defaults():
     os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
     os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
     os.environ["SEEDFARMER_PARAMETER_VPC_ID"] = "vpc-12345"
-    os.environ["SEEDFARMER_PARAMETER_PRIVATE_SUBNET_IDS"] = '["subnet-12345", "subnet-54321"]'
+    os.environ["SEEDFARMER_PARAMETER_SUBNET_IDS"] = '["subnet-12345", "subnet-54321"]'
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
         del sys.modules["app"]
@@ -33,8 +33,8 @@ def test_vpc_id(stack_defaults):
         import app  # noqa: F401
 
 
-def test_private_subnet_ids(stack_defaults):
-    del os.environ["SEEDFARMER_PARAMETER_PRIVATE_SUBNET_IDS"]
+def test_subnet_ids(stack_defaults):
+    del os.environ["SEEDFARMER_PARAMETER_SUBNET_IDS"]
 
     with pytest.raises(ValidationError):
         import app  # noqa: F401

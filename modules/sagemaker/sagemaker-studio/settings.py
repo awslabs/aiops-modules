@@ -28,7 +28,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
     vpc_id: str
-    private_subnet_ids: List[str]
+    subnet_ids: List[str]
 
     studio_domain_name: Optional[str] = Field(default=None)
     studio_bucket_name: Optional[str] = Field(default=None)
