@@ -42,7 +42,6 @@ ray_on_eks_stack = RayOnEKS(
     eks_cert_auth_data=app_settings.parameters.eks_cert_auth_data,
     namespace_name=app_settings.parameters.namespace,
     service_account_role=rbac_stack.service_account_role,
-    ray_image_uri=app_settings.parameters.ray_image_uri,
     env=env,
 )
 

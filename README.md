@@ -35,10 +35,10 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### EKS Modules
 
-| Type                                                                   | Description                                                                                                                               |
-|------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
-| [Ray on EKS](modules/eks/ray-on-eks/README.md)                         | Provisions Ray on EKS cluster using IDF EKS module, Ray Cluster, and Ray Operator. Creates a step function to orchestrate job submission. |
-| [Ray ML Benchmark Image](modules/eks/ray-ml-benchmark-image/README.md) | Creates a Docker Image for Ray pytorch benchmark.                                                                                         |
+| Type                                                                           | Description                                                                        |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Cluster, and Ray Operator. |
+| [Example Ray ML Benchmark Image](modules/eks/ray-ml-benchmark-image/README.md) | Creates an example Docker Image for running Ray pytorch benchmark job.             |
 
 ### Mlflow Modules
 

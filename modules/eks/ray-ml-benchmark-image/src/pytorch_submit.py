@@ -1,6 +1,8 @@
 from ray.job_submission import JobSubmissionClient
 
-client = JobSubmissionClient()
+address = "http://127.0.0.1:8265"
+
+client = JobSubmissionClient(address)
 
 kick_off_pytorch_benchmark = (
     "ray --version\n"
@@ -20,4 +22,4 @@ submission_id = client.submit_job(
 )
 
 print("Use the following command to follow this Job's logs:")
-print(f"ray job logs '{submission_id}'")
+print(f"ray job logs '{submission_id}' --follow --address {address}")

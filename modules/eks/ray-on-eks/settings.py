@@ -34,7 +34,6 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_endpoint: str = Field(default="Disabled")
     eks_cert_auth_data: str = Field(default="Disabled")
     namespace: str = Field(default="Disabled")
-    ray_image_uri: str = Field(default="Disabled")
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 
