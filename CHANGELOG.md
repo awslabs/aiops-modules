@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - refactor inputs for `mlflow-fargate` and `mlflow-image` 
 - refactor inputs for `sagemaker-studio` 
 - rename seedfarmer project name to `aiops`
+- chore: adding some missing auto_delete attributes
 
 ## v1.1.0
 
