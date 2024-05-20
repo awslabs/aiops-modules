@@ -163,6 +163,7 @@ class MlflowFargateStack(cdk.Stack):
                 encryption=s3.BucketEncryption.S3_MANAGED,
                 block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
                 enforce_ssl=True,
+                removal_policy=cdk.RemovalPolicy.DESTROY,
             )
         fargate_service.load_balancer.log_access_logs(bucket=lb_access_logs_bucket, prefix=lb_access_logs_bucket_prefix)
         self.lb_access_logs_bucket = lb_access_logs_bucket
