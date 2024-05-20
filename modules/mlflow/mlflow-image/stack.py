@@ -26,7 +26,6 @@ class MlflowImagePublishingStack(cdk.Stack):
             self,
             "ECR",
             repository_name=ecr_repo_name,
-            removal_policy=cdk.RemovalPolicy.DESTROY,
         )
 
         local_image = ecr_assets.DockerImageAsset(
