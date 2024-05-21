@@ -19,7 +19,7 @@ parameters:
   - name: encryption-type
     value: SSE
   - name: retention-type
-    value: RETAIN
+    value: DESTROY
 ---
 name: mlflow-mysql
 path: git::https://github.com/awslabs/idf-modules.git//modules/database/rds?ref=release/1.7.0&depth=1
