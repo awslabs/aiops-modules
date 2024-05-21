@@ -20,19 +20,17 @@ aws-cdk-lib==2.137.0
     #   -r requirements.in
     #   cdk-nag
     #   cdklabs-generative-ai-cdk-constructs
-boto3==1.34.86
+boto3==1.34.108
     # via -r requirements.in
-botocore==1.34.86
+botocore==1.34.108
     # via
     #   boto3
     #   s3transfer
 cattrs==23.2.3
     # via jsii
-cdk-nag==2.28.91
-    # via
-    #   -r requirements.in
-    #   cdklabs-generative-ai-cdk-constructs
-cdklabs-generative-ai-cdk-constructs==0.1.119
+cdk-nag==2.28.118
+    # via cdklabs-generative-ai-cdk-constructs
+cdklabs-generative-ai-cdk-constructs==0.1.145
     # via -r requirements.in
 constructs==10.3.0
     # via
@@ -45,7 +43,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsii==1.97.0
+jsii==1.98.0
     # via
     #   aws-cdk-asset-awscli-v1
     #   aws-cdk-asset-kubectl-v20
@@ -84,5 +82,5 @@ typeguard==2.13.3
     #   jsii
 typing-extensions==4.11.0
     # via jsii
-urllib3==1.25.4
+urllib3==1.26.17
     # via botocore

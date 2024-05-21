@@ -39,6 +39,7 @@ def stack_model_package_input() -> cdk.Stack:
         cognito_pool_id=cognito_pool_id,
         os_domain_endpoint=os_domain_endpoint,
         os_security_group_id=os_security_group_id,
+        os_index_name="sample",
         env=cdk.Environment(
             account="111111111111",
             region="us-east-1",
@@ -53,4 +54,4 @@ def stack(request, stack_model_package_input) -> cdk.Stack:  # type: ignore[no-u
 
 def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
-    template.resource_count_is("AWS::AppSync::Resolver", 2)
+    template.resource_count_is("AWS::AppSync::Resolver", 4)

@@ -43,6 +43,7 @@ stack = RAGResources(
     cognito_pool_id=cognito_pool_id,
     os_domain_endpoint=os_domain_endpoint,
     os_security_group_id=os_security_group_id,
+    os_index_name="rag-index",
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],
@@ -54,8 +55,12 @@ aws_cdk.CfnOutput(
     id="metadata",
     value=stack.to_json_string(
         {
-            "GraphqlApiId": stack.rag_resource.graphql_api.api_id,
-            "GraphqlArn": stack.rag_resource.graphql_api.arn,
+            "IngestionGraphqlApiId": stack.rag_ingest_resource.graphql_api.api_id,
+            "IngestionGraphqlArn": stack.rag_ingest_resource.graphql_api.arn,
+            "QnAGraphqlApiId": stack.rag_resource.graphql_api.api_id,
+            "QnAGraphqlArn": stack.rag_resource.graphql_api.arn,
+            "InputAssetBucket": stack.rag_ingest_resource.s3_input_assets_bucket.bucket_name,
+            "ProcessedInputBucket": stack.rag_ingest_resource.s3_processed_assets_bucket.bucket_name,
         }
     ),
 )

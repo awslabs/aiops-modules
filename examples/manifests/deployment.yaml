@@ -16,8 +16,6 @@ groups:
     path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
   - name: storage
     path: examples/manifests/storage-modules.yaml
-  - name: qna-rag
-    path: examples/manifests/qna-rag-modules-local.yaml
 
 targetAccountMappings:
   - alias: primary
