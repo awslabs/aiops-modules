@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rename seedfarmer project name to `aiops`
 - chore: adding some missing auto_delete attributes
 - chore: Add `auto_delete` to `mlflow-fargate` elb access logs bucket
+- updating `storage/ecr` module to latest pending `v1.8.0` of IDF
 
 ## v1.1.0
 
