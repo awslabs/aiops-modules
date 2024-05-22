@@ -6,6 +6,7 @@ from cdklabs.generative_ai_cdk_constructs import RagAppsyncStepfnOpensearch
 from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch
 from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
+from aws_cdk import aws_s3 as s3
 from aws_cdk import (
     aws_opensearchservice as os,
     aws_cognito as cognito,
@@ -22,6 +23,7 @@ class RAGResources(Stack):
         os_domain_endpoint: str,
         os_security_group_id: str,
         os_index_name: str,
+        input_asset_bucket_name: str,
         **kwargs,
     ) -> None:
         super().__init__(
@@ -52,6 +54,13 @@ class RAGResources(Stack):
             "myuserpool",
             user_pool_id=cognito_pool_id,
         )
+
+        if input_asset_bucket_name:
+            input_asset_bucket = s3.Bucket.from_bucket_name(
+                self, "input-assets-bucket", input_asset_bucket_name
+            )
+        else:
+            input_asset_bucket = None
         # 1. Create Ingestion pipeline
         rag_ingest_resource = RagAppsyncStepfnOpensearch(
             self,
@@ -60,6 +69,7 @@ class RAGResources(Stack):
             existing_opensearch_domain=os_domain,
             open_search_index_name=os_index_name,
             cognito_user_pool=user_pool_loaded,
+            existing_input_assets_bucket_obj=input_asset_bucket,
         )
 
         self.security_group_id = rag_ingest_resource.security_group.security_group_id

@@ -20,7 +20,7 @@ vpc_id = os.getenv(_param("VPC_ID"))
 cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
 os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
 os_security_group_id = os.getenv(_param("OS_SECURITY_GROUP_ID"))
-
+input_asset_bucket_name = os.getenv(_param("INPUT_ASSET_BUCKET"))
 
 if not vpc_id:
     raise ValueError("Missing input parameter vpc-id")
@@ -44,6 +44,7 @@ stack = RAGResources(
     os_domain_endpoint=os_domain_endpoint,
     os_security_group_id=os_security_group_id,
     os_index_name="rag-index",
+    input_asset_bucket_name=input_asset_bucket_name,
     env=aws_cdk.Environment(
         account=os.environ["CDK_DEFAULT_ACCOUNT"],
         region=os.environ["CDK_DEFAULT_REGION"],

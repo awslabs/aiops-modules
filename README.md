@@ -42,11 +42,11 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### FMOps Modules
 
-| Type                                                                                                            | Description                                                     |
-|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
-| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
-| [AppSync Question and Answering RAG Model Endpoint Module](modules/fmops/qna-rag/README.md) | Creates an Graphql endpoint for a Question and answering RAG model using custom input knowledge base
+| Type                                                                                                               | Description                                                                                                                             |
+|--------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)    | Creates an endpoint for a SageMaker JumpStart Foundation Model.                                                                         |
+| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model.                                                                      |
+| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)          | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
 
 
 ### MWAA Modules

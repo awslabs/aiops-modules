@@ -40,6 +40,7 @@ def stack_model_package_input() -> cdk.Stack:
         os_domain_endpoint=os_domain_endpoint,
         os_security_group_id=os_security_group_id,
         os_index_name="sample",
+        input_asset_bucket_name="input-bucket",
         env=cdk.Environment(
             account="111111111111",
             region="us-east-1",
