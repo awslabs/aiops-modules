@@ -7,8 +7,10 @@ Deploys an AWS AppSync endpoint for ingestion of data and use it as knowledge ba
 The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/generative-ai-cdk-constructs/tree/main).
 
 ### Architecture
+Knowledge Base Ingestion Architecture
 ![AWS Appsync Ingestion Endpoint Module Architecture](docs/_static/ingestion_architecture.png "AWS Appsync Ingestion Endpoint Module Architecture")
 
+Question and Answering using RAG Architecture
 ![AWS Appsync Question and Answering Endpoint Module Architecture](docs/_static/architecture.png "AWS Appsync Question and Answering RAG module Endpoint Module Architecture")
 
 ## Inputs/Outputs

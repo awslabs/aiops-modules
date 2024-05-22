@@ -50,6 +50,9 @@ stack = RAGResources(
     ),
 )
 
+assert stack.rag_ingest_resource.s3_input_assets_bucket is not None
+assert stack.rag_ingest_resource.s3_processed_assets_bucket is not None
+
 aws_cdk.CfnOutput(
     scope=stack,
     id="metadata",
