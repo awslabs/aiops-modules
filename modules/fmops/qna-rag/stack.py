@@ -7,6 +7,7 @@ from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch
 from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_s3 as s3
+from typing import Optional
 from aws_cdk import (
     aws_opensearchservice as os,
     aws_cognito as cognito,
@@ -23,7 +24,7 @@ class RAGResources(Stack):
         os_domain_endpoint: str,
         os_security_group_id: str,
         os_index_name: str,
-        input_asset_bucket_name: str,
+        input_asset_bucket_name: Optional[str],
         **kwargs,
     ) -> None:
         super().__init__(
