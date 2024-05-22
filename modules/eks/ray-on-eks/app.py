@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from aws_cdk import App, CfnOutput, Environment
+from aws_cdk import App, CfnOutput, Environment, Tags
 
 from settings import ApplicationSettings
 from rbac_stack import RbacStack
@@ -44,6 +44,14 @@ ray_on_eks_stack = RayOnEKS(
     service_account_role=rbac_stack.service_account_role,
     env=env,
 )
+
+if app_settings.parameters.tags:
+    for tag_key, tag_value in app_settings.parameters.tags.items():
+        Tags.of(app).add(tag_key, tag_value)
+
+Tags.of(app).add("SeedFarmerDeploymentName", app_settings.settings.deployment_name)
+Tags.of(app).add("SeedFarmerModuleName", app_settings.settings.module_name)
+Tags.of(app).add("SeedFarmerProjectName", app_settings.settings.project_name)
 
 CfnOutput(
     scope=rbac_stack,
