@@ -22,6 +22,7 @@ class RAGResources(Stack):
         vpc_id: str,
         cognito_pool_id: str,
         os_domain_endpoint: str,
+        os_domain_port: str,
         os_security_group_id: str,
         os_index_name: str,
         input_asset_bucket_name: Optional[str],
@@ -95,7 +96,7 @@ class RAGResources(Stack):
         )
         os_security_group.add_ingress_rule(
             peer=security_group,
-            connection=ec2.Port.tcp(443),
+            connection=ec2.Port.tcp(int(os_domain_port)),
             description="Allow inbound HTTPS to open search from embeddings lambda and question answering lambda",
         )
 

@@ -19,6 +19,7 @@ app_prefix = f"{project_name}-{deployment_name}-{module_name}"
 vpc_id = os.getenv(_param("VPC_ID"))
 cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
 os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
+os_domain_port = os.getenv(_param("OS_DOMAIN_PORT"), "443")
 os_security_group_id = os.getenv(_param("OS_SECURITY_GROUP_ID"))
 input_asset_bucket_name = os.getenv(_param("INPUT_ASSET_BUCKET"))
 
@@ -42,6 +43,7 @@ stack = RAGResources(
     vpc_id=vpc_id,
     cognito_pool_id=cognito_pool_id,
     os_domain_endpoint=os_domain_endpoint,
+    os_domain_port=os_domain_port,
     os_security_group_id=os_security_group_id,
     os_index_name="rag-index",
     input_asset_bucket_name=input_asset_bucket_name,

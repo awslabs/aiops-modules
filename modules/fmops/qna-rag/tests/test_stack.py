@@ -38,6 +38,7 @@ def stack_model_package_input() -> cdk.Stack:
         vpc_id=vpc_id,
         cognito_pool_id=cognito_pool_id,
         os_domain_endpoint=os_domain_endpoint,
+        os_domain_port="443",
         os_security_group_id=os_security_group_id,
         os_index_name="sample",
         input_asset_bucket_name="input-bucket",
