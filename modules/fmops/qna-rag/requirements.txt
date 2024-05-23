@@ -30,7 +30,7 @@ cattrs==23.2.3
     # via jsii
 cdk-nag==2.28.118
     # via cdklabs-generative-ai-cdk-constructs
-cdklabs-generative-ai-cdk-constructs==0.1.145
+cdklabs-generative-ai-cdk-constructs==0.1.146
     # via -r requirements.in
 constructs==10.3.0
     # via
@@ -82,5 +82,5 @@ typeguard==2.13.3
     #   jsii
 typing-extensions==4.11.0
     # via jsii
-urllib3==1.26.17
+urllib3==1.26.18
     # via botocore
