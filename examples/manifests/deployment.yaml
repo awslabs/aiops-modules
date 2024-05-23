@@ -14,6 +14,7 @@ groups:
     path: manifests/sagemaker-model-package-group-modules.yaml
   - name: promote-models
     path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
+
 targetAccountMappings:
   - alias: primary
     accountId:
