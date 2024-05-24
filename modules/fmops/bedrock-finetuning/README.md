@@ -4,9 +4,10 @@ This module presents how you can setup automated model finetuning in Amazon Bedr
 
 ## Description
 
-The module creates a finetuning job for Amazon Bedrock model of choice (you provide the model's name in input, note that not all models on Amazon Bedrock can be finetuned currently). Finetuning is triggerred by droping new file into created S3 Bucket. This triggers step function execution that using Lambda invokes the finetuning job and provides all the necessary parameters. You can expand this solution by adding more steps to the step function or by adding other modules. 
+The module creates a finetuning job for Amazon Bedrock model of choice (you provide the model's name in input, note that not all models on Amazon Bedrock can be finetuned currently). Finetuning is triggerred by droping new file into created S3 Bucket. This triggers step function execution that using Lambda invokes the finetuning job and provides all the necessary parameters. You can expand this solution by adding more steps to the step function or by adding other modules.
 
 ## Architecture
+
 ![Amazon Bedrock Finetuning Module Architecture](docs/BedrockModule.png "Amazon Bedrock Finetuning Module Architecture")
 
 ### Input Parameters

@@ -12,14 +12,18 @@ describe("Bedrock Finetuning Stack", () => {
   const vpcId = "vpc-123";
   const subnetIds = ["sub1", "sub2"];
 
-  const stack = new AmazonBedrockFinetuningStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
-    projectName,
-    deploymentName,
-    moduleName,
-    bedrockBaseModelID,
-    vpcId,
-    subnetIds
-  });
+  const stack = new AmazonBedrockFinetuningStack(
+    app,
+    `${projectName}-${deploymentName}-${moduleName}`,
+    {
+      projectName,
+      deploymentName,
+      moduleName,
+      bedrockBaseModelID,
+      vpcId,
+      subnetIds,
+    },
+  );
 
   test("Synth stack", () => {
     const template = Template.fromStack(stack);
@@ -30,7 +34,10 @@ describe("Bedrock Finetuning Stack", () => {
   });
 
   test("No CDK Nag Errors", () => {
-    const errors = Annotations.fromStack(stack).findError("*", Match.stringLikeRegexp("AwsSolutions-.*"));
+    const errors = Annotations.fromStack(stack).findError(
+      "*",
+      Match.stringLikeRegexp("AwsSolutions-.*"),
+    );
     expect(errors).toHaveLength(0);
   });
 });

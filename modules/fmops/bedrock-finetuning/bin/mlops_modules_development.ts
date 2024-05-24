@@ -13,20 +13,25 @@ const deploymentName = process.env.SEEDFARMER_DEPLOYMENT_NAME;
 const moduleName = process.env.SEEDFARMER_MODULE_NAME;
 
 const vpcId: string | undefined = process.env.SEEDFARMER_PARAMETER_VPC_ID;
-const subnetIds: string[] = JSON.parse(process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string));
+const subnetIds: string[] = JSON.parse(
+  process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string),
+);
 const bedrockBaseModelID: string = process.env.BEDROCK_BASE_MODEL_ID!;
 
-
 const app = new cdk.App();
-new AmazonBedrockFinetuningStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
-  bedrockBaseModelID,
-  vpcId,
-  subnetIds,
-  projectName,
-  deploymentName,
-  moduleName,
-  env: { account, region },
-});
+new AmazonBedrockFinetuningStack(
+  app,
+  `${projectName}-${deploymentName}-${moduleName}`,
+  {
+    bedrockBaseModelID,
+    vpcId,
+    subnetIds,
+    projectName,
+    deploymentName,
+    moduleName,
+    env: { account, region },
+  },
+);
 
 cdk.Aspects.of(app).add(new cdk_nag.AwsSolutionsChecks({ logIgnores: true }));
 

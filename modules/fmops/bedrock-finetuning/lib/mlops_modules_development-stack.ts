@@ -8,10 +8,9 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as events from "aws-cdk-lib/aws-events";
 import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as kms from "aws-cdk-lib/aws-kms";
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import { NagSuppressions } from 'cdk-nag';
-
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import * as logs from "aws-cdk-lib/aws-logs";
+import { NagSuppressions } from "cdk-nag";
 
 interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
   projectName?: string;
@@ -23,7 +22,11 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
 }
 
 export class AmazonBedrockFinetuningStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: AmazonBedrockFinetuningStackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: AmazonBedrockFinetuningStackProps,
+  ) {
     super(scope, id, props);
 
     // create S3 bucket
@@ -34,7 +37,6 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       eventBridgeEnabled: true,
       enforceSSL: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
-      
     });
 
     // Create a KMS Key
@@ -95,11 +97,9 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     });
     bedrockRole.attachInlinePolicy(bedrockPolicy);
 
-
-    const vpc = ec2.Vpc.fromLookup(this, 'MyVpc', {
-      vpcId: props.vpcId // Replace with your VPC ID
+    const vpc = ec2.Vpc.fromLookup(this, "MyVpc", {
+      vpcId: props.vpcId, // Replace with your VPC ID
     });
-
 
     // creating lambda function for running the model finetuning job
     const modelFinetuningLambda = new lambda.Function(
@@ -117,7 +117,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
           kms_key_id: key.keyId,
           base_model_id: props.bedrockBaseModelID,
         },
-        vpc: vpc
+        vpc: vpc,
       },
     );
 
@@ -162,8 +162,8 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       stateMachineName: "BedrockFinetuning",
       tracingEnabled: true,
       logs: {
-        destination: new logs.LogGroup(this, 'MyLogGroup', {
-          logGroupName: '/aws/vendedlogs/states/BedrockFinetuning',
+        destination: new logs.LogGroup(this, "MyLogGroup", {
+          logGroupName: "/aws/vendedlogs/states/BedrockFinetuning",
           removalPolicy: cdk.RemovalPolicy.DESTROY,
           retention: logs.RetentionDays.ONE_MONTH,
         }),
@@ -188,30 +188,31 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
 
     rule.addTarget(new targets.SfnStateMachine(stateMachine));
 
-NagSuppressions.addResourceSuppressions(
-  [inputBucket],
-  [
-    {
-      id: 'AwsSolutions-S1',
-      reason: 'Bucket logging is not required',
-    },
-  ], true);
-NagSuppressions.addStackSuppressions(this, [
-  {
-    id: 'AwsSolutions-IAM4',
-    reason: 'This is a necessary managed policy for Lambda execution',
-  },
-]);
-NagSuppressions.addStackSuppressions(this,
-  [
-    {
-      id: 'AwsSolutions-IAM5',
-      reason: 'star required as default actions are not working',
-    },
-  ], true);
-
-
-  
-
-}
+    NagSuppressions.addResourceSuppressions(
+      [inputBucket],
+      [
+        {
+          id: "AwsSolutions-S1",
+          reason: "Bucket logging is not required",
+        },
+      ],
+      true,
+    );
+    NagSuppressions.addStackSuppressions(this, [
+      {
+        id: "AwsSolutions-IAM4",
+        reason: "This is a necessary managed policy for Lambda execution",
+      },
+    ]);
+    NagSuppressions.addStackSuppressions(
+      this,
+      [
+        {
+          id: "AwsSolutions-IAM5",
+          reason: "star required as default actions are not working",
+        },
+      ],
+      true,
+    );
+  }
 }
