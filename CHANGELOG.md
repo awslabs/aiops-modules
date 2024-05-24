@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 - added multi-acc sagemaker-mlops manifest example
-- added bedrock fine tuning module
 
 ### **Changed**
 - fixed model deploy cross-account permissions
@@ -40,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-hugging-face-endpoint` module
 - added `hf_import_models` template to import hugging face models
 - added `qna-rag` module
+- added `bedrock-finetuning` module
 
 ### **Changed**
 
