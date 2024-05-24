@@ -47,6 +47,8 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 | [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
 | [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md) | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning. |
+| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)          | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
+
 
 
 ### MWAA Modules

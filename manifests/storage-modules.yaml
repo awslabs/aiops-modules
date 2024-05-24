@@ -19,7 +19,7 @@ parameters:
   - name: encryption-type
     value: SSE
   - name: retention-type
-    value: RETAIN
+    value: DESTROY
 ---
 name: mlflow-mysql
 path: git::https://github.com/awslabs/idf-modules.git//modules/database/rds?ref=release/1.7.0&depth=1
@@ -51,3 +51,25 @@ parameters:
     value: 30
   - name: removal-policy
     value: DESTROY
+---
+name: opensearch
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/opensearch?ref=release/1.7.0&depth=1
+targetAccount: primary
+targetRegion: us-east-1
+parameters:
+  - name: encryption-type
+    value: SSE
+  - name: retention-type
+    value: RETAIN
+  - name: vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: private-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds

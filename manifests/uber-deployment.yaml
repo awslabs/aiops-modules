@@ -4,24 +4,26 @@ forceDependencyRedeploy: true
 groups:
   - name: networking
     path: manifests/networking-modules.yaml
-  # - name: storage
-  #   path: manifests/storage-modules.yaml
-  # - name: sagemaker-studio
-  #   path: manifests/sagemaker-studio-modules.yaml
-  # - name: sagemaker-templates
-  #   path: manifests/sagemaker-templates-modules.yaml
-  # - name: images
-  #   path: manifests/images-modules.yaml
-  # - name: mlflow
-  #   path: manifests/mlflow-modules.yaml
-  # - name: fmops
-  #   path: manifests/fmops-modules.yaml
-  # - name: sagemaker-kernels
-  #   path: manifests/kernels-modules.yaml
-  # - name: mwaa
-  #   path: manifests/mwaa-modules.yaml
-  # - name: mwaa-dags
-  #   path: manifests/mwaa-dag-modules.yaml
+  - name: storage
+    path: manifests/storage-modules.yaml
+  - name: sagemaker-studio
+    path: manifests/sagemaker-studio-modules.yaml
+  - name: sagemaker-templates
+    path: manifests/sagemaker-templates-modules.yaml
+  - name: images
+    path: manifests/images-modules.yaml
+  - name: mlflow
+    path: manifests/mlflow-modules.yaml
+  - name: fmops
+    path: manifests/fmops-modules.yaml
+  - name: sagemaker-kernels
+    path: manifests/kernels-modules.yaml
+  - name: mwaa
+    path: manifests/mwaa-modules.yaml
+  - name: mwaa-dags
+    path: manifests/mwaa-dag-modules.yaml
+  - name: qna-rag
+    path: manifests/qna-rag-modules.yaml
   - name: bedrock-finetuning
     path: manifests/bedrock-finetuning-modules.yaml
 

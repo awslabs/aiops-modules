@@ -1,18 +1,18 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List, cast
+from typing import Any, List, Optional
 
 import aws_cdk as core
 import cdk_nag
-from aws_cdk import Stack, Tags
+from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambda_
 from aws_cdk import aws_sagemaker as sagemaker
 from aws_cdk.aws_lambda_python_alpha import PythonFunction
 from aws_cdk.custom_resources import Provider
-from constructs import Construct, IConstruct
+from constructs import Construct
 
 from helper_constructs.sm_roles import SMRoles
 
@@ -22,37 +22,26 @@ class SagemakerStudioStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
-        *,
-        project_name: str,
-        deployment_name: str,
-        module_name: str,
         vpc_id: str,
         subnet_ids: List[str],
-        studio_domain_name: str,
-        studio_bucket_name: str,
+        studio_domain_name: Optional[str],
+        studio_bucket_name: Optional[str],
         data_science_users: List[str],
         lead_data_science_users: List[str],
-        app_image_config_name: str,
-        image_name: str,
+        app_image_config_name: Optional[str],
+        image_name: Optional[str],
         enable_custom_sagemaker_projects: bool,
         auth_mode: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        dep_mod = f"{project_name}-{deployment_name}-{module_name}"
-
-        # used to tag AWS resources. Tag Value length can't exceed 256 characters
-        full_dep_mod = dep_mod[:256] if len(dep_mod) > 256 else dep_mod
-
-        Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=full_dep_mod)
         self.vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
 
         self.subnets = [ec2.Subnet.from_subnet_id(self, f"SUBNET-{subnet_id}", subnet_id) for subnet_id in subnet_ids]
 
-        domain_name = studio_domain_name
-
-        s3_bucket_prefix = studio_bucket_name
+        domain_name = studio_domain_name or f"{construct_id}-studio-domain"
+        s3_bucket_prefix = studio_bucket_name or f"{construct_id}-bucket"
 
         # create roles to be used for sagemaker user profiles and attached to sagemaker studio domain
         self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, kwargs["env"])
@@ -205,8 +194,8 @@ class SagemakerStudioStack(Stack):
         security_group_ids: List[str],
         subnet_ids: List[str],
         vpc_id: str,
-        app_image_config_name: str,
-        image_name: str,
+        app_image_config_name: Optional[str],
+        image_name: Optional[str],
         auth_mode: str,
     ) -> sagemaker.CfnDomain:
         """

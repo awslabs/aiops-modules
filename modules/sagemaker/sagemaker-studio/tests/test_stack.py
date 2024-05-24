@@ -38,23 +38,20 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str
     return stack.SagemakerStudioStack(
         app,
         f"{project_name}-{dep_name}-{mod_name}",
-        project_name=project_name,
-        deployment_name=dep_name,
-        module_name=mod_name,
         vpc_id="vpc-12345",
         subnet_ids=["subnet-12345", "subnet-54321"],
         studio_domain_name=studio_domain_name,
         studio_bucket_name=studio_bucket_name,
         data_science_users=data_science_users,
         lead_data_science_users=lead_data_science_users,
-        env=cdk.Environment(
-            account=os.environ["CDK_DEFAULT_ACCOUNT"],
-            region=os.environ["CDK_DEFAULT_REGION"],
-        ),
         app_image_config_name=app_image_config_name,
         image_name=image_name,
         enable_custom_sagemaker_projects=enable_custom_sagemaker_projects,
         auth_mode=auth_mode,
+        env=cdk.Environment(
+            account=os.environ["CDK_DEFAULT_ACCOUNT"],
+            region=os.environ["CDK_DEFAULT_REGION"],
+        ),
     )
 
 
