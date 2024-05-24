@@ -8,9 +8,22 @@ import * as s3 from "aws-cdk-lib/aws-s3";
 import * as events from "aws-cdk-lib/aws-events";
 import * as targets from "aws-cdk-lib/aws-events-targets";
 import * as kms from "aws-cdk-lib/aws-kms";
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { NagSuppressions } from 'cdk-nag';
 
-export class MlopsModulesDevelopmentStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+
+interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
+  projectName?: string;
+  deploymentName?: string;
+  moduleName?: string;
+  bedrockBaseModelID: string;
+  vpcId?: string;
+  subnetIds: string[];
+}
+
+export class AmazonBedrockFinetuningStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: AmazonBedrockFinetuningStackProps) {
     super(scope, id, props);
 
     // create S3 bucket
@@ -19,6 +32,9 @@ export class MlopsModulesDevelopmentStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       eventBridgeEnabled: true,
+      enforceSSL: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      
     });
 
     // Create a KMS Key
@@ -79,12 +95,18 @@ export class MlopsModulesDevelopmentStack extends cdk.Stack {
     });
     bedrockRole.attachInlinePolicy(bedrockPolicy);
 
+
+    const vpc = ec2.Vpc.fromLookup(this, 'MyVpc', {
+      vpcId: props.vpcId // Replace with your VPC ID
+    });
+
+
     // creating lambda function for running the model finetuning job
     const modelFinetuningLambda = new lambda.Function(
       this,
       "ObjectDetectionLambda",
       {
-        runtime: lambda.Runtime.PYTHON_3_11,
+        runtime: lambda.Runtime.PYTHON_3_12,
         code: lambda.Code.fromAsset("src/lambda-functions"),
         timeout: cdk.Duration.seconds(60),
         memorySize: 512,
@@ -93,8 +115,9 @@ export class MlopsModulesDevelopmentStack extends cdk.Stack {
         environment: {
           role_arn: bedrockRole.roleArn,
           kms_key_id: key.keyId,
-          base_model_id: "amazon.titan-text-express-v1:0:8k",
+          base_model_id: props.bedrockBaseModelID,
         },
+        vpc: vpc
       },
     );
 
@@ -137,6 +160,15 @@ export class MlopsModulesDevelopmentStack extends cdk.Stack {
       definition: definition,
       timeout: cdk.Duration.minutes(5),
       stateMachineName: "BedrockFinetuning",
+      tracingEnabled: true,
+      logs: {
+        destination: new logs.LogGroup(this, 'MyLogGroup', {
+          logGroupName: '/aws/vendedlogs/states/BedrockFinetuning',
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+          retention: logs.RetentionDays.ONE_MONTH,
+        }),
+        level: sfn.LogLevel.ALL,
+      },
     });
 
     // Grant the state machine permission to invoke the Lambda function
@@ -155,5 +187,31 @@ export class MlopsModulesDevelopmentStack extends cdk.Stack {
     });
 
     rule.addTarget(new targets.SfnStateMachine(stateMachine));
-  }
+
+NagSuppressions.addResourceSuppressions(
+  [inputBucket],
+  [
+    {
+      id: 'AwsSolutions-S1',
+      reason: 'Bucket logging is not required',
+    },
+  ], true);
+NagSuppressions.addStackSuppressions(this, [
+  {
+    id: 'AwsSolutions-IAM4',
+    reason: 'This is a necessary managed policy for Lambda execution',
+  },
+]);
+NagSuppressions.addStackSuppressions(this,
+  [
+    {
+      id: 'AwsSolutions-IAM5',
+      reason: 'star required as default actions are not working',
+    },
+  ], true);
+
+
+  
+
+}
 }

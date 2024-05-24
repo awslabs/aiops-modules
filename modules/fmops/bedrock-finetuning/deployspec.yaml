@@ -8,9 +8,7 @@ deploy:
     build:
       commands:
         - env
-        - cdk deploy --require-approval never --progress events --app "npx ts-node --prefer-ts-exts index.ts" --outputs-file ./cdk-exports.json -v
-        # Export metadata
-        - seedfarmer metadata convert -f cdk-exports.json || true
+        - cdk deploy --require-approval never --progress events --app "npx ts-node --prefer-ts-exts bin/mlops_modules_development.ts"
 destroy:
   phases:
     install:

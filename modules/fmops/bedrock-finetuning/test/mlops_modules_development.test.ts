@@ -1,16 +1,36 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as MlopsModulesDevelopment from '../lib/mlops_modules_development-stack';
+import * as cdk from "aws-cdk-lib";
+import { Annotations, Match, Template } from "aws-cdk-lib/assertions";
+import { AmazonBedrockFinetuningStack } from "../lib/mlops_modules_development-stack";
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/mlops_modules_development-stack.ts
-test("SQS Queue Created", () => {
-  //   const app = new cdk.App();
-  //     // WHEN
-  //   const stack = new MlopsModulesDevelopment.MlopsModulesDevelopmentStack(app, 'MyTestStack');
-  //     // THEN
-  //   const template = Template.fromStack(stack);
-  //   template.hasResourceProperties('AWS::SQS::Queue', {
-  //     VisibilityTimeout: 300
-  //   });
+describe("Bedrock Finetuning Stack", () => {
+  const app = new cdk.App();
+
+  const projectName = "mlops";
+  const deploymentName = "platform";
+  const moduleName = "bedrock-finetuning";
+  const bedrockBaseModelID = "amazon.titan-text-express-v1:0:8k";
+  const vpcId = "vpc-123";
+  const subnetIds = ["sub1", "sub2"];
+
+  const stack = new AmazonBedrockFinetuningStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
+    projectName,
+    deploymentName,
+    moduleName,
+    bedrockBaseModelID,
+    vpcId,
+    subnetIds
+  });
+
+  test("Synth stack", () => {
+    const template = Template.fromStack(stack);
+
+    template.hasResource("AWS::Lambda::Function", {});
+    template.hasResource("AWS::S3::Bucket", {});
+    template.hasResource("AWS::StepFunctions::StateMachine", {});
+  });
+
+  test("No CDK Nag Errors", () => {
+    const errors = Annotations.fromStack(stack).findError("*", Match.stringLikeRegexp("AwsSolutions-.*"));
+    expect(errors).toHaveLength(0);
+  });
 });
