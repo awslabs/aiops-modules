@@ -11,17 +11,21 @@ describe("Bedrock Finetuning Stack", () => {
   const bedrockBaseModelID = "amazon.titan-text-express-v1:0:8k";
   const vpcId = "vpc-123";
   const subnetIds = ["sub1", "sub2"];
+  const account = "123456789";
+  const region = "us-east-1";
 
   const stack = new AmazonBedrockFinetuningStack(
     app,
     `${projectName}-${deploymentName}-${moduleName}`,
     {
-      projectName,
-      deploymentName,
-      moduleName,
-      bedrockBaseModelID,
-      vpcId,
-      subnetIds,
+    bedrockBaseModelID,
+    vpcId,
+    subnetIds,
+    projectName,
+    deploymentName,
+    moduleName,
+    env: { account, region },
+
     },
   );
 
