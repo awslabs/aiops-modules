@@ -18,14 +18,13 @@ describe("Bedrock Finetuning Stack", () => {
     app,
     `${projectName}-${deploymentName}-${moduleName}`,
     {
-    bedrockBaseModelID,
-    vpcId,
-    subnetIds,
-    projectName,
-    deploymentName,
-    moduleName,
-    env: { account, region },
-
+      bedrockBaseModelID,
+      vpcId,
+      subnetIds,
+      projectName,
+      deploymentName,
+      moduleName,
+      env: { account, region },
     },
   );
 
