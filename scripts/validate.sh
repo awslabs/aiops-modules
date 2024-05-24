@@ -70,7 +70,7 @@ if [[ $SKIP_STATIC_CHECKS == "false" ]]; then
         mypy .
     elif [[ $LANGUAGE == "typescript" ]]; then
         echo "Checking eslint"
-        npx eslint . --ext=. .js,.jsx,.ts,.tsx
+        npx eslint . --ext .js,.jsx,.ts,.tsx
     else
         echo "ERROR Language: ${LANGUAGE}"
         exit 1
