@@ -4,6 +4,8 @@ targetAccount: primary
 parameters:
   - name: bedrock-base-model-ID
     value: amazon.titan-text-express-v1
+  - name: bucket-name
+    value: sample_bucket_name
   - name: vpc_id
     valueFrom:
       moduleMetadata:

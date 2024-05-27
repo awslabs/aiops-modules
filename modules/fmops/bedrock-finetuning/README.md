@@ -20,6 +20,7 @@ The module creates a finetuning job for Amazon Bedrock model of choice (you prov
 
 - `vpc-id` - VPC id
 - `subnet-ids` - VPC subnet ids
+- `bucket-name` - bucket name to be used as source for input data
 
 #### Input Example
 
@@ -32,6 +33,8 @@ targetAccount: primary
 parameters:
   - name: bedrock-base-model-ID
     value: amazon.titan-text-express-v1
+  - name: bucket-name
+    value: sample_bucket_name
   - name: vpc_id
     valueFrom:
       moduleMetadata:

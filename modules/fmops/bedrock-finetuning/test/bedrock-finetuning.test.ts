@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Annotations, Match, Template } from "aws-cdk-lib/assertions";
-import { AmazonBedrockFinetuningStack } from "../lib/mlops_modules_development-stack";
+import { AmazonBedrockFinetuningStack } from "../lib/bedrock-finetuning-stack";
 
 describe("Bedrock Finetuning Stack", () => {
   const app = new cdk.App();

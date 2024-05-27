@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
-import { AmazonBedrockFinetuningStack } from "../lib/mlops_modules_development-stack";
+import { AmazonBedrockFinetuningStack } from "../lib/bedrock-finetuning-stack";
 import "source-map-support/register";
 import * as cdk_nag from "cdk-nag";
 
@@ -17,9 +17,9 @@ const subnetIds: string[] = JSON.parse(
   process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string),
 );
 const bedrockBaseModelID: string = process.env.BEDROCK_BASE_MODEL_ID!;
-
+const bucketName: string = process.env.BUCKET_NAME!;
 const app = new cdk.App();
-new AmazonBedrockFinetuningStack(
+const stack = new AmazonBedrockFinetuningStack(
   app,
   `${projectName}-${deploymentName}-${moduleName}`,
   {
@@ -29,9 +29,16 @@ new AmazonBedrockFinetuningStack(
     projectName,
     deploymentName,
     moduleName,
+    bucketName,
     env: { account, region },
   },
 );
+
+new cdk.CfnOutput(stack, "metadata", {
+  value: JSON.stringify({
+    BucketName: stack.bucketName,
+  }),
+});
 
 cdk.Aspects.of(app).add(new cdk_nag.AwsSolutionsChecks({ logIgnores: true }));
 

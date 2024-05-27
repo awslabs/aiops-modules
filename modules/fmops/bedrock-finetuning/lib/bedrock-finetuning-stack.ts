@@ -16,12 +16,14 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
   projectName?: string;
   deploymentName?: string;
   moduleName?: string;
+  bucketName?: string;
   bedrockBaseModelID: string;
   vpcId?: string;
   subnetIds: string[];
 }
 
 export class AmazonBedrockFinetuningStack extends cdk.Stack {
+  bucketName: string;
   constructor(
     scope: Construct,
     id: string,
@@ -30,14 +32,17 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     super(scope, id, props);
 
     // create S3 bucket
-    const inputBucket = new s3.Bucket(this, "BedrockBucket", {
-      bucketName: "bedrock-input-data-lj",
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-      eventBridgeEnabled: true,
-      enforceSSL: true,
-      encryption: s3.BucketEncryption.S3_MANAGED,
-    });
+    const inputBucket = props?.bucketName
+      ? s3.Bucket.fromBucketName(this, "ExistingBucket", props.bucketName)
+      : new s3.Bucket(this, "BedrockBucket", {
+          bucketName: `bedrock-input-data-${props.deploymentName}-${props.moduleName}`,
+          removalPolicy: cdk.RemovalPolicy.DESTROY, // Not recommended for production
+          autoDeleteObjects: true,
+          eventBridgeEnabled: true,
+          enforceSSL: true,
+          encryption: s3.BucketEncryption.S3_MANAGED,
+        });
+    this.bucketName = inputBucket.bucketName;
 
     // Create a KMS Key
     const key = new kms.Key(this, "MyKey", {
