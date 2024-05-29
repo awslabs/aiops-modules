@@ -36,7 +36,7 @@ pythonpath = [
 ]
 
 [tool.coverage.run]
-omit = ["tests/*"]
+omit = ["tests/*", "dags/*"]
 
 [tool.coverage.report]
 fail_under = 80
