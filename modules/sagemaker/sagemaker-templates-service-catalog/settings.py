@@ -31,21 +31,21 @@ class ModuleSettings(CdkBaseSettings):
     portfolio_owner: str = Field(default="administrator")
     portfolio_access_role_arn: str
 
-    dev_vpc_id: Optional[str] = Field(default=None)
-    dev_subnet_ids: Optional[List[str]] = Field(default=None)
-    dev_security_group_ids: Optional[List[str]] = Field(default=None)
+    dev_vpc_id: str = Field(default="")
+    dev_subnet_ids: List[str] = Field(default=[])
+    dev_security_group_ids: List[str] = Field(default=[])
 
-    pre_prod_account_id: Optional[str] = Field(default=None)
-    pre_prod_region: Optional[str] = Field(default=None)
-    pre_prod_vpc_id: Optional[str] = Field(default=None)
-    pre_prod_subnet_ids: Optional[List[str]] = Field(default=None)
-    pre_prod_security_group_ids: Optional[List[str]] = Field(default=None)
+    pre_prod_account_id: str = Field(default="")
+    pre_prod_region: str = Field(default="")
+    pre_prod_vpc_id: str = Field(default="")
+    pre_prod_subnet_ids: List[str] = Field(default=[])
+    pre_prod_security_group_ids: List[str] = Field(default=[])
 
-    prod_account_id: Optional[str] = Field(default=None)
-    prod_region: Optional[str] = Field(default=None)
-    prod_vpc_id: Optional[str] = Field(default=None)
-    prod_subnet_ids: Optional[List[str]] = Field(default=None)
-    prod_security_group_ids: Optional[List[str]] = Field(default=None)
+    prod_account_id: str = Field(default="")
+    prod_region: str = Field(default="")
+    prod_vpc_id: str = Field(default="")
+    prod_subnet_ids: List[str] = Field(default=[])
+    prod_security_group_ids: List[str] = Field(default=[])
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
