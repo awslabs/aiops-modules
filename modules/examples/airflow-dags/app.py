@@ -5,6 +5,7 @@ import os
 
 import aws_cdk
 from aws_cdk import App, CfnOutput
+
 from stack import DagResources
 
 project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")

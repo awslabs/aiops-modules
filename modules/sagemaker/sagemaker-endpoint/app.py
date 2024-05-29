@@ -1,90 +1,40 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import json
-import os
-
 import aws_cdk
 import cdk_nag
 
+from settings import ApplicationSettings
 from stack import DeployEndpointStack
 
-
-def _param(name: str) -> str:
-    return f"SEEDFARMER_PARAMETER_{name}"
-
-
-project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
-deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
-module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
-app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-
-DEFAULT_SAGEMAKER_PROJECT_ID = None
-DEFAULT_SAGEMAKER_PROJECT_NAME = None
-DEFAULT_MODEL_PACKAGE_ARN = None
-DEFAULT_MODEL_PACKAGE_GROUP_NAME = None
-DEFAULT_MODEL_EXECUTION_ROLE_ARN = None
-DEFAULT_MODEL_ARTIFACTS_BUCKET_ARN = None
-DEFAULT_ECR_REPO_ARN = None
-DEFAULT_VARIANT_NAME = "AllTraffic"
-DEFAULT_INITIAL_INSTANCE_COUNT = 1
-DEFAULT_INITIAL_VARIANT_WEIGHT = 1
-DEFAULT_INSTANCE_TYPE = "ml.m4.xlarge"
-DEFAULT_SCALING_MIN_INSTANCE_COUNT = 1
-DEFAULT_SCALING_MAX_INSTANCE_COUNT = 10
-
-environment = aws_cdk.Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"],
-    region=os.environ["CDK_DEFAULT_REGION"],
-)
-
-vpc_id = os.getenv(_param("VPC_ID"))
-subnet_ids = json.loads(os.getenv(_param("SUBNET_IDS"), "[]"))
-sagemaker_project_id = os.getenv(_param("SAGEMAKER_PROJECT_ID"), DEFAULT_SAGEMAKER_PROJECT_ID)
-sagemaker_project_name = os.getenv(_param("SAGEMAKER_PROJECT_NAME"), DEFAULT_SAGEMAKER_PROJECT_NAME)
-model_package_arn = os.getenv(_param("MODEL_PACKAGE_ARN"), DEFAULT_MODEL_PACKAGE_ARN)
-model_package_group_name = os.getenv(_param("MODEL_PACKAGE_GROUP_NAME"), DEFAULT_MODEL_PACKAGE_GROUP_NAME)
-model_execution_role_arn = os.getenv(_param("MODEL_EXECUTION_ROLE_ARN"), DEFAULT_MODEL_EXECUTION_ROLE_ARN)
-model_artifacts_bucket_arn = os.getenv(_param("MODEL_ARTIFACTS_BUCKET_ARN"), DEFAULT_MODEL_ARTIFACTS_BUCKET_ARN)
-ecr_repo_arn = os.getenv(_param("ECR_REPO_ARN"), DEFAULT_ECR_REPO_ARN)
-variant_name = os.getenv(_param("VARIANT_NAME"), DEFAULT_VARIANT_NAME)
-initial_instance_count = int(os.getenv(_param("INITIAL_INSTANCE_COUNT"), DEFAULT_INITIAL_INSTANCE_COUNT))
-initial_variant_weight = int(os.getenv(_param("INITIAL_VARIANT_WEIGHT"), DEFAULT_INITIAL_VARIANT_WEIGHT))
-instance_type = os.getenv(_param("INSTANCE_TYPE"), DEFAULT_INSTANCE_TYPE)
-managed_instance_scaling = bool(os.getenv(_param("MANAGED_INSTANCE_SCALING"), False))
-scaling_min_instance_count = int(os.getenv(_param("SCALING_MIN_INSTANCE_COUNT"), DEFAULT_SCALING_MIN_INSTANCE_COUNT))
-scaling_max_instance_count = int(os.getenv(_param("SCALING_MAX_INSTANCE_COUNT"), DEFAULT_SCALING_MAX_INSTANCE_COUNT))
-
-if not vpc_id:
-    raise ValueError("Missing input parameter vpc-id")
-
-if not model_package_arn and not model_package_group_name:
-    raise ValueError("Parameter model-package-arn or model-package-group-name is required")
-
-
 app = aws_cdk.App()
+app_settings = ApplicationSettings()
+
 stack = DeployEndpointStack(
     scope=app,
-    id=app_prefix,
-    sagemaker_project_id=sagemaker_project_id,
-    sagemaker_project_name=sagemaker_project_name,
-    model_package_arn=model_package_arn,
-    model_package_group_name=model_package_group_name,
-    model_execution_role_arn=model_execution_role_arn,
-    vpc_id=vpc_id,
-    subnet_ids=subnet_ids,
-    model_artifacts_bucket_arn=model_artifacts_bucket_arn,
-    ecr_repo_arn=ecr_repo_arn,
+    id=app_settings.seedfarmer_settings.app_prefix,
+    sagemaker_project_id=app_settings.module_settings.sagemaker_project_id,
+    sagemaker_project_name=app_settings.module_settings.sagemaker_project_name,
+    model_package_arn=app_settings.module_settings.model_package_arn,
+    model_package_group_name=app_settings.module_settings.model_package_group_name,
+    model_execution_role_arn=app_settings.module_settings.model_execution_role_arn,
+    vpc_id=app_settings.module_settings.vpc_id,
+    subnet_ids=app_settings.module_settings.subnet_ids,
+    model_artifacts_bucket_arn=app_settings.module_settings.model_artifacts_bucket_arn,
+    ecr_repo_arn=app_settings.module_settings.ecr_repo_arn,
     endpoint_config_prod_variant={
-        "initial_instance_count": initial_instance_count,
-        "initial_variant_weight": initial_variant_weight,
-        "instance_type": instance_type,
-        "variant_name": variant_name,
+        "initial_instance_count": app_settings.module_settings.initial_instance_count,
+        "initial_variant_weight": app_settings.module_settings.initial_variant_weight,
+        "instance_type": app_settings.module_settings.instance_type,
+        "variant_name": app_settings.module_settings.variant_name,
     },
-    managed_instance_scaling=managed_instance_scaling,
-    scaling_min_instance_count=scaling_min_instance_count,
-    scaling_max_instance_count=scaling_max_instance_count,
-    env=environment,
+    managed_instance_scaling=app_settings.module_settings.managed_instance_scaling,
+    scaling_min_instance_count=app_settings.module_settings.scaling_min_instance_count,
+    scaling_max_instance_count=app_settings.module_settings.scaling_max_instance_count,
+    env=aws_cdk.Environment(
+        account=app_settings.cdk_settings.account,
+        region=app_settings.cdk_settings.region,
+    ),
 )
 
 aws_cdk.CfnOutput(
@@ -102,5 +52,13 @@ aws_cdk.CfnOutput(
 )
 
 aws_cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
+
+if app_settings.module_settings.tags:
+    for tag_key, tag_value in app_settings.module_settings.tags.items():
+        aws_cdk.Tags.of(app).add(tag_key, tag_value)
+
+aws_cdk.Tags.of(app).add("SeedFarmerDeploymentName", app_settings.seedfarmer_settings.deployment_name)
+aws_cdk.Tags.of(app).add("SeedFarmerModuleName", app_settings.seedfarmer_settings.module_name)
+aws_cdk.Tags.of(app).add("SeedFarmerProjectName", app_settings.seedfarmer_settings.project_name)
 
 app.synth()

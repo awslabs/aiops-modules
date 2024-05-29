@@ -12,9 +12,9 @@ from datetime import datetime
 import boto3
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from config import MLOPS_DATA_BUCKET, SAGEMAKER_EXECUTION_ROLE, DAG_EXECUTION_ROLE
-from sagemaker.processing import ProcessingInput, ProcessingOutput
+from config import DAG_EXECUTION_ROLE, MLOPS_DATA_BUCKET, SAGEMAKER_EXECUTION_ROLE
 from sagemaker.inputs import TrainingInput
+from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.session import Session
 from sagemaker.sklearn.estimator import SKLearn
 from sagemaker.sklearn.processing import SKLearnProcessor
@@ -26,9 +26,7 @@ default_args = {
 }
 dag = DAG("SciKitLearn_MLOps", default_args=default_args, schedule_interval=None)
 
-pre_processing_input = (
-    f"s3://sagemaker-sample-data-{os.environ['AWS_REGION']}/processing/census"
-)
+pre_processing_input = f"s3://sagemaker-sample-data-{os.environ['AWS_REGION']}/processing/census"
 test_data_s3_path = f"s3://{MLOPS_DATA_BUCKET}/processing/test"
 train_data_s3_path = f"s3://{MLOPS_DATA_BUCKET}/processing/train"
 model_path = f"s3://{MLOPS_DATA_BUCKET}/train/models/"
@@ -134,9 +132,7 @@ def evaluation(model_path):  # type: ignore[no-untyped-def]
         code=os.path.join(os.path.dirname(__file__), "evaluation.py"),
         inputs=[
             ProcessingInput(source=model_path, destination="/opt/ml/processing/model"),
-            ProcessingInput(
-                source=test_data_s3_path, destination="/opt/ml/processing/test"
-            ),
+            ProcessingInput(source=test_data_s3_path, destination="/opt/ml/processing/test"),
         ],
         outputs=[
             ProcessingOutput(
