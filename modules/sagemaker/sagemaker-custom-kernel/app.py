@@ -36,6 +36,7 @@ stack = CustomKernelStack(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,
     ),
+    tags=app_settings.module_settings.tags,
 )
 
 CfnOutput(
@@ -53,5 +54,9 @@ CfnOutput(
 )
 
 cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
+
+cdk.Tags.of(app).add("SeedFarmerDeploymentName", app_settings.seedfarmer_settings.deployment_name)
+cdk.Tags.of(app).add("SeedFarmerModuleName", app_settings.seedfarmer_settings.module_name)
+cdk.Tags.of(app).add("SeedFarmerProjectName", app_settings.seedfarmer_settings.project_name)
 
 app.synth()
