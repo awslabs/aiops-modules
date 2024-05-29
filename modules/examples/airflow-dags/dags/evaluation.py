@@ -3,9 +3,8 @@ import os
 import tarfile
 
 import pandas as pd
-
 from sklearn.externals import joblib
-from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
+from sklearn.metrics import accuracy_score, classification_report, roc_auc_score
 
 if __name__ == "__main__":
     model_path = os.path.join("/opt/ml/processing/model", "model.tar.gz")
@@ -30,9 +29,7 @@ if __name__ == "__main__":
 
     print("Classification report:\n{}".format(report_dict))
 
-    evaluation_output_path = os.path.join(
-        "/opt/ml/processing/evaluation", "evaluation.json"
-    )
+    evaluation_output_path = os.path.join("/opt/ml/processing/evaluation", "evaluation.json")
     print("Saving classification report to {}".format(evaluation_output_path))
 
     with open(evaluation_output_path, "w") as f:
