@@ -3,6 +3,7 @@
 
 import os
 import sys
+from unittest import mock
 
 import aws_cdk as cdk
 import cdk_nag
@@ -12,13 +13,15 @@ from aws_cdk.assertions import Annotations, Match, Template
 
 @pytest.fixture(scope="function")
 def stack_defaults():
-    os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
-    os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
+    with mock.patch.dict(os.environ, {}, clear=True):
+        os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
+        os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
-    # Unload the app import so that subsequent tests don't reuse
+        # Unload the app import so that subsequent tests don't reuse
+        if "stack" in sys.modules:
+            del sys.modules["stack"]
 
-    if "stack" in sys.modules:
-        del sys.modules["stack"]
+        yield
 
 
 @pytest.fixture(scope="function")
