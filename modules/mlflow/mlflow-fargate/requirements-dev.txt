@@ -164,7 +164,7 @@ referencing==0.33.0
     #   jsonschema-specifications
 regex==2023.12.25
     # via cfn-lint
-requests==2.31.0
+requests==2.32.2
     # via pyroma
 rpds-py==0.18.0
     # via
