@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `sagemaker-studio`
   - `sagemaker-endpoint`
   - `sagemaker-templates-service-catalog`
+  - `qna-rag`
+- add CDK nag to `qna-rag` module
 - rename seedfarmer project name to `aiops`
 - chore: adding some missing auto_delete attributes
 - chore: Add `auto_delete` to `mlflow-fargate` elb access logs bucket
