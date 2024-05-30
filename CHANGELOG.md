@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `mlflow-image` 
   - `sagemaker-studio`
   - `sagemaker-endpoint`
+  - `sagemaker-templates-service-catalog`
 - rename seedfarmer project name to `aiops`
 - chore: adding some missing auto_delete attributes
 - chore: Add `auto_delete` to `mlflow-fargate` elb access logs bucket
