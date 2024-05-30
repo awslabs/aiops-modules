@@ -12,6 +12,7 @@ from aws_cdk import (
     aws_opensearchservice as os,
 )
 from aws_cdk import aws_s3 as s3
+import cdk_nag
 from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch, RagAppsyncStepfnOpensearch
 from constructs import Construct
 
@@ -63,6 +64,7 @@ class RAGResources(Stack):
             input_asset_bucket = s3.Bucket.from_bucket_name(self, "input-assets-bucket", input_asset_bucket_name)
         else:
             input_asset_bucket = None
+
         # 1. Create Ingestion pipeline
         rag_ingest_resource = RagAppsyncStepfnOpensearch(
             self,
@@ -77,6 +79,7 @@ class RAGResources(Stack):
         self.security_group_id = rag_ingest_resource.security_group.security_group_id
 
         self.rag_ingest_resource = rag_ingest_resource
+
         # 2. create question and answer pipeline
         rag_qa_source = QaAppsyncOpensearch(
             self,
@@ -99,3 +102,44 @@ class RAGResources(Stack):
         )
 
         self.rag_resource = rag_qa_source
+
+        # 3. add cdk nag suppressions
+        cdk_nag.NagSuppressions.add_stack_suppressions(
+            self,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM4",
+                    reason="Created by the QaAppsyncOpensearch and RagAppsyncStepfnOpensearch constructs",
+                    applies_to=[
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSAppSyncPushToCloudWatchLogs",
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+                    ],
+                ),
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-IAM5",
+                    reason="Created by the QaAppsyncOpensearch and RagAppsyncStepfnOpensearch constructs",
+                ),
+            ],
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            rag_ingest_resource,
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-S10",
+                    reason="We don't have control over the S3 bucket defined by RagAppsyncStepfnOpensearch",
+                ),
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            rag_qa_source,
+            apply_to_children=True,
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-S1",
+                    reason="We don't have control over the S3 bucket defined by QaAppsyncOpensearch",
+                ),
+            ],
+        )

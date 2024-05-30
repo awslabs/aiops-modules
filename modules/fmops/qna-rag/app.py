@@ -4,12 +4,18 @@
 import aws_cdk
 import cdk_nag
 from aws_cdk import App
+from pydantic import ValidationError
 
 from settings import ApplicationSettings
 from stack import RAGResources
 
 app = App()
-app_settings = ApplicationSettings()
+
+try:
+    app_settings = ApplicationSettings()
+except ValidationError as e:
+    print(e)
+    raise e
 
 stack = RAGResources(
     scope=app,
