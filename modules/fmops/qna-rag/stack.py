@@ -1,8 +1,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Optional
+from typing import Any, Optional
 
+import cdk_nag
 from aws_cdk import Stack
 from aws_cdk import (
     aws_cognito as cognito,
@@ -12,7 +13,6 @@ from aws_cdk import (
     aws_opensearchservice as os,
 )
 from aws_cdk import aws_s3 as s3
-import cdk_nag
 from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch, RagAppsyncStepfnOpensearch
 from constructs import Construct
 
@@ -29,7 +29,7 @@ class RAGResources(Stack):
         os_security_group_id: str,
         os_index_name: str,
         input_asset_bucket_name: Optional[str],
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             scope,
@@ -45,6 +45,7 @@ class RAGResources(Stack):
             domain_endpoint="https://" + os_domain_endpoint,
         )
         self.os_domain = os_domain
+
         # get vpc from vpc id
         vpc = ec2.Vpc.from_lookup(
             self,
