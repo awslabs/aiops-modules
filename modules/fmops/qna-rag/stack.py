@@ -1,17 +1,19 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from constructs import Construct
-from cdklabs.generative_ai_cdk_constructs import RagAppsyncStepfnOpensearch
-from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch
-from aws_cdk import Stack
-from aws_cdk import aws_ec2 as ec2
-from aws_cdk import aws_s3 as s3
 from typing import Optional
+
+from aws_cdk import Stack
 from aws_cdk import (
-    aws_opensearchservice as os,
     aws_cognito as cognito,
 )
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import (
+    aws_opensearchservice as os,
+)
+from aws_cdk import aws_s3 as s3
+from cdklabs.generative_ai_cdk_constructs import QaAppsyncOpensearch, RagAppsyncStepfnOpensearch
+from constructs import Construct
 
 
 class RAGResources(Stack):
@@ -22,7 +24,7 @@ class RAGResources(Stack):
         vpc_id: str,
         cognito_pool_id: str,
         os_domain_endpoint: str,
-        os_domain_port: str,
+        os_domain_port: int,
         os_security_group_id: str,
         os_index_name: str,
         input_asset_bucket_name: Optional[str],
@@ -58,9 +60,7 @@ class RAGResources(Stack):
         )
 
         if input_asset_bucket_name:
-            input_asset_bucket = s3.Bucket.from_bucket_name(
-                self, "input-assets-bucket", input_asset_bucket_name
-            )
+            input_asset_bucket = s3.Bucket.from_bucket_name(self, "input-assets-bucket", input_asset_bucket_name)
         else:
             input_asset_bucket = None
         # 1. Create Ingestion pipeline
@@ -91,12 +91,10 @@ class RAGResources(Stack):
 
         security_group = rag_qa_source.security_group
 
-        os_security_group = ec2.SecurityGroup.from_security_group_id(
-            self, "OSSecurityGroup", os_security_group_id
-        )
+        os_security_group = ec2.SecurityGroup.from_security_group_id(self, "OSSecurityGroup", os_security_group_id)
         os_security_group.add_ingress_rule(
             peer=security_group,
-            connection=ec2.Port.tcp(int(os_domain_port)),
+            connection=ec2.Port.tcp(os_domain_port),
             description="Allow inbound HTTPS to open search from embeddings lambda and question answering lambda",
         )
 
