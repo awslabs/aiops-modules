@@ -7,7 +7,7 @@ from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class CdkBaseSettings(BaseSettings, ABC):
+class EnvBaseSettings(BaseSettings, ABC):
     """Defines common configuration for settings."""
 
     model_config = SettingsConfigDict(
@@ -19,7 +19,7 @@ class CdkBaseSettings(BaseSettings, ABC):
     )
 
 
-class ModuleSettings(CdkBaseSettings):
+class ModuleSettings(EnvBaseSettings):
     """Seedfarmer Parameters.
 
     These parameters are required for the module stack.
@@ -43,7 +43,7 @@ class ModuleSettings(CdkBaseSettings):
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 
-class SeedFarmerSettings(CdkBaseSettings):
+class SeedFarmerSettings(EnvBaseSettings):
     """Seedfarmer Settings.
 
     These parameters comes from seedfarmer by default.
@@ -63,7 +63,7 @@ class SeedFarmerSettings(CdkBaseSettings):
         return prefix
 
 
-class CDKSettings(CdkBaseSettings):
+class CDKSettings(EnvBaseSettings):
     """CDK Default Settings.
 
     These parameters comes from AWS CDK by default.
@@ -75,7 +75,7 @@ class CDKSettings(CdkBaseSettings):
     region: str
 
 
-class ApplicationSettings(CdkBaseSettings):
+class ApplicationSettings(EnvBaseSettings):
     """Application settings."""
 
     seedfarmer_settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)

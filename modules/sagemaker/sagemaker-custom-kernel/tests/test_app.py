@@ -20,6 +20,9 @@ def stack_defaults():
         os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
         os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_IMAGE_NAME"] = "echo-kernel"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_DOMAIN_NAME"] = "test-studio"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_DOMAIN_ID"] = "studio-id"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_EXECUTION_ROLE_ARN"] = "user-arn"
         os.environ["SEEDFARMER_PARAMETER_ECR_REPO_NAME"] = "repo"
 
         # Unload the app import so that subsequent tests don't reuse

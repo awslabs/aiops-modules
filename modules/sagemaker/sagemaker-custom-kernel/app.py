@@ -4,12 +4,18 @@
 import aws_cdk as cdk
 import cdk_nag
 from aws_cdk import CfnOutput
+from pydantic import ValidationError
 
 from settings import ApplicationSettings
 from stack import CustomKernelStack
 
 app = cdk.App()
-app_settings = ApplicationSettings()
+
+try:
+    app_settings = ApplicationSettings()
+except ValidationError as e:
+    print(e)
+    raise e
 
 app_image_config_name = (
     app_settings.module_settings.app_image_config_name or f"{app_settings.seedfarmer_settings.app_prefix}-app-config"
