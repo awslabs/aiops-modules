@@ -31,7 +31,6 @@ def stack() -> cdk.Stack:
             account="111111111111",
             region="us-east-1",
         ),
-        app_prefix=app_prefix,
         sagemaker_image_name=sagemaker_image_name,
         ecr_repo_name=ecr_repo_name,
         app_image_config_name=app_image_config_name,
