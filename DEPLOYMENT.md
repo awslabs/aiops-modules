@@ -39,7 +39,7 @@ Assuming that you will be using a single account, follow the guide [here](https:
 
 Following is the command to bootstrap your existing account to a toolchain and target account.
 ```
-seedfarmer bootstrap toolchain --project mlops --trusted-principal ${ADMIN_ROLE_ARN} --as-target
+seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ADMIN_ROLE_ARN} --as-target
 ```
 
 ## Deployment
