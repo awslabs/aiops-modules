@@ -4,7 +4,7 @@
 import os
 from typing import Any
 
-from aws_cdk import Stack, Tags
+from aws_cdk import Stack
 from aws_cdk import aws_ecr as ecr
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_sagemaker as sagemaker
@@ -19,7 +19,6 @@ class CustomKernelStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
-        app_prefix: str,
         sagemaker_image_name: str,
         ecr_repo_name: str,
         app_image_config_name: str,
@@ -31,10 +30,8 @@ class CustomKernelStack(Stack):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        Tags.of(self).add(key="Deployment", value=app_prefix[:64])
-
         # ECR Image deployment
-        repo = ecr.Repository.from_repository_name(self, id=f"{app_prefix}-ecr-repo", repository_name=ecr_repo_name)
+        repo = ecr.Repository.from_repository_name(self, id=f"{id}-ecr-repo", repository_name=ecr_repo_name)
 
         local_image = DockerImageAsset(
             self,
