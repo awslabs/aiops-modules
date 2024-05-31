@@ -1,56 +1,37 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import os
-
 import aws_cdk
+import cdk_nag
 from aws_cdk import App
+from pydantic import ValidationError
+
+from settings import ApplicationSettings
 from stack import RAGResources
-
-
-def _param(name: str) -> str:
-    return f"SEEDFARMER_PARAMETER_{name}"
-
-
-project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
-deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
-module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
-app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-vpc_id = os.getenv(_param("VPC_ID"))
-cognito_pool_id = os.getenv(_param("COGNITO_POOL_ID"))
-os_domain_endpoint = os.getenv(_param("OS_DOMAIN_ENDPOINT"))
-os_domain_port = os.getenv(_param("OS_DOMAIN_PORT"), "443")
-os_security_group_id = os.getenv(_param("OS_SECURITY_GROUP_ID"))
-input_asset_bucket_name = os.getenv(_param("INPUT_ASSET_BUCKET"))
-
-if not vpc_id:
-    raise ValueError("Missing input parameter vpc-id")
-
-if not cognito_pool_id:
-    raise ValueError("Missing input parameter cognito-pool-id")
-
-if not os_domain_endpoint:
-    raise ValueError("Missing input parameter os-domain-endpoint")
-
-if not os_security_group_id:
-    raise ValueError("Missing input parameter os-security-group-id")
 
 app = App()
 
+try:
+    app_settings = ApplicationSettings()
+except ValidationError as e:
+    print(e)
+    raise e
+
 stack = RAGResources(
     scope=app,
-    id=app_prefix,
-    vpc_id=vpc_id,
-    cognito_pool_id=cognito_pool_id,
-    os_domain_endpoint=os_domain_endpoint,
-    os_domain_port=os_domain_port,
-    os_security_group_id=os_security_group_id,
+    id=app_settings.seedfarmer_settings.app_prefix,
+    vpc_id=app_settings.module_settings.vpc_id,
+    cognito_pool_id=app_settings.module_settings.cognito_pool_id,
+    os_domain_endpoint=app_settings.module_settings.os_domain_endpoint,
+    os_domain_port=app_settings.module_settings.os_domain_port,
+    os_security_group_id=app_settings.module_settings.os_security_group_id,
     os_index_name="rag-index",
-    input_asset_bucket_name=input_asset_bucket_name,
+    input_asset_bucket_name=app_settings.module_settings.input_asset_bucket_name,
     env=aws_cdk.Environment(
-        account=os.environ["CDK_DEFAULT_ACCOUNT"],
-        region=os.environ["CDK_DEFAULT_REGION"],
+        account=app_settings.cdk_settings.account,
+        region=app_settings.cdk_settings.region,
     ),
+    tags=app_settings.module_settings.tags,
 )
 
 assert stack.rag_ingest_resource.s3_input_assets_bucket is not None
@@ -70,5 +51,11 @@ aws_cdk.CfnOutput(
         }
     ),
 )
+
+aws_cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
+
+aws_cdk.Tags.of(app).add("SeedFarmerDeploymentName", app_settings.seedfarmer_settings.deployment_name)
+aws_cdk.Tags.of(app).add("SeedFarmerModuleName", app_settings.seedfarmer_settings.module_name)
+aws_cdk.Tags.of(app).add("SeedFarmerProjectName", app_settings.seedfarmer_settings.project_name)
 
 app.synth(force=True)
