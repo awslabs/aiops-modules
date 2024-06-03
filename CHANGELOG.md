@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `sagemaker-studio`
   - `sagemaker-endpoint`
   - `sagemaker-templates-service-catalog`
+  - `sagemaker-custom-kernel`
   - `qna-rag`
 - add CDK nag to `qna-rag` module
 - rename seedfarmer project name to `aiops`
