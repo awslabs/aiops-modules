@@ -36,8 +36,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       ? s3.Bucket.fromBucketName(this, "ExistingBucket", props.bucketName)
       : new s3.Bucket(this, "BedrockBucket", {
           bucketName: `bedrock-input-data-${props.deploymentName}-${props.moduleName}`,
-          removalPolicy: cdk.RemovalPolicy.DESTROY, // Not recommended for production
-          autoDeleteObjects: true,
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
           eventBridgeEnabled: true,
           enforceSSL: true,
           encryption: s3.BucketEncryption.S3_MANAGED,
@@ -95,7 +94,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
           })
           .withConditions({
             ArnEquals: {
-              "aws:SourceArn": `arn:aws:bedrock:${this.region}:${this.account}:model-customization-job/*`,
+              "aws:SourceArn": `arn:${this.partition}:bedrock:${this.region}:${this.account}:model-customization-job/*`,
             },
           }),
       ),
