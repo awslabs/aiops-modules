@@ -8,7 +8,7 @@ deploy:
     build:
       commands:
         - env
-        - cdk deploy --require-approval never --progress events --app "npx ts-node --prefer-ts-exts bin/mlops_modules_development.ts"
+        - cdk deploy --require-approval never --progress events --app "npx ts-node --prefer-ts-exts bin/bedrock-finetuning.ts"
 destroy:
   phases:
     install:
@@ -17,4 +17,4 @@ destroy:
         - npm install
     build:
       commands:
-        - cdk destroy --force --app "npx ts-node --prefer-ts-exts index.ts"
+        - cdk destroy --force --app "npx ts-node --prefer-ts-exts bin/bedrock-finetuning.ts"
