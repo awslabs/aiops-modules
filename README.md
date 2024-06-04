@@ -40,16 +40,14 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow Docker container image and pushes the image to Elastic Container Registry                                                                                                          |
 | [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
 
-### FMOps Modules
+### FMOps/LLMOps Modules
 
-| Type                                                                                                            | Description                                                     |
-|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
+| Type                                                                                                             | Description                                                     |
+|------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)  | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 | [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
-| [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md) | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning. |
-| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)          | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
-
-
+| [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md)                                   | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning. |
+| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)        | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
 
 ### MWAA Modules
 
@@ -57,12 +55,12 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
 
+### Events Modules
+
+| Type                                                              | Description                                                                                                                                                                                       |
+|-------------------------------------------------------------------|------------------------------------------------------------------------|
+| [Event Bus Module](modules/examples/event-bus/README.md)          |  Creates an Amazon EventBridge Bus for cross-account events.           |
+
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
-
-### Events Modules
-
-| Type                                                                    | Description                                                                                                                                                                                       |
-|-------------------------------------------------------------------------|------------------------------------------------------------------------|
-|  [Event Bus Module](modules/examples/events/event-bus/README.md)        |  Creates an Amazon EventBridge Bus for cross-account events.           |
