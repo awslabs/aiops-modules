@@ -1,9 +1,6 @@
 {
-  "name": "mlops_modules_development",
+  "name": "aiops-bedrock-finetuning",
   "version": "0.1.0",
-  "bin": {
-    "mlops_modules_development": "bin/mlops_modules_development.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
