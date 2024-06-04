@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+### **Changed**
+- remove explicit module manifest account/region mappings from `fmops-qna-rag`
+
 ## v1.2.0
 
 ### **Added**
