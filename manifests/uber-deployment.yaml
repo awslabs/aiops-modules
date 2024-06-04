@@ -24,6 +24,9 @@ groups:
     path: manifests/mwaa-dag-modules.yaml
   - name: qna-rag
     path: manifests/qna-rag-modules.yaml
+  - name: bedrock-finetuning
+    path: manifests/bedrock-finetuning-modules.yaml
+
 targetAccountMappings:
   - alias: primary
     accountId:
