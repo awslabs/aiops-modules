@@ -192,7 +192,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
         detailType: ["Object Created"],
         detail: {
           bucket: {
-            name: [props.bucketName],
+            name: [this.bucketName],
           },
         },
       },
