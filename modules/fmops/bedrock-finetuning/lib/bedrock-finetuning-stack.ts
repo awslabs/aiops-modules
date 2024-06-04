@@ -105,6 +105,12 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       vpcId: props.vpcId, // Replace with your VPC ID
     });
 
+    //create security group, add configuration depending on your use case and setup
+    const securityGroup = new ec2.SecurityGroup(this, "SecurityGroup", {
+      vpc: vpc,
+      description: "Allow inbound traffic",
+    });
+
     // creating lambda function for running the model finetuning job
     const modelFinetuningLambda = new lambda.Function(
       this,
@@ -120,6 +126,8 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
           role_arn: bedrockRole.roleArn,
           kms_key_id: key.keyId,
           base_model_id: props.bedrockBaseModelID,
+          vpc_subnets: JSON.stringify(props.subnetIds),
+          vpc_sec_group: securityGroup.uniqueId,
         },
         vpc: vpc,
       },
@@ -184,7 +192,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
         detailType: ["Object Created"],
         detail: {
           bucket: {
-            name: ["bedrock-input-data-lj"],
+            name: [props.bucketName],
           },
         },
       },

@@ -8,6 +8,8 @@ bedrock_runtime = boto3.client(service_name="bedrock-runtime")
 role_arn = os.environ.get("role_arn")
 kms_key_id = os.environ.get("kms_key_id")
 base_model_id = os.environ.get("base_model_id")
+vpc_subnets = json.loads(os.environ.get("vpc_subnets"))
+vpc_sec_group = os.environ.get("vpc_sec_group")
 
 
 def lambda_handler(event, context):
@@ -43,6 +45,10 @@ def lambda_handler(event, context):
         },
         trainingDataConfig={"s3Uri": training_input},
         outputDataConfig={"s3Uri": output_loc},
+        vpcConfig={
+            "securityGroupIds": [vpc_sec_group],
+            "subnets": vpc_subnets,
+        },
     )
 
     return {
