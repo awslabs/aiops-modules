@@ -1,4 +1,7 @@
 [tool.ruff]
+line-length = 120
+target-version = "py38"
+
 exclude = [
     ".eggs",
     ".git",
@@ -6,15 +9,14 @@ exclude = [
     ".mypy_cache",
     ".ruff_cache",
     ".tox",
+    ".env",
     ".venv",
     "_build",
     "buck-out",
     "build",
     "dist",
-    "codeseeder",
+    "codeseeder.out",
 ]
-line-length = 120
-target-version = "py38"
 
 [tool.ruff.lint]
 select = ["F", "I", "E", "W"]
@@ -23,9 +25,8 @@ fixable = ["ALL"]
 [tool.mypy]
 python_version = "3.8"
 strict = true
-ignore_missing_imports = true
 disallow_untyped_decorators = false
-exclude = "codeseeder.out/|example/|tests/|functions/sm_studio/enable_sm_projects/|scripts/"
+exclude = "codeseeder.out/|example/|tests/|.venv"
 warn_unused_ignores = false
 
 plugins = [
@@ -36,6 +37,9 @@ plugins = [
 addopts = "-v --cov=. --cov-report term"
 pythonpath = [
   "."
+]
+testpaths = [
+  "tests"
 ]
 
 [tool.coverage.run]

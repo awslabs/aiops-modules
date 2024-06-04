@@ -1,9 +1,11 @@
 name: ecr-sagemaker-kernel
-path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=main&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=release/1.7.0&depth=1
 targetAccount: dev
 parameters:
   - name: image-tag-mutability
     value: MUTABLE
+  - name: image-scan-on-push
+    value: True
 ---
 name: buckets
 path: git::https://github.com/awslabs/idf-modules.git//modules/storage/buckets?ref=release/1.7.0&depth=1

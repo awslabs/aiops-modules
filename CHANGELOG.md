@@ -15,12 +15,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - fixed model deploy cross-account permissions
 - added bucket and model package group names as stack outputs in the `sagemaker-templates` module
-- refactor inputs for `mlflow-fargate` and `mlflow-image` 
-- refactor inputs for `sagemaker-studio` 
+- refactor inputs for the following modules to use Pydantic:
+  - `mlflow-fargate`
+  - `mlflow-image` 
+  - `sagemaker-studio`
+  - `sagemaker-endpoint`
+  - `sagemaker-templates-service-catalog`
+  - `sagemaker-custom-kernel`
+  - `qna-rag`
+- add CDK nag to `qna-rag` module
 - rename seedfarmer project name to `aiops`
 - chore: adding some missing auto_delete attributes
 - chore: Add `auto_delete` to `mlflow-fargate` elb access logs bucket
 - updating `storage/ecr` module to latest pending `v1.8.0` of IDF
+- enabled ECR image scan on push
 
 ## v1.1.0
 

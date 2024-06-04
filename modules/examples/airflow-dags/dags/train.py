@@ -1,8 +1,8 @@
 import os
 
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.externals import joblib
+from sklearn.linear_model import LogisticRegression
 
 if __name__ == "__main__":
     print("Starting training")

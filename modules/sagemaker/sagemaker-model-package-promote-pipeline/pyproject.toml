@@ -28,6 +28,10 @@ disallow_untyped_decorators = false
 exclude = "codeseeder.out/|example/|tests/|.venv"
 warn_unused_ignores = false
 
+plugins = [
+  "pydantic.mypy"
+]
+
 [tool.pytest.ini_options]
 addopts = "-v --cov=. --cov-report term"
 pythonpath = [

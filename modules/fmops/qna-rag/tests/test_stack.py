@@ -1,19 +1,7 @@
-import os
-import sys
-
 import aws_cdk as cdk
+import cdk_nag
 import pytest
-from aws_cdk.assertions import Template
-
-
-@pytest.fixture(scope="function")
-def stack_defaults() -> None:
-    os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
-    os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
-
-    # Unload the app import so that subsequent tests don't reuse
-    if "stack" in sys.modules:
-        del sys.modules["stack"]
+from aws_cdk.assertions import Annotations, Match, Template
 
 
 @pytest.fixture(scope="function")
@@ -38,7 +26,7 @@ def stack_model_package_input() -> cdk.Stack:
         vpc_id=vpc_id,
         cognito_pool_id=cognito_pool_id,
         os_domain_endpoint=os_domain_endpoint,
-        os_domain_port="443",
+        os_domain_port=443,
         os_security_group_id=os_security_group_id,
         os_index_name="sample",
         input_asset_bucket_name="input-bucket",
@@ -57,3 +45,13 @@ def stack(request, stack_model_package_input) -> cdk.Stack:  # type: ignore[no-u
 def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
     template.resource_count_is("AWS::AppSync::Resolver", 4)
+
+
+def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
+    cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
