@@ -169,7 +169,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       new sfn.Succeed(this, "Succeed"),
     );
     const stateMachine = new sfn.StateMachine(this, "MyStateMachine", {
-      definition: definition,
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
       timeout: cdk.Duration.minutes(5),
       stateMachineName: "BedrockFinetuning",
       tracingEnabled: true,
