@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
+- moved CI/CD infra to separate repository and added self mutation pipeline to provision infra for module `sagemaker-templates-service-catalog`
 
 ## v1.2.0
 
