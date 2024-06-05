@@ -82,7 +82,11 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
                 actions=[
                     "sagemaker:DescribeModelPackageGroup",
                 ],
-                resources=["*"],
+                resources=[
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.DEV_REGION}:{constants.DEV_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.PRE_PROD_REGION}:{constants.PRE_PROD_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.PROD_REGION}:{constants.PROD_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                ],
             ),
             iam.PolicyStatement(
                 sid="ModelPackage",
@@ -92,7 +96,11 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
                     "sagemaker:UpdateModelPackage",
                     "sagemaker:CreateModel",
                 ],
-                resources=["*"],
+                resources=[
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.DEV_REGION}:{constants.DEV_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.PRE_PROD_REGION}:{constants.PRE_PROD_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                    f"arn:{cdk.Aws.PARTITION}:sagemaker:{constants.PROD_REGION}:{constants.PROD_ACCOUNT_ID}:model-package-group/{constants.MODEL_PACKAGE_GROUP_NAME}",
+                ],
             ),
             iam.PolicyStatement(
                 actions=[
