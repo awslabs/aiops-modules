@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, cast
+from typing import Any, cast, List
 
-from aws_cdk import Duration, Stack, Tags
+import yaml
+from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
-from aws_cdk import aws_stepfunctions as sfn
-from aws_cdk import aws_logs as logs
+from aws_cdk.lambda_layer_kubectl_v29 import KubectlV29Layer
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -29,6 +29,7 @@ class RayOnEKS(Stack):
         eks_cert_auth_data: str,
         namespace_name: str,
         service_account_role,
+        custom_manifest_paths: List[str],
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -55,6 +56,7 @@ class RayOnEKS(Stack):
             cluster_name=eks_cluster_name,
             open_id_connect_provider=provider,
             kubectl_role_arn=eks_admin_role_arn,
+            kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
         cluster.add_helm_chart(
@@ -63,76 +65,12 @@ class RayOnEKS(Stack):
             release="kuberay-operator",
             repository="https://ray-project.github.io/kuberay-helm/",
             namespace=namespace_name,
-            version="1.0.0",
+            version="1.1.1",
             wait=True,
         )
 
-        cluster.add_helm_chart(
-            "RayCluster",
-            chart="ray-cluster",
-            release="ray-cluster",
-            repository="https://ray-project.github.io/kuberay-helm/",
-            namespace=namespace_name,
-            version="1.0.0",
-            wait=True,
-            values={
-                "image": {
-                    "repository": "rayproject/ray-ml",
-                    "tag": "2.22.0",
-                    "pullPolicy": "IfNotPresent",
-                },
-                "head": {
-                    "resources": {
-                        "limits": {
-                            "cpu": "4",
-                            "memory": "24G",
-                        },
-                        "requests": {
-                            "cpu": "4",
-                            "memory": "12G",
-                        },
-                    },
-                    "tolerations": [
-                        {
-                            "key": namespace_name,
-                            "effect": "NoSchedule",
-                            "operator": "Exists",
-                        }
-                    ],
-                    "containerEnv": [
-                        {
-                            "name": "RAY_LOG_TO_STDERR",
-                            "value": "1",
-                        },
-                    ],
-                },
-                "worker": {
-                    "resources": {
-                        "limits": {
-                            "cpu": "4",
-                            "memory": "24G",
-                        },
-                        "requests": {
-                            "cpu": "4",
-                            "memory": "12G",
-                        },
-                    },
-                    "tolerations": [
-                        {
-                            "key": namespace_name,
-                            "effect": "NoSchedule",
-                            "operator": "Exists",
-                        }
-                    ],
-                    "replicas": "0",
-                    "minReplicas": "2",
-                    "maxReplicas": "30",
-                    "containerEnv": [
-                        {
-                            "name": "RAY_LOG_TO_STDERR",
-                            "value": "1",
-                        },
-                    ],
-                },
-            },
-        )
+        # Add optional custom resource (CR) manifests
+        for custom_manifest_path in custom_manifest_paths:
+            with open(custom_manifest_path) as f:
+                for manifest in yaml.load_all(f, Loader=yaml.FullLoader):
+                    cluster.add_manifest(f"{manifest['metadata']['name']}", manifest)

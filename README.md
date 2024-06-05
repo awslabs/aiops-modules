@@ -33,13 +33,6 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [SageMaker Model Package Group Module](modules/sagemaker/sagemaker-model-package-group/README.md)                         | Creates a SageMaker Model Package Group to register and version SageMaker Machine Learning (ML) models and setups an Amazon EventBridge Rule to send model package group state change events to an Amazon EventBridge Bus                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | [SageMaker Model Package Promote Pipeline Module](modules/sagemaker/sagemaker-model-package-promote-pipeline/README.md)   | Deploy a Pipeline to promote SageMaker Model Packages in a multi-account setup. The pipeline can be triggered through an EventBridge rule in reaction of a SageMaker Model Package Group state event change (Approved/Rejected). Once the pipeline is triggered, it will promote the latest approved model package, if one is found.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
-### EKS Modules
-
-| Type                                                                           | Description                                                                        |
-|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Cluster, and Ray Operator. |
-| [Example Ray ML Benchmark Image](modules/eks/ray-ml-benchmark-image/README.md) | Creates an example Docker Image for running Ray pytorch benchmark job.             |
-
 ### Mlflow Modules
 
 | Type                                                                    | Description                                                                                                                                                                                       |
@@ -54,19 +47,24 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md) | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
 | [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
 
-
 ### MWAA Modules
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
 
-### Industry Data Framework (IDF) Modules
+### EKS Modules
 
-The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
+| Type                                                                           | Description                                                                                                      |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
 
 ### Events Modules
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|------------------------------------------------------------------------|
 |  [Event Bus Module](modules/examples/events/event-bus/README.md)        |  Creates an Amazon EventBridge Bus for cross-account events.           |
+
+### Industry Data Framework (IDF) Modules
+
+The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.

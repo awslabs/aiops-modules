@@ -5,3 +5,5 @@ python-dotenv~=0.21.0
 typing-extensions~=4.6.1
 pydantic~=2.7.1
 pydantic-settings~=2.2.1
+PyYAML==6.0.1
+aws-cdk.lambda-layer-kubectl-v29==2.0.0

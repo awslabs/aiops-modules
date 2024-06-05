@@ -1,7 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -34,6 +34,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_endpoint: str = Field(default="Disabled")
     eks_cert_auth_data: str = Field(default="Disabled")
     namespace: str = Field(default="Disabled")
+    custom_manifest_paths: List[str] = Field(default=[])
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

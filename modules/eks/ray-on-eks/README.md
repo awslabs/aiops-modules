@@ -2,18 +2,87 @@
 
 ## Description
 
-This module runs Ray in AWS EKS Kubernetes cluster.
+This module runs Ray in AWS EKS Kubernetes cluster. It deploys a KubeRay Operator via [kuberay-helm](https://github.com/ray-project/kuberay-helm) and supports Custom Resource manifests mounted via `dataFiles`.
 
 ### Usage
 
-After deploying the module, follow the steps below to submit a job.
+## RayJob Example
 
-1. Connect to EKS cluster
+This example leverages [RayJob](https://docs.ray.io/en/latest/cluster/kubernetes/getting-started/rayjob-quick-start.html). 
+With RayJob, KubeRay automatically creates a RayCluster and submits a job when the cluster is ready. 
+You can also configure RayJob to automatically delete the RayCluster once the Ray job finishes. 
+
+1. Make sure ray-job manifest dataFile and CustomManifestPaths is provided and deploy the module:
 ```
-aws eks update-kubeconfig --region us-east-1 --name mlops-ray-on-eks-core-eks-cluster
+name: ray-on-eks
+path: modules/eks/ray-on-eks
+dataFiles:
+  - filePath: data/ray/ray-job.shutdown.yaml
+
+...
+
+  - name: CustomManifestPaths
+    value:
+    - data/ray/ray-job.shutdown.yaml
+
+```
+2. Connect to EKS cluster
+```
+aws eks update-kubeconfig --region us-east-1 --name eks-cluster-xxx
+```
+3. Check that job has been submitted successfully:
+
+```
+kubectl get pods --all-namespaces
+
+NAMESPACE     NAME                                                       READY   STATUS              RESTARTS   AGE
+...
+
+ray           rayjob-sample-shutdown-xxxxx                               0/1     Completed           0          4m21s
+```
+4. Retrieve job logs after completion:
+
+```
+kubectl logs -n ray rayjob-sample-shutdown-xxxxx
+
+...
+test_counter got 1
+test_counter got 2
+test_counter got 3
+test_counter got 4
+test_counter got 5
+2024-06-05 07:27:08,908 SUCC cli.py:60 -- --------------------------------------------
+2024-06-05 07:27:08,908 SUCC cli.py:61 -- Job 'rayjob-sample-shutdown-xxx' succeeded
+2024-06-05 07:27:08,908 SUCC cli.py:62 -- --------------------------------------------
+
 ```
 
-2. Check that Ray cluster and operator pods are running:
+## RayCluster Example
+
+The example leverages [RayCluster](https://docs.ray.io/en/latest/cluster/kubernetes/getting-started/raycluster-quick-start.html).
+
+After deploying the RayCluster, follow the steps below to submit a job to the cluster.
+
+1. Make sure ray-cluster manifest dataFile and CustomManifestPaths is provided and deploy the module:
+```
+name: ray-on-eks
+path: modules/eks/ray-on-eks
+dataFiles:
+  - filePath: data/ray/ray-cluster.autoscaler.yaml
+
+...
+
+  - name: CustomManifestPaths
+    value:
+    - data/ray/ray-cluster.autoscaler.yaml
+
+```
+2. Connect to EKS cluster
+```
+aws eks update-kubeconfig --region us-east-1 --name eks-cluster-xxx
+```
+
+3. Check that Ray cluster and operator pods are running:
 
 ```
 kubectl get pods --all-namespaces
@@ -26,13 +95,13 @@ ray           ray-cluster-kuberay-worker-workergroup-...                  1/1   
 ray           ray-cluster-kuberay-worker-workergroup-...                  1/1     Running   0          11m
 ```
 
-3. Set up port forwarding:
+4.Set up port forwarding:
 
 ```
 kubectl port-forward -n ray --address 0.0.0.0 ray-cluster-kuberay-head-...  8265:8265
 ```
 
-4. Submit a Ray job:
+5. Submit a Ray job:
 ```
 ray job submit --address http://localhost:8265 -- python -c "import ray; ray.init(); print(ray.cluster_resources())"
 ```
@@ -50,6 +119,7 @@ ray job submit --address http://localhost:8265 -- python -c "import ray; ray.ini
 - `eks_cluster_endpoint`
 - `eks_cert_auth_data`
 - `namespace`
+- `custom_manifest_path`
 
 #### Optional
 
@@ -60,6 +130,8 @@ ray job submit --address http://localhost:8265 -- python -c "import ray; ray.ini
 ```yaml
 name: ray-on-eks
 path: modules/eks/ray-on-eks
+dataFiles:
+  - filePath: data/ray/ray-cluster.autoscaler.yaml
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
@@ -106,6 +178,8 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
+  - name: CustomManifestPath
+    value: data/ray/ray-cluster.autoscaler.yaml
 ```
 
 ### Module Metadata Outputs
