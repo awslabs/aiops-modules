@@ -1,108 +1,33 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
-import json
-import os
-from typing import Optional, cast
-
 import aws_cdk
 import cdk_nag
 
-from stack import MlflowFargateStack, RDSSettings
+from settings import ApplicationSettings
+from stack import MlflowFargateStack
 
-
-def _param(name: str) -> str:
-    return f"SEEDFARMER_PARAMETER_{name}"
-
-
-project_name = os.getenv("SEEDFARMER_PROJECT_NAME", "")
-deployment_name = os.getenv("SEEDFARMER_DEPLOYMENT_NAME", "")
-module_name = os.getenv("SEEDFARMER_MODULE_NAME", "")
-app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-
-DEFAULT_ECS_CLUSTER_NAME = None
-DEFAULT_SERVICE_NAME = None
-DEFAULT_TASK_CPU_UNITS = 4 * 1024
-DEFAULT_TASK_MEMORY_LIMIT_MB = 8 * 1024
-DEFAULT_AUTOSCALE_MAX_CAPACITY = 2
-DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME = None
-DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX = None
-DEFAULT_EFS_REMOVAL_POLICY = "RETAIN"
-
-environment = aws_cdk.Environment(
-    account=os.environ["CDK_DEFAULT_ACCOUNT"],
-    region=os.environ["CDK_DEFAULT_REGION"],
-)
-
-vpc_id = os.getenv(_param("VPC_ID"))
-subnet_ids = json.loads(os.getenv(_param("SUBNET_IDS"), "[]"))
-ecs_cluster_name = os.getenv(_param("ECS_CLUSTER_NAME"), DEFAULT_ECS_CLUSTER_NAME)
-service_name = os.getenv(_param("SERVICE_NAME"), DEFAULT_SERVICE_NAME)
-ecr_repo_name = os.getenv(_param("ECR_REPOSITORY_NAME"))
-task_cpu_units = os.getenv(_param("TASK_CPU_UNITS"), DEFAULT_TASK_CPU_UNITS)
-task_memory_limit_mb = os.getenv(_param("TASK_MEMORY_LIMIT_MB"), DEFAULT_TASK_MEMORY_LIMIT_MB)
-autoscale_max_capacity = os.getenv(_param("AUTOSCALE_MAX_CAPACITY"), DEFAULT_AUTOSCALE_MAX_CAPACITY)
-artifacts_bucket_name = os.getenv(_param("ARTIFACTS_BUCKET_NAME"))
-lb_access_logs_bucket_name = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_NAME"), DEFAULT_LB_ACCESS_LOGS_BUCKET_NAME)
-lb_access_logs_bucket_prefix = os.getenv(_param("LB_ACCESS_LOGS_BUCKET_PREFIX"), DEFAULT_LB_ACCESS_LOGS_BUCKET_PREFIX)
-efs_removal_policy = os.getenv(_param("EFS_REMOVAL_POLICY"), DEFAULT_EFS_REMOVAL_POLICY)
-
-rds_hostname = os.getenv(_param("RDS_HOSTNAME"))
-rds_port = os.getenv(_param("RDS_PORT"))
-rds_security_group_id = os.getenv(_param("RDS_SECURITY_GROUP_ID"))
-rds_credentials_secret_arn = os.getenv(_param("RDS_CREDENTIALS_SECRET_ARN"))
-
-
-if not vpc_id:
-    raise ValueError("Missing input parameter vpc-id")
-
-if not ecr_repo_name:
-    raise ValueError("Missing input parameter ecr-repository-name")
-
-if not artifacts_bucket_name:
-    raise ValueError("Missing input parameter artifacts-bucket-name")
-
-
-rds_settings: Optional[RDSSettings]
-if all([rds_hostname, rds_port, rds_security_group_id, rds_credentials_secret_arn]):
-    rds_settings = RDSSettings(
-        hostname=cast(str, rds_hostname),
-        port=int(cast(str, rds_port)),
-        security_group_id=cast(str, rds_security_group_id),
-        credentials_secret_arn=cast(str, rds_credentials_secret_arn),
-    )
-elif not any([rds_hostname, rds_port, rds_security_group_id, rds_credentials_secret_arn]):
-    rds_settings = None
-else:
-    raise ValueError(
-        "Invalid combination of input parameters rds-hostname, rds-port, rds-security-group-id, "
-        "and rds-credentials-secret-arn. "
-        "They must either all be specified or none of them."
-    )
-
-
+app_settings = ApplicationSettings()
 app = aws_cdk.App()
 
 stack = MlflowFargateStack(
     scope=app,
-    id=app_prefix,
-    app_prefix=app_prefix,
-    vpc_id=vpc_id,
-    subnet_ids=subnet_ids,
-    ecs_cluster_name=ecs_cluster_name,
-    service_name=service_name,
-    ecr_repo_name=ecr_repo_name,
-    task_cpu_units=int(task_cpu_units),
-    task_memory_limit_mb=int(task_memory_limit_mb),
-    autoscale_max_capacity=int(autoscale_max_capacity),
-    artifacts_bucket_name=artifacts_bucket_name,
-    lb_access_logs_bucket_name=lb_access_logs_bucket_name,
-    lb_access_logs_bucket_prefix=lb_access_logs_bucket_prefix,
-    efs_removal_policy=efs_removal_policy,
-    rds_settings=rds_settings,
+    id=app_settings.settings.app_prefix,
+    vpc_id=app_settings.parameters.vpc_id,
+    subnet_ids=app_settings.parameters.subnet_ids,
+    ecs_cluster_name=app_settings.parameters.ecs_cluster_name,
+    service_name=app_settings.parameters.service_name,
+    ecr_repo_name=app_settings.parameters.ecr_repository_name,
+    task_cpu_units=app_settings.parameters.task_cpu_units,
+    task_memory_limit_mb=app_settings.parameters.task_memory_limit_mb,
+    autoscale_max_capacity=app_settings.parameters.autoscale_max_capacity,
+    artifacts_bucket_name=app_settings.parameters.artifacts_bucket_name,
+    lb_access_logs_bucket_name=app_settings.parameters.lb_access_logs_bucket_name,
+    lb_access_logs_bucket_prefix=app_settings.parameters.lb_access_logs_bucket_prefix,
+    efs_removal_policy=app_settings.parameters.efs_removal_policy,
+    rds_settings=app_settings.parameters.rds_settings,
     env=aws_cdk.Environment(
-        account=os.environ["CDK_DEFAULT_ACCOUNT"],
-        region=os.environ["CDK_DEFAULT_REGION"],
+        account=app_settings.default.account,
+        region=app_settings.default.region,
     ),
 )
 
@@ -122,5 +47,13 @@ aws_cdk.CfnOutput(
 )
 
 aws_cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
+
+if app_settings.parameters.tags:
+    for tag_key, tag_value in app_settings.parameters.tags.items():
+        aws_cdk.Tags.of(app).add(tag_key, tag_value)
+
+aws_cdk.Tags.of(app).add("SeedFarmerDeploymentName", app_settings.settings.deployment_name)
+aws_cdk.Tags.of(app).add("SeedFarmerModuleName", app_settings.settings.module_name)
+aws_cdk.Tags.of(app).add("SeedFarmerProjectName", app_settings.settings.project_name)
 
 app.synth()

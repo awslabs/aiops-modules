@@ -3,6 +3,7 @@ import sys
 from unittest import mock
 
 import pytest
+from pydantic import ValidationError
 
 
 @pytest.fixture(scope="function")
@@ -15,6 +16,7 @@ def stack_defaults():
         os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
         os.environ["SEEDFARMER_PARAMETER_VPC_ID"] = "vpc-12345"
+        os.environ["SEEDFARMER_PARAMETER_SUBNET_IDS"] = '["subnet1","subnet2","subnet3"]'
         os.environ["SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME"] = "repo5"
         os.environ["SEEDFARMER_PARAMETER_ARTIFACTS_BUCKET_NAME"] = "bucket"
 
@@ -32,21 +34,21 @@ def test_app(stack_defaults):
 def test_vpc_id(stack_defaults):
     del os.environ["SEEDFARMER_PARAMETER_VPC_ID"]
 
-    with pytest.raises(ValueError, match="Missing input parameter vpc-id"):
+    with pytest.raises(ValidationError):
         import app  # noqa: F401
 
 
 def test_ecr_repository_name(stack_defaults):
     del os.environ["SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME"]
 
-    with pytest.raises(ValueError, match="Missing input parameter ecr-repository-name"):
+    with pytest.raises(ValidationError):
         import app  # noqa: F401
 
 
 def test_artifacts_bucket_name(stack_defaults):
     del os.environ["SEEDFARMER_PARAMETER_ARTIFACTS_BUCKET_NAME"]
 
-    with pytest.raises(ValueError, match="Missing input parameter artifacts-bucket-name"):
+    with pytest.raises(ValidationError):
         import app  # noqa: F401
 
 

@@ -251,9 +251,9 @@ class TransformResourcesProperty(CdkModel):
 class TransformJobDefinitionProperty(CdkModel):
     """TransformJobDefinitionProperty."""
 
-    transform_input: TransformInputProperty = Field(default=None, alias="TransformInput")
-    transform_output: TransformOutputProperty = Field(default=None, alias="TransformOutput")
-    transform_resources: TransformResourcesProperty = Field(
+    transform_input: Optional[TransformInputProperty] = Field(default=None, alias="TransformInput")
+    transform_output: Optional[TransformOutputProperty] = Field(default=None, alias="TransformOutput")
+    transform_resources: Optional[TransformResourcesProperty] = Field(
         default=None,
         alias="TransformResources",
     )

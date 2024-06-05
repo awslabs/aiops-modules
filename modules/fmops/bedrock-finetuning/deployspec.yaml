@@ -1,0 +1,20 @@
+publishGenericEnvVariables: true
+deploy:
+  phases:
+    install:
+      commands:
+        - npm install -g aws-cdk@2.130.0
+        - npm install
+    build:
+      commands:
+        - env
+        - cdk deploy --require-approval never --progress events --app "npx ts-node --prefer-ts-exts bin/bedrock-finetuning.ts"
+destroy:
+  phases:
+    install:
+      commands:
+        - npm install -g aws-cdk@2.130.0
+        - npm install
+    build:
+      commands:
+        - cdk destroy --force --app "npx ts-node --prefer-ts-exts bin/bedrock-finetuning.ts"

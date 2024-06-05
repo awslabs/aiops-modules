@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+### **Changed**
+- remove explicit module manifest account/region mappings from `fmops-qna-rag`
+
+## v1.2.0
+
 ### **Added**
 - added `ray-on-eks`, `ray-ml-benchmark-image` modules, and `manifests/ray-on-eks` manifests
 - added multi-acc sagemaker-mlops manifest example
@@ -16,6 +21,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - fixed model deploy cross-account permissions
 - added bucket and model package group names as stack outputs in the `sagemaker-templates` module
+- refactor inputs for the following modules to use Pydantic:
+  - `mlflow-fargate`
+  - `mlflow-image` 
+  - `sagemaker-studio`
+  - `sagemaker-endpoint`
+  - `sagemaker-templates-service-catalog`
+  - `sagemaker-custom-kernel`
+  - `qna-rag`
+- add CDK nag to `qna-rag` module
+- rename seedfarmer project name to `aiops`
+- chore: adding some missing auto_delete attributes
+- chore: Add `auto_delete` to `mlflow-fargate` elb access logs bucket
+- updating `storage/ecr` module to latest pending `v1.8.0` of IDF
+- enabled ECR image scan on push
 
 ## v1.1.0
 
@@ -33,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `sagemaker-model-package-promote-pipeline` module.
 - added `sagemaker-hugging-face-endpoint` module
 - added `hf_import_models` template to import hugging face models
+- added `qna-rag` module
+- added `bedrock-finetuning` module
 
 ### **Changed**
 
