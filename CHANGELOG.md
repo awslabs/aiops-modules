@@ -9,13 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+### **Added**
+- added `ray-on-eks`, and `manifests/ray-on-eks` manifests
+
 ### **Changed**
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
 
 ## v1.2.0
 
 ### **Added**
-- added `ray-on-eks`, `ray-ml-benchmark-image` modules, and `manifests/ray-on-eks` manifests
 - added multi-acc sagemaker-mlops manifest example
 
 ### **Changed**
