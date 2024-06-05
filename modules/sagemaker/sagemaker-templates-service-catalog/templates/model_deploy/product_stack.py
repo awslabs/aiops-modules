@@ -4,20 +4,20 @@
 import json
 from typing import Any, List
 
-from aws_cdk import aws_codecommit as codecommit
-from aws_cdk import aws_codebuild as codebuild
-from aws_cdk import aws_iam as iam
-from aws_cdk import aws_s3 as s3
-from aws_cdk import aws_events as events
-from aws_cdk import aws_events_targets as targets
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, Tags
+from aws_cdk import aws_codebuild as codebuild
+from aws_cdk import aws_codecommit as codecommit
+from aws_cdk import aws_iam as iam
+from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
 
 class Product(servicecatalog.ProductStack):
-    DESCRIPTION: str = "Creates a self-mutating CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
+    DESCRIPTION: str = (
+        "Creates a self-mutating CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
+    )
     TEMPLATE_NAME: str = "Deployment pipeline that deploys model endpoints to dev, pre-prod, and prod"
 
     def __init__(
@@ -139,23 +139,23 @@ class Product(servicecatalog.ProductStack):
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
-        code_pipeline_deploy_project_name="CodePipelineDeployProject"
+        code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 
         project = codebuild.Project(
             self,
             code_pipeline_deploy_project_name,
             build_spec=codebuild.BuildSpec.from_object(
                 {
-                     "version": "0.2",
-                     "phases": {
-                         "build": {
-                             "commands": [
+                    "version": "0.2",
+                    "phases": {
+                        "build": {
+                            "commands": [
                                 "npm install -g aws-cdk",
                                 "python -m pip install -r requirements.txt",
-                                "cdk deploy --require-approval never --app \"python app.py\" "
-                             ]
+                                'cdk deploy --require-approval never --app "python app.py" ',
+                            ]
                         }
-                    }
+                    },
                 }
             ),
             source=codebuild.Source.code_commit(repository=repository),
@@ -188,7 +188,7 @@ class Product(servicecatalog.ProductStack):
                         value=json.dumps(prod_security_group_ids)
                     ),
                 },
-            ),            
+            ),
         )
         project.role.attach_inline_policy(
             iam.Policy(
@@ -230,7 +230,7 @@ class Product(servicecatalog.ProductStack):
                             f"arn:{Aws.PARTITION}:ssm:{pre_prod_region}:{pre_prod_account_id}:parameter/*",
                             f"arn:{Aws.PARTITION}:ssm:{prod_region}:{prod_account_id}:parameter/*",
                         ],
-                    )
+                    ),
                 ],
             )
         )

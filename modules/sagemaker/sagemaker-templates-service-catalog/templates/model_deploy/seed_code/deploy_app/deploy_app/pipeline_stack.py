@@ -1,14 +1,13 @@
 import json
 
 import aws_cdk as cdk
-from constructs import Construct
+import config.constants as constants
 from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
-from aws_cdk.pipelines import CodePipeline, CodePipelineSource, ShellStep, CodeBuildStep
+from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource
+from constructs import Construct
 
-import config.constants as constants
 from .deploy_endpoint_stack import DeployEndpointStack
-
 
 ENV = {
     "MODEL_PACKAGE_GROUP_NAME": constants.MODEL_PACKAGE_GROUP_NAME,
@@ -37,7 +36,7 @@ class DevStage(cdk.Stage):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        endpoint_stack = DeployEndpointStack(
+        DeployEndpointStack(
             self,
             "endpoint",
             vpc_id=constants.DEV_VPC_ID,
@@ -50,7 +49,7 @@ class PreProdStage(cdk.Stage):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        endpoint_stack = DeployEndpointStack(
+        DeployEndpointStack(
             self,
             "endpoint",
             vpc_id=constants.PRE_PROD_VPC_ID,
@@ -121,18 +120,17 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
                     f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PRE_PROD_REGION}:{constants.PRE_PROD_ACCOUNT_ID}:parameter/*",
                     f"arn:{cdk.Aws.PARTITION}:ssm:{constants.PROD_REGION}:{constants.PROD_ACCOUNT_ID}:parameter/*",
                 ],
-            )
-        ]
+            ),
+        ],
     )
-class PipelineStack(cdk.Stack):
 
+
+class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         repository = codecommit.Repository.from_repository_name(
-            self,
-            "Repository",
-            repository_name=f"{constants.PROJECT_NAME}-deploy"
+            self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
         )
 
         codepipeline_role = iam.Role(
@@ -142,21 +140,17 @@ class PipelineStack(cdk.Stack):
             path="/service-role/",
         )
 
-        codepipeline_role.attach_inline_policy(
-            create_inline_policy(self, "DeployPipelinePolicy")
-        )
-        
+        codepipeline_role.attach_inline_policy(create_inline_policy(self, "DeployPipelinePolicy"))
+
         synth_codebuild_role = iam.Role(
             self,
             "SynthStageRole",
             assumed_by=iam.ServicePrincipal("codebuild.amazonaws.com"),
             path="/service-role/",
         )
-        synth_codebuild_role.attach_inline_policy(
-            create_inline_policy(self, "SynthStagePolicy")
-        )
+        synth_codebuild_role.attach_inline_policy(create_inline_policy(self, "SynthStagePolicy"))
 
-        pipeline =  CodePipeline(
+        pipeline = CodePipeline(
             self,
             "Pipeline",
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
@@ -166,12 +160,9 @@ class PipelineStack(cdk.Stack):
                 install_commands=[
                     "npm install -g aws-cdk",
                 ],
-                commands=[
-                    "python -m pip install -r requirements.txt",
-                    "cdk synth --app \"python app.py\" "
-                ],
+                commands=["python -m pip install -r requirements.txt", 'cdk synth --app "python app.py" '],
                 role=synth_codebuild_role,
-                env=ENV
+                env=ENV,
             ),
             cross_account_keys=True,
             self_mutation=True,
