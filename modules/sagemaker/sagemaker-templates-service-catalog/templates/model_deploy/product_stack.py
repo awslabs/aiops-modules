@@ -139,11 +139,11 @@ class Product(servicecatalog.ProductStack):
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
-        CodePipelineDeployProjectName="CodePipelineDeployProject"
+        code_pipeline_deploy_project_name="CodePipelineDeployProject"
 
         project = codebuild.Project(
             self,
-            CodePipelineDeployProjectName,
+            code_pipeline_deploy_project_name,
             build_spec=codebuild.BuildSpec.from_object(
                 {
                      "version": "0.2",
@@ -244,7 +244,7 @@ class Product(servicecatalog.ProductStack):
                 source=["aws.codebuild"],
                 detail_type=["CodeBuild Build Project State Change"],
                 detail={
-                    "project-name": [CodePipelineDeployProjectName],
+                    "project-name": [code_pipeline_deploy_project_name],
                     "build-status": ["SUCCEEDED"],
                 },
             ),
