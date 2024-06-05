@@ -234,20 +234,3 @@ class Product(servicecatalog.ProductStack):
                 ],
             )
         )
-
-        # Create a CloudWatch Event Rule to trigger the CodeBuild project
-        build_project_event_rule = events.Rule(
-            self,
-            "BuildProjectEventRule",
-            description="Trigger the CodeBuild project when it's created",
-            event_pattern=events.EventPattern(
-                source=["aws.codebuild"],
-                detail_type=["CodeBuild Build Project State Change"],
-                detail={
-                    "project-name": [code_pipeline_deploy_project_name],
-                    "build-status": ["SUCCEEDED"],
-                },
-            ),
-        )
-        # Add the CodeBuild project as a target for the CloudWatch Event Rule
-        build_project_event_rule.add_target(targets.CodeBuildProject(project))
