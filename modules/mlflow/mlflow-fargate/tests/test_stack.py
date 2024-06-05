@@ -54,7 +54,6 @@ def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
     return stack.MlflowFargateStack(
         scope=app,
         id=app_prefix,
-        app_prefix=app_prefix,
         vpc_id=vpc_id,
         subnet_ids=subnet_ids,
         ecs_cluster_name=None,

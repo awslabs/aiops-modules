@@ -33,7 +33,6 @@ def stack(stack_defaults) -> cdk.Stack:
     return stack.MlflowImagePublishingStack(
         scope=app,
         id=app_prefix,
-        app_prefix=app_prefix,
         ecr_repo_name=ecr_repo_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],

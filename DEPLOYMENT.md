@@ -5,7 +5,7 @@
 1. Clone the repository and checkout a release branch using the below command:
 
 ```
-git clone --origin upstream --branch release/1.1.0 https://github.com/awslabs/aiops-modules
+git clone --origin upstream --branch release/1.2.0 https://github.com/awslabs/aiops-modules
 ```
 The release version can be replaced with the version of interest.
 
@@ -39,7 +39,7 @@ Assuming that you will be using a single account, follow the guide [here](https:
 
 Following is the command to bootstrap your existing account to a toolchain and target account.
 ```
-seedfarmer bootstrap toolchain --project mlops --trusted-principal ${ADMIN_ROLE_ARN} --as-target
+seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ADMIN_ROLE_ARN} --as-target
 ```
 
 ## Deployment
