@@ -27,13 +27,13 @@ class SeedFarmerParameters(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    eks_cluster_name: str = Field(default="Disabled")
-    eks_cluster_admin_role_arn: str = Field(default="Disabled")
-    eks_oidc_arn: str = Field(default="Disabled")
-    eks_openid_issuer: str = Field(default="Disabled")
-    eks_cluster_endpoint: str = Field(default="Disabled")
-    eks_cert_auth_data: str = Field(default="Disabled")
-    namespace: str = Field(default="Disabled")
+    eks_cluster_name: str
+    namespace: str
+    eks_cluster_admin_role_arn: str
+    eks_oidc_arn: str
+    eks_openid_issuer: str
+    eks_cluster_endpoint: str
+    eks_cert_auth_data: str
     custom_manifest_paths: List[str] = Field(default=[])
     tags: Optional[Dict[str, str]] = Field(default=None)
 

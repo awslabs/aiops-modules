@@ -112,18 +112,18 @@ ray job submit --address http://localhost:8265 -- python -c "import ray; ray.ini
 
 #### Required
 
-- `eks_cluster_name`
-- `eks_cluster_admin_role_arn`
-- `eks_oidc_arn`
-- `eks_openid_issuer`
-- `eks_cluster_endpoint`
-- `eks_cert_auth_data`
-- `namespace`
-- `custom_manifest_path`
+- `eks_cluster_name` - Name of the EKS cluster to deploy to
+- `eks_cluster_admin_role_arn`- ARN of EKS admin role to authenticate kubectl
+- `eks_oidc_arn` - ARN of EKS OIDC provider for IAM roles
+- `eks_openid_issuer` - OIDC issuer
+- `eks_cluster_endpoint` - EKS cluster endpoint
+- `eks_cert_auth_data` - Auth certificate
+- `namespace` - Kubernetes namespace name
 
 #### Optional
 
-- `tags`: additional tags to apply to all resources
+- `custom_manifest_paths` - paths mounted via dataFiles that contain custom manifests
+- `tags` - List of additional tags to apply to all resources
 
 ### Sample manifest declaration
 
