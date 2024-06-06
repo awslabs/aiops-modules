@@ -3,30 +3,41 @@
 
 import os
 import sys
+from unittest import mock
 
 import pytest
+from pydantic import ValidationError
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 def stack_defaults():
-    os.environ["SEEDFARMER_PROJECT_NAME"] = "test-project"
-    os.environ["SEEDFARMER_DEPLOYMENT_NAME"] = "test-deployment"
-    os.environ["SEEDFARMER_MODULE_NAME"] = "test-module"
-    os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
-    os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
-    os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_IMAGE_NAME"] = "echo-kernel"
-    os.environ["SEEDFARMER_PARAMETER_ECR_REPO_NAME"] = "repo"
-    # Unload the app import so that subsequent tests don't reuse
-    if "app" in sys.modules:
-        del sys.modules["app"]
+    with mock.patch.dict(os.environ, {}, clear=True):
+        os.environ["SEEDFARMER_PROJECT_NAME"] = "test-project"
+        os.environ["SEEDFARMER_DEPLOYMENT_NAME"] = "test-deployment"
+        os.environ["SEEDFARMER_MODULE_NAME"] = "test-module"
+
+        os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
+        os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
+
+        os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_IMAGE_NAME"] = "echo-kernel"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_DOMAIN_NAME"] = "test-studio"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_DOMAIN_ID"] = "studio-id"
+        os.environ["SEEDFARMER_PARAMETER_STUDIO_EXECUTION_ROLE_ARN"] = "user-arn"
+        os.environ["SEEDFARMER_PARAMETER_ECR_REPO_NAME"] = "repo"
+
+        # Unload the app import so that subsequent tests don't reuse
+        if "app" in sys.modules:
+            del sys.modules["app"]
+
+        yield
 
 
-def test_app(stack_defaults):
+def test_app():
     import app  # noqa: F401
 
 
-def test_sagemaker_ecr_repo_name(stack_defaults):
+def test_sagemaker_ecr_repo_name():
     del os.environ["SEEDFARMER_PARAMETER_ECR_REPO_NAME"]
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         import app  # noqa: F401

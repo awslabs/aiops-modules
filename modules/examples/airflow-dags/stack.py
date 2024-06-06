@@ -5,10 +5,10 @@ import logging
 from typing import Any, Optional, cast
 
 import aws_cdk.aws_iam as aws_iam
-import cdk_nag
 import aws_cdk.aws_s3 as aws_s3
-from aws_cdk import Aspects, Stack, Tags, RemovalPolicy, Aws
-from cdk_nag import NagSuppressions, NagPackSuppression
+import cdk_nag
+from aws_cdk import Aspects, Aws, RemovalPolicy, Stack, Tags
+from cdk_nag import NagPackSuppression, NagSuppressions
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -39,9 +39,7 @@ class DagResources(Stack):
             description="This stack deploys Example DAGs resources for MLOps",
             **kwargs,
         )
-        Tags.of(scope=cast(IConstruct, self)).add(
-            key="Deployment", value=f"mlops-{deployment_name}"
-        )
+        Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=f"mlops-{deployment_name}")
         dep_mod = f"{project_name}-{deployment_name}-{module_name}"
         account: str = Aws.ACCOUNT_ID
         region: str = Aws.REGION
@@ -73,11 +71,7 @@ class DagResources(Stack):
         )
 
         managed_policies = (
-            [
-                aws_iam.ManagedPolicy.from_managed_policy_arn(
-                    self, "bucket-policy", bucket_policy_arn
-                )
-            ]
+            [aws_iam.ManagedPolicy.from_managed_policy_arn(self, "bucket-policy", bucket_policy_arn)]
             if bucket_policy_arn
             else []
         )
@@ -103,27 +97,15 @@ class DagResources(Stack):
             path="/",
         )
 
-        dag_role.add_managed_policy(
-            aws_iam.ManagedPolicy.from_aws_managed_policy_name(
-                "AmazonSageMakerFullAccess"
-            )
-        )
-        dag_role.add_managed_policy(
-            aws_iam.ManagedPolicy.from_aws_managed_policy_name(
-                "CloudWatchLogsFullAccess"
-            )
-        )
+        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess"))
+        dag_role.add_managed_policy(aws_iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchLogsFullAccess"))
 
         # Define the IAM role
         sagemaker_execution_role = aws_iam.Role(
             self,
             "SageMakerExecutionRole",
             assumed_by=aws_iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            managed_policies=[
-                aws_iam.ManagedPolicy.from_aws_managed_policy_name(
-                    "AmazonSageMakerFullAccess"
-                )
-            ],
+            managed_policies=[aws_iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")],
             path="/",
             role_name=f"SageMakerExecutionRole-{self.stack_name}",
         )
@@ -140,9 +122,7 @@ class DagResources(Stack):
         )
 
         dag_role.add_to_policy(
-            aws_iam.PolicyStatement(
-                actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn]
-            )
+            aws_iam.PolicyStatement(actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn])
         )
 
         self.dag_role = dag_role
