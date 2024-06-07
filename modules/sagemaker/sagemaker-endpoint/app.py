@@ -49,6 +49,8 @@ aws_cdk.CfnOutput(
             "ModelPackageArn": stack.model_package_arn,
             "EndpointName": stack.endpoint.attr_endpoint_name,
             "EndpointUrl": stack.endpoint_url,
+            "KmsKeyId": stack.kms_key.key_id,
+            "SecurityGroupId": stack.security_group.security_group_id,
         }
     ),
 )

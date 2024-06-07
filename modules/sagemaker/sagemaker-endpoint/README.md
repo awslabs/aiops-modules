@@ -79,6 +79,8 @@ parameters:
 - `ModelPackageArn`: SageMaker Model package ARN
 - `EndpointName`: SageMaker Endpoint name
 - `EndpointUrl`: SageMaker Endpoint Url
+- `KmsKeyId`: The KMS Key ID used for the SageMaker Endpoint assets bucket
+- `SecurityGroupId`: The security group ID for the SageMaker Endpoint
 
 #### Output Example
 
@@ -88,6 +90,8 @@ parameters:
   "ModelName": "mlops-mlops-sagemaker-endpoints-endpoint-model-xxxxxxxxxxxx",
   "EndpointName": "mlopsmlopssagemakerendpointsendpointendpoint-xxxxxxxxxxxx",
   "ModelPackageArn": "arn:aws:sagemaker:us-east-1:xxxxxxxxxxxx:model-package/model-mlops-demo/1",
-  "EndpointUrl": "https://runtime.sagemaker.us-east-1.amazonaws.com/endpoints/mlopsmlopssagemakerendpointsendpointendpoint-xxxxxxxxxxxx/invocations"
+  "EndpointUrl": "https://runtime.sagemaker.us-east-1.amazonaws.com/endpoints/mlopsmlopssagemakerendpointsendpointendpoint-xxxxxxxxxxxx/invocations",
+  "KmsKeyId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "SecurityGroupId": "sg-xxxxxxxxxxxxxxxxx"
 }
 ```
