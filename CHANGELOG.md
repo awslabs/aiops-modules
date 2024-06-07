@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- Added a `sagemaker-model-monitoring-module` module with an example of data quality monitoring of a SageMaker Endpoint.
 - Added an option to enable data capture in the `sagemaker-endpoint-module`.
 
 ### **Changed**

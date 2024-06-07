@@ -1,0 +1,12 @@
+awscli
+cdk-nag
+cfn-lint
+check-manifest
+mypy
+pip-tools
+pydot
+pyroma
+pytest
+ruff
+types-PyYAML
+types-setuptools
