@@ -46,6 +46,10 @@ class ModuleSettings(CdkBaseSettings):
     scaling_min_instance_count: int = Field(default=1)
     scaling_max_instance_count: int = Field(default=10)
 
+    # Set to a percentage greater than 0 to enable data capture.
+    data_capture_sampling_percentage: int = Field(default=0, ge=0, le=100)
+    data_capture_prefix: str = Field(default="")
+
     tags: Optional[Dict[str, str]] = Field(default=None)
 
     @model_validator(mode="after")
@@ -79,7 +83,7 @@ class SeedFarmerSettings(CdkBaseSettings):
 class CDKSettings(CdkBaseSettings):
     """CDK Default Settings.
 
-    These parameters comes from AWS CDK by default.
+    These parameters come from AWS CDK by default.
     """
 
     model_config = SettingsConfigDict(env_prefix="CDK_DEFAULT_")

@@ -40,7 +40,9 @@ where endpoints are provisioned as part of automated Continuous Integration and 
 - `instance-type`: instance type. `ml.m4.xlarge` by default.
 - `managed-instance-scaling`: whether to enable managed instance autoscaling. `False` by default.
 - `scaling-min-instance-count`: minimum autoscaling instance count. `1` by default. Only considered if `managed-instance-scaling` is `True`.
-- `scaling-max-instance-count` minimum autoscaling instance count. `10` by default. Only considered if `managed-instance-scaling` is `True`.
+- `scaling-max-instance-count`: minimum autoscaling instance count. `10` by default. Only considered if `managed-instance-scaling` is `True`.
+- `data-capture-samping-percentage`: the percentage of requests to capture data
+- `data-capture-prefix`: the S3 prefix into `model-artifacts-bucket-arn` to store captured data
 
 ### Sample manifest declaration
 
