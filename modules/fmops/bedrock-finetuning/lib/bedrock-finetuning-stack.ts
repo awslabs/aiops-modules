@@ -35,11 +35,11 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     const inputBucket = props?.bucketName
       ? s3.Bucket.fromBucketName(this, "ExistingBucket", props.bucketName)
       : new s3.Bucket(this, "BedrockBucket", {
-          bucketName: `bedrock-input-data-${props.deploymentName}-${props.moduleName}`,
+          bucketName: `${props.deploymentName}-${props.moduleName}-${this.account}`,
           removalPolicy: cdk.RemovalPolicy.RETAIN,
           eventBridgeEnabled: true,
           enforceSSL: true,
-          encryption: s3.BucketEncryption.S3_MANAGED,
+          encryption: s3.BucketEncryption.KMS_MANAGED,
         });
     this.bucketName = inputBucket.bucketName;
 
@@ -72,7 +72,13 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     });
     const KMSKeyPolicyStatement = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      actions: ["kms:*"],
+      actions: [
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:Decrypt",
+        "kms:DescribeKey"
+      ],
       resources: [key.keyArn],
       conditions: {
         StringEquals: {
