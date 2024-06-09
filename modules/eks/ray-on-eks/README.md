@@ -4,6 +4,10 @@
 
 This module runs Ray in AWS EKS Kubernetes cluster. It deploys a KubeRay Operator via [kuberay-helm](https://github.com/ray-project/kuberay-helm) and supports Custom Resource manifests mounted via `dataFiles`.
 
+## High-level Architecture
+
+![Ray on EKS Module Architecture](docs/_static/ray-on-eks-module-architecture.png "Ray on EKS Module Architecture")
+
 ### Usage
 
 ## RayJob Example

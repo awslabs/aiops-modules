@@ -23,9 +23,7 @@ def stack_defaults():
             "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/XXXXXXXX"
         )
         os.environ["SEEDFARMER_PARAMETER_EKS_OPENID_ISSUER"] = "sts.amazon.com"
-        os.environ["SEEDFARMER_PARAMETER_EKS_CLUSTER_ENDPOINT"] = (
-            "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
-        )
+        os.environ["SEEDFARMER_PARAMETER_EKS_CLUSTER_ENDPOINT"] = "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
         os.environ["SEEDFARMER_PARAMETER_EKS_CERT_AUTH_DATA"] = "cert"
         os.environ["SEEDFARMER_PARAMETER_NAMESPACE"] = "namespace"
 

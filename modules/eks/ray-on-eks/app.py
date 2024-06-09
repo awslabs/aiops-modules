@@ -3,9 +3,9 @@
 
 from aws_cdk import App, CfnOutput, Environment, Tags
 
-from settings import ApplicationSettings
-from rbac_stack import RbacStack
 from ray_stack import RayOnEKS
+from rbac_stack import RbacStack
+from settings import ApplicationSettings
 
 app_settings = ApplicationSettings()
 

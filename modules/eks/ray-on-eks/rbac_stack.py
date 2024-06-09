@@ -7,7 +7,6 @@ from typing import Any, cast
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
 from aws_cdk import aws_iam as iam
-
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -47,9 +46,7 @@ class RbacStack(Stack):
         Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=full_dep_mod)
 
         # Import EKS Cluster
-        provider = eks.OpenIdConnectProvider.from_open_id_connect_provider_arn(
-            self, "Provider", eks_oidc_arn
-        )
+        provider = eks.OpenIdConnectProvider.from_open_id_connect_provider_arn(self, "Provider", eks_oidc_arn)
         eks_cluster = eks.Cluster.from_cluster_attributes(
             self,
             "EKSCluster",
@@ -73,9 +70,7 @@ class RbacStack(Stack):
             overwrite=True,  # Create if not exists
         )
 
-        service_account = eks_cluster.add_service_account(
-            "service-account", name=module_name, namespace=namespace_name
-        )
+        service_account = eks_cluster.add_service_account("service-account", name=module_name, namespace=namespace_name)
         self.service_account_role = service_account.role
 
         service_account_role: iam.Role = cast(iam.Role, service_account.role)

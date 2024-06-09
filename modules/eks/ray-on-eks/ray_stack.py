@@ -2,11 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, cast, List
+from typing import Any, List, cast
 
 import yaml
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
+from aws_cdk import aws_iam as iam
 from aws_cdk.lambda_layer_kubectl_v29 import KubectlV29Layer
 from constructs import Construct, IConstruct
 
@@ -28,7 +29,7 @@ class RayOnEKS(Stack):
         eks_cluster_endpoint: str,
         eks_cert_auth_data: str,
         namespace_name: str,
-        service_account_role,
+        service_account_role: iam.IRole,
         custom_manifest_paths: List[str],
         **kwargs: Any,
     ) -> None:
