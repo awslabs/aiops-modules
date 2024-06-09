@@ -98,7 +98,6 @@ typeguard==2.13.3
     #   jsii
 typing-extensions==4.6.3
     # via
-    #   -r requirements.in
     #   jsii
     #   pydantic
     #   pydantic-core
