@@ -8,6 +8,7 @@ from cdk_nag import NagSuppressions
 from sagemaker import image_uris
 
 from sagemaker_model_monitoring.data_quality_construct import DataQualityConstruct
+from sagemaker_model_monitoring.model_quality_construct import ModelQualityConstruct
 
 
 class SageMakerModelMonitoringStack(Stack):
@@ -16,7 +17,8 @@ class SageMakerModelMonitoringStack(Stack):
 
     This stack is deployed to all the deployment environments of the project.
 
-    It creates the data quality monitor job construct and the associated IAM roles and policies.
+    It optionally creates the data quality monitor and model quality monitor
+    job constructs and the associated IAM roles and policies.
     """
 
     def __init__(
@@ -31,6 +33,9 @@ class SageMakerModelMonitoringStack(Stack):
         model_package_arn: str,
         model_bucket_arn: str,
         kms_key_id: str,
+        ground_truth_prefix: str,
+        enable_data_quality_monitor: bool,
+        enable_model_quality_monitor: bool,
         # Data quality monitoring options.
         data_quality_checkstep_output_prefix: str,
         data_quality_output_prefix: str,
@@ -39,6 +44,18 @@ class SageMakerModelMonitoringStack(Stack):
         data_quality_instance_volume_size_in_gb: int,
         data_quality_max_runtime_in_seconds: int,
         data_quality_schedule_expression: str,
+        # Model quality monitoring options.
+        model_quality_checkstep_output_prefix: str,
+        model_quality_output_prefix: str,
+        model_quality_instance_count: int,
+        model_quality_instance_type: str,
+        model_quality_instance_volume_size_in_gb: int,
+        model_quality_max_runtime_in_seconds: int,
+        model_quality_problem_type: str,
+        model_quality_inference_attribute: str,
+        model_quality_probability_attribute: Optional[str],
+        model_quality_probability_threshold_attribute: Optional[int],
+        model_quality_schedule_expression: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -51,6 +68,12 @@ class SageMakerModelMonitoringStack(Stack):
         # TODO Add back cross-region support as a separate S3 replica module?
         # sagemaker requires model package and inference image uri to be in the same region as model and endpoint
         sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)
+
+        # Error if no monitoring is enabled.
+        if not enable_data_quality_monitor and not enable_model_quality_monitor:
+            raise ValueError(
+                "At least one of enable_data_quality_monitor and enable_model_quality_monitor must be True"
+            )
 
         monitor_image_uri = image_uris.retrieve(framework="model-monitor", region=self.region)
 
@@ -123,21 +146,47 @@ class SageMakerModelMonitoringStack(Stack):
 
         model_bucket_name = model_bucket_arn.split(":")[-1]
 
-        DataQualityConstruct(
-            self,
-            "Data Quality Construct",
-            monitor_image_uri=monitor_image_uri,
-            endpoint_name=endpoint_name,
-            model_bucket_name=model_bucket_name,
-            data_quality_checkstep_output_prefix=data_quality_checkstep_output_prefix,
-            data_quality_output_prefix=data_quality_output_prefix,
-            kms_key_id=kms_key_id,
-            model_monitor_role_arn=model_monitor_role.role_arn,
-            security_group_id=security_group_id,
-            subnet_ids=subnet_ids,
-            instance_count=data_quality_instance_count,
-            instance_type=data_quality_instance_type,
-            instance_volume_size_in_gb=data_quality_instance_volume_size_in_gb,
-            max_runtime_in_seconds=data_quality_max_runtime_in_seconds,
-            schedule_expression=data_quality_schedule_expression,
-        )
+        if enable_data_quality_monitor:
+            DataQualityConstruct(
+                self,
+                "Data Quality Construct",
+                monitor_image_uri=monitor_image_uri,
+                endpoint_name=endpoint_name,
+                model_bucket_name=model_bucket_name,
+                data_quality_checkstep_output_prefix=data_quality_checkstep_output_prefix,
+                data_quality_output_prefix=data_quality_output_prefix,
+                kms_key_id=kms_key_id,
+                model_monitor_role_arn=model_monitor_role.role_arn,
+                security_group_id=security_group_id,
+                subnet_ids=subnet_ids,
+                instance_count=data_quality_instance_count,
+                instance_type=data_quality_instance_type,
+                instance_volume_size_in_gb=data_quality_instance_volume_size_in_gb,
+                max_runtime_in_seconds=data_quality_max_runtime_in_seconds,
+                schedule_expression=data_quality_schedule_expression,
+            )
+
+        if enable_model_quality_monitor:
+            ModelQualityConstruct(
+                self,
+                "Model Quality Construct",
+                monitor_image_uri=monitor_image_uri,
+                endpoint_name=endpoint_name,
+                model_bucket_name=model_bucket_name,
+                model_quality_checkstep_output_prefix=model_quality_checkstep_output_prefix,
+                model_quality_output_prefix=model_quality_output_prefix,
+                ground_truth_prefix=ground_truth_prefix,
+                kms_key_id=kms_key_id,
+                model_monitor_role_arn=model_monitor_role.role_arn,
+                security_group_id=security_group_id,
+                subnet_ids=subnet_ids,
+                instance_count=model_quality_instance_count,
+                instance_type=model_quality_instance_type,
+                instance_volume_size_in_gb=model_quality_instance_volume_size_in_gb,
+                max_runtime_in_seconds=model_quality_max_runtime_in_seconds,
+                problem_type=model_quality_problem_type,
+                inference_attribute=model_quality_inference_attribute,
+                probability_attribute=model_quality_probability_attribute,
+                probability_threshold_attribute=model_quality_probability_threshold_attribute,
+                schedule_expression=model_quality_schedule_expression,
+            )
