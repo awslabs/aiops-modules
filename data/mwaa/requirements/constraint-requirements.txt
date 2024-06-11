@@ -197,7 +197,7 @@ azure-common==1.1.28
 azure-core==1.29.6
 azure-cosmos==4.5.1
 azure-datalake-store==0.0.53
-azure-identity==1.15.0
+azure-identity==1.16.1
 azure-keyvault-secrets==4.7.0
 azure-kusto-data==4.3.1
 azure-mgmt-containerinstance==10.1.0
