@@ -1,7 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,7 +19,7 @@ class CdkBaseSettings(BaseSettings, ABC):
     )
 
 
-class SeedFarmerParameters(CdkBaseSettings):
+class ModuleSettings(CdkBaseSettings):
     """SeedFarmer Parameters.
 
     These parameters are required for the module stack.
@@ -46,6 +46,8 @@ class SeedFarmerParameters(CdkBaseSettings):
     data_quality_max_runtime_in_seconds: int = Field(default=3600, ge=1)
     data_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
+    tags: Optional[Dict[str, str]] = Field(default=None)
+
 
 class SeedFarmerSettings(CdkBaseSettings):
     """SeedFarmer Settings.
@@ -67,7 +69,7 @@ class SeedFarmerSettings(CdkBaseSettings):
         return prefix
 
 
-class CdkDefaultSettings(CdkBaseSettings):
+class CDKSettings(CdkBaseSettings):
     """CDK default Settings.
 
     These parameters come from AWS CDK by default.
@@ -82,6 +84,6 @@ class CdkDefaultSettings(CdkBaseSettings):
 class ApplicationSettings(CdkBaseSettings):
     """Application settings."""
 
-    settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
-    parameters: SeedFarmerParameters = Field(default_factory=SeedFarmerParameters)  # type: ignore[arg-type]
-    default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)  # type: ignore[arg-type]
+    seedfarmer_settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
+    module_settings: ModuleSettings = Field(default_factory=ModuleSettings)
+    cdk_settings: CDKSettings = Field(default_factory=CDKSettings)
