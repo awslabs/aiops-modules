@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
+- changed ECR encryption to KMS_MANAGED
 
 ## v1.2.0
 
