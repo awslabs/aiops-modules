@@ -60,7 +60,7 @@ class RayOnEKS(Stack):
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
-        cluster.add_helm_chart(
+        operator = cluster.add_helm_chart(
             "RayOperator",
             chart="kuberay-operator",
             release="kuberay-operator",
@@ -74,4 +74,5 @@ class RayOnEKS(Stack):
         for custom_manifest_path in custom_manifest_paths:
             with open(custom_manifest_path) as f:
                 for manifest in yaml.load_all(f, Loader=yaml.FullLoader):
-                    cluster.add_manifest(f"{manifest['metadata']['name']}", manifest)
+                    manifest = cluster.add_manifest(f"{manifest['metadata']['name']}", manifest)
+                    manifest.node.add_dependency(operator)

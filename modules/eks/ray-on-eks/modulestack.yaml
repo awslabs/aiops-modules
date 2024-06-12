@@ -35,15 +35,6 @@ Resources:
             Resource:
               - "*"
           - Action:
-              - "s3:Create*"
-              - "s3:Put*"
-              - "s3:Delete*"
-              - "s3:Get*"
-              - "s3:List*"
-            Effect: Allow
-            Resource:
-              - "arn:aws:s3:::cdk*"
-          - Action:
               - "iam:CreatePolicy"
               - "iam:DetachRolePolicy"
               - "iam:DeletePolicy"

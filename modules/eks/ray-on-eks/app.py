@@ -31,7 +31,7 @@ rbac_stack = RbacStack(
 
 ray_on_eks_stack = RayOnEKS(
     scope=app,
-    id=f"{app_settings.settings.app_prefix}-ray",
+    id=app_settings.settings.app_prefix,
     project_name=app_settings.settings.project_name,
     deployment_name=app_settings.settings.deployment_name,
     module_name=app_settings.settings.module_name,
@@ -55,7 +55,7 @@ Tags.of(app).add("SeedFarmerModuleName", app_settings.settings.module_name)
 Tags.of(app).add("SeedFarmerProjectName", app_settings.settings.project_name)
 
 CfnOutput(
-    scope=rbac_stack,
+    scope=ray_on_eks_stack,
     id="metadata",
     value=rbac_stack.to_json_string(
         {

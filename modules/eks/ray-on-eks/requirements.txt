@@ -6,8 +6,9 @@
 #
 annotated-types==0.6.0
     # via pydantic
-attrs==21.4.0
+attrs==23.2.0
     # via
+    #   -r requirements.in
     #   cattrs
     #   jsii
 aws-cdk-asset-awscli-v1==2.2.202
@@ -18,34 +19,20 @@ aws-cdk-asset-node-proxy-agent-v6==2.0.3
     # via aws-cdk-lib
 aws-cdk-lambda-layer-kubectl-v29==2.0.0
     # via -r requirements.in
-aws-cdk-lib==2.140.0
+aws-cdk-lib==2.145.0
     # via
     #   -r requirements.in
     #   aws-cdk-lambda-layer-kubectl-v29
-    #   cdk-nag
-boto3==1.21.46
-    # via -r requirements.in
-botocore==1.24.46
-    # via
-    #   boto3
-    #   s3transfer
 cattrs==22.1.0
     # via jsii
-cdk-nag==2.28.110
-    # via -r requirements.in
 constructs==10.0.91
     # via
     #   aws-cdk-lambda-layer-kubectl-v29
     #   aws-cdk-lib
-    #   cdk-nag
 exceptiongroup==1.0.0rc8
     # via cattrs
 importlib-resources==5.12.0
     # via jsii
-jmespath==1.0.0
-    # via
-    #   boto3
-    #   botocore
 jsii==1.98.0
     # via
     #   aws-cdk-asset-awscli-v1
@@ -53,7 +40,6 @@ jsii==1.98.0
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lambda-layer-kubectl-v29
     #   aws-cdk-lib
-    #   cdk-nag
     #   constructs
 publication==0.0.3
     # via
@@ -62,29 +48,22 @@ publication==0.0.3
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lambda-layer-kubectl-v29
     #   aws-cdk-lib
-    #   cdk-nag
     #   constructs
     #   jsii
-pydantic==2.7.1
+pydantic==2.7.3
     # via
     #   -r requirements.in
     #   pydantic-settings
-pydantic-core==2.18.2
+pydantic-core==2.18.4
     # via pydantic
 pydantic-settings==2.2.1
     # via -r requirements.in
 python-dateutil==2.8.2
-    # via
-    #   botocore
-    #   jsii
+    # via jsii
 python-dotenv==0.21.1
-    # via
-    #   -r requirements.in
-    #   pydantic-settings
+    # via pydantic-settings
 pyyaml==6.0.1
     # via -r requirements.in
-s3transfer==0.5.2
-    # via boto3
 six==1.16.0
     # via python-dateutil
 typeguard==2.13.3
@@ -94,14 +73,11 @@ typeguard==2.13.3
     #   aws-cdk-asset-node-proxy-agent-v6
     #   aws-cdk-lambda-layer-kubectl-v29
     #   aws-cdk-lib
-    #   cdk-nag
     #   jsii
 typing-extensions==4.6.3
     # via
     #   jsii
     #   pydantic
     #   pydantic-core
-urllib3==1.26.18
-    # via botocore
 zipp==3.15.0
     # via importlib-resources
