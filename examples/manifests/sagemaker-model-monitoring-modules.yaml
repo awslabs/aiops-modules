@@ -1,0 +1,41 @@
+# This is an example manifest group.
+# Replace the parameters with the parameters for your model below prior the deployment.
+name: monitor
+path: modules/sagemaker/sagemaker-model-monitoring
+parameters:
+  - name: sagemaker_project_id
+    value: project-1
+  - name: sagemaker_project_name
+    value: project-1
+  - name: model_package_arn
+    value: arn:aws:sagemaker:<region>:<account>:model-package/<package-name>/1
+  - name: model_bucket_arn
+    value: arn:aws:s3:::<model-bucket-name>>
+  - name: data-quality-checkstep-output-prefix
+    value: <model-prefix>/dataqualitycheckstep
+  - name: data-quality-output-prefix
+    value: monitor/dataqualityoutput
+  - name: endpoint_name
+    valueFrom:
+      moduleMetadata:
+        group: endpoints
+        name: endpoint
+        key: EndpointName
+  - name: security_group_id
+    valueFrom:
+      moduleMetadata:
+        group: endpoints
+        name: endpoint
+        key: SecurityGroupId
+  - name: kms_key_id
+    valueFrom:
+      moduleMetadata:
+        group: endpoints
+        name: endpoint
+        key: KmsKeyId
+  - name: subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
