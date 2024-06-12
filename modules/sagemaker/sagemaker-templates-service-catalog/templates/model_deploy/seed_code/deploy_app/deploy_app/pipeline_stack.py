@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import aws_cdk as cdk
 import config.constants as constants
@@ -33,7 +34,7 @@ ENV = {
 
 
 class DevStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         DeployEndpointStack(
@@ -46,7 +47,7 @@ class DevStage(cdk.Stage):
 
 
 class PreProdStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         DeployEndpointStack(
@@ -59,7 +60,7 @@ class PreProdStage(cdk.Stage):
 
 
 class ProdStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         DeployEndpointStack(
@@ -126,7 +127,7 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
 
 
 class PipelineStack(cdk.Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         repository = codecommit.Repository.from_repository_name(
