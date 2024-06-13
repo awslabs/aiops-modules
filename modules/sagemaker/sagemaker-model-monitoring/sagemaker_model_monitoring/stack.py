@@ -89,16 +89,13 @@ class SageMakerModelMonitoringStack(Stack):
             ),
         )
 
+        # TODO Reduce the use of wildcards by limiting to the provided KMS key ID & needed bucket prefixes.
         NagSuppressions.add_resource_suppressions(
             model_monitor_policy,
             suppressions=[
                 {
                     "id": "AwsSolutions-IAM5",
-                    # TODO
-                    "reason": (
-                        "The IAM policy for create-ssm-param-provider role is already restricted "
-                        "to invoke only create-ssm-param-function"
-                    ),
+                    "reason": "The IAM policy needs access to the S3 bucket and associated KMS keys",
                 },
             ],
         )
@@ -113,16 +110,13 @@ class SageMakerModelMonitoringStack(Stack):
             ],
         )
 
+        # TODO Avoid AmazonSageMakerFullAccess by limiting to the needed operations.
         NagSuppressions.add_resource_suppressions(
             model_monitor_role,
             suppressions=[
                 {
                     "id": "AwsSolutions-IAM4",
-                    # TODO
-                    "reason": (
-                        "The IAM policy for create-ssm-param-provider role is already restricted "
-                        "to invoke only create-ssm-param-function"
-                    ),
+                    "reason": "The IAM policy needs access to many SageMaker and EC2 operations.",
                 },
             ],
         )
