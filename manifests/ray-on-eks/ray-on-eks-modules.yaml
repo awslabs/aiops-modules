@@ -1,0 +1,54 @@
+name: ray-on-eks
+path: modules/eks/ray-on-eks
+dataFiles:
+  - filePath: data/ray/ray-job.shutdown.yaml
+  # - filePath: data/ray/ray-cluster.autoscaler.yaml
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksClusterEndpoint
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterEndpoint
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: EksOpenidIssuer
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterOpenIdConnectIssuer
+  - name: EksCertAuthData
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterCertAuthData
+  - name: EksClusterSecurityGroupId
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterSecurityGroupId
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: CustomManifestPaths
+    value:
+    - data/ray/ray-job.shutdown.yaml

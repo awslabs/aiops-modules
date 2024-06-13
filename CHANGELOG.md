@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## UNRELEASED
 
+### **Added**
+- added `ray-on-eks`, and `manifests/ray-on-eks` manifests
+
 ### **Changed**
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
 - changed ECR encryption to KMS_MANAGED
