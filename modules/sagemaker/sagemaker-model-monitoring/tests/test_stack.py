@@ -18,7 +18,7 @@ def stack_defaults() -> None:
 
 
 @pytest.fixture(scope="function")
-def stack_model_package_input() -> cdk.Stack:
+def stack(stack_defaults: None) -> cdk.Stack:
     from sagemaker_model_monitoring import settings, stack
 
     app = cdk.App()
@@ -36,7 +36,7 @@ def stack_model_package_input() -> cdk.Stack:
     kms_key_id = "example-kms-key-id"
 
     # Instantiate a settings object to avoid needing to pass default parameters.
-    app_settings = settings.SeedFarmerParameters(
+    app_settings = settings.ModuleSettings(
         sagemaker_project_id=sagemaker_project_id,
         sagemaker_project_name=sagemaker_project_name,
         endpoint_name=endpoint_name,
@@ -58,13 +58,11 @@ def stack_model_package_input() -> cdk.Stack:
     )
 
 
-@pytest.fixture(params=["stack_model_package_input"], scope="function")
 def test_synthesize_stack_data_quality(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
     template.resource_count_is("AWS::SageMaker::DataQualityJobDefinition", 1)
 
 
-@pytest.fixture(params=["stack_model_package_input"], scope="function")
 def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
     cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
 
