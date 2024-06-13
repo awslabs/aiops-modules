@@ -54,13 +54,21 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)       |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+
+
+### EKS Modules
+
+| Type                                                                           | Description                                                                                                      |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
 
 ### Events Modules
 
 | Type                                                              | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------|------------------------------------------------------------------------|
 | [Event Bus Module](modules/examples/event-bus/README.md)          |  Creates an Amazon EventBridge Bus for cross-account events.           |
+
 
 ### Industry Data Framework (IDF) Modules
 
