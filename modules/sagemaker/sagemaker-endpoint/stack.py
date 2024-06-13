@@ -39,6 +39,8 @@ class DeployEndpointStack(Stack):
         managed_instance_scaling: bool,
         scaling_min_instance_count: int,
         scaling_max_instance_count: int,
+        data_capture_sampling_percentage: int,
+        data_capture_prefix: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -48,11 +50,13 @@ class DeployEndpointStack(Stack):
         if sagemaker_project_name:
             Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
 
+        enable_data_capture = data_capture_sampling_percentage > 0
+
         # Import VPC, create security group, and add ingress rule
         vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
 
-        security_group = ec2.SecurityGroup(self, "Security Group", vpc=vpc, allow_all_outbound=True)
-        security_group.add_ingress_rule(
+        self.security_group = ec2.SecurityGroup(self, "Security Group", vpc=vpc, allow_all_outbound=True)
+        self.security_group.add_ingress_rule(
             peer=ec2.Peer.ipv4(vpc.vpc_cidr_block),
             connection=ec2.Port.all_tcp(),
         )
@@ -105,6 +109,9 @@ class DeployEndpointStack(Stack):
                 # Grant model assets bucket read permissions
                 model_bucket = s3.Bucket.from_bucket_arn(self, "Model Bucket", model_artifacts_bucket_arn)
                 model_bucket.grant_read(self.model_execution_role)
+                if enable_data_capture:
+                    # Ensure the model execution role can write to the data capture prefix.
+                    model_bucket.grant_write(self.model_execution_role, f"{data_capture_prefix}/*")
             else:
                 self.model_execution_role.add_to_policy(
                     iam.PolicyStatement(
@@ -148,28 +155,53 @@ class DeployEndpointStack(Stack):
             model_name=model_name,
             containers=[sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)],
             vpc_config=sagemaker.CfnModel.VpcConfigProperty(
-                security_group_ids=[security_group.security_group_id],
+                security_group_ids=[self.security_group.security_group_id],
                 subnets=subnet_ids,
             ),
         )
         self.model = model
 
         # Create kms key to be used by the endpoint assets bucket
-        kms_key = kms.Key(
+        self.kms_key = kms.Key(
             self,
             "Endpoint Key",
             description="Key used for encryption of data in Amazon SageMaker Endpoint",
             enable_key_rotation=True,
         )
-        kms_key.grant_encrypt_decrypt(iam.AccountRootPrincipal())
+        self.kms_key.grant_encrypt_decrypt(iam.AccountRootPrincipal())
 
         # Create endpoint config
+        if enable_data_capture:
+            if not model_artifacts_bucket_arn:
+                raise ValueError("Must provide 'model_artifacts_bucket_arn' to enable data capture")
+
+            destination_s3_uri = f"s3://{model_artifacts_bucket_arn.split(':')[-1]}/{data_capture_prefix}"
+
+            capture_options = [
+                sagemaker.CfnEndpointConfig.CaptureOptionProperty(capture_mode="Input"),
+                sagemaker.CfnEndpointConfig.CaptureOptionProperty(capture_mode="Output"),
+            ]
+            data_capture_config = sagemaker.CfnEndpointConfig.DataCaptureConfigProperty(
+                capture_options=capture_options,
+                destination_s3_uri=destination_s3_uri,
+                initial_sampling_percentage=data_capture_sampling_percentage,
+                capture_content_type_header=sagemaker.CfnEndpointConfig.CaptureContentTypeHeaderProperty(
+                    csv_content_types=["text/csv"],
+                    json_content_types=["application/json"],
+                ),
+                enable_capture=True,
+                kms_key_id=self.kms_key.key_id,
+            )
+        else:
+            data_capture_config = None
+
         endpoint_config_name: str = f"{id}-conf-{get_timestamp()}"
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
             "Endpoint Configuration",
+            data_capture_config=data_capture_config,
             endpoint_config_name=endpoint_config_name,
-            kms_key_id=kms_key.key_id,
+            kms_key_id=self.kms_key.key_id,
             production_variants=[
                 sagemaker.CfnEndpointConfig.ProductionVariantProperty(
                     model_name=model_name,

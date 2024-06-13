@@ -3,7 +3,7 @@
 from abc import ABC
 from typing import Dict, List, Optional
 
-from pydantic import Field, computed_field, model_validator
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,48 +20,37 @@ class CdkBaseSettings(BaseSettings, ABC):
 
 
 class ModuleSettings(CdkBaseSettings):
-    """Seedfarmer Parameters.
+    """SeedFarmer Parameters.
 
     These parameters are required for the module stack.
     """
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    vpc_id: str
+    endpoint_name: str
+    security_group_id: str
     subnet_ids: List[str]
+    model_package_arn: str
+    model_bucket_arn: str
+    kms_key_id: str
 
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
-    model_package_arn: Optional[str] = Field(default=None)
-    model_package_group_name: Optional[str] = Field(default=None)
-    model_execution_role_arn: Optional[str] = Field(default=None)
-    model_artifacts_bucket_arn: Optional[str] = Field(default=None)
-    ecr_repo_arn: Optional[str] = Field(default=None)
-    variant_name: str = Field(default="AllTraffic")
 
-    initial_instance_count: int = Field(default=1)
-    initial_variant_weight: int = Field(default=1)
-    instance_type: str = Field(default="ml.m4.xlarge")
-    managed_instance_scaling: bool = Field(default=False)
-    scaling_min_instance_count: int = Field(default=1)
-    scaling_max_instance_count: int = Field(default=10)
-
-    # Set to a percentage greater than 0 to enable data capture.
-    data_capture_sampling_percentage: int = Field(default=0, ge=0, le=100)
-    data_capture_prefix: str = Field(default="")
+    # Data quality monitoring options.
+    data_quality_checkstep_output_prefix: str = Field(default="")
+    data_quality_output_prefix: str = Field(default="")
+    data_quality_instance_count: int = Field(default=1, ge=1)
+    data_quality_instance_type: str = Field(default="ml.m5.large")
+    data_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
+    data_quality_max_runtime_in_seconds: int = Field(default=3600, ge=1)
+    data_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
-    @model_validator(mode="after")
-    def check_model_package(self) -> "ModuleSettings":
-        if not self.model_package_arn and not self.model_package_group_name:
-            raise ValueError("Parameter model-package-arn or model-package-group-name is required")
-
-        return self
-
 
 class SeedFarmerSettings(CdkBaseSettings):
-    """Seedfarmer Settings.
+    """SeedFarmer Settings.
 
     These parameters comes from seedfarmer by default.
     """
@@ -81,7 +70,7 @@ class SeedFarmerSettings(CdkBaseSettings):
 
 
 class CDKSettings(CdkBaseSettings):
-    """CDK Default Settings.
+    """CDK default Settings.
 
     These parameters come from AWS CDK by default.
     """

@@ -61,6 +61,8 @@ def stack_model_package_input() -> cdk.Stack:
         managed_instance_scaling=managed_instance_scaling,
         scaling_min_instance_count=scaling_min_instance_count,
         scaling_max_instance_count=scaling_max_instance_count,
+        data_capture_sampling_percentage=0,
+        data_capture_prefix="",
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
@@ -129,6 +131,8 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
             managed_instance_scaling=managed_instance_scaling,
             scaling_min_instance_count=scaling_min_instance_count,
             scaling_max_instance_count=scaling_max_instance_count,
+            data_capture_sampling_percentage=0,
+            data_capture_prefix="",
             env=cdk.Environment(
                 account=os.environ["CDK_DEFAULT_ACCOUNT"],
                 region=os.environ["CDK_DEFAULT_REGION"],
