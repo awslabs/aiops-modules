@@ -32,6 +32,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [SageMaker Custom Kernel Module](modules/sagemaker/sagemaker-custom-kernel/README.md)                                     | Builds custom kernel for SageMaker Studio from a Dockerfile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | [SageMaker Model Package Group Module](modules/sagemaker/sagemaker-model-package-group/README.md)                         | Creates a SageMaker Model Package Group to register and version SageMaker Machine Learning (ML) models and setups an Amazon EventBridge Rule to send model package group state change events to an Amazon EventBridge Bus                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | [SageMaker Model Package Promote Pipeline Module](modules/sagemaker/sagemaker-model-package-promote-pipeline/README.md)   | Deploy a Pipeline to promote SageMaker Model Packages in a multi-account setup. The pipeline can be triggered through an EventBridge rule in reaction of a SageMaker Model Package Group state event change (Approved/Rejected). Once the pipeline is triggered, it will promote the latest approved model package, if one is found.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| [SageMaker Model Monitoring Module](modules/sagemaker/sagemaker-model-monitoring-module/README.md)                        | Deploy a data quality monitoring job which runs against a SageMaker Endpoint.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Mlflow Modules
 
@@ -53,13 +54,21 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)       |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+
+
+### EKS Modules
+
+| Type                                                                           | Description                                                                                                      |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
 
 ### Events Modules
 
 | Type                                                              | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------|------------------------------------------------------------------------|
 | [Event Bus Module](modules/examples/event-bus/README.md)          |  Creates an Amazon EventBridge Bus for cross-account events.           |
+
 
 ### Industry Data Framework (IDF) Modules
 

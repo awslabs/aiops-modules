@@ -1,0 +1,23 @@
+name: ray-on-eks
+forceDependencyRedeploy: True
+toolchainRegion: us-east-1
+groups:
+  - name: base
+    path: manifests/ray-on-eks/base-modules.yaml
+  - name: core
+    path: manifests/ray-on-eks/core-modules.yaml
+  - name: ray-on-eks
+    path: manifests/ray-on-eks/ray-on-eks-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    codebuildImage: aws/codebuild/standard:7.0
+    parametersGlobal:
+      dockerCredentialsSecret: aws-aiops-docker-credentials
+      rayNamespaceName: ray
+    regionMappings:
+      - region: us-east-1
+        default: true
