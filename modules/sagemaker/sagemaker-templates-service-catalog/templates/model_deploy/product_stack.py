@@ -107,10 +107,7 @@ class Product(servicecatalog.ProductStack):
 
         dev_account_id: str = Aws.ACCOUNT_ID
         dev_region: str = Aws.REGION
-        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
-        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
-        pre_prod_region = Aws.REGION if not pre_prod_region else pre_prod_region
-        prod_region = Aws.REGION if not prod_region else prod_region
+
         model_package_arn = (
             f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
             f"{model_package_group_name}/*"
