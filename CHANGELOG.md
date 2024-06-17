@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
 - changed ECR encryption to KMS_MANAGED
+- changed encryption for each bucket to KMS_MANAGED
 - refactor `airflow-dags` module to use Pydantic
 
 ## v1.2.0
