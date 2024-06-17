@@ -77,7 +77,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
         "kms:ReEncrypt*",
         "kms:GenerateDataKey*",
         "kms:Decrypt",
-        "kms:DescribeKey"
+        "kms:DescribeKey",
       ],
       resources: [key.keyArn],
       conditions: {
