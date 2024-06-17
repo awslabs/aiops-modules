@@ -2,7 +2,7 @@
 
 ## Description
 
-This module creates a SageMaker Model Monitoring job for data quality.
+This module creates a SageMaker Model Monitoring jobs for (optionally) data quality and model quality.
 It requires a deployed model endpoint and the proper check steps
 for each monitoring job:
 
