@@ -21,6 +21,8 @@ def stack_defaults():
     os.environ["SEEDFARMER_PARAMETER_MODEL_BUCKET_ARN"] = "example-bucket-arn"
     os.environ["SEEDFARMER_PARAMETER_KMS_KEY_ID"] = "example-kms-key-id"
 
+    os.environ["SEEDFARMER_PARAMETER_ENABLE_DATA_QUALITY_MONITOR"] = "true"
+
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
         del sys.modules["app"]
@@ -28,3 +30,13 @@ def stack_defaults():
 
 def test_app(stack_defaults):
     import app  # noqa: F401
+
+
+def test_all_disabled(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_ENABLE_DATA_QUALITY_MONITOR"] = "false"
+    os.environ["SEEDFARMER_PARAMETER_ENABLE_MODEL_QUALITY_MONITOR"] = "false"
+
+    with pytest.raises(
+        Exception, match="At least one of enable_data_quality_monitor and enable_model_quality_monitor must be True"
+    ):
+        import app  # noqa: F401
