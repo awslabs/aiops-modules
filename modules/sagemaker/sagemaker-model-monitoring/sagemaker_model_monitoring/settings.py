@@ -40,6 +40,7 @@ class ModuleSettings(CdkBaseSettings):
     ground_truth_prefix: str = Field(default="")
     enable_data_quality_monitor: bool = Field(default=True)
     enable_model_quality_monitor: bool = Field(default=True)
+    enable_model_bias_monitor: bool = Field(default=True)
 
     # Data quality monitoring options.
     data_quality_checkstep_output_prefix: str = Field(default="")
@@ -49,6 +50,7 @@ class ModuleSettings(CdkBaseSettings):
     data_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
     data_quality_max_runtime_in_seconds: int = Field(default=3600, ge=1)
     data_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
+
     # Model quality monitoring options.
     model_quality_checkstep_output_prefix: str = Field(default="")
     model_quality_output_prefix: str = Field(default="")
@@ -61,6 +63,20 @@ class ModuleSettings(CdkBaseSettings):
     model_quality_probability_attribute: Optional[str] = Field(default=None)
     model_quality_probability_threshold_attribute: Optional[int] = Field(default=None)
     model_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
+
+    # Model bias monitoring options.
+    model_bias_checkstep_output_prefix: str = Field(default="")
+    model_bias_checkstep_analysis_config_prefix: Optional[str] = Field(default=None)
+    model_bias_output_prefix: str = Field(default="")
+    model_bias_instance_count: int = Field(default=1, ge=1)
+    model_bias_instance_type: str = Field(default="ml.m5.large")
+    model_bias_instance_volume_size_in_gb: int = Field(default=20, ge=1)
+    model_bias_max_runtime_in_seconds: int = Field(default=1800, ge=1)
+    model_bias_features_attribute: Optional[str] = Field(default=None)
+    model_bias_inference_attribute: Optional[str] = Field(default=None)
+    model_bias_probability_attribute: Optional[str] = Field(default=None)
+    model_bias_probability_threshold_attribute: Optional[int] = Field(default=None)
+    model_bias_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
