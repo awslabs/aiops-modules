@@ -57,7 +57,7 @@ class ModuleSettings(CdkBaseSettings):
     model_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
     model_quality_max_runtime_in_seconds: int = Field(default=1800, ge=1)
     model_quality_problem_type: str = Field(default="Regression")
-    model_quality_inference_attribute: str = Field(default="column_0")
+    model_quality_inference_attribute: Optional[str] = Field(default=None)
     model_quality_probability_attribute: Optional[str] = Field(default=None)
     model_quality_probability_threshold_attribute: Optional[int] = Field(default=None)
     model_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")

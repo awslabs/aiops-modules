@@ -30,7 +30,7 @@ class ModelQualityConstruct(Construct):
         instance_volume_size_in_gb: int,
         max_runtime_in_seconds: int,
         problem_type: str,
-        inference_attribute: str,
+        inference_attribute: Optional[str],
         probability_attribute: Optional[str],
         probability_threshold_attribute: Optional[int],
         schedule_expression: str,

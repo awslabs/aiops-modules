@@ -52,7 +52,7 @@ class SageMakerModelMonitoringStack(Stack):
         model_quality_instance_volume_size_in_gb: int,
         model_quality_max_runtime_in_seconds: int,
         model_quality_problem_type: str,
-        model_quality_inference_attribute: str,
+        model_quality_inference_attribute: Optional[str],
         model_quality_probability_attribute: Optional[str],
         model_quality_probability_threshold_attribute: Optional[int],
         model_quality_schedule_expression: str,
