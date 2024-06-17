@@ -66,8 +66,14 @@ N/A
 
 ##### Model Quality Monitoring Job Parameters
 
+###### Required
+
+- `ground-truth-prefix`: The S3 prefix in `model-artifacts-bucket-arn` which contains the [ground truth](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality-merge.html) for captured data.
 - `model-quality-problem-type`: The machine learning problem type of the model that the monitoring job monitors.
 - `model-quality-inference-attribute`: The attribute of the input data that represents the ground truth label.
+
+###### Optional
+
 - `model-quality-probability-attribute`: In a classification problem, the attribute that represents the class probability.
 - `model-quality-probability-threshold-attribute`: The threshold for the class probability to be evaluated as a positive result.
 
