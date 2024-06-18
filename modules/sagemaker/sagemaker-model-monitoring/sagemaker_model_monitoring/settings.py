@@ -37,6 +37,10 @@ class ModuleSettings(CdkBaseSettings):
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
 
+    ground_truth_prefix: str = Field(default="")
+    enable_data_quality_monitor: bool = Field(default=True)
+    enable_model_quality_monitor: bool = Field(default=True)
+
     # Data quality monitoring options.
     data_quality_checkstep_output_prefix: str = Field(default="")
     data_quality_output_prefix: str = Field(default="")
@@ -45,6 +49,18 @@ class ModuleSettings(CdkBaseSettings):
     data_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
     data_quality_max_runtime_in_seconds: int = Field(default=3600, ge=1)
     data_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
+    # Model quality monitoring options.
+    model_quality_checkstep_output_prefix: str = Field(default="")
+    model_quality_output_prefix: str = Field(default="")
+    model_quality_instance_count: int = Field(default=1, ge=1)
+    model_quality_instance_type: str = Field(default="ml.m5.large")
+    model_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
+    model_quality_max_runtime_in_seconds: int = Field(default=1800, ge=1)
+    model_quality_problem_type: str = Field(default="Regression")
+    model_quality_inference_attribute: Optional[str] = Field(default=None)
+    model_quality_probability_attribute: Optional[str] = Field(default=None)
+    model_quality_probability_threshold_attribute: Optional[int] = Field(default=None)
+    model_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
