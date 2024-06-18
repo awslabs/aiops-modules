@@ -16,10 +16,10 @@ deploy:
       - >
         echo "SEEDFARMER_PARAMETER_MWAA_EXEC_ROLE_ARN: ${SEEDFARMER_PARAMETER_MWAA_EXEC_ROLE_ARN}"
       - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
-      - export SEEDFARMER_MODULE_METADATA=$(python -c "import json; file=open('cdk-exports.json'); print(json.load(file)['${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}']['metadata'])")
-      - export MLOPS_BUCKET=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".MlOpsBucket")
-      - export DAG_IAM_ROLE=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".DagRoleArn")
-      - export SAGEMAKER_IAM_ROLE=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".SageMakerExecutionRole")
+      - seedfarmer metadata convert -f cdk-exports.json || true
+      - export MLOPS_BUCKET=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".MlOpsBucket")
+      - export DAG_IAM_ROLE=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".DagRoleArn")
+      - export SAGEMAKER_IAM_ROLE=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".SageMakerExecutionRole")
       - >
         echo "MLOPS_BUCKET: ${MLOPS_BUCKET}"
       - >
