@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - moved CI/CD infra to separate repository and added self mutation pipeline to provision infra for module `sagemaker-templates-service-catalog`
 - changed ECR encryption to KMS_MANAGED
 - changed encryption for each bucket to KMS_MANAGED
+- refactor `airflow-dags` module to use Pydantic
 
 ## v1.2.0
 
