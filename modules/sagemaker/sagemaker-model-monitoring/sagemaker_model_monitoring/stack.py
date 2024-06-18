@@ -9,6 +9,7 @@ from sagemaker import image_uris
 
 from sagemaker_model_monitoring.data_quality_construct import DataQualityConstruct
 from sagemaker_model_monitoring.model_bias_construct import ModelBiasConstruct
+from sagemaker_model_monitoring.model_explainability_construct import ModelExplainabilityConstruct
 from sagemaker_model_monitoring.model_quality_construct import ModelQualityConstruct
 
 
@@ -18,8 +19,8 @@ class SageMakerModelMonitoringStack(Stack):
 
     This stack is deployed to all the deployment environments of the project.
 
-    It optionally creates the data quality, model quality, and model bias monitor
-    job constructs and the associated IAM roles and policies.
+    It optionally creates the data quality, model quality, model bias, and model explainability
+    monitor job constructs and their associated IAM roles and policies.
     """
 
     def __init__(
@@ -38,6 +39,7 @@ class SageMakerModelMonitoringStack(Stack):
         enable_data_quality_monitor: bool,
         enable_model_quality_monitor: bool,
         enable_model_bias_monitor: bool,
+        enable_model_explainability_monitor: bool,
         # Data quality monitoring options.
         data_quality_checkstep_output_prefix: str,
         data_quality_output_prefix: str,
@@ -71,6 +73,18 @@ class SageMakerModelMonitoringStack(Stack):
         model_bias_probability_attribute: Optional[str],
         model_bias_probability_threshold_attribute: Optional[int],
         model_bias_schedule_expression: str,
+        # Model explainability monitoring options.
+        model_explainability_checkstep_output_prefix: str,
+        model_explainability_checkstep_analysis_config_prefix: str,
+        model_explainability_output_prefix: str,
+        model_explainability_instance_count: int,
+        model_explainability_instance_type: str,
+        model_explainability_instance_volume_size_in_gb: int,
+        model_explainability_max_runtime_in_seconds: int,
+        model_explainability_features_attribute: Optional[str],
+        model_explainability_inference_attribute: Optional[str],
+        model_explainability_probability_attribute: Optional[str],
+        model_explainability_schedule_expression: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -85,10 +99,17 @@ class SageMakerModelMonitoringStack(Stack):
         sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)
 
         # Error if no monitoring is enabled.
-        if not any((enable_data_quality_monitor, enable_model_quality_monitor, enable_model_bias_monitor)):
+        if not any(
+            (
+                enable_data_quality_monitor,
+                enable_model_quality_monitor,
+                enable_model_bias_monitor,
+                enable_model_explainability_monitor,
+            )
+        ):
             raise ValueError(
-                "At least one of enable_data_quality_monitor, enable_model_quality_monitor, or "
-                "enable_model_bias_monitor must be True"
+                "At least one of enable_data_quality_monitor, enable_model_quality_monitor, enable_model_bias_monitor, "
+                "or enable_model_explainability_monitor must be True"
             )
 
         monitor_image_uri = image_uris.retrieve(framework="model-monitor", region=self.region)
@@ -232,4 +253,28 @@ class SageMakerModelMonitoringStack(Stack):
                 probability_attribute=model_bias_probability_attribute,
                 probability_threshold_attribute=model_bias_probability_threshold_attribute,
                 schedule_expression=model_bias_schedule_expression,
+            )
+
+        if enable_model_explainability_monitor:
+            ModelExplainabilityConstruct(
+                self,
+                "Model Explainability Construct",
+                clarify_image_uri=clarify_image_uri,
+                endpoint_name=endpoint_name,
+                model_bucket_name=model_bucket_name,
+                model_explainability_checkstep_output_prefix=model_explainability_checkstep_output_prefix,
+                model_explainability_checkstep_analysis_config_prefix=model_explainability_checkstep_analysis_config_prefix,
+                model_explainability_output_prefix=model_explainability_output_prefix,
+                kms_key_id=kms_key_id,
+                model_monitor_role_arn=model_monitor_role.role_arn,
+                security_group_id=security_group_id,
+                subnet_ids=subnet_ids,
+                instance_count=model_explainability_instance_count,
+                instance_type=model_explainability_instance_type,
+                instance_volume_size_in_gb=model_explainability_instance_volume_size_in_gb,
+                max_runtime_in_seconds=model_explainability_max_runtime_in_seconds,
+                features_attribute=model_explainability_features_attribute,
+                inference_attribute=model_explainability_inference_attribute,
+                probability_attribute=model_explainability_probability_attribute,
+                schedule_expression=model_explainability_schedule_expression,
             )
