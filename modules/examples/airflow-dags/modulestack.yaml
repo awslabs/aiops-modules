@@ -1,13 +1,7 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: "2010-09-09"
 Description: This stack deploys a Module specific IAM permissions
 
 Parameters:
-  # DeploymentName:
-  #   Type: String
-  #   Description: The name of the deployment
-  # ModuleName:
-  #   Type: String
-  #   Description: The name of the Module
   RoleName:
     Type: String
     Description: The name of the IAM Role
@@ -20,20 +14,19 @@ Parameters:
 
 Resources:
   Policy:
-    Type: 'AWS::IAM::Policy'
+    Type: "AWS::IAM::Policy"
     Properties:
+      PolicyName: "modulespecific-policy"
+      Roles:
+        - !Ref RoleName
       PolicyDocument:
+        Version: "2012-10-17"
         Statement:
           - Action:
-              - 's3:Create*'
-              - 's3:Put*'
-              - 's3:Delete*'
-              - 's3:Get*'
-              - 's3:List*'
+              - "s3:Put*"
+              - "s3:Delete*"
+              - "s3:Get*"
+              - "s3:List*"
             Effect: Allow
             Resource:
-              - 'arn:aws:s3:::cdk*'
               - !Sub "arn:aws:s3:::${DagBucketName}/${DagPath}/*"
-        Version: 2012-10-17
-      PolicyName: "mlops-modulespecific-policy"
-      Roles: [!Ref RoleName]
