@@ -44,6 +44,16 @@ jobs:
           pip install -r requirements-dev.txt
       - name: cfn-lint
         run: cfn-lint --template ./one-click-launch.yaml
+
+  nag:
+    name: CFN Nag Template
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: cfn-nag
         uses: stelligent/cfn_nag@master
         with:
