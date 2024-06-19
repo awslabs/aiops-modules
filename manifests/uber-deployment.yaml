@@ -26,7 +26,6 @@ groups:
     path: manifests/qna-rag-modules.yaml
   - name: bedrock-finetuning
     path: manifests/bedrock-finetuning-modules.yaml
-
 targetAccountMappings:
   - alias: primary
     accountId:
