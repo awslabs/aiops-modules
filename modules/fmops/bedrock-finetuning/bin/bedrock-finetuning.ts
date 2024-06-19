@@ -16,8 +16,10 @@ const vpcId: string | undefined = process.env.SEEDFARMER_PARAMETER_VPC_ID;
 const subnetIds: string[] = JSON.parse(
   process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string),
 );
-const bedrockBaseModelID: string = process.env.BEDROCK_BASE_MODEL_ID!;
-const bucketName: string = process.env.BUCKET_NAME!;
+const bedrockBaseModelID: string = process.env.SEEDFARMER_PARAMETER_BEDROCK_BASE_MODEL_ID!;
+const bucketName: string | undefined = process.env.SEEDFARMER_PARAMETER_BUCKET_NAME;
+
+
 const app = new cdk.App();
 const stack = new AmazonBedrockFinetuningStack(
   app,
