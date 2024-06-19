@@ -34,8 +34,8 @@ from sagemaker.network import NetworkConfig
 
 # BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-SUBNET_IDS = json.loads(os.environ["DEV_SUBNET_IDS"])
-SECURITY_GROUP_IDS = json.loads(os.environ["DEV_SECURITY_GROUP_IDS"])
+SUBNET_IDS = json.loads(os.environ["SUBNET_IDS"])
+SECURITY_GROUP_IDS = json.loads(os.environ["SECURITY_GROUP_IDS"])
 
 
 logger = logging.getLogger(__name__)
