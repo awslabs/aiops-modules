@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Creates MLOps setup for Developers
+Description: Creates AIOps setup for Developers
 Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
@@ -133,7 +133,7 @@ Resources:
               - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
               - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
               - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/mlops*              
+              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aiops*
             - Sid: IAM
               Effect: Allow
               Action:
@@ -224,20 +224,20 @@ Resources:
               - s3:PutObject
               - s3:PutObjectAcl
               Resource: 
-              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*"
-              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*/*"
-              - !Sub "arn:${AWS::Partition}:s3:::mlops*"
-              - !Sub "arn:${AWS::Partition}:s3:::mlops*/*"
+              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-aiops-${AWS::AccountId}-*"
+              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-aiops-${AWS::AccountId}-*/*"
+              - !Sub "arn:${AWS::Partition}:s3:::aiops*"
+              - !Sub "arn:${AWS::Partition}:s3:::aiops*/*"
             - Sid: CodebuildCleanup
               Effect: Allow
               Action:
               - codebuild:DeleteProject
               Resource: 
-              - !Sub "arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/codeseeder-mlops"
+              - !Sub "arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/codeseeder-aiops"
   CreateUpdateCodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Description: Builds MLOps Solution Using Seedfarmer
+      Description: Builds AIOps Solution Using Seedfarmer
       ServiceRole: !GetAtt 'CodeBuildRole.Arn'
       Artifacts:
         Type: NO_ARTIFACTS
@@ -288,10 +288,10 @@ Resources:
             build:
               commands:
                 - echo Build started on `date`
-                - echo 'Cloning mlops repo...'
-                - git clone https://github.com/awslabs/mlops-modules.git
+                - echo 'Cloning aiops repo...'
+                - git clone https://github.com/awslabs/aiops-modules.git
                 - echo 'Cloning complete'
-                - cd mlops-modules/
+                - cd aiops-modules/
                 - echo 'Installing dependencies...'
                 - pip install -r requirements.txt
                 - echo 'Python environment setup complete'
@@ -299,15 +299,15 @@ Resources:
                 - cdk bootstrap aws://${AWS_ACCOUNT_ID}/${AWS_REGION}
                 - echo 'CDK bootstrap complete'
                 - echo 'Bootstrapping seedfarmer...'
-                - seedfarmer bootstrap toolchain --project mlops --trusted-principal ${ROLE_ARN} --as-target
+                - seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ROLE_ARN} --as-target
                 - python scripts/role_assume_update.py ${ROLE_ARN}
                 - echo 'Sleeping 120 seconds after role update'
                 - sleep 120
                 - echo 'Preparing Manifest files'
                 - sed -i "s/us-east-1/${AWS_REGION}/g" manifests/*.yaml
-                - echo 'Deploying MLOPS manifest'
+                - echo 'Deploying AIOPS manifest'
                 - seedfarmer apply manifests/deployment.yaml --region ${AWS_REGION} --enable-session-timeout
-                - echo 'Deployment of mlops-modules manifest complete'
+                - echo 'Deployment of aiops-modules manifest complete'
             post_build:
               commands:
                 - echo Build completed on `date`

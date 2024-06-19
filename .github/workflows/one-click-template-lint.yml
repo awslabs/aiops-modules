@@ -19,6 +19,10 @@ on:
       - "requirements-dev.txt"
       - ".github/workflows/one-click-template-lint.yml"
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   lint:
     name: CFN Lint Template
@@ -38,5 +42,14 @@ jobs:
           set -x
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
-      - name: Lint
+      - name: cfn-lint
         run: cfn-lint --template ./one-click-launch.yaml
+      - name: cfn-nag
+        uses: stelligent/cfn_nag@master
+        with:
+          input_path: ./one-click-launch.yaml
+          extra_args: -o sarif
+          output_path: cfn_nag.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cfn_nag.sarif
