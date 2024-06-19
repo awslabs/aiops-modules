@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - changed ECR encryption to KMS_MANAGED
 - changed encryption for each bucket to KMS_MANAGED
 - refactor `airflow-dags` module to use Pydantic
+- fix inputs for `bedrock-finetuning` module not working
 
 ## v1.2.0
 
