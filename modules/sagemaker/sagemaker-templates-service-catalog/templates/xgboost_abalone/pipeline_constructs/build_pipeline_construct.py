@@ -226,6 +226,8 @@ class BuildPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
+                    SUBNET_IDS = json.loads(os.environ["SUBNET_IDS"]),
+                    SECURITY_GROUP_IDS = json.loads(os.environ["SECURITY_GROUP_IDS"])
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),

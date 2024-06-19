@@ -30,8 +30,13 @@ from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.properties import PropertyFile
 from sagemaker.workflow.step_collections import RegisterModel
 from sagemaker.workflow.steps import ProcessingStep, TrainingStep
+from sagemaker.network import NetworkConfig
 
 # BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
+SUBNET_IDS = json.loads(os.environ["DEV_SUBNET_IDS"])
+SECURITY_GROUP_IDS = json.loads(os.environ["DEV_SECURITY_GROUP_IDS"])
+
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +118,13 @@ def get_pipeline(
             py_version="py3",
             instance_type="ml.m5.xlarge",
         )
+           # define network args
+    network_kwargs = dict(
+        subnets=SUBNET_IDS,
+        security_group_ids=SECURITY_GROUP_IDS,
+        enable_network_isolation=True,
+        encrypt_inter_container_traffic=True,
+    )
     script_processor = ScriptProcessor(
         image_uri=processing_image_uri,
         instance_type=processing_instance_type,
@@ -122,6 +134,7 @@ def get_pipeline(
         sagemaker_session=sagemaker_session,
         role=role,
         output_kms_key=bucket_kms_id,
+        network_config=NetworkConfig(**network_kwargs),
     )
     step_process = ProcessingStep(
         name="PreprocessAbaloneData",
