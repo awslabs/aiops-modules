@@ -2,14 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Optional, cast
+from typing import Any, Optional
 
 import aws_cdk.aws_iam as aws_iam
 import aws_cdk.aws_s3 as aws_s3
-import cdk_nag
-from aws_cdk import Aspects, Aws, RemovalPolicy, Stack, Tags
+from aws_cdk import Aws, RemovalPolicy, Stack
 from cdk_nag import NagPackSuppression, NagSuppressions
-from constructs import Construct, IConstruct
+from constructs import Construct
 
 _logger: logging.Logger = logging.getLogger(__name__)
 
@@ -39,7 +38,6 @@ class DagResources(Stack):
             description="This stack deploys Example DAGs resources for MLOps",
             **kwargs,
         )
-        Tags.of(scope=cast(IConstruct, self)).add(key="Deployment", value=f"mlops-{deployment_name}")
         dep_mod = f"{project_name}-{deployment_name}-{module_name}"
         account: str = Aws.ACCOUNT_ID
         region: str = Aws.REGION
@@ -56,6 +54,7 @@ class DagResources(Stack):
         )
 
         self.mlops_assets_bucket = mlops_assets_bucket
+
         # Create Dag IAM Role and policy
         dag_statement = aws_iam.PolicyDocument(
             statements=[
@@ -110,25 +109,12 @@ class DagResources(Stack):
             role_name=f"SageMakerExecutionRole-{self.stack_name}",
         )
 
-        # Add policy to allow access to S3 bucket
-        sagemaker_execution_role.add_to_policy(
-            aws_iam.PolicyStatement(
-                actions=["s3:*"],
-                resources=[
-                    mlops_assets_bucket.bucket_arn,
-                    f"{mlops_assets_bucket.bucket_arn}/*",
-                ],
-            )
-        )
-
-        dag_role.add_to_policy(
-            aws_iam.PolicyStatement(actions=["iam:PassRole"], resources=[sagemaker_execution_role.role_arn])
-        )
+        # Add policy to allow access to S3 bucket and IAM pass role
+        mlops_assets_bucket.grant_read_write(sagemaker_execution_role)
+        sagemaker_execution_role.grant_pass_role(dag_role)
 
         self.dag_role = dag_role
         self.sagemaker_execution_role = sagemaker_execution_role
-
-        Aspects.of(self).add(cdk_nag.AwsSolutionsChecks())
 
         NagSuppressions.add_resource_suppressions(
             self,
