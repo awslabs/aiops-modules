@@ -249,11 +249,13 @@ Resources:
         EnvironmentVariables:
           - Name: AWS_ACCOUNT_ID
             Value: !Ref AWS::AccountId
-          - Name: PRIMARY_ACCOUNT
-            Value: !Ref AWS::AccountId
           - Name: AWS_REGION
             Value: !Ref AWS::Region
           - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: PRIMARY_ACCOUNT
+            Value: !Ref AWS::AccountId
+          - Name: PRIMARY_REGION
             Value: !Ref AWS::Region
           - Name: ROLE_ARN
             Value: !GetAtt CodeBuildRole.Arn
