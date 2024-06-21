@@ -24,7 +24,6 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
 }
 
 export class AmazonBedrockFinetuningStack extends cdk.Stack {
-
   bucketName: string;
 
   constructor(
@@ -235,7 +234,10 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     } else {
       return new s3.Bucket(this, "BedrockBucket", {
         bucketName: `${props.deploymentName}-${props.moduleName}-${this.account}`,
-        removalPolicy: props.removalPolicy == "DESTROY" ? cdk.RemovalPolicy.DESTROY : cdk.RemovalPolicy.RETAIN,
+        removalPolicy:
+          props.removalPolicy == "DESTROY"
+            ? cdk.RemovalPolicy.DESTROY
+            : cdk.RemovalPolicy.RETAIN,
         autoDeleteObjects: props.removalPolicy == "DESTROY",
         eventBridgeEnabled: true,
         enforceSSL: true,
