@@ -21,6 +21,9 @@ The module creates a finetuning job for Amazon Bedrock model of choice (you prov
 - `vpc-id` - VPC id
 - `subnet-ids` - VPC subnet ids
 - `bucket-name` - bucket name to be used as source for input data
+- `removal-policy`: the retention policy for the S3 bucket (if one is created)
+  - defaults to `RETAIN`
+  - supports `DESTROY` and `RETAIN` only
 
 #### Input Example
 

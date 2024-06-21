@@ -21,6 +21,11 @@ const bedrockBaseModelID: string =
 const bucketName: string | undefined =
   process.env.SEEDFARMER_PARAMETER_BUCKET_NAME;
 
+const removalPolicy = process.env.SEEDFARMER_PARAMETER_REMOVAL_POLICY?.toUpperCase() ?? "RETAIN";
+if (removalPolicy != "RETAIN" && removalPolicy != "DESTROY") {
+  throw new Error("Invalid removal policy for resources");
+}
+
 const app = new cdk.App();
 const stack = new AmazonBedrockFinetuningStack(
   app,
@@ -33,6 +38,7 @@ const stack = new AmazonBedrockFinetuningStack(
     deploymentName,
     moduleName,
     bucketName,
+    removalPolicy,
     env: { account, region },
   },
 );
