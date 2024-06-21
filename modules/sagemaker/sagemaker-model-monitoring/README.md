@@ -53,7 +53,7 @@ Each job has prefixed parameters, some of which are required. E.g. if
 
 #### Optional
 
-- `*-instance-count`: The number of ML compute instances to use in the model monitoring job. 
+- `*-instance-count`: The number of ML compute instances to use in the model monitoring job.
 - `*-instance-type`: The ML compute instance type for the processing job.
 - `*-instance-volume-size-in-gb`: The size of the ML storage volume, in gigabytes, that you want to provision.
 - `*-max-runtime-in-seconds`: The maximum length of time, in seconds, the monitoring job can run before it is stopped.
