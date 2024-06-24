@@ -8,6 +8,7 @@ describe("Bedrock Finetuning Stack", () => {
   const projectName = "mlops";
   const deploymentName = "platform";
   const moduleName = "bedrock-finetuning";
+  const removalPolicy = "DESTROY";
   const bedrockBaseModelID = "amazon.titan-text-express-v1:0:8k";
   const vpcId = "vpc-123";
   const subnetIds = ["sub1", "sub2"];
@@ -24,6 +25,7 @@ describe("Bedrock Finetuning Stack", () => {
       projectName,
       deploymentName,
       moduleName,
+      removalPolicy,
       env: { account, region },
     },
   );

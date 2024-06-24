@@ -16,3 +16,5 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: removal-policy
+    value: DESTROY
