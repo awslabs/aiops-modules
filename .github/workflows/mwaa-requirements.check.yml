@@ -1,4 +1,4 @@
-name: Module Checks
+name: MWAA Requirements Check
 
 on:
   push:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   install:
-    name: Check if MWAA requirements files are correct
+    name: Install Requirements
     runs-on: ubuntu-latest
     env:
       AIRFLOW_VERSION: 2.8.1
