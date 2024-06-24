@@ -31,9 +31,12 @@ jobs:
         with:
           python-version: 3.11
       - name: Install Requirements
+        run: |
+          pip install --upgrade pip uv
+      - name: Install Airflow and Dependencies
         working-directory: ./data/mwaa/requirements/
         run: |
           tail -n +2 requirements.txt > requirements-no-constraint.txt
-          pip install "apache-airflow[celery,cncf.kubernetes,google,amazon,snowflake]==$AIRFLOW_VERSION" \
+          uv pip install "apache-airflow[celery,cncf.kubernetes,google,amazon,snowflake]==$AIRFLOW_VERSION" \
             --constraint constraint-requirements.txt \
             --requirement requirements-no-constraint.txt
