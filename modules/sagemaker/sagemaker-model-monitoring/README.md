@@ -2,13 +2,14 @@
 
 ## Description
 
-This module creates SageMaker Model Monitoring jobs for (optionally) data quality, model bias, and model quality.
-It requires a deployed model endpoint and the proper check steps
+This module creates SageMaker Model Monitoring jobs for (optionally) data quality, model quality,
+model bias, and model explainability. It requires a deployed model endpoint and the proper check steps
 for each monitoring job:
 
 * Data Quality: [QualityCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-quality-check)
 * Model Quality: [QualityCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-quality-check)
 * Model Bias: [ClarifyCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-clarify-check)
+* Model Explainability: [ClarifyCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-clarify-check)
 
 ### Architecture
 
@@ -32,10 +33,7 @@ One or more of:
 - `enable-data-quality-monitor`: True to enable the data quality monitoring job.
 - `enable-model-quality-monitor`: True to enable the model quality monitoring job.
 - `enable-model-bias-monitor`: True to enable the model bias monitoring job.
-
-#### Required for some jobs
-
-- `ground-truth-prefix`: The S3 prefix in `model-artifacts-bucket-arn` which contains the [ground truth](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-model-quality-merge.html) for captured data. Required if `enable-model-quality-monitor` or `enable-model-bias-monitor` is true.
+- `enable-model-explainability-monitor`: True to enable the model explainability monitoring job.
 
 #### Optional
 
@@ -91,6 +89,15 @@ N/A
 - `model-bias-inference-attribute`: The attribute of the input data that represents the ground truth label.
 - `model-bias-probability-attribute`: In a classification problem, the attribute that represents the class probability.
 - `model-bias-probability-threshold-attribute`: The threshold for the class probability to be evaluated as a positive result.
+
+##### Model Explainability Monitoring Job Parameters
+
+###### Optional
+
+- `model-explainability-checkstep-analysis-config-prefix`: The S3 prefix in `model-artifacts-bucket-arn` which contains the output from the [Clarify Check Step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-clarify-check) used for model explainability.
+- `model-explainability-features-attribute`: The attributes of the input data that are the input features.
+- `model-explainability-inference-attribute`: The attribute of the input data that represents the ground truth label.
+- `model-explainability-probability-attribute`: In a classification problem, the attribute that represents the class probability.
 
 ### Sample manifest declaration
 

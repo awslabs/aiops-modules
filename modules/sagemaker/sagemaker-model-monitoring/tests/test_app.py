@@ -36,6 +36,7 @@ def test_all_disabled(stack_defaults):
     os.environ["SEEDFARMER_PARAMETER_ENABLE_DATA_QUALITY_MONITOR"] = "false"
     os.environ["SEEDFARMER_PARAMETER_ENABLE_MODEL_QUALITY_MONITOR"] = "false"
     os.environ["SEEDFARMER_PARAMETER_ENABLE_MODEL_BIAS_MONITOR"] = "false"
+    os.environ["SEEDFARMER_PARAMETER_ENABLE_MODEL_EXPLAINABILITY_MONITOR"] = "false"
 
     with pytest.raises(Exception, match="At least one of enable_data_quality_monitor, .+ must be True"):
         import app  # noqa: F401

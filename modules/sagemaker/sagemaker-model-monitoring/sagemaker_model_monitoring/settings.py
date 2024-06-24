@@ -41,6 +41,7 @@ class ModuleSettings(CdkBaseSettings):
     enable_data_quality_monitor: bool = Field(default=True)
     enable_model_quality_monitor: bool = Field(default=True)
     enable_model_bias_monitor: bool = Field(default=True)
+    enable_model_explainability_monitor: bool = Field(default=True)
 
     # Data quality monitoring options.
     data_quality_checkstep_output_prefix: str = Field(default="")
@@ -77,6 +78,19 @@ class ModuleSettings(CdkBaseSettings):
     model_bias_probability_attribute: Optional[str] = Field(default=None)
     model_bias_probability_threshold_attribute: Optional[int] = Field(default=None)
     model_bias_schedule_expression: str = Field(default="cron(0 * ? * * *)")
+
+    # Model explainability monitoring options.
+    model_explainability_checkstep_output_prefix: str = Field(default="")
+    model_explainability_checkstep_analysis_config_prefix: Optional[str] = Field(default=None)
+    model_explainability_output_prefix: str = Field(default="")
+    model_explainability_instance_count: int = Field(default=1, ge=1)
+    model_explainability_instance_type: str = Field(default="ml.m5.large")
+    model_explainability_instance_volume_size_in_gb: int = Field(default=20, ge=1)
+    model_explainability_max_runtime_in_seconds: int = Field(default=1800, ge=1)
+    model_explainability_features_attribute: Optional[str] = Field(default=None)
+    model_explainability_inference_attribute: Optional[str] = Field(default=None)
+    model_explainability_probability_attribute: Optional[str] = Field(default=None)
+    model_explainability_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
