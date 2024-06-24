@@ -7,8 +7,10 @@ contextlib2==21.6.0
 dill==0.3.1.1
 docker==7.0.0 
 google-pasta==0.2.0 
+multiprocess==0.70.9
 numpy==1.24.4 
 pandas==2.1.4 
+pathos==0.2.5
 pox==0.3.4 
 ppft==1.7.6.8
 s3fs==2023.12.2 
