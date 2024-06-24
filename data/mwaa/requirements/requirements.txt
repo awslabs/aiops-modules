@@ -4,10 +4,10 @@ aiobotocore==2.9.0
 aioitertools==0.11.0 
 cloudpickle==2.2.1 
 contextlib2==21.6.0 
-dill==0.3.1.1
+dill==0.3.8
 docker==7.0.0 
 google-pasta==0.2.0 
-multiprocess==0.70.9
+multiprocess==0.70.16
 numpy==1.24.4 
 pandas==2.1.4 
 pathos==0.2.5

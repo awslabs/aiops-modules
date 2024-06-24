@@ -266,7 +266,7 @@ debugpy==1.8.0
 decorator==5.1.1
 defusedxml==0.7.1
 deltalake==0.15.1
-dill==0.3.1.1
+dill==0.3.8
 distlib==0.3.8
 distro==1.9.0
 dnspython==2.4.2
