@@ -30,7 +30,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
-      - name: Install Requirements
+      - name: Update pip
+        run: pip install --upgrade pip
+      - name: Install Airflow and Dependencies
         working-directory: ./data/mwaa/requirements/
         run: |
           tail -n +2 requirements.txt > requirements-no-constraint.txt
