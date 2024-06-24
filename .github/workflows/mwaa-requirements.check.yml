@@ -35,5 +35,5 @@ jobs:
         run: |
           tail -n +2 requirements.txt > requirements-no-constraint.txt
           pip install "apache-airflow[celery,cncf.kubernetes,google,amazon,snowflake]==$AIRFLOW_VERSION" \
-            --constraint constraint-requirements.txt
+            --constraint constraint-requirements.txt \
             --requirement requirements-no-constraint.txt
