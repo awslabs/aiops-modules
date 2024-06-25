@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - refactor `airflow-dags` module to use Pydantic
 - fix inputs for `bedrock-finetuning` module not working
 - add `retention-type` argument for the bucket in the `bedrock-finetuning` module
+- fix broken dependencies for `examples/airflow-dags`
 
 ## v1.2.0
 
