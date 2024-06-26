@@ -12,6 +12,8 @@
 Implements a get_pipeline(**kwargs) method.
 """
 
+import os
+import json
 import logging
 from typing import Any, Optional
 
@@ -34,8 +36,10 @@ from sagemaker.network import NetworkConfig
 
 # BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-SUBNET_IDS = json.loads(os.environ["SUBNET_IDS"])
-SECURITY_GROUP_IDS = json.loads(os.environ["SECURITY_GROUP_IDS"])
+ENABLE_NETWORK_ISOLATION = bool(os.getenv("ENABLE_NETWORK_ISOLATION", False))
+ENCRYPT_INTER_CONTAINER_TRAFFIC = bool(os.getenv("ENCRYPT_INTER_CONTAINER_TRAFFIC", False))
+SUBNET_IDS = json.loads(os.getenv("SUBNET_IDS", "[]"))
+SECURITY_GROUP_IDS = json.loads(os.getenv("SECURITY_GROUP_IDS", "[]"))
 
 
 logger = logging.getLogger(__name__)
@@ -91,6 +95,16 @@ def get_pipeline(
     if role is None:
         role = sagemaker.session.get_execution_role(sagemaker_session)
 
+    # define network config
+    network_config = NetworkConfig(
+        dict(
+            subnets=SUBNET_IDS if SUBNET_IDS else None,
+            security_group_ids=SECURITY_GROUP_IDS if SECURITY_GROUP_IDS else None,
+            enable_network_isolation=ENABLE_NETWORK_ISOLATION,
+            encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
+        )
+    )
+
     # parameters for pipeline execution
     processing_instance_count = ParameterInteger(name="ProcessingInstanceCount", default_value=1)
     processing_instance_type = ParameterString(name="ProcessingInstanceType", default_value="ml.m5.xlarge")
@@ -118,13 +132,6 @@ def get_pipeline(
             py_version="py3",
             instance_type="ml.m5.xlarge",
         )
-           # define network args
-    network_kwargs = dict(
-        subnets=SUBNET_IDS,
-        security_group_ids=SECURITY_GROUP_IDS,
-        enable_network_isolation=True,
-        encrypt_inter_container_traffic=True,
-    )
     script_processor = ScriptProcessor(
         image_uri=processing_image_uri,
         instance_type=processing_instance_type,
@@ -134,7 +141,7 @@ def get_pipeline(
         sagemaker_session=sagemaker_session,
         role=role,
         output_kms_key=bucket_kms_id,
-        network_config=NetworkConfig(**network_kwargs),
+        network_config=network_config,
     )
     step_process = ProcessingStep(
         name="PreprocessAbaloneData",
@@ -173,6 +180,10 @@ def get_pipeline(
         sagemaker_session=sagemaker_session,
         role=role,
         output_kms_key=bucket_kms_id,
+        subnets=SUBNET_IDS if SUBNET_IDS else None,
+        security_group_ids=SECURITY_GROUP_IDS if SECURITY_GROUP_IDS else None,
+        enable_network_isolation=ENABLE_NETWORK_ISOLATION,
+        encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
     )
     xgb_train.set_hyperparameters(
         objective="reg:linear",
@@ -209,6 +220,7 @@ def get_pipeline(
         sagemaker_session=sagemaker_session,
         role=role,
         output_kms_key=bucket_kms_id,
+        network_config=network_config,
     )
     evaluation_report = PropertyFile(
         name="AbaloneEvaluationReport",
