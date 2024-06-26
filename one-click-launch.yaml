@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Creates MLOps setup for Developers
+Description: Creates AIOps setup for Developers
 Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
@@ -11,7 +11,6 @@ Resources:
             Effect: Allow
             Principal:
               Service: codebuild.amazonaws.com
-
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSCodeBuildAdminAccess
       Policies:
@@ -19,256 +18,86 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-            - Sid: Logs
-              Effect: Allow
-              Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-              Resource:
-              - "*"
-            - Sid: CFN
-              Effect: Allow
-              Action:
-              - cloudformation:DescribeStacks
-              - cloudformation:CreateChangeSet
-              - cloudformation:DescribeChangeSet
-              - cloudformation:ExecuteChangeSet
-              - cloudformation:GetTemplate
-              - cloudformation:DescribeStackEvents
-              - cloudformation:DeleteStack
-              - cloudformation:DeleteChangeSet
-              Resource:
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
-            - Sid: IAM
-              Effect: Allow
-              Action:
-              - iam:GetRole
-              - iam:CreateRole
-              - iam:AttachRolePolicy
-              - iam:DetachRolePolicy
-              - iam:DeleteRole
-              - iam:PutRolePolicy
-              - iam:DeleteRolePolicy
-              - iam:getRolePolicy
-              - iam:TagRole
-              Resource:
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-*
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-*
-            - Sid: ECR
-              Effect: Allow
-              Action:
-              - ecr:CreateRepository
-              - ecr:SetRepositoryPolicy
-              - ecr:Describe*
-              - ecr:DeleteRepository
-              - ecr:PutLifecyclePolicy
-              - ecr:PutImageTagMutability
-              - ecr:List*
-              Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
-            - Sid: S3
-              Effect: Allow
-              Action:
-              - s3:CreateBucket
-              - s3:GetBucketPolicy
-              - s3:PutBucketPolicy
-              - s3:PutBucketVersioning
-              - s3:PutBucketPublicAccessBlock
-              - s3:PutBucketAcl
-              - s3:GetEncryptionConfiguration
-              - s3:PutEncryptionConfiguration
-              - s3:PutLifecycleConfiguration
-              - s3:PutObjectTagging
-              - s3:PutObjectVersionTagging
-              - s3:DeleteObjectTagging
-              - s3:DeleteObjectVersionTagging
-              Resource: "*"
-            - Sid: SSM
-              Effect: Allow
-              Action:
-              - ssm:PutParameter
-              - ssm:DeleteParameter
-              - ssm:GetParameters
-              Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
-            - Sid: SecretsManager
-              Effect: Allow
-              Action:
-              - secretsmanager:CreateSecret
-              - secretsmanager:DeleteSecret
-              Resource:
-              - !Sub "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
-            - Sid: Password
-              Effect: Allow
-              Action:
-              - secretsmanager:GetRandomPassword
-              Resource: "*"
-            - Sid: ES
-              Effect: Allow
-              Action:
-              - es:Get*
-              - es:Describe*
-              - es:List*
-              - es:ESHttpGet
-              Resource: 
-              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:*"
-              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:domain:*"
-        - PolicyName: delete
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-            - Sid: CFN
-              Effect: Allow
-              Action:
-              - cloudformation:DescribeStacks
-              - cloudformation:CreateChangeSet
-              - cloudformation:DescribeChangeSet
-              - cloudformation:ExecuteChangeSet
-              - cloudformation:GetTemplate
-              - cloudformation:DescribeStackEvents
-              - cloudformation:DeleteStack
-              - cloudformation:DeleteChangeSet
-              Resource:
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-*
-              - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/mlops*              
-            - Sid: IAM
-              Effect: Allow
-              Action:
-              - iam:GetRole
-              - iam:CreateRole
-              - iam:AttachRolePolicy
-              - iam:DetachRolePolicy
-              - iam:DeleteRole
-              - iam:PutRolePolicy
-              - iam:DeleteRolePolicy
-              - iam:getRolePolicy
-              - iam:UpdateAssumeRolePolicy
-              - iam:GetPolicy
-              - iam:List*
-              - iam:DeletePolicy
-              Resource:
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-*
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-*
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/codeseeder-*
-              - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/codeseeder-*
-            - Sid: ECR
-              Effect: Allow
-              Action:
-              - ecr:CreateRepository
-              - ecr:SetRepositoryPolicy
-              - ecr:Describe*
-              - ecr:DeleteRepository
-              - ecr:PutLifecyclePolicy
-              - ecr:PutImageTagMutability
-              - ecr:List*
-              Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
-            - Sid: S3KMS
-              Effect: Allow
-              Action:
-              - s3:CreateBucket
-              - s3:GetBucketPolicy
-              - s3:PutBucketPolicy
-              - s3:PutBucketVersioning
-              - s3:PutBucketPublicAccessBlock
-              - s3:PutBucketAcl
-              - s3:GetEncryptionConfiguration
-              - s3:PutEncryptionConfiguration
-              - s3:PutLifecycleConfiguration
-              - s3:PutObjectTagging
-              - s3:PutObjectVersionTagging
-              - s3:DeleteObjectTagging
-              - s3:DeleteObjectVersionTagging
-              - s3:List*
-              - kms:Delete*
-              - kms:ScheduleKeyDeletion
-              - kms:CancelKeyDeletion
-              - kms:List*
-              - kms:Describe*
-              Resource: "*"
-            - Sid: SSM
-              Effect: Allow
-              Action:
-              - ssm:PutParameter
-              - ssm:DeleteParameter
-              - ssm:GetParameters
-              Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
-            - Sid: SecretsManager
-              Effect: Allow
-              Action:
-              - secretsmanager:CreateSecret
-              - secretsmanager:DeleteSecret
-              Resource:
-              - !Sub "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
-            - Sid: Password
-              Effect: Allow
-              Action:
-              - secretsmanager:GetRandomPassword
-              Resource: "*"
-            - Sid: ES
-              Effect: Allow
-              Action:
-              - es:Get*
-              - es:Describe*
-              - es:List*
-              - es:ESHttpGet
-              Resource: 
-              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:*"
-              - !Sub "arn:${AWS::Partition}:es:${AWS::Region}:${AWS::AccountId}:domain:*"
-            - Sid: S3DeleteCodeseeder
-              Effect: Allow
-              Action:
-              - s3:Delete*
-              - s3:PutObject
-              - s3:PutObjectAcl
-              Resource: 
-              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*"
-              - !Sub "arn:${AWS::Partition}:s3:::codeseeder-mlops-${AWS::AccountId}-*/*"
-              - !Sub "arn:${AWS::Partition}:s3:::mlops*"
-              - !Sub "arn:${AWS::Partition}:s3:::mlops*/*"
-            - Sid: CodebuildCleanup
-              Effect: Allow
-              Action:
-              - codebuild:DeleteProject
-              Resource: 
-              - !Sub "arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/codeseeder-mlops"
+              - Sid: Logs
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*:*
+              - Sid: CFN
+                Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:GetTemplate
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DeleteStack
+                  - cloudformation:DeleteChangeSet
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-aiops-*
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-aiops-*/*
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-aiops
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-aiops/*
+              - Sid: IAM
+                Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRole
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:TagRole
+                  - iam:UpdateAssumeRolePolicy
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-aiops-toolchain-role
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-aiops-deployment-role
+
   CreateUpdateCodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
-      Description: Builds MLOps Solution Using Seedfarmer
-      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
+      Description: Builds AIOps Solution Using Seedfarmer
+      ServiceRole: !GetAtt CodeBuildRole.Arn
       Artifacts:
         Type: NO_ARTIFACTS
       TimeoutInMinutes: 480
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_LARGE
-        Image: "aws/codebuild/standard:7.0"
+        Image: aws/codebuild/standard:7.0
         EnvironmentVariables:
           - Name: AWS_ACCOUNT_ID
-            Value: !Sub '${AWS::AccountId}'
-          - Name: PRIMARY_ACCOUNT
-            Value: !Sub '${AWS::AccountId}'
+            Value: !Ref AWS::AccountId
           - Name: AWS_REGION
-            Value: !Sub '${AWS::Region}'
+            Value: !Ref AWS::Region
           - Name: AWS_DEFAULT_REGION
-            Value: !Sub '${AWS::Region}'
+            Value: !Ref AWS::Region
+          - Name: PRIMARY_ACCOUNT
+            Value: !Ref AWS::AccountId
+          - Name: PRIMARY_REGION
+            Value: !Ref AWS::Region
           - Name: ROLE_ARN
-            Value: !Sub '${CodeBuildRole.Arn}'
+            Value: !GetAtt CodeBuildRole.Arn
           - Name: url_path
-            Value: 'placeholder'
+            Value: placeholder
           - Name: url_query
-            Value: 'placeholder'
+            Value: placeholder
           - Name: cfn_signal_url
-            Value: 'placeholder'
+            Value: placeholder
           - Name: cfn_stack_id
-            Value: 'placeholder'
+            Value: placeholder
           - Name: cfn_logical_resource_id
-            Value: 'placeholder'
+            Value: placeholder
           - Name: cfn_request_id
-            Value: 'placeholder'
+            Value: placeholder
       Source:
         Type: NO_SOURCE
         BuildSpec: |
@@ -288,10 +117,10 @@ Resources:
             build:
               commands:
                 - echo Build started on `date`
-                - echo 'Cloning mlops repo...'
-                - git clone https://github.com/awslabs/mlops-modules.git
+                - echo 'Cloning aiops repo...'
+                - git clone https://github.com/awslabs/aiops-modules.git
                 - echo 'Cloning complete'
-                - cd mlops-modules/
+                - cd aiops-modules/
                 - echo 'Installing dependencies...'
                 - pip install -r requirements.txt
                 - echo 'Python environment setup complete'
@@ -299,15 +128,15 @@ Resources:
                 - cdk bootstrap aws://${AWS_ACCOUNT_ID}/${AWS_REGION}
                 - echo 'CDK bootstrap complete'
                 - echo 'Bootstrapping seedfarmer...'
-                - seedfarmer bootstrap toolchain --project mlops --trusted-principal ${ROLE_ARN} --as-target
+                - seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ROLE_ARN} --as-target
                 - python scripts/role_assume_update.py ${ROLE_ARN}
                 - echo 'Sleeping 120 seconds after role update'
                 - sleep 120
                 - echo 'Preparing Manifest files'
                 - sed -i "s/us-east-1/${AWS_REGION}/g" manifests/*.yaml
-                - echo 'Deploying MLOPS manifest'
-                - seedfarmer apply manifests/deployment.yaml --region ${AWS_REGION} --enable-session-timeout
-                - echo 'Deployment of mlops-modules manifest complete'
+                - echo 'Deploying AIOPS manifest'
+                - seedfarmer apply manifests/uber-deployment.yaml --region ${AWS_REGION} --enable-session-timeout
+                - echo 'Deployment of aiops-modules manifest complete'
             post_build:
               commands:
                 - echo Build completed on `date`
@@ -332,26 +161,30 @@ Resources:
                   cat /tmp/payload.json
                   echo "Calling Callback URL: ${cfn_signal_url}"
                   curl -T /tmp/payload.json "$cfn_signal_url"
+
   CodeBuildRun:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt CodeBuildLambda.Arn
       BuildProjectName: !Ref CreateUpdateCodeBuildProject
       CallbackUrl: !Ref CodeBuildRunWaitConditionHandler01
+
   CodeBuildRunWaitConditionHandler01:
     Type: AWS::CloudFormation::WaitConditionHandle
+
   CodeBuildRunWaitCondition:
     Type: AWS::CloudFormation::WaitCondition
-    DependsOn : CodeBuildRun
-    Properties: 
+    DependsOn: CodeBuildRun
+    Properties:
       Count: 1
       Handle: !Ref CodeBuildRunWaitConditionHandler01
-      Timeout: "18000"
+      Timeout: 18000
+
   CodeBuildLambda:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: | 
+        ZipFile: |
           import http.client
           import urllib.parse
           import json
@@ -444,32 +277,33 @@ Resources:
       Runtime: python3.12
       Timeout: 300
       Role: !GetAtt CodeBuildLambdaExecutionRole.Arn
+
   CodeBuildLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
       Path: "/"
       Policies:
-      - PolicyName: root
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-              - codebuild:StartBuild
-            Resource: 
-              - !GetAtt CreateUpdateCodeBuildProject.Arn
-          - Effect: Allow
-            Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-            Resource: !Sub arn:${AWS::Partition}:logs:*:*:*
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource:
+                  - !GetAtt CreateUpdateCodeBuildProject.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:${AWS::Partition}:logs:*:*:*
