@@ -5,10 +5,10 @@ import logging
 from typing import Any, Optional
 
 import cdk_nag
-from aws_cdk import Stack, Environment
+from aws_cdk import Environment, Stack
 from constructs import Construct
 
-from personas import Personas
+from personas import Personas as PersonasConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
 
@@ -19,12 +19,18 @@ class Personas(Stack):
         scope: Construct,
         construct_id: str,
         bucket_name: Optional[str],
-        env: Environment
+        env: Environment,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
         s3_bucket_prefix = bucket_name or f"{construct_id}-bucket"
-        self.personas = Personas(self, construct_id= 'PersonasStack',bucket_name=s3_bucket_prefix, env= env)
+        self.personas = PersonasConstruct(
+            self,
+            construct_id="PersonasConstruct",
+            s3_bucket_prefix=s3_bucket_prefix,
+            env=env,
+        )
         cdk_nag.NagSuppressions.add_resource_suppressions(
             self.personas,
             apply_to_children=True,
