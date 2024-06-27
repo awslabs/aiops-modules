@@ -1,16 +1,18 @@
 from typing import Any
 
-from aws_cdk import Aws,Environment
+from aws_cdk import Aws, Environment
 from aws_cdk import aws_iam as iam
 from constructs import Construct
 
+
 class Personas(Construct):
     def __init__(
-            self,
-            scope: Construct,
-            construct_id: str,
-            s3_bucket_prefix: str,
-            env: Environment
+        self,
+        scope: Construct,
+        construct_id: str,
+        s3_bucket_prefix: str,
+        env: Environment,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
@@ -60,116 +62,136 @@ class Personas(Construct):
             self,
             "MLEngineerRole",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            managed_policies=[
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "sagemaker:CreateModel",
-                        "sagemaker:CreateEndpoint",
-                        "sagemaker:CreateEndpointConfig",
-                        "sagemaker:CreateTrainingJob",
-                        "sagemaker:CreateHyperParameterTuningJob",
-                        "sagemaker:CreateProcessingJob",
-                        "sagemaker:CreateTransformJob",
-                        *sagemaker_describe_permissions,
-                        *sagemaker_list_permissions,
-                    ],
-                    resources=["*"],
-                ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=s3_permissions,
-                    resources=["*"],
-                ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "codecommit:GitPull",
-                        "codecommit:GitPush",
-                        "codecommit:GetRepository",
-                        "codecommit:CreateRepository",
-                        "codecommit:DeleteRepository",
-                        "codecommit:ListBranches",
-                    ],
-                    resources=["*"],
-                ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=["codepipeline:*", "codebuild:*"],
-                    resources=["*"],
-                ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=ecr_permissions,
-                    resources=["*"],
-                ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=["lambda:InvokeFunction"],
-                    resources=["*"],
-                ),
-            ],
+            role_name="aiops-MLEngineer",
+            inline_policies={
+                "MLEngineerPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "sagemaker:CreateModel",
+                                "sagemaker:CreateEndpoint",
+                                "sagemaker:CreateEndpointConfig",
+                                "sagemaker:CreateTrainingJob",
+                                "sagemaker:CreateHyperParameterTuningJob",
+                                "sagemaker:CreateProcessingJob",
+                                "sagemaker:CreateTransformJob",
+                                *sagemaker_describe_permissions,
+                                *sagemaker_list_permissions,
+                            ],
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=s3_permissions,
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "codecommit:GitPull",
+                                "codecommit:GitPush",
+                                "codecommit:GetRepository",
+                                "codecommit:CreateRepository",
+                                "codecommit:DeleteRepository",
+                                "codecommit:ListBranches",
+                            ],
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=["codepipeline:*", "codebuild:*"],
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=ecr_permissions,
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=["lambda:InvokeFunction"],
+                            resources=["*"],
+                        ),
+                    ]
+                )
+            }
         )
         self.ml_engineer_role = ml_engineer_role
         # Data Engineers role
         data_engineer_role = iam.Role(
             self,
             "DataEngineerRole",
+            role_name="aiops-DataEngineer",
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("glue.amazonaws.com"),
                 iam.ServicePrincipal("lambda.amazonaws.com"),
-                iam.ServicePrincipal("elasticmapreduce.amazonaws.com")),
-            managed_policies=[
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "s3:PutObject",
-                        "s3:DeleteObject",
-                        *s3_permissions,
-                    ],
-                    resources=[f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*/*"],
+                iam.ServicePrincipal("elasticmapreduce.amazonaws.com")
+            ),
+            inline_policies={
+                "DataEngineerS3Policy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "s3:PutObject",
+                                "s3:DeleteObject",
+                                *s3_permissions,
+                            ],
+                            resources=[f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}/*"],
+                        )
+                    ]
                 ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "glue:CreateTable",
-                        "glue:DeleteTable",
-                        "glue:CreateJob",
-                        "glue:DeleteJob",
-                        "glue:StartJobRun",
-                        "glue:CreateTrigger",
-                        "glue:DeleteTrigger",
-                        "glue:CreateCrawler",
-                        "glue:DeleteCrawler",
-                        "glue:StartCrawler",
-                        "glue:CreateDevEndpoint",
-                        "glue:DeleteDevEndpoint",
-                        *glue_describe_permissions,
-                    ],
-                    resources=["*"],
+                "DataEngineerGluePolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "glue:CreateTable",
+                                "glue:DeleteTable",
+                                "glue:CreateJob",
+                                "glue:DeleteJob",
+                                "glue:StartJobRun",
+                                "glue:CreateTrigger",
+                                "glue:DeleteTrigger",
+                                "glue:CreateCrawler",
+                                "glue:DeleteCrawler",
+                                "glue:StartCrawler",
+                                "glue:CreateDevEndpoint",
+                                "glue:DeleteDevEndpoint",
+                                *glue_describe_permissions,
+                            ],
+                            resources=["*"],
+                        )
+                    ]
                 ),
-                iam.PolicyStatement(
-                    effect=iam.Effect.ALLOW,
-                    actions=[
-                        "sagemaker:CreateModel",
-                        "sagemaker:CreateEndpoint",
-                        "sagemaker:CreateEndpointConfig",
-                        "sagemaker:CreateTrainingJob",
-                        "sagemaker:CreateHyperParameterTuningJob",
-                        "sagemaker:CreateProcessingJob",
-                        "sagemaker:CreateTransformJob",
-                        *sagemaker_describe_permissions,
-                        *sagemaker_list_permissions,
-                    ],
-                    resources=["*"],
-                ),
-            ],
+                "DataEngineerSageMakerPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "sagemaker:CreateModel",
+                                "sagemaker:CreateEndpoint",
+                                "sagemaker:CreateEndpointConfig",
+                                "sagemaker:CreateTrainingJob",
+                                "sagemaker:CreateHyperParameterTuningJob",
+                                "sagemaker:CreateProcessingJob",
+                                "sagemaker:CreateTransformJob",
+                                *sagemaker_describe_permissions,
+                                *sagemaker_list_permissions,
+                            ],
+                            resources=["*"],
+                        )
+                    ]
+                )
+            }
         )
         self.data_engineer_role = data_engineer_role
         # IT Lead role
         self.it_lead_role = iam.Role(
             self,
             "ITLeadRole",
+            role_name="aiops-ITLead",
             assumed_by = iam.AccountRootPrincipal())
         it_lead_policy = iam.Policy(
             self,
@@ -258,6 +280,7 @@ class Personas(Construct):
         self.business_analyst_role = iam.Role(
             self,
             "business-analyst-role",
+            role_name="aiops-business-analyst",
             assumed_by=iam.AccountRootPrincipal(),
         )
 
@@ -286,6 +309,7 @@ class Personas(Construct):
         self.mlops_engineer_role = iam.Role(
             self,
             "mlops-engineer-role",
+            role_name="aiops-mlops-engineer",
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
                 iam.ServicePrincipal("glue.amazonaws.com"),
@@ -392,6 +416,7 @@ class Personas(Construct):
         self.it_auditor_role = iam.Role(
             self,
             "it-auditor-role",
+            role_name="aiops-it-auditor",
             assumed_by=iam.AccountRootPrincipal(),
         )
 
@@ -508,6 +533,7 @@ class Personas(Construct):
         self.model_risk_manager_role = iam.Role(
             self,
             "model-risk-manager-role",
+            role_name="aiops-model-risk-manager",
             assumed_by=iam.AccountRootPrincipal(),
         )
 

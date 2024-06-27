@@ -4,18 +4,18 @@ name: aiops
 toolchainRegion: us-east-1
 forceDependencyRedeploy: true
 groups:
-#  - name: networking
-#    path: examples/manifests/networking-modules.yaml
+  - name: networking
+    path: manifests/networking-modules.yaml
   - name: sagemaker-endpoints
-    path: examples/manifests/sagemaker-endpoints-modules.yaml
-#  - name: events
-#    path: manifests/sagemaker-model-event-bus.yaml
-#  - name: registry
-#    path: manifests/sagemaker-model-package-group-modules.yaml
-#  - name: promote-models
-#    path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
-#  - name: personas
-#    path: examples/manifests/personas-modules.yaml
+    path: manifests/sagemaker-endpoints-modules.yaml
+  - name: events
+    path: manifests/sagemaker-model-event-bus.yaml
+  - name: registry
+    path: manifests/sagemaker-model-package-group-modules.yaml
+  - name: promote-models
+    path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
+  - name: personas
+    path: examples/manifests/personas-modules.yaml
 
 targetAccountMappings:
   - alias: primary
@@ -23,13 +23,6 @@ targetAccountMappings:
       valueFrom:
         envVariable: PRIMARY_ACCOUNT
     default: true
-    regionMappings:
-      - region: us-east-1
-        default: true
-  - alias: tooling
-    accountId:
-      valueFrom:
-        envVariable: TOOLING_ACCOUNT
     regionMappings:
       - region: us-east-1
         default: true
