@@ -31,6 +31,8 @@ stack = DeployEndpointStack(
     managed_instance_scaling=app_settings.module_settings.managed_instance_scaling,
     scaling_min_instance_count=app_settings.module_settings.scaling_min_instance_count,
     scaling_max_instance_count=app_settings.module_settings.scaling_max_instance_count,
+    data_capture_sampling_percentage=app_settings.module_settings.data_capture_sampling_percentage,
+    data_capture_prefix=app_settings.module_settings.data_capture_prefix,
     env=aws_cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,
@@ -47,6 +49,8 @@ aws_cdk.CfnOutput(
             "ModelPackageArn": stack.model_package_arn,
             "EndpointName": stack.endpoint.attr_endpoint_name,
             "EndpointUrl": stack.endpoint_url,
+            "KmsKeyId": stack.kms_key.key_id,
+            "SecurityGroupId": stack.security_group.security_group_id,
         }
     ),
 )

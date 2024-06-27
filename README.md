@@ -32,6 +32,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [SageMaker Custom Kernel Module](modules/sagemaker/sagemaker-custom-kernel/README.md)                                     | Builds custom kernel for SageMaker Studio from a Dockerfile                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | [SageMaker Model Package Group Module](modules/sagemaker/sagemaker-model-package-group/README.md)                         | Creates a SageMaker Model Package Group to register and version SageMaker Machine Learning (ML) models and setups an Amazon EventBridge Rule to send model package group state change events to an Amazon EventBridge Bus                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | [SageMaker Model Package Promote Pipeline Module](modules/sagemaker/sagemaker-model-package-promote-pipeline/README.md)   | Deploy a Pipeline to promote SageMaker Model Packages in a multi-account setup. The pipeline can be triggered through an EventBridge rule in reaction of a SageMaker Model Package Group state event change (Approved/Rejected). Once the pipeline is triggered, it will promote the latest approved model package, if one is found.                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| [SageMaker Model Monitoring Module](modules/sagemaker/sagemaker-model-monitoring-module/README.md)                        | Deploy data quality, model quality, model bias, and model explainability monitoring jobs which run against a SageMaker Endpoint.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ### Mlflow Modules
 
@@ -40,27 +41,35 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 | [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow Docker container image and pushes the image to Elastic Container Registry                                                                                                          |
 | [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
 
-### FMOps Modules
+### FMOps/LLMOps Modules
 
-| Type                                                                                                               | Description                                                                                                                             |
-|--------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)    | Creates an endpoint for a SageMaker JumpStart Foundation Model.                                                                         |
-| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model.                                                                      |
-| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)          | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
-
+| Type                                                                                                             | Description                                                     |
+|------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)  | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
+| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
+| [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md)                                   | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning. |
+| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)        | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
 
 ### MWAA Modules
 
 | Type                                                                    | Description                                                                                                                                                                                       |
 |-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)  |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)       |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+
+
+### EKS Modules
+
+| Type                                                                           | Description                                                                                                      |
+|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
+
+### Events Modules
+
+| Type                                                              | Description                                                                                                                                                                                       |
+|-------------------------------------------------------------------|------------------------------------------------------------------------|
+| [Event Bus Module](modules/examples/event-bus/README.md)          |  Creates an Amazon EventBridge Bus for cross-account events.           |
+
 
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
-
-### Events Modules
-
-| Type                                                                    | Description                                                                                                                                                                                       |
-|-------------------------------------------------------------------------|------------------------------------------------------------------------|
-|  [Event Bus Module](modules/examples/events/event-bus/README.md)        |  Creates an Amazon EventBridge Bus for cross-account events.           |

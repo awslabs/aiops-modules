@@ -8,7 +8,6 @@ groups:
     path: manifests/fmops-qna-rag/storage-modules.yaml
   - name: qna-rag
     path: manifests/fmops-qna-rag/qna-rag-modules.yaml
-
 targetAccountMappings:
   - alias: primary
     accountId:

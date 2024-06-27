@@ -1,7 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -38,9 +38,9 @@ class SeedFarmerSettings(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_")
 
-    project_name: str = Field(default="aiops")
-    deployment_name: str = Field(default="dev")
-    module_name: str = Field(default="persona")
+    project_name: str = Field(default="")
+    deployment_name: str = Field(default="")
+    module_name: str = Field(default="")
 
     @computed_field  # type: ignore
     @property

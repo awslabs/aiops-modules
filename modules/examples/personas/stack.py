@@ -5,7 +5,7 @@ import logging
 from typing import Any, Optional
 
 import cdk_nag
-from aws_cdk import Stack, Environment
+from aws_cdk import Environment, Stack
 from constructs import Construct
 
 from personas import Personas as PersonasConstruct
