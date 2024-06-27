@@ -114,4 +114,4 @@ class ModelBiasConstruct(Construct):
             ),
             monitoring_schedule_name=f"{endpoint_name}-model-bias",
         )
-        model_bias_monitor_schedule.add_depends_on(model_bias_job_definition)
+        model_bias_monitor_schedule.add_dependency(model_bias_job_definition)
