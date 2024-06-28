@@ -108,4 +108,4 @@ class ModelExplainabilityConstruct(Construct):
             ),
             monitoring_schedule_name=f"{endpoint_name}-model-explainability",
         )
-        model_explainability_monitor_schedule.add_depends_on(model_explainability_job_definition)
+        model_explainability_monitor_schedule.add_dependency(model_explainability_job_definition)

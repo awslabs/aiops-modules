@@ -99,4 +99,4 @@ class DataQualityConstruct(Construct):
             ),
             monitoring_schedule_name=f"{endpoint_name}-data-quality",
         )
-        data_quality_monitor_schedule.add_depends_on(data_quality_job_definition)
+        data_quality_monitor_schedule.add_dependency(data_quality_job_definition)

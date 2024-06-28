@@ -215,7 +215,7 @@ class DeployEndpointStack(Stack):
             ],
         )
 
-        endpoint_config.add_depends_on(model)
+        endpoint_config.add_dependency(model)
 
         # Sagemaker Endpoint
         endpoint_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-endpoint"
@@ -227,6 +227,6 @@ class DeployEndpointStack(Stack):
             endpoint_name=endpoint_name,
         )
 
-        endpoint.add_depends_on(endpoint_config)
+        endpoint.add_dependency(endpoint_config)
 
         self.endpoint = endpoint
