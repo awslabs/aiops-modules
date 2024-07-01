@@ -1,0 +1,5 @@
+name: personas
+path: modules/examples/personas
+parameters:
+  - name: bucket-name
+    value: my-bucket

@@ -12,11 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 - added `ray-on-eks`, and `manifests/ray-on-eks` manifests
-- Added a `sagemaker-model-monitoring-module` module with an example of data quality, model quality, model bias, and model explainability monitoring of a SageMaker Endpoint.
-- Added an option to enable data capture in the `sagemaker-endpoint-module`.
+- added a `sagemaker-model-monitoring-module` module with an example of data quality, model quality, model bias, and model explainability monitoring of a SageMaker Endpoint
+- added an option to enable data capture in the `sagemaker-endpoint-module`
+- added a `personas` example module to deploy various roles required for an AI/ML project
 - added `sagemaker-model-cicd` module
 
 ### **Changed**
+
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
 - changed ECR encryption to KMS_MANAGED
 - changed encryption for each bucket to KMS_MANAGED
@@ -24,14 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix inputs for `bedrock-finetuning` module not working
 - add `retention-type` argument for the bucket in the `bedrock-finetuning` module
 - fix broken dependencies for `examples/airflow-dags`
-- Use `add_dependency` to avoid deprecation warnings from CDK.
+- use `add_dependency` to avoid deprecation warnings from CDK.
 
 ## v1.2.0
 
 ### **Added**
+
 - added multi-acc sagemaker-mlops manifest example
 
 ### **Changed**
+
 - fixed model deploy cross-account permissions
 - added bucket and model package group names as stack outputs in the `sagemaker-templates` module
 - refactor inputs for the following modules to use Pydantic:
