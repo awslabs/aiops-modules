@@ -230,7 +230,7 @@ class DeployPipelineConstruct(Construct):
                                 "echo $SCAN_RESULT",
                                 "echo $FAIL_BUILD",
                                 """if [[ "$FAIL_BUILD" = "true" && "$SCAN_RESULT" = "FAILED" ]]; then printf "\n\n
-                                Failiing pipeline as possible insecure configurations were detected
+                                Failing pipeline as possible insecure configurations were detected
                                 \n\n" && exit 1; fi""",
                             ]
                         },

@@ -29,7 +29,7 @@ export PRIMARY_ACCOUNT=XXXXXXXXXXXX
 export ADMIN_ROLE_ARN=arn:aws:iam::XXXXXXXXXXXX:role/XXXXX
 ```
 
-5. Bbootstrap the CDK environment (one time per region) with CDK V2. Asuming you are deploying in `us-east-1`:
+5. Bootstrap the CDK environment (one time per region) with CDK V2. Assuming you are deploying in `us-east-1`:
 ```
 cdk bootstrap aws://${PRIMARY_ACCOUNT}/us-east-1
 ```
@@ -44,7 +44,7 @@ seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ADMIN_ROLE_
 
 ## Deployment
 
-Pick the manifest to deploy. Manifests are located in `mainfests/` directory. For example, to deploy SageMaker mlops manifests, run:
+Pick the manifest to deploy. Manifests are located in `manifests/` directory. For example, to deploy SageMaker mlops manifests, run:
 
 !Note: if you are deploying into a region different from `us-east-1`, change the `regionMappings` in `deployment.yaml`.
 ```

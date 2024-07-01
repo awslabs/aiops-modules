@@ -29,7 +29,7 @@ sm_client = boto3.client("sagemaker")
 
 def invoke_endpoint(endpoint_name):
     """
-    Add custom logic here to invoke the endpoint and validate reponse
+    Add custom logic here to invoke the endpoint and validate response
     """
     return {"endpoint_name": endpoint_name, "success": True}
 
@@ -48,7 +48,7 @@ def test_endpoint(endpoint_name):
             logger.error(error_message)
             raise Exception(error_message)
 
-        # Output if endpoint has data capture enbaled
+        # Output if endpoint has data capture enabled
         endpoint_config_name = response["EndpointConfigName"]
         response = sm_client.describe_endpoint_config(EndpointConfigName=endpoint_config_name)
         if "DataCaptureConfig" in response and response["DataCaptureConfig"]["EnableCapture"]:
