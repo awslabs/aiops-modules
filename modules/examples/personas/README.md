@@ -2,13 +2,15 @@
 
 ## Description
 
-This module deploys various roles required for an AI/ML project, including:
+This module is an example that deploys various roles that may be required for an AI/ML project, including:
 
-- Data Engineer
 - ML Engineer
-- MLOps
+- Data Engineer
+- IT Lead
+- Business Analyst
+- MLOPs Engineer
 - IT Auditor
-- Model Auditor
+- Model Risk Manager
 
 The module creates separate roles with appropriate permissions and policies for each persona, ensuring proper segregation of duties and access control within the AI/ML project.
 
@@ -16,29 +18,18 @@ The module creates separate roles with appropriate permissions and policies for 
 
 ### Input Parameters
 
-#### Required
-
-- `project_name`: The name of the AI/ML project for which the roles are being created.
-- `environment`: The environment for which the roles are being created (e.g., dev, staging, prod).
-
 #### Optional
 
-- `additional_policies`: A list of additional IAM policies to attach to the roles (e.g., for accessing specific AWS services or resources).
-
-### Module Outputs
-
-- `data_engineer_role_arn`: The ARN of the Data Engineer role.
-- `ml_engineer_role_arn`: The ARN of the ML Engineer role.
-- `mlops_role_arn`: The ARN of the MLOps role.
-- `it_auditor_role_arn`: The ARN of the IT Auditor role.
-- `model_auditor_role_arn`: The ARN of the Model Auditor role.
+- `bucket_name`: S3 bucket name to add permissions for
 
 ## Sample manifest declaration
+
 Create a manifest file under appropriate location, for example examples/manifests
 ```
 name: personas
 path: modules/examples/personas
 ```
+
 ### Outputs (module metadata):
   - `MLEngineerRoleArn` - the arn of the Machine Learning Engineer Role
   - `DataEngineerRoleArn` - the arn of the Data Engineer Role

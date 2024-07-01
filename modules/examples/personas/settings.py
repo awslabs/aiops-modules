@@ -26,8 +26,9 @@ class SeedFarmerParameters(CdkBaseSettings):
     """
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
-    tags: Optional[Dict[str, str]] = Field(default=None)
+
     bucket_name: Optional[str] = Field(default=None)
+    tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

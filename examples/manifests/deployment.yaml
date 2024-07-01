@@ -5,24 +5,30 @@ toolchainRegion: us-east-1
 forceDependencyRedeploy: true
 groups:
   - name: networking
-    path: manifests/networking-modules.yaml
+    path: examples/manifests/networking-modules.yaml
   - name: sagemaker-endpoints
-    path: manifests/sagemaker-endpoints-modules.yaml
+    path: examples/manifests/sagemaker-endpoints-modules.yaml
   - name: events
-    path: manifests/sagemaker-model-event-bus.yaml
+    path: examples/manifests/event-bus-modules.yaml
   - name: registry
-    path: manifests/sagemaker-model-package-group-modules.yaml
+    path: examples/manifests/sagemaker-model-package-group-modules.yaml
   - name: promote-models
-    path: manifests/sagemaker-model-package-promote-pipeline-modules.yaml
+    path: examples/manifests/sagemaker-model-package-promote-pipeline-modules.yaml
   - name: personas
     path: examples/manifests/personas-modules.yaml
-
 targetAccountMappings:
   - alias: primary
     accountId:
       valueFrom:
         envVariable: PRIMARY_ACCOUNT
     default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
+  - alias: tooling
+    accountId:
+      valueFrom:
+        envVariable: TOOLING_ACCOUNT
     regionMappings:
       - region: us-east-1
         default: true
