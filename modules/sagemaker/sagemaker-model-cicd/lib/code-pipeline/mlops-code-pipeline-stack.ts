@@ -64,6 +64,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
       'MLOpsCodePipeline',
       {
         pipelineName: `${projectName}-infra`,
+        // this pipeline will already be updated during `seedfarmer apply`
         selfMutation: false,
         crossAccountKeys: true,
         artifactBucket: utils.createPipelineArtifactsBucket(this),

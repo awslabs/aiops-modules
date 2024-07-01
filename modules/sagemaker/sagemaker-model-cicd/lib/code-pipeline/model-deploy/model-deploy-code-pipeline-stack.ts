@@ -86,6 +86,7 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
 
     const pipeline = new cdk.pipelines.CodePipeline(this, 'Pipeline', {
       pipelineName,
+      // this pipeline will be updated by project-infra pipeline
       selfMutation: false,
       crossAccountKeys: true,
       artifactBucket: utils.createPipelineArtifactsBucket(this),
@@ -108,7 +109,7 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
             },
           ),
         },
-        commands: ['npm install', 'npx cdk synth --no-lookups'],
+        commands: ['echo hello2', 'npm install', 'npx cdk synth --no-lookups'],
         buildEnvironment: {
           environmentVariables: {
             // this will be fetched from SSM param store and set as env variable automatically by codebuild
