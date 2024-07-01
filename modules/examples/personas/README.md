@@ -35,8 +35,9 @@ The module creates separate roles with appropriate permissions and policies for 
 
 ## Usage
 
-To use this module, include it in your CDK application and provide the required input parameters. For example:
+To deploy an uber-manifest containing all modules, run:
 
+Note: this is an uber-manifest that contains other modules also. It may take a while to deploy.
 ```
 seedfarmer apply examples/manifests/deployment.yaml
 ```
