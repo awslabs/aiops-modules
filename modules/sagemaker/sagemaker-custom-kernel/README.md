@@ -6,7 +6,7 @@ This module builds custom kernel for SageMaker studio from a Dockerfile.
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 

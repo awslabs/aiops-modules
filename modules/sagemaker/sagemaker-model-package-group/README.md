@@ -10,7 +10,7 @@ This module creates a SageMaker Model Package Group to register and version Sage
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 
