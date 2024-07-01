@@ -33,11 +33,31 @@ The module creates separate roles with appropriate permissions and policies for 
 - `it_auditor_role_arn`: The ARN of the IT Auditor role.
 - `model_auditor_role_arn`: The ARN of the Model Auditor role.
 
-## Usage
-
-To deploy an uber-manifest containing all modules, run:
-
-Note: this is an uber-manifest that contains other modules also. It may take a while to deploy.
+## Sample manifest declaration
+Create a manifest file under appropriate location, for example examples/manifests
 ```
-seedfarmer apply examples/manifests/deployment.yaml
+name: personas
+path: modules/examples/personas
+```
+### Outputs (module metadata):
+  - `MLEngineerRoleArn` - the arn of the Machine Learning Engineer Role
+  - `DataEngineerRoleArn` - the arn of the Data Engineer Role
+  - `ITLeadRoleArn` - the arn of the Machine IT Lead Role
+  - `BusinessAnalystRoleArn` - the arn of the Business Analyst Role
+  - `MLOpsEngineerRoleArn` - the arn of the Machine Learning Ops Engineer Role
+  - `ITAuditorRoleArn` - the arn of the IT Auditor Role
+  - `ModelRiskManagerRoleArn` - the arn of the Model Risk Manager Role
+
+### Example Output:
+```yaml
+metadata: |
+  {
+    "MLEngineerRoleArn": "arn:aws:iam::<account_id>:role/MyStack-MLEngineerRole-<random_string>",
+    "DataEngineerRoleArn": "arn:aws:iam::<account_id>:role/MyStack-DataEngineerRole-<random_string>",
+    "ITLeadRoleArn": "arn:aws:iam::<account_id>:role/MyStack-ITLeadRole-<random_string>",
+    "BusinessAnalystRoleArn": "arn:aws:iam::<account_id>:role/MyStack-BusinessAnalystRole-<random_string>",
+    "MLOpsEngineerRoleArn": "arn:aws:iam::<account_id>:role/MyStack-MLOpsEngineerRole-<random_string>",
+    "ITAuditorRoleArn": "arn:aws:iam::<account_id>:role/MyStack-ITAuditorRole-<random_string>",
+    "ModelRiskManagerRoleArn": "arn:aws:iam::<account_id>:role/MyStack-ModelRiskManagerRole-<random_string>"
+  }
 ```

@@ -115,7 +115,7 @@ class Personas(Construct):
                         ),
                     ]
                 )
-            }
+            },
         )
         self.ml_engineer_role = ml_engineer_role
         # Data Engineers role
@@ -126,7 +126,7 @@ class Personas(Construct):
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("glue.amazonaws.com"),
                 iam.ServicePrincipal("lambda.amazonaws.com"),
-                iam.ServicePrincipal("elasticmapreduce.amazonaws.com")
+                iam.ServicePrincipal("elasticmapreduce.amazonaws.com"),
             ),
             inline_policies={
                 "DataEngineerS3Policy": iam.PolicyDocument(
@@ -183,16 +183,14 @@ class Personas(Construct):
                             resources=["*"],
                         )
                     ]
-                )
-            }
+                ),
+            },
         )
         self.data_engineer_role = data_engineer_role
         # IT Lead role
         self.it_lead_role = iam.Role(
-            self,
-            "ITLeadRole",
-            role_name="aiops-ITLead",
-            assumed_by = iam.AccountRootPrincipal())
+            self, "ITLeadRole", role_name="aiops-ITLead", assumed_by=iam.AccountRootPrincipal()
+        )
         it_lead_policy = iam.Policy(
             self,
             "it-lead-policy",
@@ -212,8 +210,7 @@ class Personas(Construct):
                         "iam:PutRolePolicy",
                         "iam:DeleteRolePolicy",
                     ],
-                    resources=[f"arn:aws:iam::{env.account}:role/*",
-                               f"arn:aws:iam::{env.account}:policy/*"],
+                    resources=[f"arn:aws:iam::{env.account}:role/*", f"arn:aws:iam::{env.account}:policy/*"],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -225,7 +222,9 @@ class Personas(Construct):
                         "cloudformation:DescribeStackEvents",
                         "cloudformation:DescribeStackResources",
                     ],
-                    resources=[f"arn:aws:cloudformation:{env.region}:{env.account}:stack/*",],
+                    resources=[
+                        f"arn:aws:cloudformation:{env.region}:{env.account}:stack/*",
+                    ],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -235,8 +234,10 @@ class Personas(Construct):
                         "cloudwatch:GetMetricStatistics",
                         "cloudwatch:ListMetrics",
                     ],
-                    resources=[f"arn:aws:cloudwatch:{env.region}:{env.account}:log-group/*",
-                                f"arn:aws:cloudwatch:{env.region}:{env.account}:metric-data/*"],
+                    resources=[
+                        f"arn:aws:cloudwatch:{env.region}:{env.account}:log-group/*",
+                        f"arn:aws:cloudwatch:{env.region}:{env.account}:metric-data/*",
+                    ],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -266,11 +267,13 @@ class Personas(Construct):
                         "ec2:AttachNetworkInterface",
                         "ec2:DetachNetworkInterface",
                     ],
-                    resources=[f"arn:aws:ec2:{env.region}:{env.account}:instance/*",
-                                f"arn:aws:ec2:{env.region}:{env.account}:network-interface/*",
-                                f"arn:aws:ec2:{env.region}:{env.account}:security-group/*",
-                                f"arn:aws:ec2:{env.region}:{env.account}:subnet/*",
-                                f"arn:aws:ec2:{env.region}:{env.account}:vpc/*",]
+                    resources=[
+                        f"arn:aws:ec2:{env.region}:{env.account}:instance/*",
+                        f"arn:aws:ec2:{env.region}:{env.account}:network-interface/*",
+                        f"arn:aws:ec2:{env.region}:{env.account}:security-group/*",
+                        f"arn:aws:ec2:{env.region}:{env.account}:subnet/*",
+                        f"arn:aws:ec2:{env.region}:{env.account}:vpc/*",
+                    ],
                 ),
             ],
         )
@@ -284,7 +287,7 @@ class Personas(Construct):
             assumed_by=iam.AccountRootPrincipal(),
         )
 
-        #business analyst role
+        # business analyst role
         business_analyst_policy = iam.Policy(
             self,
             "business-analyst-policy",
@@ -582,13 +585,14 @@ class Personas(Construct):
                         "glue:GetCrawler",
                         "glue:GetDevEndpoint",
                     ],
-                    resources=[f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:crawler/*",
-                               f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:job/*"
-                               f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:catalog/*",
-                               f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:database/*",
-                               f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:table/*",
-                               f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:devEndpoint/*"
-                               ],
+                    resources=[
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:crawler/*",
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:job/*"
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:catalog/*",
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:database/*",
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:table/*",
+                        f"arn:{Aws.PARTITION}:glue:{Aws.REGION}:{Aws.ACCOUNT_ID}:devEndpoint/*",
+                    ],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,

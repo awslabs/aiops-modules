@@ -73,3 +73,9 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
+
+### Personas Module
+ Type                                         | Description                                                                                                      |
+|----------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Personas](modules/examples/personas/README.md) | This module deploys various roles required for an AI/ML project. |
+
