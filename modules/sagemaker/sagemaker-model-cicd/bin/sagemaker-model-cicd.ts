@@ -19,7 +19,7 @@ const moduleParameters = getModuleParameters();
 
 const app = new cdk.App();
 const stackName = moduleParameters.projectName;
-const stack = new MLOpsCodePipelineStack(app, stackName, {
+new MLOpsCodePipelineStack(app, stackName, {
   env: {
     account,
     region,
