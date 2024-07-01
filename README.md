@@ -23,7 +23,7 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### SageMaker Modules
 
-| Type                                                                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Type                                                                                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 |---------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [SageMaker Studio Module](modules/sagemaker/sagemaker-studio/README.md)                                                   | Provisions secure SageMaker Studio Domain environment, creates example User Profiles for Data Scientist and Lead Data Scientist linked to IAM Roles, and adds lifecycle config                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | [SageMaker Endpoint Module](modules/sagemaker/sagemaker-endpoint/README.md)                                               | Creates SageMaker real-time inference endpoint for the specified model package or latest approved model from the model package group                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -43,33 +43,38 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### FMOps/LLMOps Modules
 
-| Type                                                                                                             | Description                                                     |
-|------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)  | Creates an endpoint for a SageMaker JumpStart Foundation Model. |
-| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model. |
-| [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md)                                   | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning. |
-| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)        | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG.  |
+| Type                                                                                                               | Description                                                                                                                            |
+|--------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| [SageMaker JumpStart Foundation Model Endpoint Module](modules/fmops/sagemaker-jumpstart-fm-endpoint/README.md)    | Creates an endpoint for a SageMaker JumpStart Foundation Model.                                                                        |
+| [SageMaker Hugging Face Foundation Model Endpoint Module](modules/fmops/sagemaker-hugging-face-endpoint/README.md) | Creates an endpoint for a SageMaker Hugging Face Foundation Model.                                                                     |
+| [Amazon Bedrock Finetuning Module](modules/fmops/bedrock-finetuning/README.md)                                     | Creates a pipeline that automatically triggers Amazon Bedrock Finetuning.                                                              |
+| [AppSync Knowledge Base Ingestion and Question and Answering RAG Module](modules/fmops/qna-rag/README.md)          | Creates an Graphql endpoint for ingestion of data and and use ingested as knowledge base for a Question and Answering model using RAG. |
 
 ### MWAA Modules
 
-| Type                                                                    | Description                                                                                                                                                                                       |
-|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|  [Example DAG for MLOps](modules/examples/airflow-dags/README.md)       |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
+| Type                                                                    | Description                                                                              |
+|-------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| [Example DAG for MLOps Module](modules/examples/airflow-dags/README.md) |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
 
 
 ### EKS Modules
 
-| Type                                                                           | Description                                                                                                      |
-|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| [Ray on EKS](modules/eks/ray-on-eks/README.md)                                 | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
+| Type                                                  | Description                                                                                                      |
+|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| [Ray on EKS Module](modules/eks/ray-on-eks/README.md) | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
 
-### Events Modules
+### Example Modules
 
-| Type                                                              | Description                                                                                                                                                                                       |
-|-------------------------------------------------------------------|------------------------------------------------------------------------|
-| [Event Bus Module](modules/examples/event-bus/README.md)          |  Creates an Amazon EventBridge Bus for cross-account events.           |
+| Type                                                      | Description                                                                         |
+|-----------------------------------------------------------|-------------------------------------------------------------------------------------|
+| [Event Bus Module](modules/examples/event-bus/README.md)  | Creates an Amazon EventBridge Bus for cross-account events.                         |
+| [Personas Module](modules/examples/personas/README.md)    | This module is an example that creates various roles required for an AI/ML project. |
 
 
 ### Industry Data Framework (IDF) Modules
 
 The modules in this repository are compatible with [Industry Data Framework (IDF) Modules](https://github.com/awslabs/idf-modules) and can be used together within the same deployment. Refer to `examples/manifests` for examples.
+
+### Autonomous Driving Data Framework (ADDF) Modules
+
+The modules in this repository are compatible with [Autonomous Driving Data Framework (ADDF) Modules](https://github.com/awslabs/autonomous-driving-data-framework) and can be used together within the same deployment.
