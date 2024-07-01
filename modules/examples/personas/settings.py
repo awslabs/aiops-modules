@@ -67,4 +67,4 @@ class ApplicationSettings(CdkBaseSettings):
 
     settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
     parameters: SeedFarmerParameters = Field(default_factory=SeedFarmerParameters)
-    default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)
+    default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)  # type: ignore
