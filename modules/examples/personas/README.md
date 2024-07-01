@@ -18,7 +18,7 @@ The module creates separate roles with appropriate permissions and policies for 
 
 ### Input Parameters
 
-#### Optional
+#### Required
 
 - `bucket_name`: S3 bucket name to add permissions for
 
@@ -28,6 +28,9 @@ Create a manifest file under appropriate location, for example examples/manifest
 ```
 name: personas
 path: modules/examples/personas
+parameters:
+  - name: bucket-name
+    value: my-bucket
 ```
 
 ### Outputs (module metadata):

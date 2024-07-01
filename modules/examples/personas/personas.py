@@ -1,6 +1,6 @@
 from typing import Any
 
-from aws_cdk import Aws, Environment
+from aws_cdk import Aws
 from aws_cdk import aws_iam as iam
 from constructs import Construct
 
@@ -10,8 +10,8 @@ class Personas(Construct):
         self,
         scope: Construct,
         construct_id: str,
-        s3_bucket_prefix: str,
-        env: Environment,
+        app_prefix: str,
+        bucket_name: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
@@ -62,7 +62,7 @@ class Personas(Construct):
             self,
             "MLEngineerRole",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            role_name="aiops-MLEngineer",
+            role_name=f"{app_prefix}-MLEngineer",
             inline_policies={
                 "MLEngineerPolicy": iam.PolicyDocument(
                     statements=[
@@ -122,7 +122,7 @@ class Personas(Construct):
         data_engineer_role = iam.Role(
             self,
             "DataEngineerRole",
-            role_name="aiops-DataEngineer",
+            role_name=f"{app_prefix}-DataEngineer",
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("glue.amazonaws.com"),
                 iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -138,7 +138,7 @@ class Personas(Construct):
                                 "s3:DeleteObject",
                                 *s3_permissions,
                             ],
-                            resources=[f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}/*"],
+                            resources=[f"arn:{Aws.PARTITION}:s3:::{bucket_name}/*"],
                         )
                     ]
                 ),
@@ -189,11 +189,11 @@ class Personas(Construct):
         self.data_engineer_role = data_engineer_role
         # IT Lead role
         self.it_lead_role = iam.Role(
-            self, "ITLeadRole", role_name="aiops-ITLead", assumed_by=iam.AccountRootPrincipal()
+            self, "ITLeadRole", role_name=f"{app_prefix}-ITLead", assumed_by=iam.AccountRootPrincipal()
         )
         it_lead_policy = iam.Policy(
             self,
-            "it-lead-policy",
+            "ITLeadPolicy",
             statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -210,7 +210,10 @@ class Personas(Construct):
                         "iam:PutRolePolicy",
                         "iam:DeleteRolePolicy",
                     ],
-                    resources=[f"arn:aws:iam::{env.account}:role/*", f"arn:aws:iam::{env.account}:policy/*"],
+                    resources=[
+                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/*",
+                        f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:policy/*",
+                    ],
                 ),
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -223,7 +226,7 @@ class Personas(Construct):
                         "cloudformation:DescribeStackResources",
                     ],
                     resources=[
-                        f"arn:aws:cloudformation:{env.region}:{env.account}:stack/*",
+                        f"arn:{Aws.PARTITION}:cloudformation:{Aws.REGION}:{Aws.ACCOUNT_ID}:stack/*",
                     ],
                 ),
                 iam.PolicyStatement(
@@ -235,8 +238,8 @@ class Personas(Construct):
                         "cloudwatch:ListMetrics",
                     ],
                     resources=[
-                        f"arn:aws:cloudwatch:{env.region}:{env.account}:log-group/*",
-                        f"arn:aws:cloudwatch:{env.region}:{env.account}:metric-data/*",
+                        f"arn:{Aws.PARTITION}:cloudwatch:{Aws.REGION}:{Aws.ACCOUNT_ID}:log-group/*",
+                        f"arn:{Aws.PARTITION}:cloudwatch:{Aws.REGION}:{Aws.ACCOUNT_ID}:metric-data/*",
                     ],
                 ),
                 iam.PolicyStatement(
@@ -268,11 +271,11 @@ class Personas(Construct):
                         "ec2:DetachNetworkInterface",
                     ],
                     resources=[
-                        f"arn:aws:ec2:{env.region}:{env.account}:instance/*",
-                        f"arn:aws:ec2:{env.region}:{env.account}:network-interface/*",
-                        f"arn:aws:ec2:{env.region}:{env.account}:security-group/*",
-                        f"arn:aws:ec2:{env.region}:{env.account}:subnet/*",
-                        f"arn:aws:ec2:{env.region}:{env.account}:vpc/*",
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:instance/*",
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:network-interface/*",
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:security-group/*",
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:subnet/*",
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:vpc/*",
                     ],
                 ),
             ],
@@ -282,15 +285,15 @@ class Personas(Construct):
 
         self.business_analyst_role = iam.Role(
             self,
-            "business-analyst-role",
-            role_name="aiops-business-analyst",
+            "BusinessAnalystRole",
+            role_name=f"{app_prefix}-BusinessAnalyst",
             assumed_by=iam.AccountRootPrincipal(),
         )
 
         # business analyst role
         business_analyst_policy = iam.Policy(
             self,
-            "business-analyst-policy",
+            "BusinessAnalystPolicy",
             statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -311,8 +314,8 @@ class Personas(Construct):
         # MLOps Engineer role
         self.mlops_engineer_role = iam.Role(
             self,
-            "mlops-engineer-role",
-            role_name="aiops-mlops-engineer",
+            "MLOpsEngineerRole",
+            role_name=f"{app_prefix}-MLOpsEngineer",
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
                 iam.ServicePrincipal("glue.amazonaws.com"),
@@ -323,7 +326,7 @@ class Personas(Construct):
 
         mlops_engineer_policy = iam.Policy(
             self,
-            "mlops-engineer-policy",
+            "MLOpsEngineerPolicy",
             statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -361,8 +364,8 @@ class Personas(Construct):
                         "s3:ListBucket",
                     ],
                     resources=[
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*/*",
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}/*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}",
                     ],
                 ),
                 iam.PolicyStatement(
@@ -418,14 +421,14 @@ class Personas(Construct):
         # IT Auditor role
         self.it_auditor_role = iam.Role(
             self,
-            "it-auditor-role",
-            role_name="aiops-it-auditor",
+            "ITAuditorRole",
+            role_name=f"{app_prefix}-ITAuditor",
             assumed_by=iam.AccountRootPrincipal(),
         )
 
         it_auditor_policy = iam.Policy(
             self,
-            "it-auditor-policy",
+            "ITAuditorPolicy",
             statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -502,8 +505,8 @@ class Personas(Construct):
                         "s3:ListBucket",
                     ],
                     resources=[
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*/*",
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}/*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}",
                     ],
                 ),
                 iam.PolicyStatement(
@@ -535,14 +538,14 @@ class Personas(Construct):
         # Model Risk Manager role
         self.model_risk_manager_role = iam.Role(
             self,
-            "model-risk-manager-role",
-            role_name="aiops-model-risk-manager",
+            "ModelRiskManagerRole",
+            role_name=f"{app_prefix}-ModelRiskManager",
             assumed_by=iam.AccountRootPrincipal(),
         )
 
         model_risk_manager_policy = iam.Policy(
             self,
-            "model-risk-manager-policy",
+            "ModelRiskManagerPolicy",
             statements=[
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
@@ -571,8 +574,8 @@ class Personas(Construct):
                         "s3:ListBucket",
                     ],
                     resources=[
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*/*",
-                        f"arn:{Aws.PARTITION}:s3:::{s3_bucket_prefix}*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}/*",
+                        f"arn:{Aws.PARTITION}:s3:::{bucket_name}",
                     ],
                 ),
                 iam.PolicyStatement(

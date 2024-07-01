@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import cdk_nag
-from aws_cdk import Environment, Stack
+from aws_cdk import Stack
 from constructs import Construct
 
 from personas import Personas as PersonasConstruct
@@ -18,18 +18,17 @@ class Personas(Stack):
         self,
         scope: Construct,
         construct_id: str,
-        bucket_name: Optional[str],
-        env: Environment,
+        app_prefix: str,
+        bucket_name: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
-        s3_bucket_prefix = bucket_name or f"{construct_id}-bucket"
         self.personas = PersonasConstruct(
             self,
             construct_id="PersonasConstruct",
-            s3_bucket_prefix=s3_bucket_prefix,
-            env=env,
+            app_prefix=app_prefix,
+            bucket_name=bucket_name,
         )
         cdk_nag.NagSuppressions.add_resource_suppressions(
             self.personas,

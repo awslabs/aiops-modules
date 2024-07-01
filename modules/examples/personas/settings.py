@@ -27,7 +27,8 @@ class SeedFarmerParameters(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    bucket_name: Optional[str] = Field(default=None)
+    bucket_name: str
+
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 
@@ -43,7 +44,7 @@ class SeedFarmerSettings(CdkBaseSettings):
     deployment_name: str = Field(default="")
     module_name: str = Field(default="")
 
-    @computed_field  # type: ignore
+    @computed_field  # type: ignore[misc]
     @property
     def app_prefix(self) -> str:
         """Application prefix."""
@@ -68,4 +69,4 @@ class ApplicationSettings(CdkBaseSettings):
 
     settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
     parameters: SeedFarmerParameters = Field(default_factory=SeedFarmerParameters)
-    default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)  # type: ignore
+    default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)

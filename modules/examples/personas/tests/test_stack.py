@@ -26,12 +26,14 @@ def stack(stack_defaults: Any) -> cdk.Stack:
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
-    s3_bucket_name = "test-bucket"
+    app_prefix = f"{project_name}-{dep_name}-{mod_name}"
+    bucket_name = "test-bucket"
 
     return stack.Personas(
         scope=app,
-        construct_id=f"{project_name}-{dep_name}-{mod_name}",
-        bucket_name=s3_bucket_name,
+        construct_id=app_prefix,
+        app_prefix=app_prefix,
+        bucket_name=bucket_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
