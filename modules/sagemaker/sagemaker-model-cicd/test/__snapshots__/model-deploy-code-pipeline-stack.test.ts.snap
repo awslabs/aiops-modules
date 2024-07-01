@@ -292,7 +292,6 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
                   "Version": "1",
                 },
                 "Configuration": {
-                  "EnvironmentVariables": "[{"name":"_PROJECT_CONFIG_HASH","type":"PLAINTEXT","value":"1dca58e3e985e1f7ccce024878500fe6b1a9a442a3d013354351864080e95bbb"}]",
                   "PrimarySource": "infra_repo_Source",
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6",
@@ -322,38 +321,6 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
               },
             ],
             "Name": "Build",
-          },
-          {
-            "Actions": [
-              {
-                "ActionTypeId": {
-                  "Category": "Build",
-                  "Owner": "AWS",
-                  "Provider": "CodeBuild",
-                  "Version": "1",
-                },
-                "Configuration": {
-                  "EnvironmentVariables": "[{"name":"_PROJECT_CONFIG_HASH","type":"PLAINTEXT","value":"08920c57bed57d90c3ffb3813ad4596e66091f970896882ec0af67fd5e1b80c5"}]",
-                  "ProjectName": {
-                    "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
-                  },
-                },
-                "InputArtifacts": [
-                  {
-                    "Name": "Synth_Output",
-                  },
-                ],
-                "Name": "SelfMutate",
-                "RoleArn": {
-                  "Fn::GetAtt": [
-                    "PipelineCodeBuildActionRole226DB0CB",
-                    "Arn",
-                  ],
-                },
-                "RunOrder": 1,
-              },
-            ],
-            "Name": "UpdatePipeline",
           },
         ],
       },
@@ -592,6 +559,7 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
     },
     "build": {
       "commands": [
+        "echo hello2",
         "npm install",
         "npx cdk synth --no-lookups"
       ]
@@ -892,20 +860,6 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
               "Resource": {
                 "Fn::GetAtt": [
                   "PipelineBuildSynthCdkBuildProject6BEFA8E6",
-                  "Arn",
-                ],
-              },
-            },
-            {
-              "Action": [
-                "codebuild:BatchGetBuilds",
-                "codebuild:StartBuild",
-                "codebuild:StopBuild",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineUpdatePipelineSelfMutationDAA41400",
                   "Arn",
                 ],
               },
@@ -1295,273 +1249,6 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
         "Roles": [
           {
             "Ref": "PipelineSourcemodelbuildrepoCodePipelineActionRole02A5FAA0",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-    },
-    "PipelineUpdatePipelineSelfMutationDAA41400": {
-      "Properties": {
-        "Artifacts": {
-          "Type": "CODEPIPELINE",
-        },
-        "Cache": {
-          "Type": "NO_CACHE",
-        },
-        "Description": "Pipeline step MyTestStack/Pipeline/UpdatePipeline/SelfMutate",
-        "EncryptionKey": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketKms876A3C5B",
-            "Arn",
-          ],
-        },
-        "Environment": {
-          "ComputeType": "BUILD_GENERAL1_SMALL",
-          "Image": "aws/codebuild/standard:7.0",
-          "ImagePullCredentialsType": "CODEBUILD",
-          "PrivilegedMode": false,
-          "Type": "LINUX_CONTAINER",
-        },
-        "Name": "test-project-dev-deploy-selfupdate",
-        "ServiceRole": {
-          "Fn::GetAtt": [
-            "PipelineUpdatePipelineSelfMutationRole57E559E8",
-            "Arn",
-          ],
-        },
-        "Source": {
-          "BuildSpec": "{
-  "version": "0.2",
-  "phases": {
-    "install": {
-      "commands": [
-        "npm install -g aws-cdk@2"
-      ]
-    },
-    "build": {
-      "commands": [
-        "cdk -a . deploy MyTestStack --require-approval=never --verbose"
-      ]
-    }
-  }
-}",
-          "Type": "CODEPIPELINE",
-        },
-      },
-      "Type": "AWS::CodeBuild::Project",
-    },
-    "PipelineUpdatePipelineSelfMutationRole57E559E8": {
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "codebuild.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-      },
-      "Type": "AWS::IAM::Role",
-    },
-    "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E": {
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":logs:",
-                      {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
-                      },
-                    ],
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":logs:",
-                      {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
-                      {
-                        "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
-                      },
-                      ":*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
-                "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition",
-                    },
-                    ":codebuild:",
-                    {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":report-group/",
-                    {
-                      "Ref": "PipelineUpdatePipelineSelfMutationDAA41400",
-                    },
-                    "-*",
-                  ],
-                ],
-              },
-            },
-            {
-              "Action": "sts:AssumeRole",
-              "Condition": {
-                "ForAnyValue:StringEquals": {
-                  "iam:ResourceTag/aws-cdk:bootstrap-role": [
-                    "image-publishing",
-                    "file-publishing",
-                    "deploy",
-                  ],
-                },
-              },
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:*:iam::",
-                    {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":role/*",
-                  ],
-                ],
-              },
-            },
-            {
-              "Action": "cloudformation:DescribeStacks",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": "s3:ListBucket",
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactBucketD127CCF6",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactBucketD127CCF6",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketKms876A3C5B",
-                  "Arn",
-                ],
-              },
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "PipelineArtifactsBucketKms876A3C5B",
-                  "Arn",
-                ],
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E",
-        "Roles": [
-          {
-            "Ref": "PipelineUpdatePipelineSelfMutationRole57E559E8",
           },
         ],
       },
