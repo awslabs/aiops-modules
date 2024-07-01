@@ -37,20 +37,6 @@ The module creates separate roles with appropriate permissions and policies for 
 
 To use this module, include it in your CDK application and provide the required input parameters. For example:
 
-```python
-from aws_cdk import App, Stack
-from personas_module import PersonasModule
-
-app = App()
-stack = Stack(app, "PersonasStack", env={"region": "us-west-2"})
-
-personas_module = PersonasModule(stack, "PersonasModule",
-    project_name="my-ai-ml-project",
-    environment="dev",
-    additional_policies=[
-        "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess",
-        "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-    ]
-)
-
-app.synth()
+```
+seedfarmer apply examples/manifests/deployment.yaml
+```
