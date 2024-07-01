@@ -64,6 +64,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
       'MLOpsCodePipeline',
       {
         pipelineName: `${projectName}-infra`,
+        selfMutation: false,
         crossAccountKeys: true,
         artifactBucket: utils.createPipelineArtifactsBucket(this),
         synth: new cdk.pipelines.CodeBuildStep('Synth', {

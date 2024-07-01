@@ -86,8 +86,9 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
 
     const pipeline = new cdk.pipelines.CodePipeline(this, 'Pipeline', {
       pipelineName,
-      artifactBucket: utils.createPipelineArtifactsBucket(this),
+      selfMutation: false,
       crossAccountKeys: true,
+      artifactBucket: utils.createPipelineArtifactsBucket(this),
       synth: new cdk.pipelines.CodeBuildStep('Synth', {
         input: cdk.pipelines.CodePipelineSource.codeCommit(
           infraRepo,
