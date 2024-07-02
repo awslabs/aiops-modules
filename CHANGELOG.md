@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix broken dependencies for `examples/airflow-dags`
 - use `add_dependency` to avoid deprecation warnings from CDK.
 - Various typo fixes.
+- Various clean-ups to the SageMaker Service Catalog templates.
 
 ## v1.2.0
 
