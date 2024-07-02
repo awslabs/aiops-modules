@@ -103,7 +103,7 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
       [
         {
           id: "AwsSolutions-IAM5",
-          reason: "Resource access restriced to S3 buckets (with a prefix) and ECR images",
+          reason: "Resource access restricted to S3 buckets (with a prefix) and ECR images",
         },
       ],
       true,

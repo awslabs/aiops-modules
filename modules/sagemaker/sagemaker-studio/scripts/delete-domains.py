@@ -68,7 +68,7 @@ if __name__ == "__main__":
                         AppName=app["AppName"],
                     )
                 else:
-                    print("App already delted")
+                    print("App already deleted")
             except Exception as e:
                 print(f"\tError deleting app: {e}")
 
