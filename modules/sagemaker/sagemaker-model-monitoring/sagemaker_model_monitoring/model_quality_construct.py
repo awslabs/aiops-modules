@@ -1,3 +1,4 @@
+from time import time
 from typing import Any, List, Optional
 
 from aws_cdk import aws_sagemaker as sagemaker
@@ -38,6 +39,10 @@ class ModelQualityConstruct(Construct):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
+        # it to autogenerate it. Generate one which will hopefully not conflict.
+        job_definition_name = f"{endpoint_name}-model-quality-{int(time())}"
+
         model_quality_job_definition = sagemaker.CfnModelQualityJobDefinition(
             self,
             "ModelQualityJobDefinition",
@@ -77,7 +82,7 @@ class ModelQualityConstruct(Construct):
                 ],
                 kms_key_id=kms_key_id,
             ),
-            job_definition_name=f"{endpoint_name}-model-quality-def",
+            job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
             model_quality_baseline_config=sagemaker.CfnModelQualityJobDefinition.ModelQualityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelQualityJobDefinition.ConstraintsResourceProperty(
@@ -106,6 +111,6 @@ class ModelQualityConstruct(Construct):
                     schedule_expression=schedule_expression,
                 ),
             ),
-            monitoring_schedule_name=f"{endpoint_name}-model-quality",
+            monitoring_schedule_name=f"{job_definition_name}-schedule",
         )
         model_quality_monitor_schedule.add_dependency(model_quality_job_definition)
