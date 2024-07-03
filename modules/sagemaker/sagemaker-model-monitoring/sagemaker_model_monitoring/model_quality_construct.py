@@ -1,8 +1,9 @@
-from time import time
 from typing import Any, List, Optional
 
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
+
+from sagemaker_model_monitoring.utils import generate_unique_id
 
 
 class ModelQualityConstruct(Construct):
@@ -41,7 +42,28 @@ class ModelQualityConstruct(Construct):
 
         # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
         # it to autogenerate it. Generate one which will hopefully not conflict.
-        job_definition_name = f"{endpoint_name}-model-quality-{int(time())}"
+        unique_id = generate_unique_id(
+            monitor_image_uri,
+            endpoint_name,
+            model_bucket_name,
+            model_quality_checkstep_output_prefix,
+            model_quality_output_prefix,
+            ground_truth_prefix,
+            kms_key_id,
+            model_monitor_role_arn,
+            security_group_id,
+            subnet_ids,
+            instance_count,
+            instance_type,
+            instance_volume_size_in_gb,
+            max_runtime_in_seconds,
+            problem_type,
+            inference_attribute,
+            probability_attribute,
+            probability_threshold_attribute,
+            schedule_expression,
+        )
+        job_definition_name = f"{endpoint_name}-model-quality-{unique_id}"
 
         model_quality_job_definition = sagemaker.CfnModelQualityJobDefinition(
             self,

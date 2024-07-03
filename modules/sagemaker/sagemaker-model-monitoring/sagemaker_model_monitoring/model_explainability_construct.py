@@ -1,8 +1,9 @@
-from time import time
 from typing import Any, List, Optional
 
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
+
+from sagemaker_model_monitoring.utils import generate_unique_id
 
 
 class ModelExplainabilityConstruct(Construct):
@@ -40,7 +41,27 @@ class ModelExplainabilityConstruct(Construct):
 
         # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
         # it to autogenerate it. Generate one which will hopefully not conflict.
-        job_definition_name = f"{endpoint_name}-model-explain-{int(time())}"
+        unique_id = generate_unique_id(
+            clarify_image_uri,
+            endpoint_name,
+            model_bucket_name,
+            model_explainability_checkstep_output_prefix,
+            model_explainability_checkstep_analysis_config_prefix,
+            model_explainability_output_prefix,
+            kms_key_id,
+            model_monitor_role_arn,
+            security_group_id,
+            subnet_ids,
+            instance_count,
+            instance_type,
+            instance_volume_size_in_gb,
+            max_runtime_in_seconds,
+            features_attribute,
+            inference_attribute,
+            probability_attribute,
+            schedule_expression,
+        )
+        job_definition_name = f"{endpoint_name}-model-explain-{unique_id}"
 
         # To match the defaults in SageMaker.
         if model_explainability_checkstep_analysis_config_prefix is None:

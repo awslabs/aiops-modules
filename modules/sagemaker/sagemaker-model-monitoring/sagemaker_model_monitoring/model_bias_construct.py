@@ -1,8 +1,9 @@
-from time import time
 from typing import Any, List, Optional
 
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
+
+from sagemaker_model_monitoring.utils import generate_unique_id
 
 
 class ModelBiasConstruct(Construct):
@@ -42,7 +43,29 @@ class ModelBiasConstruct(Construct):
 
         # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
         # it to autogenerate it. Generate one which will hopefully not conflict.
-        job_definition_name = f"{endpoint_name}-model-bias-{int(time())}"
+        unique_id = generate_unique_id(
+            clarify_image_uri,
+            endpoint_name,
+            model_bucket_name,
+            model_bias_checkstep_output_prefix,
+            model_bias_checkstep_analysis_config_prefix,
+            model_bias_output_prefix,
+            ground_truth_prefix,
+            kms_key_id,
+            model_monitor_role_arn,
+            security_group_id,
+            subnet_ids,
+            instance_count,
+            instance_type,
+            instance_volume_size_in_gb,
+            max_runtime_in_seconds,
+            features_attribute,
+            inference_attribute,
+            probability_attribute,
+            probability_threshold_attribute,
+            schedule_expression,
+        )
+        job_definition_name = f"{endpoint_name}-model-bias-{unique_id}"
 
         # To match the defaults in SageMaker.
         if model_bias_checkstep_analysis_config_prefix is None:
