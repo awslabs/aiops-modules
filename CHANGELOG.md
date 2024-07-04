@@ -24,9 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix inputs for `bedrock-finetuning` module not working
 - add `retention-type` argument for the bucket in the `bedrock-finetuning` module
 - fix broken dependencies for `examples/airflow-dags`
-- use `add_dependency` to avoid deprecation warnings from CDK.
-- Various typo fixes.
-- Various clean-ups to the SageMaker Service Catalog templates.
+- use `add_dependency` to avoid deprecation warnings from CDK
+- various typo fixes
+- various clean-ups to the SageMaker Service Catalog templates
+- fix opensearch removal policy
 
 ## v1.2.0
 

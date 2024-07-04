@@ -18,6 +18,12 @@ The template contains an example SageMaker Pipeline to train a model on Abalone 
 
 ![Abalone with XGBoost](docs/_static/abalone-xgboost-template.png "Abalone with XGBoost Template Architecture")
 
+#### LLM evaluate template
+
+This project template contains SageMaker pipeline that performs LLM evaluation. 
+
+![LLM evaluate template](docs/_static/llm-evaluate.png "LLM Evaluate Template Architecture")
+
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 
 #### Batch Inference Template
