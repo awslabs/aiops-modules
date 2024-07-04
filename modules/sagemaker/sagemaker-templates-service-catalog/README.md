@@ -23,6 +23,7 @@ The template contains an example SageMaker Pipeline to train a model on Abalone 
 This project template contains SageMaker pipeline that performs LLM evaluation. 
 
 ![LLM evaluate template](docs/_static/llm-evaluate.png "LLM Evaluate Template Architecture")
+![SM pipeline graph](docs/_static/llm-evaluation-pipeline-graph.png "SM Pipeline graph")
 
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 
