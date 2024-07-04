@@ -58,7 +58,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
         kms_key_arn
             The KMS Key ARN to encrypt model artifacts.
         retain_on_delete
-            Wether or not to retain model package resources on delete. Defaults True. This applies only
+            Whether to retain model package resources on delete. Defaults True. This applies only
             to the sagemaker model package resources and not to the resources in this stack.
         """
         super().__init__(scope, construct_id, **kwargs)

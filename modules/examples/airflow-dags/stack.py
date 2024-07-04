@@ -130,7 +130,7 @@ class DagResources(Stack):
                 ),
                 NagPackSuppression(
                     id="AwsSolutions-IAM5",
-                    reason="Resource access restriced to MLOPS resources.",
+                    reason="Resource access restricted to MLOPS resources.",
                 ),
                 NagPackSuppression(
                     id="AwsSolutions-IAM4",
