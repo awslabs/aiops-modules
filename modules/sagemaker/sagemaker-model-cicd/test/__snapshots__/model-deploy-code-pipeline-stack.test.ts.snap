@@ -559,7 +559,6 @@ exports[`ModelDeployCodePipelineStack to match snapshot 1`] = `
     },
     "build": {
       "commands": [
-        "echo hello2",
         "npm install",
         "npx cdk synth --no-lookups"
       ]

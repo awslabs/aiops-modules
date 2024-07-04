@@ -109,7 +109,7 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
             },
           ),
         },
-        commands: ['echo hello2', 'npm install', 'npx cdk synth --no-lookups'],
+        commands: ['npm install', 'npx cdk synth --no-lookups'],
         buildEnvironment: {
           environmentVariables: {
             // this will be fetched from SSM param store and set as env variable automatically by codebuild
