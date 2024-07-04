@@ -24,6 +24,7 @@ new MLOpsCodePipelineStack(app, stackName, {
     account,
     region,
   },
+  // pass the tags in props so they can shared across other stacks deployed in codepipeline
   tags: {
     SeedFarmerProjectName: sfProjectName,
     SeedFarmerDeploymentName: sfDeploymentName,
@@ -31,10 +32,6 @@ new MLOpsCodePipelineStack(app, stackName, {
   },
   ...moduleParameters,
 });
-
-cdk.Tags.of(app).add('SeedFarmerProjectName', sfProjectName);
-cdk.Tags.of(app).add('SeedFarmerDeploymentName', sfDeploymentName);
-cdk.Tags.of(app).add('SeedFarmerModuleName', sfModuleName);
 
 cdk.Aspects.of(app).add(new AwsSolutionsChecks());
 
