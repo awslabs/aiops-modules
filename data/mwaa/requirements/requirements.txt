@@ -1,16 +1,16 @@
 --constraint https://raw.githubusercontent.com/awslabs/aiops-modules/main/data/mwaa/requirements/constraint-requirements.txt
 
-aiobotocore==2.11.2 
+aiobotocore==2.11.2
 aioitertools==0.11.0 
 cloudpickle==2.2.1 
 contextlib2==21.6.0 
-dill==0.3.8 
+dill==0.3.8
 docker==7.0.0 
 google-pasta==0.2.0 
-multiprocess==0.70.16 
+multiprocess==0.70.16
 numpy==1.24.4 
 pandas==2.1.4 
-pathos==0.3.2 
+pathos==0.2.5
 pox==0.3.4 
 ppft==1.7.6.8
 s3fs==2023.12.2 

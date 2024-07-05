@@ -44,7 +44,7 @@ class Product(servicecatalog.ProductStack):
     ) -> None:
         super().__init__(scope, construct_id)
 
-        # Define required parmeters
+        # Define required parameters
         project_name = aws_cdk.CfnParameter(
             self,
             "SageMakerProjectName",

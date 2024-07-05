@@ -10,7 +10,7 @@ This module creates a SageMaker Notebook instance.
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 

@@ -131,7 +131,7 @@ def get_pipeline(
             ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
             ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
         ],
-        code="source_scripts/preprocessing/prepare_abalone_data/main.py",
+        code="source_scripts/preprocessing.py",
         job_arguments=["--input-data", input_data],
     )
 
@@ -218,7 +218,7 @@ def get_pipeline(
         outputs=[
             ProcessingOutput(output_name="evaluation", source="/opt/ml/processing/evaluation"),
         ],
-        code="source_scripts/evaluate/evaluate_xgboost/main.py",
+        code="source_scripts/evaluate.py",
         property_files=[evaluation_report],
     )
 

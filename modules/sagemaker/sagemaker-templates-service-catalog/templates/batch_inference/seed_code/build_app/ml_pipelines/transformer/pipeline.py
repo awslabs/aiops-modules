@@ -144,7 +144,7 @@ def get_pipeline(
         outputs=[
             ProcessingOutput(output_name="output_data", source="/opt/ml/processing/output_data"),
         ],
-        code="source_scripts/preprocessing/prepare_abalone_data/main.py",
+        code="source_scripts/preprocessing.py",
         job_arguments=[
             "--input-data",
             input_data,

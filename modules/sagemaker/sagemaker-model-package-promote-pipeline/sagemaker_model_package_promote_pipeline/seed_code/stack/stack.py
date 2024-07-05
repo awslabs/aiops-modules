@@ -42,7 +42,7 @@ class SagemakerModelPackageStack(Stack):
         bucket_name
             The S3 bucket name to store model artifacts.
         retain_on_delete, optional
-            Wether or not to retain resources on delete. Defaults True.
+            Whether to retain resources on delete. Defaults True.
         model_package_group_name, optional
             The SageMaker model package group name to register the model package. Defaults None. If None
             it will use the model package group name that is in the model metadata.

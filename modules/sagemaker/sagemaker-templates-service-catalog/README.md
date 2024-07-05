@@ -16,7 +16,7 @@ The module contains ogranizational SageMaker Project Templates vended as Service
 
 The template contains an example SageMaker Pipeline to train a model on Abalone dataset using XGBoost, and perform model evaluation.
 
-![Abalone wtih XGBoost](docs/_static/abalone-xgboost-template.png "Abalone with XGBoost Template Architecture")
+![Abalone with XGBoost](docs/_static/abalone-xgboost-template.png "Abalone with XGBoost Template Architecture")
 
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 

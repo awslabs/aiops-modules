@@ -68,7 +68,7 @@ def process(efs_id: str, domain_id: str) -> None:
         print(f"Deleting mount target {mount_target_id}")
         delete_mount_target(mount_target_id)
 
-    print("Sleeping to allow mount targts to delete")
+    print("Sleeping to allow mount targets to delete")
     time.sleep(35)
     print(f"Deleting FileSystem {efs_id}")
     delete_file_system(efs_id=efs_id)

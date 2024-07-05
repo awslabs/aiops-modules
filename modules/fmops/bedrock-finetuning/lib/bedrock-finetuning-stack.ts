@@ -17,6 +17,7 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
   deploymentName?: string;
   moduleName?: string;
   bucketName?: string;
+  removalPolicy: "DESTROY" | "RETAIN";
   bedrockBaseModelID: string;
   vpcId?: string;
   subnetIds: string[];
@@ -24,6 +25,7 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
 
 export class AmazonBedrockFinetuningStack extends cdk.Stack {
   bucketName: string;
+
   constructor(
     scope: Construct,
     id: string,
@@ -32,15 +34,7 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     super(scope, id, props);
 
     // create S3 bucket
-    const inputBucket = props?.bucketName
-      ? s3.Bucket.fromBucketName(this, "ExistingBucket", props.bucketName)
-      : new s3.Bucket(this, "BedrockBucket", {
-          bucketName: `${props.deploymentName}-${props.moduleName}-${this.account}`,
-          removalPolicy: cdk.RemovalPolicy.RETAIN,
-          eventBridgeEnabled: true,
-          enforceSSL: true,
-          encryption: s3.BucketEncryption.KMS_MANAGED,
-        });
+    const inputBucket = this.getBucket(props);
     this.bucketName = inputBucket.bucketName;
 
     // Create a KMS Key
@@ -232,5 +226,23 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
       ],
       true,
     );
+  }
+
+  private getBucket(props: AmazonBedrockFinetuningStackProps): s3.IBucket {
+    if (props.bucketName) {
+      return s3.Bucket.fromBucketName(this, "BedrockBucket", props.bucketName);
+    } else {
+      return new s3.Bucket(this, "BedrockBucket", {
+        bucketName: `${props.deploymentName}-${props.moduleName}-${this.account}`,
+        removalPolicy:
+          props.removalPolicy == "DESTROY"
+            ? cdk.RemovalPolicy.DESTROY
+            : cdk.RemovalPolicy.RETAIN,
+        autoDeleteObjects: props.removalPolicy == "DESTROY",
+        eventBridgeEnabled: true,
+        enforceSSL: true,
+        encryption: s3.BucketEncryption.KMS_MANAGED,
+      });
+    }
   }
 }

@@ -37,7 +37,7 @@ class SagemakerModelPackageGroupStack(Stack):
         model_package_group_name
             The Model Package Group name.
         retain_on_delete, optional
-            Wether or not to retain resources on delete. Defaults True.
+            Whether to retain resources on delete. Defaults True.
         target_event_bus_arn, optional
             The event bus arn in to send events model package group state change events to.
             It can be a bus located in another account. Defaults None.

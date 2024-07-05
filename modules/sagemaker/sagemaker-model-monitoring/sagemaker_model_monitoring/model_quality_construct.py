@@ -108,4 +108,4 @@ class ModelQualityConstruct(Construct):
             ),
             monitoring_schedule_name=f"{endpoint_name}-model-quality",
         )
-        model_quality_monitor_schedule.add_depends_on(model_quality_job_definition)
+        model_quality_monitor_schedule.add_dependency(model_quality_job_definition)
