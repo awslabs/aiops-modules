@@ -4,6 +4,7 @@ import logging
 import os
 import re
 import tarfile
+from typing import Any
 
 import torch
 from datasets import load_from_disk
@@ -16,7 +17,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
-def clean_prediction(generated_response: str) -> str:
+def clean_prediction(generated_response: str) -> Any:
     """
     Extract SQL statements from generated response.
     Args:
@@ -39,7 +40,7 @@ def clean_prediction(generated_response: str) -> str:
         return ""  # Return empty string to avoid issues downstream
 
 
-def normalise_string(s) -> str:
+def normalise_string(s: str) -> str:
     """
     Normalise string using pre-defined rules to allow for easier evaluation.
     For example, if the prediction only differs in letter case or spaces.
@@ -61,7 +62,7 @@ def normalise_string(s) -> str:
     return normalized
 
 
-def evaluate_model(args):
+def evaluate_model(args: Any) -> None:
     """
     Evaluate the model performance.
 

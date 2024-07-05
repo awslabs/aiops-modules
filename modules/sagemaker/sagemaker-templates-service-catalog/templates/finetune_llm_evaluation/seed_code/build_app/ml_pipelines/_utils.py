@@ -46,9 +46,10 @@
 from __future__ import absolute_import
 
 import ast
+from typing import Any, Dict, Optional
 
 
-def get_pipeline_driver(module_name, passed_args=None):
+def get_pipeline_driver(module_name: str, passed_args: Optional[str] = None) -> Any:
     """Gets the driver for generating your pipeline definition.
 
     Pipeline modules must define a get_pipeline() module-level method.
@@ -65,7 +66,7 @@ def get_pipeline_driver(module_name, passed_args=None):
     return _imports.get_pipeline(**kwargs)
 
 
-def convert_struct(str_struct=None):
+def convert_struct(str_struct: Optional[str] = None) -> Any:
     """convert the string argument to it's proper type
 
     Args:
@@ -77,7 +78,7 @@ def convert_struct(str_struct=None):
     return ast.literal_eval(str_struct) if str_struct else {}
 
 
-def get_pipeline_custom_tags(module_name, args, tags):
+def get_pipeline_custom_tags(module_name: str, args: Optional[str], tags: Dict[str, Any]) -> Any:
     """Gets the custom tags for pipeline
 
     Returns:

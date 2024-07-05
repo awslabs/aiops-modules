@@ -16,10 +16,11 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
+from typing import Any, Dict
 
 import setuptools
 
-about = {}
+about: Dict[str, Any] = {}
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "ml_pipelines", "__version__.py")) as f:
     exec(f.read(), about)

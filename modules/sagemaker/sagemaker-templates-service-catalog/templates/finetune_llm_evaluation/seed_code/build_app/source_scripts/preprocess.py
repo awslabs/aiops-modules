@@ -1,5 +1,6 @@
 import argparse
 import logging
+from typing import Any
 
 from data_processing import CodeLlamaDataProcessor
 
@@ -8,7 +9,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
-def preprocess(args):
+def preprocess(args: Any) -> None:
     """
     Preprocess the dataset and save it to disk.
 

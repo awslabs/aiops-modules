@@ -1,6 +1,7 @@
 import logging
 from functools import partial
 from itertools import chain
+from typing import Any, Dict
 
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer
@@ -29,16 +30,16 @@ class CodeLlamaDataProcessor:
     {query}
     {eos_token}
     """
-    REMAINDER = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
-    MODEL_ID = "codellama/CodeLlama-7b-hf"
-    TOKENIZER = AutoTokenizer.from_pretrained(MODEL_ID)
+    REMAINDER: Dict[str, Any] = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
+    MODEL_ID: str = "codellama/CodeLlama-7b-hf"
+    TOKENIZER: Any = AutoTokenizer.from_pretrained(MODEL_ID)
 
     def __init__(self, dataset: Dataset, is_training: bool):
         self.dataset = dataset
         self.is_training = is_training
 
     @staticmethod
-    def load_hf_dataset(dataset_name: str):
+    def load_hf_dataset(dataset_name: str) -> Any:
         if isinstance(dataset_name, str):
             try:
                 dataset = load_dataset(dataset_name)
@@ -51,7 +52,7 @@ class CodeLlamaDataProcessor:
 
         return dataset
 
-    def _assemble_prompt(self, sample: dict) -> str:
+    def _assemble_prompt(self, sample: Dict[str, Any]) -> str:
         prompt = self.PROMPT_TEMPLATE.format(
             question=sample["question"],
             schema=sample["schema"],
@@ -62,7 +63,7 @@ class CodeLlamaDataProcessor:
         )
         return prompt
 
-    def template_dataset(self, sample: dict) -> dict:
+    def template_dataset(self, sample: Dict[str, Any]) -> Dict[str, Any]:
         prompt = self._assemble_prompt(sample=sample)
         sample["prompt"] = prompt.strip()
 
@@ -71,7 +72,7 @@ class CodeLlamaDataProcessor:
         return sample
 
     @classmethod
-    def _chunk(cls, sample, chunk_length: int):
+    def _chunk(cls, sample: Dict[str, Any], chunk_length: int) -> Any:
         concatenated_examples = {k: list(chain(*sample[k])) for k in sample.keys()}
         concatenated_examples = {k: cls.REMAINDER[k] + concatenated_examples[k] for k in concatenated_examples.keys()}
 
@@ -90,7 +91,7 @@ class CodeLlamaDataProcessor:
         return result
 
     @classmethod
-    def chunk_and_tokenize(cls, prompt_dataset: Dataset, chunk_length: int):
+    def chunk_and_tokenize(cls, prompt_dataset: Dataset, chunk_length: int) -> Any:
         chunked_tokenized_dataset = prompt_dataset.map(
             lambda sample: cls.TOKENIZER(sample["prompt"]),
             batched=True,
@@ -101,9 +102,9 @@ class CodeLlamaDataProcessor:
         )
         return chunked_tokenized_dataset
 
-    def _get_sample_prompts(self):
+    def _get_sample_prompts(self) -> Any:
         prompt_dataset = self.dataset.map(self.template_dataset, remove_columns=list(self.dataset.features))
         return prompt_dataset
 
-    def prepare_data(self):
+    def prepare_data(self) -> Any:
         return self._get_sample_prompts()

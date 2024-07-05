@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from typing import Any, List
 
 import bitsandbytes as bnb
 import torch
@@ -31,7 +32,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
-def find_all_linear_names(model) -> list[str]:
+def find_all_linear_names(model: PeftModel) -> List[str]:
     """
     Find all the names of linear layers in the model.
     Args:
@@ -51,7 +52,7 @@ def find_all_linear_names(model) -> list[str]:
     return list(lora_module_names)
 
 
-def create_peft_model(model, gradient_checkpointing: bool = True, bf16: bool = True) -> PeftModel:
+def create_peft_model(model: Any, gradient_checkpointing: bool = True, bf16: bool = True) -> PeftModel:
     """
     Create a PEFT model from a HuggingFace model.
 
@@ -64,7 +65,7 @@ def create_peft_model(model, gradient_checkpointing: bool = True, bf16: bool = T
 
     """
     # prepare int-4 model for training
-    model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=gradient_checkpointing)
+    model: PeftModel = prepare_model_for_kbit_training(model, use_gradient_checkpointing=gradient_checkpointing)  # type: ignore[no-redef]
     if gradient_checkpointing:
         model.gradient_checkpointing_enable()
 
@@ -100,7 +101,7 @@ def create_peft_model(model, gradient_checkpointing: bool = True, bf16: bool = T
     return model
 
 
-def train(args):
+def train(args: Any) -> None:
     """
     Fine-tune model from HuggingFace and save it.
     Args:

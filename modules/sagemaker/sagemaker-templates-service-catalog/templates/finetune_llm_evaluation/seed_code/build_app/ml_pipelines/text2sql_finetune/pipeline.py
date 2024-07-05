@@ -10,6 +10,7 @@ Implements a get_pipeline(**kwargs) method.
 """
 
 import logging
+from typing import Any, Optional
 
 import boto3
 import sagemaker
@@ -46,7 +47,7 @@ logger = logging.getLogger()
 SCRIPTS_DIR_PATH = "source_scripts"
 
 
-def get_sagemaker_client(region):
+def get_sagemaker_client(region: str) -> Any:
     """Gets the sagemaker client.
 
     Args:
@@ -61,7 +62,7 @@ def get_sagemaker_client(region):
     return sagemaker_client
 
 
-def get_session(region, default_bucket):
+def get_session(region: str, default_bucket: Optional[str]) -> sagemaker.session.Session:
     """Gets the sagemaker session based on the region.
 
     Args:
@@ -84,7 +85,7 @@ def get_session(region, default_bucket):
     )
 
 
-def get_pipeline_session(region, default_bucket):
+def get_pipeline_session(region: str, default_bucket: Optional[str]) -> PipelineSession:
     """Gets the pipeline session based on the region.
 
     Args:
@@ -105,7 +106,7 @@ def get_pipeline_session(region, default_bucket):
     )
 
 
-def get_pipeline_custom_tags(new_tags, region, sagemaker_project_name=None):
+def get_pipeline_custom_tags(new_tags: Any, region: str, sagemaker_project_name: Optional[str] = None) -> Any:
     try:
         sm_client = get_sagemaker_client(region)
         response = sm_client.describe_project(ProjectName=sagemaker_project_name)
@@ -120,22 +121,22 @@ def get_pipeline_custom_tags(new_tags, region, sagemaker_project_name=None):
 
 
 def get_pipeline(
-    region,
-    sagemaker_project_name=None,
-    role=None,
-    default_bucket=None,
-    bucket_kms_id=None,
-    model_package_group_name="Text2SQLGenerationPackageGroup",
-    pipeline_name="Text2SQLSQLGenerationPipeline",
-    base_job_prefix="Text2sql",
-    processing_instance_count=1,
-    processing_instance_type="ml.g4dn.xlarge",  # small gpu instance for data preprocessing
-    training_instance_type="ml.g5.12xlarge",  # "ml.g5.24xlarge", # larger instance type for training if needed
-    evaluation_instance_type="ml.g4dn.12xlarge",
-    transformers_version="4.28.1",
-    pytorch_version="2.0.0",
-    py_version="py310",
-):
+    region: str,
+    sagemaker_project_name: Optional[str] = None,
+    role: Optional[str] = None,
+    default_bucket: Optional[str] = None,
+    bucket_kms_id: Optional[str] = None,
+    model_package_group_name: str = "Text2SQLGenerationPackageGroup",
+    pipeline_name: str = "Text2SQLSQLGenerationPipeline",
+    base_job_prefix: str = "Text2sql",
+    processing_instance_count: int = 1,
+    processing_instance_type: str = "ml.g4dn.xlarge",  # small gpu instance for data preprocessing
+    training_instance_type: str = "ml.g5.12xlarge",  # "ml.g5.24xlarge", # larger instance type for training if needed
+    evaluation_instance_type: str = "ml.g4dn.12xlarge",
+    transformers_version: str = "4.28.1",
+    pytorch_version: str = "2.0.0",
+    py_version: str = "py310",
+) -> Pipeline:
     """Gets a SageMaker ML Pipeline instance to fine-tune LLMs with HuggingFace scripts.
 
     Args:
