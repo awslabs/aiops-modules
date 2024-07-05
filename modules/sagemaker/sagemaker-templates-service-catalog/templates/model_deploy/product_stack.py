@@ -6,14 +6,12 @@ from typing import Any, List
 
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnParameter, Tags
+from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
-from aws_cdk import aws_s3 as s3
-from aws_cdk import CustomResource
-from aws_cdk import Duration
 from aws_cdk import aws_lambda as lambdafunction
+from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
 
@@ -312,6 +310,6 @@ def handler(event, context):
             service_token=custom_resource_lambda.function_arn,
             properties={
                 "CodeBuildProjectName": project.project_name,
-            }
+            },
         )
         custom_resource.node.add_dependency(project)
