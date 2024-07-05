@@ -20,7 +20,7 @@ The template contains an example SageMaker Pipeline to train a model on Abalone 
 
 #### LLM fine-tuning and evaluation
 
-This project template contains SageMaker pipeline that performs LLM fine-tuning and evaluation. 
+The template is based on LLM fine-tuning template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/tree/main/mlops-multi-account-cdk/mlops-sm-project-template/mlops_sm_project_template/templates/finetune_deploy_llm_product).
 
 ![LLM fine-tuning and evaluation template](docs/_static/llm-evaluate.png "LLM Evaluate Template Architecture")
 ![SM pipeline graph](docs/_static/llm-evaluation-pipeline-graph.png "SM Pipeline graph")

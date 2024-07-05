@@ -19,11 +19,10 @@ from templates.finetune_llm_evaluation.pipeline_constructs.build_pipeline_constr
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = (
-        "This template includes a model building pipeline that includes a workflow to pre-process, "
-        "train, evaluate and register a model. The deploy pipeline creates a dev,preprod and "
-        "production endpoint. The target DEV/PREPROD/PROD accounts are parameterized in this template."
+        "This template includes a model building pipeline that includes a workflow to pre-process data, "
+        "fine-tune, evaluate and register a Large Language Model."
     )
-    TEMPLATE_NAME: str = "Fine-tune & Deploy LLMOps template (with HuggingFace) (multi-account)"
+    TEMPLATE_NAME: str = "Fine-tune & evaluate CodeLlama LLM (with HuggingFace)"
 
     def __init__(
         self,
