@@ -11,6 +11,9 @@ from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
+from aws_cdk import CustomResource
+from aws_cdk import Duration
+from aws_cdk import aws_lambda as lambdafunction
 from constructs import Construct
 
 
@@ -230,3 +233,85 @@ class Product(servicecatalog.ProductStack):
                     ],
                 )
             )
+        # Create custom resource as lamda function that triggers codebuild project
+        custom_resource_lambda_role = iam.Role(
+            self,
+            "CodeBuildTriggerCustomResourceLambdaRole",
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2ContainerRegistryPowerUser"),
+            ],
+            inline_policies={
+                "CodeBuildTriggerCustomResourceLambdaPolicy": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "codebuild:StartBuild",
+                                "codebuild:BatchGetBuilds",
+                                "codebuild:DescribeTestCases",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=[project.project_arn],
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=["*"],
+                        ),
+                    ]
+                )
+            },
+        )
+        lambda_func_code = """
+import boto3
+import cfnresponse
+
+def handler(event, context):
+    print(f"Event: {event}")
+
+    # Get the CodeBuild project name from the event parameters
+    project_name = event["ResourceProperties"]["CodeBuildProjectName"]
+
+    try:
+        # Create a CodeBuild client
+        codebuild = boto3.client("codebuild")
+
+        # Start the CodeBuild project
+        response = codebuild.start_build(projectName=project_name)
+        print(f"CodeBuild project started: {response}")
+
+        # Send a successful response back to CloudFormation
+        cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+
+    except Exception as e:
+        print(f"Error: {e}")
+        # Send a failed response back to CloudFormation
+        cfnresponse.send(event, context, cfnresponse.FAILED, {})
+
+"""
+        custom_resource_lambda = lambdafunction.Function(
+            self,
+            "CustomResourceLambda",
+            runtime=lambdafunction.Runtime.PYTHON_3_9,
+            handler="index.handler",
+            role=custom_resource_lambda_role,
+            code=lambdafunction.Code.from_inline(lambda_func_code),
+            environment={
+                "CODE_BUILD_PROJECT_NAME": project.project_name,
+            },
+            timeout=Duration.minutes(5),
+        )
+
+        custom_resource = CustomResource(
+            self,
+            "Custom::CodeBuildTriggerResourceType",
+            service_token=custom_resource_lambda.function_arn,
+            properties={
+                "CodeBuildProjectName": project.project_name,
+            }
+        )
+        custom_resource.node.add_dependency(project)
