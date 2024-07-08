@@ -80,7 +80,7 @@ def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::ServiceCatalog::Portfolio", 1)
-    template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 4)
+    template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 5)
 
 
 def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:
