@@ -35,7 +35,7 @@ required_packages = [
     "scipy==1.9.3",
     "diffusers==0.11.1",
     "datasets==2.8.0",
-    "transformers==4.33.0",
+    "transformers==4.38.0",
     "torch>=2.0.0",
     "peft==0.4.0",
     "accelerate==0.21.0",
