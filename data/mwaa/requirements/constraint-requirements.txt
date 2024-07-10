@@ -135,7 +135,7 @@ apache-airflow-providers-fab==1.1.1
 apache-airflow-providers-facebook==3.5.1
 apache-airflow-providers-ftp==3.9.1
 apache-airflow-providers-github==2.6.1
-apache-airflow-providers-google==10.19.0
+apache-airflow-providers-google==10.20.0
 apache-airflow-providers-grpc==3.5.1
 apache-airflow-providers-hashicorp==3.7.1
 apache-airflow-providers-http==4.11.1
@@ -276,7 +276,7 @@ decorator==5.1.1
 defusedxml==0.7.1
 deltalake==0.17.4
 diagrams==0.23.4
-dill==0.3.1.1
+dill==0.3.8
 distlib==0.3.8
 distro==1.9.0
 dnspython==2.6.1
@@ -310,14 +310,14 @@ gcsfs==2023.12.2.post1
 geomet==0.2.1.post1
 gevent==24.2.1
 gitdb==4.0.11
-google-ads==24.0.0
+google-ads==24.1.0
 google-analytics-admin==0.22.7
 google-api-core==2.19.0
 google-api-python-client==2.132.0
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.0
 google-auth==2.29.0
-google-cloud-aiplatform==1.53.0
+google-cloud-aiplatform==1.54.0
 google-cloud-appengine-logging==1.4.3
 google-cloud-audit-log==0.2.5
 google-cloud-automl==2.13.3
@@ -380,9 +380,9 @@ hatchling==1.24.2
 hdfs==2.7.3
 hmsclient==0.1.1
 hpack==4.0.0
-httpcore==0.16.3
+httpcore==0.18.0
 httplib2==0.22.0
-httpx==0.23.3
+httpx==0.25.0
 humanize==4.9.0
 hvac==2.2.0
 hyperframe==6.0.1
@@ -717,7 +717,7 @@ uc-micro-py==1.0.3
 unicodecsv==0.14.1
 universal_pathlib==0.2.2
 uritemplate==4.1.1
-urllib3==2.2.1
+urllib3==2.2.2
 userpath==1.9.2
 uv==0.2.2
 validators==0.28.3
