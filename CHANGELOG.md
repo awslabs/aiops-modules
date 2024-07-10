@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - various typo fixes
 - various clean-ups to the SageMaker Service Catalog templates
 - fix opensearch removal policy
+- update mwaa constraints
 
 ## v1.2.0
 
