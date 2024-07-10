@@ -20,7 +20,7 @@ jobs:
     name: Install Requirements
     runs-on: ubuntu-latest
     env:
-      AIRFLOW_VERSION: 2.8.1
+      AIRFLOW_VERSION: 2.9.2
     steps:
       - name: Checkout
         uses: actions/checkout@v3
