@@ -709,7 +709,7 @@ yandexcloud==0.253.0
 yarl==1.9.4
 zeep==4.2.1
 zenpy==2.0.45
-zipp==3.17.0
+zipp==3.19.1
 zope.event==5.0
 zope.interface==6.1
 zstandard==0.22.0
