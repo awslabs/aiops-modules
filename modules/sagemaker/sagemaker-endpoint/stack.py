@@ -147,7 +147,7 @@ class DeployEndpointStack(Stack):
         self.model_package_arn = model_package_arn
 
         # Create model instance
-        model_name: str = f"{id}-model-{get_timestamp()}"
+        model_name: str = f"{id[:42]}-model-{get_timestamp()}"
         model = sagemaker.CfnModel(
             self,
             "Model",
@@ -195,7 +195,7 @@ class DeployEndpointStack(Stack):
         else:
             data_capture_config = None
 
-        endpoint_config_name: str = f"{id}-conf-{get_timestamp()}"
+        endpoint_config_name: str = f"{id[:42]}-conf-{get_timestamp()}"
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
             "Endpoint Configuration",
