@@ -1,5 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creates AIOps setup for Developers
+Parameters:
+  VersionTag:
+    Type: String
+    Default: v1.2.0
+    Description: Version. Should reference version tag in the repository e.g v1.2.0.
+  ManifestPath:
+    Type: String
+    Default: manifests/mlops-sagemaker.yaml
+    AllowedValues:
+      - manifests/mlops-sagemaker/deployment.yaml
+      - manifests/mlflow-experiments-tracking/deployment.yaml
+      - manifests/mwaa-ml-training/deployment.yaml
+      - manifests/fmops-qna-rag/deployment.yaml
+      - manifests/ray-on-eks/deployment.yaml
+    Description: Manifest to deploy. Must match one of the manifests in the repository.
 Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
@@ -84,6 +99,10 @@ Resources:
             Value: !Ref AWS::AccountId
           - Name: PRIMARY_REGION
             Value: !Ref AWS::Region
+          - Name: VERSION_TAG
+            Value: !Ref VersionTag
+          - Name: MANIFEST_PATH
+            Value: !Ref ManifestPath
           - Name: ROLE_ARN
             Value: !GetAtt CodeBuildRole.Arn
           - Name: url_path
@@ -118,7 +137,7 @@ Resources:
               commands:
                 - echo Build started on `date`
                 - echo 'Cloning aiops repo...'
-                - git clone https://github.com/awslabs/aiops-modules.git
+                - git clone https://github.com/awslabs/aiops-modules.git --branch ${VERSION_TAG}
                 - echo 'Cloning complete'
                 - cd aiops-modules/
                 - echo 'Installing dependencies...'
@@ -135,7 +154,7 @@ Resources:
                 - echo 'Preparing Manifest files'
                 - sed -i "s/us-east-1/${AWS_REGION}/g" manifests/*.yaml
                 - echo 'Deploying AIOPS manifest'
-                - seedfarmer apply manifests/uber-deployment.yaml --region ${AWS_REGION} --enable-session-timeout
+                - seedfarmer apply ${MANIFEST_PATH} --region ${AWS_REGION} --enable-session-timeout
                 - echo 'Deployment of aiops-modules manifest complete'
             post_build:
               commands:
