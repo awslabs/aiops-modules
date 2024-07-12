@@ -41,5 +41,9 @@ PROD_SECURITY_GROUP_IDS = json.loads(os.environ["PROD_SECURITY_GROUP_IDS"])
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "")
 PROJECT_ID = os.getenv("PROJECT_ID", "")
+DOMAIN_ID = os.getenv("DOMAIN_ID", None)
+DOMAIN_ARN = os.getenv("DOMAIN_ARN", None)
 
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)
+
+ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true") == "true"

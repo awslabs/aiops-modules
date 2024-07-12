@@ -16,7 +16,10 @@ from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
     DEV_ACCOUNT_ID,
+    DOMAIN_ARN,
+    DOMAIN_ID,
     ECR_REPO_ARN,
+    ENABLE_NETWORK_ISOLATION,
     MODEL_BUCKET_ARN,
     MODEL_PACKAGE_GROUP_NAME,
     PROJECT_ID,
@@ -85,6 +88,10 @@ class DeployEndpointStack(Stack):
         Tags.of(self).add("sagemaker:project-id", PROJECT_ID)
         Tags.of(self).add("sagemaker:project-name", PROJECT_NAME)
         Tags.of(self).add("sagemaker:deployment-stage", Stack.of(self).stack_name)
+        if DOMAIN_ID:
+            Tags.of(self).add("sagemaker:domain-id", DOMAIN_ID)
+        if DOMAIN_ARN:
+            Tags.of(self).add("sagemaker:domain-arn", DOMAIN_ARN)
 
         # iam role that would be used by the model endpoint to run the inference
         model_execution_policy = iam.ManagedPolicy(
@@ -175,6 +182,7 @@ class DeployEndpointStack(Stack):
             containers=[
                 sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=latest_approved_model_package)
             ],
+            enable_network_isolation=ENABLE_NETWORK_ISOLATION,
             vpc_config=vpc_config,
         )
 

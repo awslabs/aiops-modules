@@ -28,11 +28,14 @@ class DeployEndpointStack(Stack):
         id: str,
         sagemaker_project_id: Optional[str],
         sagemaker_project_name: Optional[str],
+        sagemaker_domain_id: Optional[str],
+        sagemaker_domain_arn: Optional[str],
         model_package_arn: Optional[str],
         model_package_group_name: Optional[str],
         model_execution_role_arn: Optional[str],
         vpc_id: str,
         subnet_ids: List[str],
+        enable_network_isolation: bool,
         model_artifacts_bucket_arn: Optional[str],
         ecr_repo_arn: Optional[str],
         endpoint_config_prod_variant: Dict[str, Any],
@@ -49,6 +52,10 @@ class DeployEndpointStack(Stack):
             Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         if sagemaker_project_name:
             Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         enable_data_capture = data_capture_sampling_percentage > 0
 
@@ -151,6 +158,7 @@ class DeployEndpointStack(Stack):
         model = sagemaker.CfnModel(
             self,
             "Model",
+            enable_network_isolation=enable_network_isolation,
             execution_role_arn=self.model_execution_role.role_arn,
             model_name=model_name,
             containers=[sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)],

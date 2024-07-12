@@ -47,6 +47,9 @@ class ModuleSettings(CdkBaseSettings):
     prod_subnet_ids: List[str] = Field(default=[])
     prod_security_group_ids: List[str] = Field(default=[])
 
+    sagemaker_domain_id: Optional[str] = Field(default=None)
+    sagemaker_domain_arn: Optional[str] = Field(default=None)
+
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

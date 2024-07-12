@@ -34,6 +34,8 @@ class ServiceCatalogStack(Stack):
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
         prod_security_group_ids: List[str],
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -100,6 +102,8 @@ class ServiceCatalogStack(Stack):
                 prod_region=prod_region,
                 prod_subnet_ids=prod_subnet_ids,
                 prod_security_group_ids=prod_security_group_ids,
+                sagemaker_domain_id=sagemaker_domain_id,
+                sagemaker_domain_arn=sagemaker_domain_arn,
             )
 
             product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)

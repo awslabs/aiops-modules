@@ -25,6 +25,8 @@ class DeployPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
+        domain_id: str,
+        domain_arn: str,
         model_bucket: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
         model_package_group_name: str,
@@ -42,6 +44,7 @@ class DeployPipelineConstruct(Construct):
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
         prod_security_group_ids: List[str],
+        enable_network_isolation: str,
         dev_account_id: str = Aws.ACCOUNT_ID,
         dev_region: str = Aws.REGION,
         **kwargs: Any,
@@ -63,6 +66,10 @@ class DeployPipelineConstruct(Construct):
         )
         aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-id", project_id)
         aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:project-name", project_name)
+        if domain_id:
+            aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:domain-id", domain_id)
+        if domain_arn:
+            aws_cdk.Tags.of(deploy_app_repository).add("sagemaker:domain-arn", domain_arn)
 
         cdk_synth_build_role = iam.Role(
             self,
@@ -166,6 +173,12 @@ class DeployPipelineConstruct(Construct):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
+                    **({} if domain_id is None else {"DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id)}),
+                    **(
+                        {}
+                        if domain_arn is None
+                        else {"DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn)}
+                    ),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
@@ -187,6 +200,7 @@ class DeployPipelineConstruct(Construct):
                     "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
                         value=json.dumps(prod_security_group_ids)
                     ),
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
                 },
             ),
         )
@@ -245,6 +259,12 @@ class DeployPipelineConstruct(Construct):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
+                    **({} if domain_id is None else {"DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id)}),
+                    **(
+                        {}
+                        if domain_arn is None
+                        else {"DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn)}
+                    ),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
@@ -262,6 +282,7 @@ class DeployPipelineConstruct(Construct):
                     "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
                     "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=prod_subnet_ids),
                     "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=prod_security_group_ids),
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
                 },
             ),
         )

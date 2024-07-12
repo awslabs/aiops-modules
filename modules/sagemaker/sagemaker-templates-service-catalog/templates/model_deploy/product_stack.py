@@ -38,6 +38,8 @@ class Product(servicecatalog.ProductStack):
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
         prod_security_group_ids: List[str],
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -107,8 +109,21 @@ class Product(servicecatalog.ProductStack):
             default=prod_region,
         ).value_as_string
 
+        enable_network_isolation = CfnParameter(
+            self,
+            "EnableNetworkIsolation",
+            type="String",
+            description="Enable network isolation",
+            allowed_values=["true", "false"],
+            default="false",
+        ).value_as_string
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
@@ -191,6 +206,8 @@ class Product(servicecatalog.ProductStack):
             "deploy",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
+            domain_id=sagemaker_domain_id,
+            domain_arn=sagemaker_domain_arn,
             model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_package_group_name=model_package_group_name,
@@ -208,4 +225,5 @@ class Product(servicecatalog.ProductStack):
             prod_vpc_id=prod_vpc_id,
             prod_subnet_ids=prod_subnet_ids,
             prod_security_group_ids=prod_security_group_ids,
+            enable_network_isolation=enable_network_isolation,
         )

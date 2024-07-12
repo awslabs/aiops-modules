@@ -51,10 +51,12 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `lead_data_science_users` - a list of lead data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
   - `retain_efs` - True | False -- if set to True, the EFS volume will persist after domain deletion.  Default is True
   - `enable_custom_sagemaker_projects` - True | False -- if set to True, custom sagemaker projects will be enabled for the data science and lead data science users.  Default is False
+  - `enable_domain_resource_isolation` - True | False -- if set to True, SageMaker cannot access resources from other domains.  Default is True
 
 ### Outputs (module metadata):
   - `StudioDomainName` - the name of the domain created by Sagemaker Studio
   - `StudioDomainId` - the Id of the domain created by Sagemaker Studio
+  - `StudioDomainArn` - ARN of the domain created by Sagemaker Studio
   - `StudioBucketName` - the Bucket (or prefix) given access to Sagemaker Studio
   - `StudioDomainEFSId` - the EFS created by Sagemaker Studio
   - `DataScientistRoleArn` - ARN of the Data Scientist IAM role
@@ -70,6 +72,7 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   "StudioBucketName": "mlops-*",
   "StudioDomainEFSId": "fs-0a550ea71ecac4978",
   "StudioDomainId": "d-flfqmvy84hfq",
+  "StudioDomainARN": "arn:aws:sagemaker:us-east-1:XXXXXXXXXXXX:domain/d-flfqmvy84hfq",
   "StudioDomainName": "mlops-sagemaker-sagemaker-sagemaker-studio-studio-domain"
 }
 ```
