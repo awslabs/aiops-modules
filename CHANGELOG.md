@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update MWAA to 2.9.2
 - update mwaa constraints
 - limit length of id in model name to prevent model name becoming too long
+- add permission for get secret value in `hf_import_models` template
 
 ## v1.2.0
 
