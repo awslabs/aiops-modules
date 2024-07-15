@@ -7,7 +7,7 @@ Parameters:
     Description: Version. Should reference version tag in the repository e.g v1.2.0.
   ManifestPath:
     Type: String
-    Default: manifests/mlops-sagemaker.yaml
+    Default: manifests/mlops-sagemaker/deployment.yaml
     AllowedValues:
       - manifests/mlops-sagemaker/deployment.yaml
       - manifests/mlflow-experiments-tracking/deployment.yaml
