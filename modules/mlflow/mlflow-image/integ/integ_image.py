@@ -17,7 +17,7 @@ ecr_repo = ecr.Repository(setup_stack, "repo", image_scan_on_push=True, removal_
 mlflow_image_stack = stack.MlflowImagePublishingStack(
     app,
     "mlflow-image",
-    ecr_repository=ecr_repo,
+    ecr_repo_name=ecr_repo.repository_name,
 )
 
 integration.IntegTest(
