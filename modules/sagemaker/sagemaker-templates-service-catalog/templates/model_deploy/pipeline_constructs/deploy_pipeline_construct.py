@@ -173,12 +173,8 @@ class DeployPipelineConstruct(Construct):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
-                    **({} if domain_id is None else {"DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id)}),
-                    **(
-                        {}
-                        if domain_arn is None
-                        else {"DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn)}
-                    ),
+                    "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
+                    "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
@@ -259,12 +255,8 @@ class DeployPipelineConstruct(Construct):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
-                    **({} if domain_id is None else {"DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id)}),
-                    **(
-                        {}
-                        if domain_arn is None
-                        else {"DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn)}
-                    ),
+                    "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
+                    "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),

@@ -253,16 +253,8 @@ class BuildPipelineConstruct(Construct):
                 environment_variables={
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
-                    **(
-                        {}
-                        if domain_id is None
-                        else {"SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id)}
-                    ),
-                    **(
-                        {}
-                        if domain_arn is None
-                        else {"SAGEMAKER_DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn)}
-                    ),
+                    "SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
+                    "SAGEMAKER_DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "AWS_REGION": codebuild.BuildEnvironmentVariable(value=Aws.REGION),
                     "SAGEMAKER_PIPELINE_NAME": codebuild.BuildEnvironmentVariable(

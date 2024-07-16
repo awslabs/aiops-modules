@@ -210,14 +210,14 @@ class SagemakerStudioStack(Stack):
                         "sagemaker:Describe*",
                     ],
                     not_resources=[
-                        f"arn:aws:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:domain/{self.studio_domain.attr_domain_id}",
-                        f"arn:aws:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user-profile/{self.studio_domain.attr_domain_id}/*",
-                        f"arn:aws:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:project/*",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:domain/{self.studio_domain.attr_domain_id}",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user-profile/{self.studio_domain.attr_domain_id}/*",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:project/*",
                     ],
                     conditions={
                         "StringNotEquals": {
                             "aws:ResourceTag/sagemaker:domain-arn": (
-                                f"arn:aws:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:"
+                                f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:"
                                 f"domain/{self.studio_domain.attr_domain_id}"
                             )
                         }

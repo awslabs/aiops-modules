@@ -70,7 +70,7 @@ The template is based on basic multi-account template from [AWS Enterprise MLOps
   - `prod-subnet-ids` - list of subnet ids
   - `prod-security-group-ids` - list of security group ids
   - `sagemaker-domain-id`: SageMaker domain id
-  - `sagemaker-domain-arn`: SageMaker domain ARN used for domain resource isolation
+  - `sagemaker-domain-arn`: SageMaker domain ARN. Used to tag resources with the `domain-arn`, which is used for domain resource isolation. If domain resource isolation is enabled `sagemaker-domain-arn` must be provided to ensure correct access to resources within the domain
 
 ### Sample manifest declaration
 
