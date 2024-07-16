@@ -11,18 +11,18 @@ import stack  # noqa: E402
 
 app = cdk.App()
 
-setup_stack = cdk.Stack(app, "base-resources-stack")
-ecr_repo = ecr.Repository(setup_stack, "repo", image_scan_on_push=True, removal_policy=cdk.RemovalPolicy.DESTROY)
+setup_stack = cdk.Stack(app, "mlflow-image-integ-setup-stack")
+ecr_repo = ecr.Repository(setup_stack, "repo", auto_delete_images=True, removal_policy=cdk.RemovalPolicy.DESTROY)
 
 mlflow_image_stack = stack.MlflowImagePublishingStack(
     app,
-    "mlflow-image",
+    "mlflow-image-integ-stack",
     ecr_repo_name=ecr_repo.repository_name,
 )
 
 integration.IntegTest(
     app,
-    "Integration Tests Buckets Module",
+    "Integration Tests MLFlow Image Module",
     test_cases=[
         setup_stack,
         mlflow_image_stack,
