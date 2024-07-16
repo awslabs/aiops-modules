@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - limit length of id in model name to prevent model name becoming too long
 - add permission for get secret value in `hf_import_models` template
 - add manifests/tags parameters to one-click-template
+- add integration tests for `mlflow-image`
 
 ## v1.2.0
 
