@@ -3,8 +3,8 @@ Description: Creates AIOps setup for Developers
 Parameters:
   VersionTag:
     Type: String
-    Default: v1.2.0
-    Description: Version. Should reference version tag in the repository e.g v1.2.0.
+    Default: v1.3.0
+    Description: Version. Should reference version tag in the repository e.g v1.3.0.
   ManifestPath:
     Type: String
     Default: manifests/mlops-sagemaker/deployment.yaml
@@ -125,10 +125,6 @@ Resources:
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-aiops-*/*
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-aiops
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-aiops/*
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-mlops-*
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-mlops-*/*
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-mlops
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-mlops/*
               - Sid: IAM
                 Effect: Allow
                 Action:
@@ -145,8 +141,6 @@ Resources:
                 Resource:
                   - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-aiops-toolchain-role
                   - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-aiops-deployment-role
-                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-mlops-toolchain-role
-                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/seedfarmer-mlops-deployment-role
 
   CreateUpdateCodeBuildProject:
     Type: AWS::CodeBuild::Project
