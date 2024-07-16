@@ -46,4 +46,4 @@ DOMAIN_ARN = os.getenv("DOMAIN_ARN", None)
 
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)
 
-ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true") == "true"
+ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true").lower() == "true"
