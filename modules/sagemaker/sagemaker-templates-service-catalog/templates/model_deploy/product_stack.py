@@ -174,6 +174,8 @@ class Product(servicecatalog.ProductStack):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=sagemaker_project_name),
+                    "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_id),
+                    "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_arn),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
@@ -195,6 +197,7 @@ class Product(servicecatalog.ProductStack):
                     "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
                         value=json.dumps(prod_security_group_ids)
                     ),
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
                 },
             ),
         )

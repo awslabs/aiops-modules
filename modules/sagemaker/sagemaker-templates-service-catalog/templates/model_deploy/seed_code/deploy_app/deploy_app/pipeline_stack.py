@@ -15,6 +15,8 @@ ENV = {
     "MODEL_BUCKET_ARN": constants.MODEL_BUCKET_ARN,
     "PROJECT_ID": constants.PROJECT_ID,
     "PROJECT_NAME": constants.PROJECT_NAME,
+    "DOMAIN_ID": constants.DOMAIN_ID,
+    "DOMAIN_ARN": constants.DOMAIN_ARN,
     "DEV_ACCOUNT_ID": constants.DEV_ACCOUNT_ID,
     "DEV_REGION": constants.DEV_REGION,
     "DEV_VPC_ID": constants.DEV_VPC_ID,
@@ -30,6 +32,7 @@ ENV = {
     "PROD_VPC_ID": constants.PROD_VPC_ID,
     "PROD_SUBNET_IDS": json.dumps(constants.PROD_SUBNET_IDS),
     "PROD_SECURITY_GROUP_IDS": json.dumps(constants.PROD_SECURITY_GROUP_IDS),
+    "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION),
 }
 
 
