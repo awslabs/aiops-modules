@@ -35,11 +35,3 @@ targetAccountMappings:
     regionMappings:
       - region: us-east-1
         default: true
-  - alias: secondary
-    accountId:
-      valueFrom:
-        envVariable: SECONDARY_ACCOUNT
-    default: true
-    regionMappings:
-      - region: us-east-1
-        default: true
