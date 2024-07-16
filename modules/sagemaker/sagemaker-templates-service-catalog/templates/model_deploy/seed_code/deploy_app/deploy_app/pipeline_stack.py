@@ -39,7 +39,7 @@ class DevStage(cdk.Stage):
 
         DeployEndpointStack(
             self,
-            "endpoint",
+            "dev-endpoint",
             vpc_id=constants.DEV_VPC_ID,
             subnet_ids=constants.DEV_SUBNET_IDS,
             security_group_ids=constants.DEV_SECURITY_GROUP_IDS,
@@ -52,7 +52,7 @@ class PreProdStage(cdk.Stage):
 
         DeployEndpointStack(
             self,
-            "endpoint",
+            "preprod-endpoint",
             vpc_id=constants.PRE_PROD_VPC_ID,
             subnet_ids=constants.PRE_PROD_SUBNET_IDS,
             security_group_ids=constants.PRE_PROD_SECURITY_GROUP_IDS,
@@ -65,7 +65,7 @@ class ProdStage(cdk.Stage):
 
         DeployEndpointStack(
             self,
-            "endpoint",
+            "prod-endpoint",
             vpc_id=constants.PROD_VPC_ID,
             subnet_ids=constants.PROD_SUBNET_IDS,
             security_group_ids=constants.PROD_SECURITY_GROUP_IDS,
