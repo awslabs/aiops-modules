@@ -49,6 +49,8 @@ def stack(stack_defaults) -> cdk.Stack:
     prod_vpc_id = "vpc"
     prod_subnet_ids = ["sub"]
     prod_security_group_ids = ["sg"]
+    sagemaker_domain_id = "domain_id"
+    sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
 
     return stack.ServiceCatalogStack(
         app,
@@ -73,6 +75,8 @@ def stack(stack_defaults) -> cdk.Stack:
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
         ),
+        sagemaker_domain_id=sagemaker_domain_id,
+        sagemaker_domain_arn=sagemaker_domain_arn,
     )
 
 
