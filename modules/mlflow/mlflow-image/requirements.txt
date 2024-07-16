@@ -16,9 +16,9 @@ aws-cdk-asset-kubectl-v20==2.1.2
     # via aws-cdk-lib
 aws-cdk-asset-node-proxy-agent-v6==2.0.3
     # via aws-cdk-lib
-aws-cdk-integ-tests-alpha==2.149.0a0
+aws-cdk-integ-tests-alpha==2.130.0a0
     # via -r requirements.in
-aws-cdk-lib==2.149.0
+aws-cdk-lib==2.130.0
     # via
     #   -r requirements.in
     #   aws-cdk-integ-tests-alpha
