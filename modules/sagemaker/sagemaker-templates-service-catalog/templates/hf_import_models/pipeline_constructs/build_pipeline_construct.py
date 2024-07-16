@@ -224,6 +224,16 @@ class BuildPipelineConstruct(Construct):
                 resources=[sagemaker_seedcode_bucket.bucket_arn],
             )
         )
+        codebuild_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "secretsmanager:GetSecretValue",
+                ],
+                resources=[
+                    f"arn:aws:secretsmanager:{Aws.REGION}:{Aws.ACCOUNT_ID}:secret:{hf_access_token_secret}-??????"
+                ],
+            )
+        )
 
         # Create the CodeBuild project
         sm_pipeline_build = codebuild.PipelineProject(
