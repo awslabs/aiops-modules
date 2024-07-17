@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 
 - add integration tests for `sagemaker-studio`
+- bump ecr module version to 1.10.0 to consume auto-delete images feature
 
 ## v1.3.0
 
