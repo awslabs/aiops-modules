@@ -43,6 +43,7 @@ studio_stack = stack.SagemakerStudioStack(
     app_image_config_name=None,
     image_name=None,
     enable_custom_sagemaker_projects=False,
+    enable_domain_resource_isolation=True,
     auth_mode="IAM",
     env=cdk.Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region="us-east-1"),
 )
