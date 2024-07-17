@@ -35,6 +35,8 @@ def stack_model_package_input() -> cdk.Stack:
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
+    sagemaker_domain_id = "ABCDE"
+    sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
     vpc_id = "vpc-12345"
     model_package_arn = "example-arn"
     model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
@@ -47,6 +49,8 @@ def stack_model_package_input() -> cdk.Stack:
         id=f"{project_name}-{dep_name}-{mod_name}",
         sagemaker_project_id=sagemaker_project_id,
         sagemaker_project_name=sagemaker_project_name,
+        sagemaker_domain_id=sagemaker_domain_id,
+        sagemaker_domain_arn=sagemaker_domain_arn,
         model_package_arn=model_package_arn,
         model_package_group_name=None,
         model_execution_role_arn=None,
@@ -67,6 +71,7 @@ def stack_model_package_input() -> cdk.Stack:
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
         ),
+        enable_network_isolation=True,
     )
 
 
@@ -83,6 +88,8 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
 
     sagemaker_project_id = "12345"
     sagemaker_project_name = "sagemaker-project"
+    sagemaker_domain_id = "ABCDE"
+    sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
     vpc_id = "vpc-12345"
     model_package_group_name = "example-group"
     model_artifacts_bucket_arn = "arn:aws:s3:::test-bucket"
@@ -117,6 +124,8 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
             id=f"{project_name}-{dep_name}-{mod_name}",
             sagemaker_project_id=sagemaker_project_id,
             sagemaker_project_name=sagemaker_project_name,
+            sagemaker_domain_id=sagemaker_domain_id,
+            sagemaker_domain_arn=sagemaker_domain_arn,
             model_package_arn=None,
             model_package_group_name=model_package_group_name,
             model_execution_role_arn=None,
@@ -137,6 +146,7 @@ def stack_latest_approved_model_package(mock_s3_client) -> cdk.Stack:
                 account=os.environ["CDK_DEFAULT_ACCOUNT"],
                 region=os.environ["CDK_DEFAULT_REGION"],
             ),
+            enable_network_isolation=True,
         )
 
 

@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added an option to enable data capture in the `sagemaker-endpoint-module`
 - added a `personas` example module to deploy various roles required for an AI/ML project
 - added `sagemaker-model-cicd` module
+- added `sagemaker_domain_arn` as optional input for multiple modules, tags resources created with domain ARN to support domain resource isolation
+- added `enable_network_isolation` as optional input for `sagemaker-endpoint` module, defaults to true
+- added `enable_domain_resource_isolation` as optional input for `sagemaker-studio` module, adds IAM policy to studio roles preventing the access of resources from outside the domain, defaults to true
+- added `StudioDomainArn` as output from `sagemaker-studio` module
+- added `enable_network_isolation` as parameter for `model_deploy` template
 
 ### **Changed**
 

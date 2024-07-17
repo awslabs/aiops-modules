@@ -23,6 +23,7 @@ stack = SagemakerStudioStack(
     app_image_config_name=app_settings.parameters.app_image_config_name,
     image_name=app_settings.parameters.image_name,
     enable_custom_sagemaker_projects=app_settings.parameters.enable_custom_sagemaker_projects,
+    enable_domain_resource_isolation=app_settings.parameters.enable_domain_resource_isolation,
     auth_mode=app_settings.parameters.auth_mode,
     env=aws_cdk.Environment(
         account=app_settings.default.account,
@@ -38,6 +39,7 @@ CfnOutput(
             "StudioDomainName": stack.studio_domain.domain_name,
             "StudioDomainEFSId": stack.studio_domain.attr_home_efs_file_system_id,
             "StudioDomainId": stack.studio_domain.attr_domain_id,
+            "StudioDomainArn": stack.studio_domain.attr_domain_arn,
             "StudioBucketName": app_settings.parameters.studio_bucket_name,
             "DataScientistRoleArn": stack.sm_roles.data_scientist_role.role_arn,
             "LeadDataScientistRoleArn": stack.sm_roles.lead_data_scientist_role.role_arn,

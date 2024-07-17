@@ -52,6 +52,7 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
         ),
+        enable_domain_resource_isolation=True,
     )
 
 

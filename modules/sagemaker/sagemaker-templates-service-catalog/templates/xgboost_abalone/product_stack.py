@@ -9,7 +9,7 @@ import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnOutput, CfnParameter, CfnTag, RemovalPolicy, Tags
+from aws_cdk import Aws, CfnOutput, CfnParameter, RemovalPolicy, Tags
 from constructs import Construct
 
 from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct import (
@@ -28,6 +28,8 @@ class Product(servicecatalog.ProductStack):
         build_app_asset: s3_assets.Asset,
         pre_prod_account_id: str,
         prod_account_id: str,
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -68,6 +70,10 @@ class Product(servicecatalog.ProductStack):
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         # create kms key to be used by the assets bucket
         kms_key = kms.Key(
@@ -195,10 +201,6 @@ class Product(servicecatalog.ProductStack):
             model_package_group_name=model_package_group_name,
             model_package_group_description=f"Model Package Group for {sagemaker_project_name}",
             model_package_group_policy=model_package_group_policy,
-            tags=[
-                CfnTag(key="sagemaker:project-id", value=sagemaker_project_id),
-                CfnTag(key="sagemaker:project-name", value=sagemaker_project_name),
-            ],
         )
 
         kms_key = kms.Key(
@@ -232,6 +234,8 @@ class Product(servicecatalog.ProductStack):
             "build",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
+            domain_id=sagemaker_domain_id,
+            domain_arn=sagemaker_domain_arn,
             model_package_group_name=model_package_group_name,
             model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
