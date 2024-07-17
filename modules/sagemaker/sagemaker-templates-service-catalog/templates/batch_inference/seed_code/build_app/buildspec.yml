@@ -10,6 +10,16 @@ phases:
   build:
     commands:
       - export PYTHONUNBUFFERED=TRUE
+      - TAGS="[{\"Key\":\"sagemaker:project-name\", \"Value\":\"${SAGEMAKER_PROJECT_NAME}\"}, {\"Key\":\"sagemaker:project-id\", \"Value\":\"${SAGEMAKER_PROJECT_ID}\"}"
+      - |
+        if [ -n "${SAGEMAKER_DOMAIN_ID}" ]; then
+          TAGS="$TAGS, {\"Key\":\"sagemaker:domain-id\", \"Value\":\"${SAGEMAKER_DOMAIN_ID}\"}"
+        fi
+      - |
+        if [ -n "${SAGEMAKER_DOMAIN_ARN}" ]; then
+          TAGS="$TAGS, {\"Key\":\"sagemaker:domain-arn\", \"Value\":\"${SAGEMAKER_DOMAIN_ARN}\"}"
+        fi
+      - TAGS="$TAGS]"
       - |
         create-pipeline \
           --role-arn $SAGEMAKER_PIPELINE_ROLE_ARN \
@@ -18,5 +28,5 @@ phases:
           --artifact-bucket $ARTIFACT_BUCKET \
           --base-job-prefix $BASE_JOB_PREFIX \
           --pipeline-name $SAGEMAKER_PROJECT_NAME \
-          --tags "[{\"Key\":\"sagemaker:project-name\", \"Value\":\"${SAGEMAKER_PROJECT_NAME}\"}, {\"Key\":\"sagemaker:project-id\", \"Value\":\"${SAGEMAKER_PROJECT_ID}\"}]"
+          --tags "$TAGS"
       - echo "Create/Update of the SageMaker Pipeline complete."

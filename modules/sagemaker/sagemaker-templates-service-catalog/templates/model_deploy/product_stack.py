@@ -39,6 +39,8 @@ class Product(servicecatalog.ProductStack):
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
         prod_security_group_ids: List[str],
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -103,8 +105,21 @@ class Product(servicecatalog.ProductStack):
             default=prod_region,
         ).value_as_string
 
+        enable_network_isolation = CfnParameter(
+            self,
+            "EnableNetworkIsolation",
+            type="String",
+            description="Enable network isolation",
+            allowed_values=["true", "false"],
+            default="false",
+        ).value_as_string
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         dev_account_id: str = Aws.ACCOUNT_ID
         dev_region: str = Aws.REGION
@@ -159,6 +174,8 @@ class Product(servicecatalog.ProductStack):
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
                     "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=sagemaker_project_name),
+                    "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_id),
+                    "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_arn),
                     "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
                     "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
                     "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
@@ -180,6 +197,7 @@ class Product(servicecatalog.ProductStack):
                     "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
                         value=json.dumps(prod_security_group_ids)
                     ),
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
                 },
             ),
         )

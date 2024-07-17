@@ -31,7 +31,10 @@ where endpoints are provisioned as part of automated Continuous Integration and 
 
 - `sagemaker-project-id`: SageMaker project id
 - `sagemaker-project-name`: SageMaker project name
+- `sagemaker-domain-id`: SageMaker domain id
+- `sagemaker-domain-arn`: SageMaker domain ARN. Used to tag resources with the `domain-arn`, which is used for domain resource isolation. If domain resource isolation is enabled `sagemaker-domain-arn` must be provided to ensure correct access to endpoint and other resources within the domain 
 - `model-execution-role-arn`: Model execution role ARN. Will be created if not provided.
+- `enable-network-isolation`: Enable network isolation on the model. `True` by default.
 - `model-artifacts-bucket-arn`: Bucket ARN that contains model artifacts. Required by model execution IAM role to download model artifacts.
 - `ecr-repo-arn`: ECR repository ARN if custom container is used
 - `variant-name`: Endpoint config production variant name. `AllTraffic` by default.
@@ -70,6 +73,18 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: sagemaker-domain-id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker-domain-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
 ```
 
 ### Module Metadata Outputs
