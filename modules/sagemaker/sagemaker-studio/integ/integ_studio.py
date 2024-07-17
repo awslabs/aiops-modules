@@ -44,6 +44,7 @@ studio_stack = stack.SagemakerStudioStack(
     image_name=None,
     enable_custom_sagemaker_projects=False,
     auth_mode="IAM",
+    env=cdk.Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region="us-east-1"),
 )
 
 integration.IntegTest(
