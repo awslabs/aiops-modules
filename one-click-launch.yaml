@@ -47,6 +47,8 @@ Resources:
                 Resource:
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
+                  - !Sub arn:${AWS::Partition}:cloudformation:us-east-1:${AWS::AccountId}:stack/CDKToolkit
+                  - !Sub arn:${AWS::Partition}:cloudformation:us-east-1:${AWS::AccountId}:stack/CDKToolkit/*
               - Sid: IAM
                 Effect: Allow
                 Action:
@@ -71,14 +73,18 @@ Resources:
                   - ecr:PutImageTagMutability
                   - ecr:Describe*
                   - ecr:List*
-                Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
+                  - !Sub arn:${AWS::Partition}:ecr:us-east-1:${AWS::AccountId}:repository/cdk-*
               - Sid: SSM
                 Effect: Allow
                 Action:
                   - ssm:PutParameter
                   - ssm:DeleteParameter
                   - ssm:GetParameters
-                Resource: !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
+                  - !Sub arn:${AWS::Partition}:ssm:us-east-1:${AWS::AccountId}:parameter/cdk-*
               - Sid: S3
                 Effect: Allow
                 Action:
