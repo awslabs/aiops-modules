@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v1.3.0
+
+### **Added**
+
 - added `ray-on-eks`, and `manifests/ray-on-eks` manifests
 - added a `sagemaker-model-monitoring-module` module with an example of data quality, model quality, model bias, and model explainability monitoring of a SageMaker Endpoint
 - added an option to enable data capture in the `sagemaker-endpoint-module`
