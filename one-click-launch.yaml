@@ -212,6 +212,9 @@ Resources:
                 - echo 'Bootstrapping CDK...'
                 - cdk bootstrap aws://${AWS_ACCOUNT_ID}/${AWS_REGION}
                 - echo 'CDK bootstrap complete'
+                - echo 'Boostrapping CDK in us-east-1...'
+                - cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-east-1
+                - echo 'CDK bootstrap complete in us-east-1'
                 - echo 'Bootstrapping seedfarmer...'
                 - seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ROLE_ARN} --as-target
                 - python scripts/role_assume_update.py ${ROLE_ARN}
