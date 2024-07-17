@@ -1,7 +1,9 @@
+import json
 import sys
+from typing import Dict, List
 
 import aws_cdk as cdk
-from aws_cdk import aws_ec2 as ec2
+import boto3
 from aws_cdk import cloud_assembly_schema as cas
 from aws_cdk import integ_tests_alpha as integration
 
@@ -11,14 +13,26 @@ import stack  # noqa: E402
 
 app = cdk.App()
 
-setup_stack = cdk.Stack(app, "sagemaker-studio-integ-setup-stack")
-vpc = ec2.Vpc(setup_stack, "VPC")
+def get_module_dependencies(resource_keys: List[str]) -> Dict[str, str]:
+    ssm = boto3.client("ssm", region_name="us-east-1")
+    dependencies = {}
+    try:
+        for key in resource_keys:
+            dependencies[key] = ssm.get_parameter(Name=f"/module-integration-tests/{key}")["Parameter"]["Value"]
+    except Exception as e:
+        print(f"issue getting dependencies: {e}")
+    return dependencies
+
+dependencies = get_module_dependencies(
+    # Add any required resource identifiers here
+    resource_keys=["vpc-id", "vpc-private-subnets"]
+)
 
 studio_stack = stack.SagemakerStudioStack(
     app,
     "sagemaker-studio-integ-stack",
-    vpc_id=vpc.vpc_id,
-    subnet_ids=vpc.private_subnets,
+    vpc_id=dependencies["vpc-id"],
+    subnet_ids=json.loads(dependencies["vpc-private-subnets"]),
     studio_domain_name="test-domain",
     studio_bucket_name="test-bucket",
     data_science_users=["ds-user-1"],
