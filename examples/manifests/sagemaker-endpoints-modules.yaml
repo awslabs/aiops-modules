@@ -23,6 +23,18 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: sagemaker-domain-id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker-domain-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
   - name: managed_instance_scaling
     value: True
   - name: scaling_max_instance_count

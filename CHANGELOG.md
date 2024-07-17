@@ -11,15 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v1.3.0
+
+### **Added**
+
 - added `ray-on-eks`, and `manifests/ray-on-eks` manifests
 - added a `sagemaker-model-monitoring-module` module with an example of data quality, model quality, model bias, and model explainability monitoring of a SageMaker Endpoint
 - added an option to enable data capture in the `sagemaker-endpoint-module`
 - added a `personas` example module to deploy various roles required for an AI/ML project
 - added `sagemaker-model-cicd` module
+- added `sagemaker_domain_arn` as optional input for multiple modules, tags resources created with domain ARN to support domain resource isolation
+- added `enable_network_isolation` as optional input for `sagemaker-endpoint` module, defaults to true
+- added `enable_domain_resource_isolation` as optional input for `sagemaker-studio` module, adds IAM policy to studio roles preventing the access of resources from outside the domain, defaults to true
+- added `StudioDomainArn` as output from `sagemaker-studio` module
+- added `enable_network_isolation` as parameter for `model_deploy` template
 
 ### **Changed**
 
 - remove explicit module manifest account/region mappings from `fmops-qna-rag`
+- moved CI/CD infra to separate repository and added self mutation pipeline to provision infra for module `sagemaker-templates-service-catalog`
 - changed ECR encryption to KMS_MANAGED
 - changed encryption for each bucket to KMS_MANAGED
 - refactor `airflow-dags` module to use Pydantic
@@ -34,6 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update mwaa constraints
 - limit length of id in model name to prevent model name becoming too long
 - add permission for get secret value in `hf_import_models` template
+- add manifests/tags parameters to one-click-template
+- add integration tests for `mlflow-image`
 
 ## v1.2.0
 
