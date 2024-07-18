@@ -34,6 +34,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_openid_issuer: str
     eks_cluster_endpoint: str
     eks_cert_auth_data: str
+    eks_handler_role_arn: str
     custom_manifest_paths: List[str] = Field(default=[])
     tags: Optional[Dict[str, str]] = Field(default=None)
 
