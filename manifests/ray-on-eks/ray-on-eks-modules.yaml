@@ -10,6 +10,12 @@ parameters:
         group: core
         name: eks
         key: EksClusterMasterRoleArn
+  - name: EksHandlerRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksHandlerRoleArn
   - name: EksClusterName
     valueFrom:
       moduleMetadata:
