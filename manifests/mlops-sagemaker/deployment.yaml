@@ -12,6 +12,8 @@ groups:
     path: manifests/mlops-sagemaker/sagemaker-templates-modules.yaml
   - name: sagemaker-kernels
     path: manifests/mlops-sagemaker/kernels-modules.yaml
+  - name: ground-truth
+    path: manifests/mlops-sagemaker/sagemaker-groundtruth-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:

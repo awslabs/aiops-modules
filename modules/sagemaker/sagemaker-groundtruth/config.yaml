@@ -1,0 +1,25 @@
+# the codecommit repo where the pipeline should pull its source from
+repoName: "aiops-to-greengrass-cs"
+# the branch to use
+branchName: "main"
+# S3 prefix where pipeline assets will be stored
+pipelineAssetsPrefix: "pipeline/labeling"
+# whether to use a private worteam for Labeling
+usePrivateWorkteamForLabeling: false
+# whether to use a private worteam for verifaction
+usePrivateWorkteamForVerification: false
+# maximum number of labels per labeling job
+maxLabelsPerLabelingJob: 200
+# the arn of the private workteam for labeling (only used if usePrivateWorkteamForLabeling is true)
+labelingJobPrivateWorkteamArn: "arn:aws:sagemaker:eu-west-1:0000000000000:workteam/private-crowd/GT1"
+# the arn of the private workteam for labeling (only used if usePrivateWorkteamForLabeling is true)
+verificationJobPrivateWorkteamArn: "arn:aws:sagemaker:eu-west-1:0000000000000:workteam/private-crowd/GT1"
+# labeling pipeline schedule, triggering once a month on the 1st to keep cost to a minimum , fell free to change this
+labelingPipelineSchedule: "cron(0 12 1 * ? *)"
+# featureGroupName in SageMaker Feature Store, where features should be saved
+featureGroupName: "tag-quality-inspection"
+assets_bucket: "tag-quality-inspection-bkt-2024"
+# modelPackageGroupName in model Registry
+modelPackageGroupName: "TagQualityInspectionPackageGroup"
+# modelPackageGroupName in model Registry
+modelPackageGroupDescription: "Contains models for quality inspection of metal tags"

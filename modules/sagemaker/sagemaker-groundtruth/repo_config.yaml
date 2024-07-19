@@ -1,0 +1,13 @@
+# defines the git repositroy to use, options:
+# "CODECOMMIT" - will create a new codecommit repo with name specified in repoName
+# "CODECOMMIT_PROVIDED" - will expect a codecommit repository in the account with name specified in repoName
+# "GITHUB" - will use an existing codestar connection for GitHub source, checkout README.MD, for instructions
+repoType: CODECOMMIT
+# the repo where the pipeline should pull its source from
+repoName: aiops-for-quality-inspection
+# the CodestarConnectionArn for your GitHub repository
+githubConnectionArn: <FILL_WITH_CONNECTION_ARN>
+# the GitHub repo owner
+githubRepoOwner:
+# the git branch to use
+branchName: main
