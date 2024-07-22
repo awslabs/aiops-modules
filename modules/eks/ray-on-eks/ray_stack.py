@@ -29,6 +29,7 @@ class RayOnEKS(Stack):
         eks_cluster_endpoint: str,
         eks_cert_auth_data: str,
         namespace_name: str,
+        service_account_name: str,
         service_account_role: iam.IRole,
         custom_manifest_paths: List[str],
         **kwargs: Any,
@@ -68,6 +69,12 @@ class RayOnEKS(Stack):
             namespace=namespace_name,
             version="1.1.1",
             wait=True,
+            values={
+                "serviceAccount" : {
+                    "name": service_account_name,
+                    "create": False,
+                }
+            }
         )
 
         # Add optional custom resource (CR) manifests
