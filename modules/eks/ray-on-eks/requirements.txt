@@ -79,5 +79,5 @@ typing-extensions==4.6.3
     #   jsii
     #   pydantic
     #   pydantic-core
-zipp==3.15.0
+zipp==3.19.1
     # via importlib-resources
