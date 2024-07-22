@@ -53,6 +53,7 @@ spec:
     # Pod template
     template:
       spec:
+        # serviceAccountName: "ray-on-eks-ray-on-eks"
         containers:
         # The Ray head container
         - name: ray-head
@@ -71,10 +72,10 @@ spec:
           resources:
             limits:
               cpu: "1"
-              memory: "2G"
+              memory: "8G"
             requests:
               cpu: "1"
-              memory: "2G"
+              memory: "8G"
           volumeMounts:
             - mountPath: /home/ray/samples
               name: ray-example-configmap
@@ -111,6 +112,7 @@ spec:
     # Pod template
     template:
       spec:
+        # serviceAccountName: "ray-on-eks-ray-on-eks"
         containers:
         - name: ray-worker
           image: rayproject/ray-ml:2.23.0
