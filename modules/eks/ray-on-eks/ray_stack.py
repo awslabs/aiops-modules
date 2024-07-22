@@ -70,11 +70,11 @@ class RayOnEKS(Stack):
             version="1.1.1",
             wait=True,
             values={
-                "serviceAccount" : {
+                "serviceAccount": {
                     "name": service_account_name,
                     "create": False,
                 }
-            }
+            },
         )
 
         # Add optional custom resource (CR) manifests

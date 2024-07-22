@@ -53,7 +53,7 @@ spec:
     # Pod template
     template:
       spec:
-        # serviceAccountName: "ray-on-eks-ray-on-eks"
+        # serviceAccountName: "my-service-account"
         containers:
         # The Ray head container
         - name: ray-head
@@ -112,7 +112,7 @@ spec:
     # Pod template
     template:
       spec:
-        # serviceAccountName: "ray-on-eks-ray-on-eks"
+        # serviceAccountName: "my-service-account"
         containers:
         - name: ray-worker
           image: rayproject/ray-ml:2.23.0
