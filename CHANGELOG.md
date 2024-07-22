@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add integration tests for `sagemaker-studio`
 - bump ecr module version to 1.10.0 to consume auto-delete images feature
 - refactored `ray-on-eks` module to use latest EKS IDF release
+- add service account to kuberay
 
 ## v1.3.0
 

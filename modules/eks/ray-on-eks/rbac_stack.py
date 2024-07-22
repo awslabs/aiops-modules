@@ -76,7 +76,7 @@ class RbacStack(Stack):
         )
 
         service_account = eks_cluster.add_service_account("service-account", name=module_name, namespace=namespace_name)
-        self.service_account_role = service_account.role
+        self.service_account = service_account
 
         service_account_role: iam.Role = cast(iam.Role, service_account.role)
         if service_account_role.assume_role_policy:

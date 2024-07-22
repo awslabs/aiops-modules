@@ -86,7 +86,8 @@ def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         eks_cluster_endpoint=eks_cluster_endpoint,
         eks_cert_auth_data=eks_cert_auth_data,
         namespace_name=namespace,
-        service_account_role=rbac_stack.service_account_role,
+        service_account_name=rbac_stack.service_account.service_account_name,
+        service_account_role=rbac_stack.service_account.role,
         custom_manifest_paths=custom_manifest_paths,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
