@@ -43,7 +43,6 @@ ray_on_eks_stack = RayOnEKS(
     namespace_name=app_settings.parameters.namespace,
     service_account_name=rbac_stack.service_account.service_account_name,
     service_account_role=rbac_stack.service_account.role,
-    custom_manifest_paths=app_settings.parameters.custom_manifest_paths,
     env=env,
 )
 
@@ -60,6 +59,7 @@ CfnOutput(
     id="metadata",
     value=rbac_stack.to_json_string(
         {
+            "EksServiceAccountName": rbac_stack.service_account.service_account_name,
             "EksServiceAccountRoleArn": rbac_stack.service_account.role.role_arn,
             "NamespaceName": app_settings.parameters.namespace,
         }
