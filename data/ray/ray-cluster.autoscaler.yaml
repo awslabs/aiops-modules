@@ -77,22 +77,33 @@ spec:
               cpu: "1"
               memory: "8G"
           volumeMounts:
-            - mountPath: /home/ray/samples
-              name: ray-example-configmap
-            - mountPath: /mnt/cluster_storage
-              name: ray-storage
+            # - mountPath: /home/ray/samples
+            #   name: ray-example-configmap
+            - mountPath: /tmp/ray
+              name: log-volume   # Mount for Ray logs
+            # - mountPath: /ray/export
+            #   name: ray-storage
+            - mountPath: /ray/export
+              name: persistent-storage # Mount shared filesystem (FSx for Lustre)
+        tolerations:
+          - key: "training"
+            value: "true"
+            effect: "NoSchedule"
         volumes:
-          - name: ray-example-configmap
-            configMap:
-              name: ray-example
-              defaultMode: 0777
-              items:
-                - key: detached_actor.py
-                  path: detached_actor.py
-                - key: terminate_detached_actor.py
-                  path: terminate_detached_actor.py
-          - name: ray-storage
+          # - name: ray-example-configmap
+          #   configMap:
+          #     name: ray-example
+          #     defaultMode: 0777
+          #     items:
+          #       - key: detached_actor.py
+          #         path: detached_actor.py
+          #       - key: terminate_detached_actor.py
+          #         path: terminate_detached_actor.py
+          - name: log-volume
             emptyDir: {}
+          - name: persistent-storage
+            persistentVolumeClaim:
+              claimName: integration-lustre-on-eks-fsx-pvc   # FSX PVC for shared storage
   workerGroupSpecs:
   # the Pod replicas in this group typed worker
   - replicas: 0
@@ -122,39 +133,55 @@ spec:
                 command: ["/bin/sh","-c","ray stop"]
           resources:
             limits:
-              cpu: "8"
-              memory: "24G"
+              cpu: "5"
+              memory: "10G"
             requests:
-              cpu: "8"
-              memory: "24G"
+              cpu: "5"
+              memory: "10G"
           volumeMounts:
-            - mountPath: /mnt/cluster_storage
-              name: ray-storage
+            - mountPath: /dev/shm   # Mount for shared memory
+              name: dshm
+            - mountPath: /tmp/ray
+              name: log-volume     # Mount for Ray logs
+            # - mountPath: /ray/export
+            #   name: ray-storage
+            - mountPath: /ray/export
+              name: persistent-storage # Mount shared filesystem (FSx for Lustre)
+        tolerations:
+          - key: "training"
+            value: "true"
+            effect: "NoSchedule"
         volumes:
-          - name: ray-storage
+          - name: persistent-storage
+            persistentVolumeClaim:
+              claimName: integration-lustre-on-eks-fsx-pvc   # FSX PVC for shared storage
+          - name: dshm
+            emptyDir:
+              medium: Memory
+          - name: log-volume
             emptyDir: {}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ray-example
-  namespace: ray
-data:
-  detached_actor.py: |
-    import ray
-    import sys
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: ray-example
+#   namespace: ray
+# data:
+#   detached_actor.py: |
+#     import ray
+#     import sys
 
-    @ray.remote(num_cpus=1)
-    class Actor:
-      pass
+#     @ray.remote(num_cpus=1)
+#     class Actor:
+#       pass
 
-    ray.init(namespace="ray")
-    Actor.options(name=sys.argv[1], lifetime="detached").remote()
+#     ray.init(namespace="ray")
+#     Actor.options(name=sys.argv[1], lifetime="detached").remote()
 
-  terminate_detached_actor.py: |
-    import ray
-    import sys
+#   terminate_detached_actor.py: |
+#     import ray
+#     import sys
 
-    ray.init(namespace="ray")
-    detached_actor = ray.get_actor(sys.argv[1])
-    ray.kill(detached_actor)
+#     ray.init(namespace="ray")
+#     detached_actor = ray.get_actor(sys.argv[1])
+#     ray.kill(detached_actor)
