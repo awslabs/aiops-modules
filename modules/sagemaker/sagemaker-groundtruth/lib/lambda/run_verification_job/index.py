@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import boto3
 import json
 import os
@@ -43,7 +45,7 @@ LabelingjobConfig = namedtuple(
 )
 
 
-def handler(event, context):
+def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
     logger.info(f"# event={json.dumps(event)} , Environment {os.environ}")
     config = get_step_config(event)
     logger.info(f"StepConfig: {config}")
@@ -57,7 +59,7 @@ def handler(event, context):
     return {"LabelingJobName": labeling_job_config["LabelingJobName"]}
 
 
-def get_step_config(event) -> LabelingjobConfig:
+def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
     # file containing list of missing labels
     input_manifest = event["input_manifest"]
     # bucket/path where the job should write temp assets to
@@ -73,14 +75,24 @@ def get_step_config(event) -> LabelingjobConfig:
     workteam_arn = (
         f"arn:aws:sagemaker:{region}:394669845002:workteam/public-crowd/default"
     )
-
-    if use_private_workteam.lower() == "True".lower():
-        if "PRIVATE_WORKTEAM_ARN" in os.environ:
-            workteam_arn = os.environ.get("PRIVATE_WORKTEAM_ARN")
-        else:
-            raise Exception(
-                "USE_PRIVATE_WORKTEAM set to True, make sure to also specify parameter 'PRIVATE_WORKTEAM_ARN'"
-            )
+    if use_private_workteam is not None:
+        use_private_workteam_value = use_private_workteam.strip().casefold()
+        if use_private_workteam_value == "true":
+            if "PRIVATE_WORKTEAM_ARN" in os.environ:
+                workteam_arn = os.environ.get("PRIVATE_WORKTEAM_ARN")
+                if workteam_arn is not None:
+                    workteam_arn = workteam_arn
+                else:
+                    raise Exception(
+                        "USE_PRIVATE_WORKTEAM set to True, but PRIVATE_WORKTEAM_ARN is None"
+                    )
+            else:
+                raise Exception(
+                    "USE_PRIVATE_WORKTEAM set to True, make sure to also specify parameter 'PRIVATE_WORKTEAM_ARN'"
+                )
+        elif use_private_workteam_value:
+            # Handle other true values if needed
+            pass
 
     instructions_template_s3_uri = (
         f"s3://{bucket}/{bucket_prefix}/groundtruth/verification_job/template.liquid"
@@ -102,7 +114,7 @@ def get_step_config(event) -> LabelingjobConfig:
     )
 
 
-def create_labeling_job_config(config: LabelingjobConfig):
+def create_labeling_job_config(config: LabelingjobConfig) -> Dict[str, Any]:
     prehuman_arn = "arn:aws:lambda:{}:{}:function:PRE-VerificationBoundingBox".format(
         region, AC_ARN_MAP[region]
     )

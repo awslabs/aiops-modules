@@ -1,3 +1,5 @@
+from typing import List, Dict, Any
+
 import datetime
 import json
 import logging
@@ -48,7 +50,7 @@ LambdaConfig = namedtuple(
 )
 
 
-def initialize_lambda_config(event):
+def initialize_lambda_config(event: Dict[str, Any]) -> LambdaConfig:
     role = os.environ["ROLE"]
     feature_group_name = (
         os.environ["FEATURE_GROUP_NAME"]
@@ -73,7 +75,7 @@ def initialize_lambda_config(event):
     )
 
 
-def handler(event, context):
+def handler(event: Dict[str, Any], context: object) -> None:
     logger.info(f"check-missing-labels called with event {event} ")
     config = initialize_lambda_config(event)
     logging.info(f"Loaded config: {config}")
@@ -106,7 +108,7 @@ def handler(event, context):
     logging.info("Updated feature store with new labels")
 
 
-def transform_df_to_records(df: pd.DataFrame):
+def transform_df_to_records(df: pd.DataFrame) -> List[List[Dict[str, str]]]:
     return [
         [
             {"ValueAsString": str(row[column]), "FeatureName": column}
@@ -116,7 +118,7 @@ def transform_df_to_records(df: pd.DataFrame):
     ]
 
 
-def load_manifest_to_dataframe(s3_uri):
+def load_manifest_to_dataframe(s3_uri: str) -> pd.DataFrame:
     parsed_url = urlparse(s3_uri, allow_fragments=False)
     s3_object = s3.Object(parsed_url.netloc, parsed_url.path[1:])
     file_content = s3_object.get()["Body"].read().decode("utf-8")
@@ -178,7 +180,7 @@ def load_manifest_to_dataframe(s3_uri):
     return data_frame
 
 
-def feature_group_exists(feature_group_name):
+def feature_group_exists(feature_group_name: str) -> bool:
     try:
         sagemaker_client.describe_feature_group(FeatureGroupName=feature_group_name)
     except ClientError as error:
@@ -188,7 +190,7 @@ def feature_group_exists(feature_group_name):
     return True
 
 
-def wait_for_feature_group_creation(feature_group):
+def wait_for_feature_group_creation(feature_group: FeatureGroup) -> None:
     """
     Print when the feature group has been successfully created
     Parameters:

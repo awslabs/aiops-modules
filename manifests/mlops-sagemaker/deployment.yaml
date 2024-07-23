@@ -1,4 +1,4 @@
-name: mlops-sagemaker
+name: aiops-sagemaker
 toolchainRegion: us-east-1
 forceDependencyRedeploy: true
 groups:

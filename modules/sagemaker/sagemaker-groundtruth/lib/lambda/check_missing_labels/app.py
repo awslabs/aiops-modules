@@ -1,3 +1,5 @@
+from typing import List, Dict, Any, Tuple, Optional
+
 from collections import namedtuple
 from botocore.exceptions import ClientError
 import sagemaker
@@ -38,7 +40,7 @@ LambdaConfig = namedtuple(
 )
 
 
-def initialize_lambda_config():
+def initialize_lambda_config() -> LambdaConfig:
     feature_group_name = (
         os.environ["FEATURE_GROUP_NAME"]
         if "FEATURE_GROUP_NAME" in os.environ
@@ -67,7 +69,7 @@ def initialize_lambda_config():
 lambda_config = initialize_lambda_config()
 
 
-def handler(event, context):
+def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     logger.info(
         f"check-missing-labels called with event {event} and lambda config {lambda_config}"
     )
@@ -92,18 +94,18 @@ def handler(event, context):
     return output
 
 
-def split_s3_url(s3_url):
+def split_s3_url(s3_url: str) -> Tuple[str, str]:
     bucket = urlparse(s3_url, allow_fragments=False).netloc
     key = urlparse(s3_url, allow_fragments=False).path[1:]
     return bucket, key
 
 
-def get_list_of_files(bucket=None, prefix=None, file_types=None):
+def get_list_of_files(bucket: str, prefix: str, file_types: Optional[List[str]] = None) -> List[str]:
     logger.info(f"Getting list of files for bucket {bucket} and prefix {prefix}")
-    filtered_files = []
+    filtered_files: List[str] = []
 
-    bucket = s3.Bucket(bucket)
-    files = bucket.objects.filter(Prefix=prefix)
+    bucket_resource = s3.Bucket(bucket)
+    files = bucket_resource.objects.filter(Prefix=prefix)
 
     for file in files:
         if is_allowed_file_type(file.key, file_types):
@@ -112,15 +114,15 @@ def get_list_of_files(bucket=None, prefix=None, file_types=None):
     return filtered_files
 
 
-def is_allowed_file_type(file, file_types=None):
+def is_allowed_file_type(file: str, file_types: Optional[List[str]] = None) -> bool:
     allowed = False
-    for file_type in file_types:
+    for file_type in file_types or []:
         if file.endswith(file_type):
             allowed = True
     return allowed
 
 
-def feature_group_exists(feature_group_name):
+def feature_group_exists(feature_group_name: str) -> bool:
     try:
         sagemaker_client.describe_feature_group(FeatureGroupName=feature_group_name)
     except ClientError as error:
@@ -130,7 +132,7 @@ def feature_group_exists(feature_group_name):
     return True
 
 
-def get_existing_labels(feature_group_name, query_results_s3uri):
+def get_existing_labels(feature_group_name: str, query_results_s3uri: str) -> Any:
     if not feature_group_exists(feature_group_name):
         return []
     feature_group = FeatureGroup(
@@ -143,15 +145,11 @@ def get_existing_labels(feature_group_name, query_results_s3uri):
     query.wait()
     df = query.as_dataframe()
     logger.info(f"Found {len(df[lambda_config.feature_name_s3uri].tolist())} labels")
-
     return df[lambda_config.feature_name_s3uri].tolist()
 
 
-def get_images_without_labels(images=None, existing_labels=None):
-    missing_labels = []
-    for image in images:
-        if image not in existing_labels:
-            missing_labels.append(image)
+def get_images_without_labels(images: List[str], existing_labels: List[str]) -> List[str]:
+    missing_labels = [image for image in images if image not in existing_labels]
     logger.info(
         f"images: {len(images)} , existing_labels: {len(existing_labels)}, missing_labels: {len(missing_labels)}"
     )

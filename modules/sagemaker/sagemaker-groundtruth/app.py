@@ -6,9 +6,9 @@ from aws_cdk import (
 from constructs import Construct
 from cdk_nag import NagSuppressions
 from cdk_nag import AwsSolutionsChecks
-from lib.stacks.init import LabelingInitStack as InitStack
-from lib.stacks.labeling_pipeline import LabelingPipelineStack
-from lib.stacks.statemachine_pipeline import ExecuteStateMachinePipeline
+from stacks.init import LabelingInitStack as InitStack
+from stacks.labeling_pipeline import LabelingPipelineStack
+from stacks.statemachine_pipeline import ExecuteStateMachinePipeline
 
 app = cdk.App()
 

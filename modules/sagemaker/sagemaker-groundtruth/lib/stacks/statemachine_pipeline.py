@@ -13,7 +13,7 @@ import aws_cdk.aws_stepfunctions as sfn
 import aws_cdk.aws_stepfunctions_tasks as tasks
 from constructs import Construct
 
-from lib.constructs.labeling_pipeline_assets import PipelineAssets
+from constructs.labeling_pipeline_assets import PipelineAssets
 
 
 class ExecuteStateMachinePipeline(Stack):

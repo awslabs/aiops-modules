@@ -70,7 +70,7 @@ class LabelingInitStack(Stack):
             export_name="aiopsDataBucket",
         )
 
-    def seed_code_commit_repo(self, repo_name: str, branch_name: str):
+    def seed_code_commit_repo(self, repo_name: str, branch_name: str) -> None:
         # Only uploading minimal code from this repo for the stack to work, excluding seed assets and doc
         directory_asset = s3_assets.Asset(
             self,

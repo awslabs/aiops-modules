@@ -13,7 +13,7 @@ from aws_cdk import (
 
 from constructs import Construct
 
-from lib.stacks.statemachine_pipeline import (
+from stacks.statemachine_pipeline import (
     ExecuteStateMachinePipeline as StateMachinePipeline,
 )
 

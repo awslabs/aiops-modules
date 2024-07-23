@@ -1,5 +1,5 @@
 from __future__ import print_function
-
+from typing import List, Dict, Tuple, Any
 import logging
 from collections import namedtuple
 from io import StringIO
@@ -36,7 +36,7 @@ except Exception as e:
 
 
 @helper.create
-def create(event, context):
+def create(event: Dict[str,Any], context: object)-> str:
     logger.info(f"check-missing-labels called with event {event}")
     lambda_config = initialize_lambda_config(event)
     logger.info(f"Finished with lambda config {lambda_config}")
@@ -60,11 +60,11 @@ def create(event, context):
 
 
 @helper.delete
-def delete(event, context):
+def delete(event: Dict[str,Any], context: object) -> None:
     logger.info("Deletion of labels not required")
 
 
-def initialize_lambda_config(event: dict):
+def initialize_lambda_config(event: Dict[str,Any]) -> LambdaConfig:
     feature_group_name = (
         event["ResourceProperties"]["feature_group_name"]
         if "feature_group_name" in event["ResourceProperties"]
@@ -79,7 +79,7 @@ def initialize_lambda_config(event: dict):
     return LambdaConfig(feature_group_name, labels_uri)
 
 
-def transform_df_to_records(df: pd.DataFrame):
+def transform_df_to_records(df: pd.DataFrame) -> List[List[Dict[str, str]]]:
     return [
         [
             {"ValueAsString": str(row[column]), "FeatureName": column}
@@ -89,18 +89,18 @@ def transform_df_to_records(df: pd.DataFrame):
     ]
 
 
-def read_file_from_s3(file: str):
+def read_file_from_s3(file: str) -> Any:
     bucket, key = parse_s3_uri(file)
     logger.info(f"Reading file {file} from bucket {bucket} with key {key}")
     obj = s3.Object(bucket, key)
     return obj.get()["Body"].read().decode("utf-8")
 
 
-def parse_s3_uri(s3_url):
+def parse_s3_uri(s3_url: str) ->Tuple[str, str]:
     bucket = urlparse(s3_url, allow_fragments=False).netloc
     key = urlparse(s3_url, allow_fragments=False).path[1:]
     return bucket, key
 
 
-def handler(event, context):
+def handler(event: Dict[str,Any], context: object) -> None:
     helper(event, context)

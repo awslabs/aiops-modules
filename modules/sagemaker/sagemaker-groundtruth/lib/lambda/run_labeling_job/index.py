@@ -1,3 +1,4 @@
+from typing import Dict, Any
 import boto3
 import json
 import os
@@ -43,7 +44,7 @@ LabelingjobConfig = namedtuple(
 )
 
 
-def handler(event, context):
+def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
     logger.info(f"# event={json.dumps(event)} , Environment {os.environ}")
     config = get_step_config(event)
     logger.info(f"StepConfig: {config}")
@@ -69,11 +70,16 @@ def handler(event, context):
     }
 
 
-def get_step_config(event) -> LabelingjobConfig:
+def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
     # file containing list of missing labels
     missing_labels = event["request"]["Payload"]["missing_labels"]
 
-    max_labels_per_labeling_job = int(os.environ.get("MAX_LABELS"))
+    max_labels_value = os.environ.get("MAX_LABELS")
+    if max_labels_value is not None:
+        max_labels_per_labeling_job = int(max_labels_value)
+    else:
+        # Set a default value
+        max_labels_per_labeling_job = 100
     # bucket/path where the job should write temp assets to
     bucket = os.environ.get("BUCKET")
     bucket_prefix = os.environ.get("PREFIX")
@@ -119,7 +125,7 @@ def get_step_config(event) -> LabelingjobConfig:
 
 def create_and_upload_manifest(
     images=None, manifest_name="input.manifest", labeling_job_s3_uri=""
-):
+)-> str:
     parsed_url = urlparse(labeling_job_s3_uri, allow_fragments=False)
     bucket = parsed_url.netloc
     prefix = parsed_url.path[1:]
@@ -136,7 +142,7 @@ def create_and_upload_manifest(
     return f"s3://{bucket}/{prefix}/{manifest_name}"
 
 
-def create_labeling_job_config(config: LabelingjobConfig, manifest_uri):
+def create_labeling_job_config(config: LabelingjobConfig, manifest_uri) -> Dict[str, Any]:
     region = boto3.session.Session().region_name
     prehuman_arn = "arn:aws:lambda:{}:{}:function:PRE-BoundingBox".format(
         region, AC_ARN_MAP[region]
