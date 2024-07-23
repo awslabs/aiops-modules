@@ -11,11 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- adds workflow specific to changes for `requirements-dev.txt` so all static checks are run
+
 ### **Changed**
 
 - add integration tests for `sagemaker-studio`
 - bump ecr module version to 1.10.0 to consume auto-delete images feature
 - add service account to kuberay
+- updated `get-modules` workflow to only run tests against changed files in `modules/**`
 
 ## v1.3.0
 
