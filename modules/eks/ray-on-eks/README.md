@@ -10,7 +10,7 @@ This module runs Ray in AWS EKS Kubernetes cluster. It deploys a KubeRay Operato
 
 ### Usage
 
-## RayJob Example
+## Ray Job Example
 
 This example leverages [RayJob](https://docs.ray.io/en/latest/cluster/kubernetes/getting-started/rayjob-quick-start.html). 
 With RayJob, KubeRay automatically creates a RayCluster and submits a job when the cluster is ready. 
