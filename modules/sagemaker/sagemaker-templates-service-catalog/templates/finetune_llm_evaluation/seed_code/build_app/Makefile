@@ -1,20 +1,6 @@
 .PHONY: lint init
 
 #################################################################################
-# GLOBALS                                                                       #
-#################################################################################
-
-PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-PROJECT_NAME = gfdtv-dataanalysis-data-models
-PYTHON_INTERPRETER = python3
-
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
-
-#################################################################################
 # COMMANDS                                                                      #
 #################################################################################
 
@@ -26,8 +12,6 @@ init:
 	git config core.hooksPath .githooks
 
 clean:
-	rm -f cdk.staging
-	rm -rf cdk.out
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '.coverage' -exec rm -fr {} +
 	find . -name '.pytest_cache' -exec rm -fr {} +

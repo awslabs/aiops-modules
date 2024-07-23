@@ -26,8 +26,6 @@ init:
 	git config core.hooksPath .githooks
 
 clean:
-	rm -f cdk.staging
-	rm -rf cdk.out
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '.coverage' -exec rm -fr {} +
 	find . -name '.pytest_cache' -exec rm -fr {} +

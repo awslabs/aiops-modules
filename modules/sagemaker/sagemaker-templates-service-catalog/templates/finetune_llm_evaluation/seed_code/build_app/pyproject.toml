@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml_pipelines"
+version = "0.0.1"
+description = "ml pipelines - template package"
+authors = [
+    {"name" = "<Your Name>"},
+]
+readme = "README.md"
+license = {text = "Apache 2.0"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+]
+requires-python = ">= 3.6"
+dependencies = [
+    "sagemaker==2.218.0",
+    "scipy==1.9.3",
+    "diffusers==0.11.1",
+    "datasets==2.8.0",
+    "transformers==4.38.0",
+    "torch>=2.0.0",
+    "peft==0.4.0",
+    "accelerate==0.21.0",
+    "bitsandbytes==0.40.2",
+    "safetensors>=0.3.1",
+    "tokenizers>=0.13.3",
+]
+
+[project.optional-dependencies]
+test = [
+    "black",
+    "coverage",
+    "flake8",
+    "mock",
+    "pydocstyle",
+    "pytest",
+    "pytest-cov",
+    "sagemaker",
+    "tox",
+]
+
+[project.scripts]
+get-pipeline-definition = "ml_pipelines.get_pipeline_definition:main"
+run-pipeline = "ml_pipelines.run_pipeline:main"
+
+[tool.setuptools.packages.find]
+include = ["ml_pipelines*", "source_scripts*"]
