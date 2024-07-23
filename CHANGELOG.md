@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- add `ray-cluster` module based on `kuberay-helm` charts
+
 ### **Changed**
 
 - add integration tests for `sagemaker-studio`
 - bump ecr module version to 1.10.0 to consume auto-delete images feature
 - add service account to kuberay
+- remove custom manifests via `dataFiles` from `ray-on-eks`
+- refactor `ray-on-eks` to `ray-cluster` and `ray-operator` modules
 
 ## v1.3.0
 

@@ -1,4 +1,4 @@
-# Ray on EKS
+# Ray Cluster
 
 ## Description
 
