@@ -1,8 +1,5 @@
 name: ray-on-eks
 path: modules/eks/ray-on-eks
-dataFiles:
-  - filePath: data/ray/ray-job.shutdown.yaml
-  # - filePath: data/ray/ray-cluster.autoscaler.yaml
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
@@ -49,6 +46,3 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
-  - name: CustomManifestPaths
-    value:
-    - data/ray/ray-job.shutdown.yaml

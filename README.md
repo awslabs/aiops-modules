@@ -60,9 +60,11 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### EKS Modules
 
-| Type                                                  | Description                                                                                                      |
-|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
-| [Ray on EKS Module](modules/eks/ray-on-eks/README.md) | Provisions Ray on EKS cluster using IDF EKS module, Ray Operator, and RayJob or RayCluster via Custom Resources. |
+| Type                                                    | Description                                               |
+|---------------------------------------------------------|-----------------------------------------------------------|
+| [Ray Operator Module](modules/eks/ray-on-eks/README.md) | Provisions a Ray Operator on EKS.                         |
+| [Ray Cluster Module](modules/eks/ray-cluster/README.md) | Provisions a Ray Cluster on EKS. Requires a Ray Operator. |
+
 
 ### Example Modules
 

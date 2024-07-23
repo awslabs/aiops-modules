@@ -8,6 +8,8 @@ groups:
     path: manifests/ray-on-eks/core-modules.yaml
   - name: ray-on-eks
     path: manifests/ray-on-eks/ray-on-eks-modules.yaml
+  - name: ray-cluster
+    path: manifests/ray-on-eks/ray-cluster-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:

@@ -1,0 +1,30 @@
+name: ray-cluster
+path: modules/eks/ray-cluster
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: ServiceAccountName
+    valueFrom:
+      moduleMetadata:
+        group: ray-on-eks
+        name: ray-on-eks
+        key: EksServiceAccountName
