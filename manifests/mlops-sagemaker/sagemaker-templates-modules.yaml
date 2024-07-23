@@ -62,3 +62,15 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: sagemaker-domain-id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker-domain-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn

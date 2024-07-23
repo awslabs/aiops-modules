@@ -21,6 +21,8 @@ class Product(servicecatalog.ProductStack):
         construct_id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: None,
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
@@ -71,6 +73,10 @@ class Product(servicecatalog.ProductStack):
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         # Get Model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "Model Bucket", model_bucket_name)
@@ -98,6 +104,8 @@ class Product(servicecatalog.ProductStack):
             "Build",
             project_name=sagemaker_project_name,
             project_id=sagemaker_project_id,
+            domain_id=sagemaker_domain_id,
+            domain_arn=sagemaker_domain_arn,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             model_bucket=model_bucket,
             repo_asset=build_app_asset,

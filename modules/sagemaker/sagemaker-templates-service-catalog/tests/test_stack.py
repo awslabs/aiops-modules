@@ -49,6 +49,8 @@ def stack(stack_defaults) -> cdk.Stack:
     prod_vpc_id = "vpc"
     prod_subnet_ids = ["sub"]
     prod_security_group_ids = ["sg"]
+    sagemaker_domain_id = "domain_id"
+    sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
 
     return stack.ServiceCatalogStack(
         app,
@@ -73,6 +75,8 @@ def stack(stack_defaults) -> cdk.Stack:
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
         ),
+        sagemaker_domain_id=sagemaker_domain_id,
+        sagemaker_domain_arn=sagemaker_domain_arn,
     )
 
 
@@ -80,7 +84,7 @@ def test_synthesize_stack(stack: cdk.Stack) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::ServiceCatalog::Portfolio", 1)
-    template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 4)
+    template.resource_count_is("AWS::ServiceCatalog::CloudFormationProduct", 5)
 
 
 def test_no_cdk_nag_errors(stack: cdk.Stack) -> None:

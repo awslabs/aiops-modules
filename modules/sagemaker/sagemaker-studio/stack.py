@@ -31,6 +31,7 @@ class SagemakerStudioStack(Stack):
         app_image_config_name: Optional[str],
         image_name: Optional[str],
         enable_custom_sagemaker_projects: bool,
+        enable_domain_resource_isolation: bool,
         auth_mode: str,
         **kwargs: Any,
     ) -> None:
@@ -74,6 +75,15 @@ class SagemakerStudioStack(Stack):
                     self.sm_roles.sagemaker_studio_role.role_arn,
                     self.sm_roles.data_scientist_role.role_arn,
                     self.sm_roles.lead_data_scientist_role.role_arn,
+                ],
+            )
+
+        if enable_domain_resource_isolation:
+            self.enable_domain_resource_isolation(
+                [
+                    self.sm_roles.sagemaker_studio_role,
+                    self.sm_roles.data_scientist_role,
+                    self.sm_roles.lead_data_scientist_role,
                 ],
             )
 
@@ -186,6 +196,38 @@ class SagemakerStudioStack(Stack):
                 ),
             ],
         )
+
+    def enable_domain_resource_isolation(self, roles: List[iam.Role]) -> None:
+        policy = iam.Policy(
+            self,
+            "sm_domain_resource_isolation_policy",
+            statements=[
+                iam.PolicyStatement(
+                    effect=iam.Effect.DENY,
+                    actions=[
+                        "sagemaker:Update*",
+                        "sagemaker:Delete*",
+                        "sagemaker:Describe*",
+                    ],
+                    not_resources=[
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:domain/{self.studio_domain.attr_domain_id}",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user-profile/{self.studio_domain.attr_domain_id}/*",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:project/*",
+                    ],
+                    conditions={
+                        "StringNotEquals": {
+                            "aws:ResourceTag/sagemaker:domain-arn": (
+                                f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:"
+                                f"domain/{self.studio_domain.attr_domain_id}"
+                            )
+                        }
+                    },
+                )
+            ],
+        )
+
+        for role in roles:
+            role.attach_inline_policy(policy)
 
     def sagemaker_studio_domain(
         self,

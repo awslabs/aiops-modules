@@ -1,5 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Creates AIOps setup for Developers
+Parameters:
+  VersionTag:
+    Type: String
+    Default: v1.3.0
+    Description: Version. Should reference version tag in the repository e.g v1.3.0.
+  ManifestPath:
+    Type: String
+    Default: manifests/mlops-sagemaker/deployment.yaml
+    AllowedValues:
+      - manifests/mlops-sagemaker/deployment.yaml
+      - manifests/mlflow-experiments-tracking/deployment.yaml
+      - manifests/mwaa-ml-training/deployment.yaml
+      - manifests/fmops-qna-rag/deployment.yaml
+      - manifests/ray-on-eks/deployment.yaml
+    Description: Manifest to deploy. Must match one of the manifests in the repository.
 Resources:
   CodeBuildRole:
     Type: AWS::IAM::Role
@@ -14,7 +29,81 @@ Resources:
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSCodeBuildAdminAccess
       Policies:
-        - PolicyName: create
+        - PolicyName: cdk-bootstrap-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: CFN
+                Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:ExecuteChangeSet
+                  - cloudformation:GetTemplate
+                  - cloudformation:DescribeStackEvents
+                  - cloudformation:DeleteStack
+                  - cloudformation:DeleteChangeSet
+                Resource:
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit
+                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
+                  - !Sub arn:${AWS::Partition}:cloudformation:us-east-1:${AWS::AccountId}:stack/CDKToolkit
+                  - !Sub arn:${AWS::Partition}:cloudformation:us-east-1:${AWS::AccountId}:stack/CDKToolkit/*
+              - Sid: IAM
+                Effect: Allow
+                Action:
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRole
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:TagRole
+                  - iam:UpdateAssumeRolePolicy
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-*
+              - Sid: ECR
+                Effect: Allow
+                Action:
+                  - ecr:CreateRepository
+                  - ecr:DeleteRepository
+                  - ecr:SetRepositoryPolicy
+                  - ecr:PutLifecyclePolicy
+                  - ecr:PutImageTagMutability
+                  - ecr:Describe*
+                  - ecr:List*
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/cdk-*
+                  - !Sub arn:${AWS::Partition}:ecr:us-east-1:${AWS::AccountId}:repository/cdk-*
+              - Sid: SSM
+                Effect: Allow
+                Action:
+                  - ssm:PutParameter
+                  - ssm:DeleteParameter
+                  - ssm:GetParameters
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/cdk-*
+                  - !Sub arn:${AWS::Partition}:ssm:us-east-1:${AWS::AccountId}:parameter/cdk-*
+              - Sid: S3
+                Effect: Allow
+                Action:
+                  - s3:CreateBucket
+                  - s3:GetBucketPolicy
+                  - s3:PutBucketPolicy
+                  - s3:PutBucketVersioning
+                  - s3:PutBucketPublicAccessBlock
+                  - s3:PutBucketAcl
+                  - s3:GetEncryptionConfiguration
+                  - s3:PutEncryptionConfiguration
+                  - s3:PutLifecycleConfiguration
+                  - s3:PutObjectTagging
+                  - s3:PutObjectVersionTagging
+                  - s3:DeleteObjectTagging
+                  - s3:DeleteObjectVersionTagging
+                Resource:
+                  - !Sub arn:${AWS::Partition}:s3:::cdk-*
+        - PolicyName: seedfarmer-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -38,8 +127,6 @@ Resources:
                   - cloudformation:DeleteStack
                   - cloudformation:DeleteChangeSet
                 Resource:
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit
-                  - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/CDKToolkit/*
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-aiops-*
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/seedfarmer-aiops-*/*
                   - !Sub arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/aws-codeseeder-aiops
@@ -84,6 +171,10 @@ Resources:
             Value: !Ref AWS::AccountId
           - Name: PRIMARY_REGION
             Value: !Ref AWS::Region
+          - Name: VERSION_TAG
+            Value: !Ref VersionTag
+          - Name: MANIFEST_PATH
+            Value: !Ref ManifestPath
           - Name: ROLE_ARN
             Value: !GetAtt CodeBuildRole.Arn
           - Name: url_path
@@ -118,7 +209,7 @@ Resources:
               commands:
                 - echo Build started on `date`
                 - echo 'Cloning aiops repo...'
-                - git clone https://github.com/awslabs/aiops-modules.git
+                - git clone https://github.com/awslabs/aiops-modules.git --branch ${VERSION_TAG}
                 - echo 'Cloning complete'
                 - cd aiops-modules/
                 - echo 'Installing dependencies...'
@@ -127,6 +218,9 @@ Resources:
                 - echo 'Bootstrapping CDK...'
                 - cdk bootstrap aws://${AWS_ACCOUNT_ID}/${AWS_REGION}
                 - echo 'CDK bootstrap complete'
+                - echo 'Boostrapping CDK in us-east-1...'
+                - cdk bootstrap aws://${AWS_ACCOUNT_ID}/us-east-1
+                - echo 'CDK bootstrap complete in us-east-1'
                 - echo 'Bootstrapping seedfarmer...'
                 - seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ROLE_ARN} --as-target
                 - python scripts/role_assume_update.py ${ROLE_ARN}
@@ -135,7 +229,7 @@ Resources:
                 - echo 'Preparing Manifest files'
                 - sed -i "s/us-east-1/${AWS_REGION}/g" manifests/*.yaml
                 - echo 'Deploying AIOPS manifest'
-                - seedfarmer apply manifests/uber-deployment.yaml --region ${AWS_REGION} --enable-session-timeout
+                - seedfarmer apply ${MANIFEST_PATH} --region ${AWS_REGION} --enable-session-timeout
                 - echo 'Deployment of aiops-modules manifest complete'
             post_build:
               commands:

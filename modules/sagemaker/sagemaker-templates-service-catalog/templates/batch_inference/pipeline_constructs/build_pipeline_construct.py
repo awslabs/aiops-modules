@@ -1,6 +1,6 @@
 from typing import Any
 
-from aws_cdk import Aws
+from aws_cdk import Aws, Tags
 from aws_cdk import aws_cloudwatch as cloudwatch
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codecommit as codecommit
@@ -19,6 +19,8 @@ class BuildPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
+        domain_id: str,
+        domain_arn: str,
         pipeline_artifact_bucket: s3.IBucket,
         repo_asset: s3_assets.Asset,
         model_package_group_name: str,
@@ -38,6 +40,12 @@ class BuildPipelineConstruct(Construct):
                 branch="main",
             ),
         )
+        Tags.of(build_app_repository).add("sagemaker:project-id", project_id)
+        Tags.of(build_app_repository).add("sagemaker:project-name", project_name)
+        if domain_id:
+            Tags.of(build_app_repository).add("sagemaker:domain-id", domain_id)
+        if domain_arn:
+            Tags.of(build_app_repository).add("sagemaker:domain-arn", domain_arn)
 
         sagemaker_seedcode_bucket = s3.Bucket.from_bucket_name(
             self, "SageMaker Seedcode Bucket", f"sagemaker-servicecatalog-seedcode-{Aws.REGION}"
@@ -157,6 +165,8 @@ class BuildPipelineConstruct(Construct):
                 environment_variables={
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
+                    "SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
+                    "SAGEMAKER_DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "AWS_REGION": codebuild.BuildEnvironmentVariable(value=Aws.REGION),
                     "SAGEMAKER_PIPELINE_ROLE_ARN": codebuild.BuildEnvironmentVariable(

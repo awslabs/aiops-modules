@@ -11,6 +11,9 @@ for each monitoring job:
 * Model Bias: [ClarifyCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-clarify-check)
 * Model Explainability: [ClarifyCheck step](https://docs.aws.amazon.com/sagemaker/latest/dg/build-and-manage-steps.html#step-type-clarify-check)
 
+Note that updating parameters will require replacing resources. Deployments may be delayed until any
+running monitoring jobs complete (and the resources can be destroyed).
+
 ### Architecture
 
 ![SageMaker Model Monitoring Module Architecture](docs/_static/sagemaker-model-monitoring-module-architecture.png "SageMaker Model Monitoring Module Architecture")

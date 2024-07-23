@@ -3,6 +3,8 @@ from typing import Any, List, Optional
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
 
+from sagemaker_model_monitoring.utils import generate_unique_id
+
 
 class ModelExplainabilityConstruct(Construct):
     """
@@ -36,6 +38,30 @@ class ModelExplainabilityConstruct(Construct):
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
+        # it to autogenerate it. Generate one which will hopefully not conflict.
+        unique_id = generate_unique_id(
+            clarify_image_uri,
+            endpoint_name,
+            model_bucket_name,
+            model_explainability_checkstep_output_prefix,
+            model_explainability_checkstep_analysis_config_prefix,
+            model_explainability_output_prefix,
+            kms_key_id,
+            model_monitor_role_arn,
+            security_group_id,
+            subnet_ids,
+            instance_count,
+            instance_type,
+            instance_volume_size_in_gb,
+            max_runtime_in_seconds,
+            features_attribute,
+            inference_attribute,
+            probability_attribute,
+            schedule_expression,
+        )
+        job_definition_name = f"{endpoint_name}-model-explain-{unique_id}"
 
         # To match the defaults in SageMaker.
         if model_explainability_checkstep_analysis_config_prefix is None:
@@ -77,7 +103,7 @@ class ModelExplainabilityConstruct(Construct):
                 ],
                 kms_key_id=kms_key_id,
             ),
-            job_definition_name=f"{endpoint_name}-model-explain-def",
+            job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
             model_explainability_baseline_config=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelExplainabilityJobDefinition.ConstraintsResourceProperty(
@@ -106,6 +132,6 @@ class ModelExplainabilityConstruct(Construct):
                     schedule_expression=schedule_expression,
                 ),
             ),
-            monitoring_schedule_name=f"{endpoint_name}-model-explainability",
+            monitoring_schedule_name=f"{job_definition_name}-schedule",
         )
         model_explainability_monitor_schedule.add_dependency(model_explainability_job_definition)
