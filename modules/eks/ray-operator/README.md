@@ -8,43 +8,6 @@ This module runs Ray Operator in AWS EKS Kubernetes cluster. It deploys a KubeRa
 
 ![Ray on EKS Module Architecture](docs/_static/ray-on-eks-module-architecture.png "Ray on EKS Module Architecture")
 
-### Usage
-
-## RayCluster Example
-
-The example leverages [RayCluster](https://docs.ray.io/en/latest/cluster/kubernetes/getting-started/raycluster-quick-start.html).
-
-After deploying the RayCluster, follow the steps below to submit a job to the cluster.
-
-1. Connect to EKS cluster
-```
-aws eks update-kubeconfig --region us-east-1 --name eks-cluster-xxx
-```
-
-2. Check that Ray cluster and operator pods are running:
-
-```
-kubectl get pods --all-namespaces
-
-NAMESPACE     NAME                                                        READY   STATUS    RESTARTS   AGE
-...
-ray           kuberay-operator-...                                        1/1     Running   0          11m
-ray           ray-cluster-kuberay-head-...                                1/1     Running   0          11m
-ray           ray-cluster-kuberay-worker-workergroup-...                  1/1     Running   0          11m
-ray           ray-cluster-kuberay-worker-workergroup-...                  1/1     Running   0          11m
-```
-
-3. Set up port forwarding:
-
-```
-kubectl port-forward -n ray --address 0.0.0.0 ray-cluster-kuberay-head-...  8265:8265
-```
-
-4. Submit a Ray job:
-```
-ray job submit --address http://localhost:8265 -- python -c "import ray; ray.init(); print(ray.cluster_resources())"
-```
-
 ## Inputs/Outputs
 
 ### Input Parameters
