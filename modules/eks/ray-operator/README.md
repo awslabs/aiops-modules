@@ -6,7 +6,7 @@ This module runs Ray Operator in AWS EKS Kubernetes cluster. It deploys a KubeRa
 
 ## High-level Architecture
 
-![Ray on EKS Module Architecture](docs/_static/ray-on-eks-module-architecture.png "Ray on EKS Module Architecture")
+![Ray Operator Module Architecture](docs/_static/ray-operator-module-architecture.png "Ray Operator Module Architecture")
 
 ## Inputs/Outputs
 

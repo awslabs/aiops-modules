@@ -2,7 +2,7 @@
 
 ## Description
 
-This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a RayClsuter via [kuberay-helm](https://github.com/ray-project/kuberay-helm) and a ClusterIP service.
+This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a RayClsuter via [kuberay-helm](https://github.com/ray-project/kuberay-helm) and a ClusterIP service. Requires a RayOperator.
 
 ## Inputs/Outputs
 
@@ -103,10 +103,16 @@ ray job submit --address http://localhost:8265 -- python -c "import ray; ray.ini
 7. For a more elaborate example, get an example pytorch training job from the Ray repository:
 
 ```
-wget https://raw.githubusercontent.com/ray-project/ray/master/release/air_tests/air_benchmarks/workloads/pytorch_training_e2e.py
+wget https://raw.githubusercontent.com/ray-project/ray/ray-2.23.0/release/air_tests/air_benchmarks/workloads/pytorch_training_e2e.py
 ```
 
-8. Submit a training job:
+8. Replace local storage in the script with an S3 bucket:
+
+```
+sed -i -e 's|/mnt/cluster_storage|s3://my-bucket|g' pytorch_training_e2e.py
+```
+
+9. Submit a training job:
 
 ```
 ray job submit --address http://localhost:8265 --working-dir="." -- python pytorch_training_e2e.py --smoke-test --num-workers 6

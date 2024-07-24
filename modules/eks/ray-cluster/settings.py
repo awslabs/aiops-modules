@@ -6,6 +6,17 @@ from typing import Dict, Optional
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+DEFAULT_POD_RESOURCES = {
+    "limits": {
+        "cpu": "1",
+        "memory": "8G",
+    },
+    "requests": {
+        "cpu": "1",
+        "memory": "8G",
+    },
+}
+
 
 class CdkBaseSettings(BaseSettings, ABC):
     """Defines common configuration for settings."""
@@ -36,33 +47,11 @@ class SeedFarmerParameters(CdkBaseSettings):
     image_uri: str = Field(default="rayproject/ray-ml:2.23.0")
     enable_autoscaling: bool = Field(default=True)
     autoscaler_idle_timeout_seconds: int = Field(default=60)
-    head_resources: Dict[str, Dict[str, str]] = Field(
-        default={
-            "limits": {
-                "cpu": "1",
-                "memory": "8G",
-            },
-            "requests": {
-                "cpu": "1",
-                "memory": "8G",
-            },
-        }
-    )
+    head_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
     worker_replicas: int = Field(default=1)
     worker_min_replicas: int = Field(default=1)
     worker_max_replicas: int = Field(default=10)
-    worker_resources: Dict[str, Dict[str, str]] = Field(
-        default={
-            "limits": {
-                "cpu": "1",
-                "memory": "8G",
-            },
-            "requests": {
-                "cpu": "1",
-                "memory": "8G",
-            },
-        }
-    )
+    worker_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 
