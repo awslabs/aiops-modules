@@ -26,6 +26,8 @@ class RayCluster(Stack):
         eks_openid_connect_provider_arn: str,
         namespace_name: str,
         service_account_name: str,
+        ray_cluster_helm_chart_version: str,
+        image_uri: str,
         enable_autoscaling: bool,
         autoscaler_idle_timeout_seconds: int,
         head_resources: Dict[str, Dict[str, str]],
@@ -63,23 +65,26 @@ class RayCluster(Stack):
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
+        [image_repository, image_tag] = image_uri.split(":")
         eks_cluster.add_helm_chart(
             "RayCluster",
             chart="ray-cluster",
             repository="https://ray-project.github.io/kuberay-helm/",
             namespace=namespace_name,
-            version="1.1.1",
+            version=ray_cluster_helm_chart_version,
             wait=True,
             values={
                 "image": {
-                    "repository": "rayproject/ray-ml",
-                    "tag": "2.23.0",
+                    "repository": image_repository,
+                    "tag": image_tag,
                     "pullPolicy": "IfNotPresent",
                 },
                 "nameOverride": "kuberay",
                 "fullnameOverride": "kuberay",
                 "head": {
                     "rayVersion": "2.23.0",
+                    # Set rayStartParams num-cpus to 0 to prevent the Ray scheduler from
+                    # scheduling any Ray actors or tasks on the Ray head Pod.
                     "rayStartParams": {"num-cpus": "0"},
                     "serviceAccountName": service_account_name,
                     "enableInTreeAutoscaling": enable_autoscaling,
@@ -112,33 +117,5 @@ class RayCluster(Stack):
                     "volumes": [{"name": "log-volume", "emptyDir": {}}],
                     "volumeMounts": [{"mountPath": "/tmp/ray", "name": "log-volume"}],
                 },
-                "service": {
-                    "type": "ClusterIP",
-                },
             },
         )
-
-        """
-        ray_service = eks_cluster.add_manifest(
-            "RayService",
-            {
-                "apiVersion": "v1",
-                "kind": "Service",
-                "metadata": {
-                    "name": module_name,
-                    "namespace": namespace_name,
-                },
-                "spec": {
-                    "selector": {"ray.io/node-type": "head"},
-                    "ports": [
-                        {"port": 8265, "targetPort": 8265, "name": "dashboard"},
-                        {"port": 10001, "targetPort": 10001, "name": "client"},
-                        {"port": 6379, "targetPort": 6379, "name": "gcs"},
-                        {"port": 8000, "targetPort": 8000, "name": "serve"},
-                        {"port": 8080, "targetPort": 8080, "name": "metrics"},
-                    ],
-                },
-            },
-        )
-        ray_service.node.add_dependency(ray_cluster)
-        """
