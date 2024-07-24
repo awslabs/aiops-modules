@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, cast
+from typing import Any, Dict, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -28,9 +28,11 @@ class RayCluster(Stack):
         service_account_name: str,
         enable_autoscaling: bool,
         autoscaler_idle_timeout_seconds: int,
+        head_resources: Dict[str, Dict[str, str]],
         worker_replicas: int,
         worker_min_replicas: int,
         worker_max_replicas: int,
+        worker_resources: Dict[str, Dict[str, str]],
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -97,7 +99,7 @@ class RayCluster(Stack):
                             },
                         },
                     },
-                    "resources": {"limits": {"cpu": "1", "memory": "8G"}, "requests": {"cpu": "1", "memory": "8G"}},
+                    "resources": head_resources,
                     "volumes": [{"name": "log-volume", "emptyDir": {}}],
                     "volumeMounts": [{"mountPath": "/tmp/ray", "name": "log-volume"}],
                 },
@@ -106,8 +108,7 @@ class RayCluster(Stack):
                     "minReplicas": worker_min_replicas,
                     "maxReplicas": worker_max_replicas,
                     "serviceAccountName": service_account_name,
-                    # TODO: make all this configurable obviously
-                    "resources": {"limits": {"cpu": "4", "memory": "24G"}, "requests": {"cpu": "4", "memory": "24G"}},
+                    "resources": worker_resources,
                     "volumes": [{"name": "log-volume", "emptyDir": {}}],
                     "volumeMounts": [{"mountPath": "/tmp/ray", "name": "log-volume"}],
                 },

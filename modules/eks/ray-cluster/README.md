@@ -18,6 +18,29 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
 
 #### Optional
 
+- `enable_autoscaling` - Whether ray autoscaler is enabled. `True` by default.
+- `autoscaler_idle_timeout_seconds` -  The number of seconds to wait before scaling down a worker pod which is not using Ray resources.
+- `head_resources` - Head group resource requests and limits. Defaults to:
+```yaml
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+```
+- `worker_replicas` - The requested number of the Pod replicas in worker group. Defaults to `1`.
+- `worker_min_replicas` - The minimum number of the Pod replicas in worker group. Defaults to `1`.
+- `worker_max_replicas` - The maximum number of the Pod replicas in worker group. Defaults to `10`.
+- `worker_resources` - Worker group resource requests and limits. Defaults to:
+```yaml
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+```
 - `tags` - List of additional tags to apply to all resources
 
 ### Sample manifest declaration
@@ -56,7 +79,29 @@ parameters:
   - name: ServiceAccountName
     valueFrom:
       moduleMetadata:
-        group: ray-on-eks
-        name: ray-on-eks
+        group: ray-operator
+        name: ray-operator
         key: EksServiceAccountName
+  - name: HeadResources
+    value:
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+  - name: WorkerReplicas
+    value: 2
+  - name: WorkerMinReplicas
+    value: 2
+  - name: WorkerMaxReplicas
+    value: 10
+  - name: WorkerResources
+    value:
+      requests:
+        cpu: "4"
+        memory: "24G"
+      limits:
+        cpu: "4"
+        memory: "24G"
 ```

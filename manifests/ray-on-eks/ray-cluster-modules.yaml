@@ -25,6 +25,28 @@ parameters:
   - name: ServiceAccountName
     valueFrom:
       moduleMetadata:
-        group: ray-on-eks
-        name: ray-on-eks
+        group: ray-operator
+        name: ray-operator
         key: EksServiceAccountName
+  - name: HeadResources
+    value:
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+  - name: WorkerReplicas
+    value: 2
+  - name: WorkerMinReplicas
+    value: 2
+  - name: WorkerMaxReplicas
+    value: 10
+  - name: WorkerResources
+    value:
+      requests:
+        cpu: "4"
+        memory: "24G"
+      limits:
+        cpu: "4"
+        memory: "24G"

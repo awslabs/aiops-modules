@@ -27,9 +27,11 @@ ray_cluster_stack = RayCluster(
     service_account_name=app_settings.parameters.service_account_name,
     enable_autoscaling=app_settings.parameters.enable_autoscaling,
     autoscaler_idle_timeout_seconds=app_settings.parameters.autoscaler_idle_timeout_seconds,
+    head_resources=app_settings.parameters.head_resources,
     worker_replicas=app_settings.parameters.worker_replicas,
     worker_min_replicas=app_settings.parameters.worker_min_replicas,
     worker_max_replicas=app_settings.parameters.worker_max_replicas,
+    worker_resources=app_settings.parameters.worker_resources,
     env=env,
 )
 

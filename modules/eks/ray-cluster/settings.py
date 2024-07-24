@@ -34,9 +34,33 @@ class SeedFarmerParameters(CdkBaseSettings):
     service_account_name: str
     enable_autoscaling: bool = Field(default=True)
     autoscaler_idle_timeout_seconds: int = Field(default=60)
+    head_resources: Dict[str, Dict[str, str]] = Field(
+        default={
+            "limits": {
+                "cpu": "1",
+                "memory": "8G",
+            },
+            "requests": {
+                "cpu": "1",
+                "memory": "8G",
+            },
+        }
+    )
     worker_replicas: int = Field(default=1)
-    worker_min_replicas: int = Field(default=4)
+    worker_min_replicas: int = Field(default=1)
     worker_max_replicas: int = Field(default=10)
+    worker_resources: Dict[str, Dict[str, str]] = Field(
+        default={
+            "limits": {
+                "cpu": "1",
+                "memory": "8G",
+            },
+            "requests": {
+                "cpu": "1",
+                "memory": "8G",
+            },
+        }
+    )
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

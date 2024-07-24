@@ -41,6 +41,8 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
     worker_replicas = 1
     worker_min_replicas = 4
     worker_max_replicas = 10
+    head_resources = {"limits": {"cpu": "1", "memory": "8G"}, "requests": {"cpu": "1", "memory": "8G"}}
+    worker_resources = {"limits": {"cpu": "1", "memory": "8G"}, "requests": {"cpu": "1", "memory": "8G"}}
 
     return ray_cluster_stack.RayCluster(
         scope=app,
@@ -55,9 +57,11 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
         service_account_name=service_account_name,
         enable_autoscaling=enable_autoscaling,
         autoscaler_idle_timeout_seconds=autoscaler_idle_timeout_seconds,
+        head_resources=head_resources,
         worker_replicas=worker_replicas,
         worker_min_replicas=worker_min_replicas,
         worker_max_replicas=worker_max_replicas,
+        worker_resources=worker_resources,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

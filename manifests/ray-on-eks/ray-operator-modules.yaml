@@ -1,5 +1,5 @@
-name: ray-on-eks
-path: modules/eks/ray-on-eks
+name: ray-operator
+path: modules/eks/ray-operator
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
