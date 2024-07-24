@@ -26,6 +26,7 @@ class RayCluster(Stack):
         eks_openid_connect_provider_arn: str,
         namespace_name: str,
         service_account_name: str,
+        ray_version: str,
         ray_cluster_helm_chart_version: str,
         image_uri: str,
         enable_autoscaling: bool,
@@ -82,7 +83,7 @@ class RayCluster(Stack):
                 "nameOverride": "kuberay",
                 "fullnameOverride": "kuberay",
                 "head": {
-                    "rayVersion": "2.23.0",
+                    "rayVersion": ray_version,
                     # Set rayStartParams num-cpus to 0 to prevent the Ray scheduler from
                     # scheduling any Ray actors or tasks on the Ray head Pod.
                     "rayStartParams": {"num-cpus": "0"},

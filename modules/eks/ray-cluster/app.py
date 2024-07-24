@@ -25,6 +25,7 @@ ray_cluster_stack = RayCluster(
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
     namespace_name=app_settings.parameters.namespace,
     service_account_name=app_settings.parameters.service_account_name,
+    ray_version=app_settings.parameters.ray_version,
     ray_cluster_helm_chart_version=app_settings.parameters.ray_cluster_helm_chart_version,
     image_uri=app_settings.parameters.image_uri,
     enable_autoscaling=app_settings.parameters.enable_autoscaling,

@@ -36,6 +36,7 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
     eks_oidc_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/XXXXXXXX"
     namespace = "namespace"
     service_account_name = "acc"
+    ray_version = "2.23.0"
     ray_cluster_helm_chart_version = "1.1.1"
     image_uri = "img:latest"
     enable_autoscaling = True
@@ -57,6 +58,7 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
         eks_openid_connect_provider_arn=eks_oidc_arn,
         namespace_name=namespace,
         service_account_name=service_account_name,
+        ray_version=ray_version,
         ray_cluster_helm_chart_version=ray_cluster_helm_chart_version,
         image_uri=image_uri,
         enable_autoscaling=enable_autoscaling,
