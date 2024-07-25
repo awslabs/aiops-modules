@@ -1,10 +1,21 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+DEFAULT_POD_RESOURCES = {
+    "limits": {
+        "cpu": "1",
+        "memory": "8G",
+    },
+    "requests": {
+        "cpu": "1",
+        "memory": "8G",
+    },
+}
 
 
 class CdkBaseSettings(BaseSettings, ABC):
@@ -31,10 +42,17 @@ class SeedFarmerParameters(CdkBaseSettings):
     namespace: str
     eks_cluster_admin_role_arn: str
     eks_oidc_arn: str
-    eks_openid_issuer: str
-    eks_cluster_endpoint: str
-    eks_cert_auth_data: str
-    custom_manifest_paths: List[str] = Field(default=[])
+    service_account_name: str
+    ray_version: str = Field(default="2.30.0")
+    ray_cluster_helm_chart_version: str = Field(default="1.1.1")
+    image_uri: str = Field(default="rayproject/ray-ml:2.30.0")
+    enable_autoscaling: bool = Field(default=True)
+    autoscaler_idle_timeout_seconds: int = Field(default=60)
+    head_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
+    worker_replicas: int = Field(default=1)
+    worker_min_replicas: int = Field(default=1)
+    worker_max_replicas: int = Field(default=10)
+    worker_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

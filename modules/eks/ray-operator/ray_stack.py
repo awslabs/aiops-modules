@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, List, cast
+from typing import Any, cast
 
-import yaml
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
 from aws_cdk import aws_iam as iam
@@ -31,7 +30,6 @@ class RayOnEKS(Stack):
         namespace_name: str,
         service_account_name: str,
         service_account_role: iam.IRole,
-        custom_manifest_paths: List[str],
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -61,7 +59,7 @@ class RayOnEKS(Stack):
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
-        operator = cluster.add_helm_chart(
+        cluster.add_helm_chart(
             "RayOperator",
             chart="kuberay-operator",
             release="kuberay-operator",
@@ -76,10 +74,3 @@ class RayOnEKS(Stack):
                 }
             },
         )
-
-        # Add optional custom resource (CR) manifests
-        for custom_manifest_path in custom_manifest_paths:
-            with open(custom_manifest_path) as f:
-                for manifest in yaml.load_all(f, Loader=yaml.FullLoader):
-                    manifest = cluster.add_manifest(f"{manifest['metadata']['name']}", manifest)
-                    manifest.node.add_dependency(operator)

@@ -1,0 +1,64 @@
+name: ray-cluster
+path: modules/eks/ray-cluster
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: ServiceAccountName
+    valueFrom:
+      moduleMetadata:
+        group: ray-operator
+        name: ray-operator
+        key: EksServiceAccountName
+  - name: HeadResources
+    value:
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+  - name: WorkerReplicas
+    value: 2
+  - name: WorkerMinReplicas
+    value: 2
+  - name: WorkerMaxReplicas
+    value: 10
+  - name: WorkerResources
+    value:
+      requests:
+        cpu: "4"
+        memory: "24G"
+      limits:
+        cpu: "4"
+        memory: "24G"
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: datalake-buckets
+        key: ArtifactsBucketName
+  - name: ImageUri
+    valueFrom:
+      moduleMetadata:
+        group: images
+        name: ray
+        key: ImageUri

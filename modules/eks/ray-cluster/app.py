@@ -3,8 +3,7 @@
 
 from aws_cdk import App, CfnOutput, Environment, Tags
 
-from ray_stack import RayOnEKS
-from rbac_stack import RbacStack
+from ray_cluster_stack import RayCluster
 from settings import ApplicationSettings
 
 app_settings = ApplicationSettings()
@@ -15,21 +14,7 @@ env = Environment(
     region=app_settings.default.region,
 )
 
-rbac_stack = RbacStack(
-    scope=app,
-    id=f"{app_settings.settings.app_prefix}-rbac",
-    project_name=app_settings.settings.project_name,
-    deployment_name=app_settings.settings.deployment_name,
-    module_name=app_settings.settings.module_name,
-    eks_cluster_name=app_settings.parameters.eks_cluster_name,
-    eks_admin_role_arn=app_settings.parameters.eks_cluster_admin_role_arn,
-    eks_oidc_arn=app_settings.parameters.eks_oidc_arn,
-    eks_openid_issuer=app_settings.parameters.eks_openid_issuer,
-    namespace_name=app_settings.parameters.namespace,
-    env=env,
-)
-
-ray_on_eks_stack = RayOnEKS(
+ray_cluster_stack = RayCluster(
     scope=app,
     id=app_settings.settings.app_prefix,
     project_name=app_settings.settings.project_name,
@@ -38,12 +23,18 @@ ray_on_eks_stack = RayOnEKS(
     eks_cluster_name=app_settings.parameters.eks_cluster_name,
     eks_admin_role_arn=app_settings.parameters.eks_cluster_admin_role_arn,
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
-    eks_cluster_endpoint=app_settings.parameters.eks_cluster_endpoint,
-    eks_cert_auth_data=app_settings.parameters.eks_cert_auth_data,
     namespace_name=app_settings.parameters.namespace,
-    service_account_name=rbac_stack.service_account.service_account_name,
-    service_account_role=rbac_stack.service_account.role,
-    custom_manifest_paths=app_settings.parameters.custom_manifest_paths,
+    service_account_name=app_settings.parameters.service_account_name,
+    ray_version=app_settings.parameters.ray_version,
+    ray_cluster_helm_chart_version=app_settings.parameters.ray_cluster_helm_chart_version,
+    image_uri=app_settings.parameters.image_uri,
+    enable_autoscaling=app_settings.parameters.enable_autoscaling,
+    autoscaler_idle_timeout_seconds=app_settings.parameters.autoscaler_idle_timeout_seconds,
+    head_resources=app_settings.parameters.head_resources,
+    worker_replicas=app_settings.parameters.worker_replicas,
+    worker_min_replicas=app_settings.parameters.worker_min_replicas,
+    worker_max_replicas=app_settings.parameters.worker_max_replicas,
+    worker_resources=app_settings.parameters.worker_resources,
     env=env,
 )
 
@@ -56,11 +47,10 @@ Tags.of(app).add("SeedFarmerModuleName", app_settings.settings.module_name)
 Tags.of(app).add("SeedFarmerProjectName", app_settings.settings.project_name)
 
 CfnOutput(
-    scope=ray_on_eks_stack,
+    scope=ray_cluster_stack,
     id="metadata",
-    value=rbac_stack.to_json_string(
+    value=ray_cluster_stack.to_json_string(
         {
-            "EksServiceAccountRoleArn": rbac_stack.service_account.role.role_arn,
             "NamespaceName": app_settings.parameters.namespace,
         }
     ),
