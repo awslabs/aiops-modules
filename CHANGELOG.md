@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-=======
-
 ## UNRELEASED
 
 ### **Added**
@@ -21,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add service account to kuberay
 - updated `get-modules` workflow to only run tests against changed files in `modules/**`
 - Updated the `sagemaker-templates-service-catalog` module documentation to match the code layout.
+- Modernize `sagemaker-templates-service-catalog` packaging and remove unused dependencies.
 - remove custom manifests via `dataFiles` from `ray-on-eks`
 - refactor `ray-on-eks` to `ray-cluster` and `ray-operator` modules
+- downscope `ray-operator` service account permissions
 
 ## v1.3.0
 
