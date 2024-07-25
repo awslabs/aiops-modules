@@ -18,7 +18,7 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
 
 #### Optional
 
-- `ray_version` - Ray version. Defaults to `2.23.0`.
+- `ray_version` - Ray version. Defaults to `2.30.0`.
 - `ray_cluster_helm_chart_version` - Kuberay RayCluster helm chart version. Defaults to `1.1.1`.
 - `image_uri` - Container Image URI. Defaults to `rayproject/ray-ml:2.23.0`.
 - `enable_autoscaling` - Whether ray autoscaler is enabled. `True` by default.
