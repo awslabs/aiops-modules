@@ -24,6 +24,7 @@ This module runs Ray Operator in AWS EKS Kubernetes cluster. It deploys a KubeRa
 
 #### Optional
 
+- `data_bucket_name` - Name of the bucket to grant service account permissions to
 - `tags` - List of additional tags to apply to all resources
 
 ### Sample manifest declaration

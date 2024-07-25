@@ -46,3 +46,9 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: datalake-buckets
+        key: ArtifactsBucketName

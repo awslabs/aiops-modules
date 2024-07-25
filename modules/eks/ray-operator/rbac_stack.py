@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, cast
+from typing import Any, Optional, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -26,6 +26,7 @@ class RbacStack(Stack):
         eks_oidc_arn: str,
         eks_openid_issuer: str,
         namespace_name: str,
+        data_bucket_name: Optional[str],
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -74,21 +75,24 @@ class RbacStack(Stack):
         self.service_account = service_account
 
         service_account_role: iam.Role = cast(iam.Role, service_account.role)
-        if service_account_role.assume_role_policy:
-            service_account_role.assume_role_policy.add_statements(
+        if data_bucket_name:
+            service_account_role.add_to_policy(
                 iam.PolicyStatement(
                     effect=iam.Effect.ALLOW,
-                    actions=["sts:AssumeRole"],
-                    principals=[iam.ServicePrincipal("states.amazonaws.com")],
+                    actions=[
+                        "s3:PutObject",
+                        "s3:GetObject",
+                        "s3:AbortMultipartUpload",
+                        "s3:ListBucket",
+                        "s3:GetObjectVersion",
+                        "s3:ListMultipartUploadParts",
+                    ],
+                    resources=[
+                        f"arn:{self.partition}:s3:::{data_bucket_name}/*",
+                        f"arn:{self.partition}:s3:::{data_bucket_name}",
+                    ],
                 )
             )
-        service_account_role.add_to_policy(
-            iam.PolicyStatement(
-                effect=iam.Effect.ALLOW,
-                actions=["*"],
-                resources=["*"],
-            )
-        )
 
         rbac_role = eks_cluster.add_manifest(
             "rbac-role",

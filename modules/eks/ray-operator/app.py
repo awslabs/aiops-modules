@@ -26,6 +26,7 @@ rbac_stack = RbacStack(
     eks_oidc_arn=app_settings.parameters.eks_oidc_arn,
     eks_openid_issuer=app_settings.parameters.eks_openid_issuer,
     namespace_name=app_settings.parameters.namespace,
+    data_bucket_name=app_settings.parameters.data_bucket_name,
     env=env,
 )
 
