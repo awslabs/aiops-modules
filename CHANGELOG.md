@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add service account to kuberay
 - updated `get-modules` workflow to only run tests against changed files in `modules/**`
 - Updated the `sagemaker-templates-service-catalog` module documentation to match the code layout.
+- Modernize `sagemaker-templates-service-catalog` packaging and remove unused dependencies.
 
 ## v1.3.0
 
