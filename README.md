@@ -60,10 +60,11 @@ See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
 
 ### EKS Modules
 
-| Type                                                      | Description                                               |
-|-----------------------------------------------------------|-----------------------------------------------------------|
-| [Ray Operator Module](modules/eks/ray-operator/README.md) | Provisions a Ray Operator on EKS.                         |
-| [Ray Cluster Module](modules/eks/ray-cluster/README.md)   | Provisions a Ray Cluster on EKS. Requires a Ray Operator. |
+| Type                                                      | Description                                                  |
+|-----------------------------------------------------------|--------------------------------------------------------------|
+| [Ray Operator Module](modules/eks/ray-operator/README.md) | Provisions a Ray Operator on EKS.                            |
+| [Ray Cluster Module](modules/eks/ray-cluster/README.md)   | Provisions a Ray Cluster on EKS. Requires a Ray Operator.    |
+| [Ray Image Module](modules/eks/ray-image/README.md)       | An example that builds a custom Ray image and pushes to ECR. |
 
 
 ### Example Modules

@@ -4,6 +4,8 @@ toolchainRegion: us-east-1
 groups:
   - name: base
     path: manifests/ray-on-eks/base-modules.yaml
+  - name: images
+    path: manifests/ray-on-eks/images-modules.yaml
   - name: core
     path: manifests/ray-on-eks/core-modules.yaml
   - name: ray-operator

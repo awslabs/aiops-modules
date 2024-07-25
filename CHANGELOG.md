@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove custom manifests via `dataFiles` from `ray-on-eks`
 - refactor `ray-on-eks` to `ray-cluster` and `ray-operator` modules
 - downscope `ray-operator` service account permissions
+- add an example custom `ray-image`
 
 ## v1.3.0
 

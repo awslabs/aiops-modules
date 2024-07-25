@@ -43,9 +43,9 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_admin_role_arn: str
     eks_oidc_arn: str
     service_account_name: str
-    ray_version: str = Field(default="2.23.0")
+    ray_version: str = Field(default="2.30.0")
     ray_cluster_helm_chart_version: str = Field(default="1.1.1")
-    image_uri: str = Field(default="rayproject/ray-ml:2.23.0")
+    image_uri: str = Field(default="rayproject/ray-ml:2.30.0")
     enable_autoscaling: bool = Field(default=True)
     autoscaler_idle_timeout_seconds: int = Field(default=60)
     head_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)

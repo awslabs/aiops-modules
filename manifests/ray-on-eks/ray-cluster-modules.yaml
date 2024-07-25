@@ -50,3 +50,15 @@ parameters:
       limits:
         cpu: "4"
         memory: "24G"
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: datalake-buckets
+        key: ArtifactsBucketName
+  - name: ImageUri
+    valueFrom:
+      moduleMetadata:
+        group: images
+        name: ray
+        key: ImageUri
