@@ -20,7 +20,7 @@ Question and Answering using RAG Architecture
 #### Required
 
 - `cognito-pool-id` - ID of the cognito user pool, used to secure GraphQl API
-- `os-domain-endpoint` - Open Search doamin url used as knowledge base
+- `os-domain-endpoint` - Open Search domain url used as knowledge base
 - `os-security-group-id` - Security group of open search cluster
 - `vpc-id` - VPC id
 

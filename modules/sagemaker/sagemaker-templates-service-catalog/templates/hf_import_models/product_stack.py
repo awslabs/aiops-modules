@@ -40,11 +40,13 @@ class Product(servicecatalog.ProductStack):
         construct_id: str,
         build_app_asset: s3_assets.Asset,
         deploy_app_asset: s3_assets.Asset,
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
-        # Define required parmeters
+        # Define required parameters
         project_name = aws_cdk.CfnParameter(
             self,
             "SageMakerProjectName",
@@ -99,6 +101,10 @@ class Product(servicecatalog.ProductStack):
 
         Tags.of(self).add("sagemaker:project-id", project_id)
         Tags.of(self).add("sagemaker:project-name", project_name)
+        if sagemaker_domain_id:
+            Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
+        if sagemaker_domain_arn:
+            Tags.of(self).add("sagemaker:domain-arn", sagemaker_domain_arn)
 
         # create kms key to be used by the assets bucket
         kms_key_artifact = kms.Key(
@@ -208,6 +214,8 @@ class Product(servicecatalog.ProductStack):
             "build",
             project_name=project_name,
             project_id=project_id,
+            domain_id=sagemaker_domain_id,
+            domain_arn=sagemaker_domain_arn,
             s3_artifact=s3_artifact,
             repo_asset=build_app_asset,
             model_package_group_name=model_package_group_name,

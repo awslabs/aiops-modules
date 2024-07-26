@@ -12,7 +12,7 @@ This module demonstrates:
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 

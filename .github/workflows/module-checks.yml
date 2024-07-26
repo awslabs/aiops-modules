@@ -6,7 +6,6 @@ on:
       - "main"
     paths:
       - "modules/**"
-      - "requirements-dev.txt"
       - ".github/workflows/module-checks.yml"
 
   pull_request:
@@ -16,7 +15,6 @@ on:
       - "stable"
     paths:
       - "modules/**"
-      - "requirements-dev.txt"
       - ".github/workflows/module-checks.yml"
 
 jobs:
@@ -27,15 +25,29 @@ jobs:
       matrix: ${{ steps.get-modules.outputs.matrix }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: modules/**
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
       - name: Get modules
         id: get-modules
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           set -x
           # Get all the modules that have the file "deployspec.yaml"
-          MODULES=$(find modules -type f -name "deployspec.yaml" | cut -d/ -f 2-3 | uniq)
+          MODULES=$(echo $ALL_CHANGED_FILES | cut -d/ -f 2-3 | uniq)
           # Create our json structure [{"module_name": "..."}]
           MODULES_JSON=$(echo "$MODULES" | jq -R -s 'split("\n")' | jq '[ .[] | select(length > 0) ]' | jq 'map({"module_name": .})')
           # Export the modules as json to the outputs

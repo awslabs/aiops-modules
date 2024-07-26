@@ -32,9 +32,12 @@ class ModuleSettings(CdkBaseSettings):
 
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
+    sagemaker_domain_id: Optional[str] = Field(default=None)
+    sagemaker_domain_arn: Optional[str] = Field(default=None)
     model_package_arn: Optional[str] = Field(default=None)
     model_package_group_name: Optional[str] = Field(default=None)
     model_execution_role_arn: Optional[str] = Field(default=None)
+    enable_network_isolation: bool = Field(default=True)
     model_artifacts_bucket_arn: Optional[str] = Field(default=None)
     ecr_repo_arn: Optional[str] = Field(default=None)
     variant_name: str = Field(default="AllTraffic")

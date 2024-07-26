@@ -1,0 +1,54 @@
+name: ray-operator
+path: modules/eks/ray-operator
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksClusterEndpoint
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterEndpoint
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: EksOpenidIssuer
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterOpenIdConnectIssuer
+  - name: EksCertAuthData
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterCertAuthData
+  - name: EksClusterSecurityGroupId
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterSecurityGroupId
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: datalake-buckets
+        key: ArtifactsBucketName

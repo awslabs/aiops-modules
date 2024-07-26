@@ -54,6 +54,6 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps(
-            f"Model finetuning started succesfully, job name: {job_name}"
+            f"Model finetuning started successfully, job name: {job_name}"
         ),
     }

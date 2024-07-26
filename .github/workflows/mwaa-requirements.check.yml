@@ -1,0 +1,41 @@
+name: MWAA Requirements Check
+
+on:
+  push:
+    branches: 
+      - "main"
+    paths:
+      - "data/mwaa/requirements/**"
+
+  pull_request:
+    branches:
+      - "main"
+      - "release/*"
+      - "stable"
+    paths:
+      - "data/mwaa/requirements/**"
+
+jobs:
+  install:
+    name: Install Requirements
+    runs-on: ubuntu-latest
+    env:
+      AIRFLOW_VERSION: 2.9.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+      - name: Update pip
+        run: pip install --upgrade pip
+      - name: Install Airflow and Dependencies
+        working-directory: ./data/mwaa/requirements/
+        run: |
+          tail -n +2 requirements.txt > requirements-no-constraint.txt
+          pip install "apache-airflow[celery,cncf.kubernetes,google,amazon,snowflake]==$AIRFLOW_VERSION" \
+            --constraint constraint-requirements.txt \
+            --requirement requirements-no-constraint.txt

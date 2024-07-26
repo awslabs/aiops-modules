@@ -10,9 +10,19 @@ phases:
   build:
     commands:
       - export PYTHONUNBUFFERED=TRUE
+      - TAGS="[{\"Key\":\"sagemaker:project-name\", \"Value\":\"${SAGEMAKER_PROJECT_NAME}\"}, {\"Key\":\"sagemaker:project-id\", \"Value\":\"${SAGEMAKER_PROJECT_ID}\"}"
+      - |
+        if [ -n "${SAGEMAKER_DOMAIN_ID}" ]; then
+          TAGS="$TAGS, {\"Key\":\"sagemaker:domain-id\", \"Value\":\"${SAGEMAKER_DOMAIN_ID}\"}"
+        fi
+      - |
+        if [ -n "${SAGEMAKER_DOMAIN_ARN}" ]; then
+          TAGS="$TAGS, {\"Key\":\"sagemaker:domain-arn\", \"Value\":\"${SAGEMAKER_DOMAIN_ARN}\"}"
+        fi
+      - TAGS="$TAGS]"
       - |
         run-pipeline --module-name ml_pipelines.training.pipeline \
           --role-arn $SAGEMAKER_PIPELINE_ROLE_ARN \
-          --tags "[{\"Key\":\"sagemaker:project-name\", \"Value\":\"${SAGEMAKER_PROJECT_NAME}\"}, {\"Key\":\"sagemaker:project-id\", \"Value\":\"${SAGEMAKER_PROJECT_ID}\"}]" \
+          --tags "$TAGS" \
           --kwargs "{\"region\":\"${AWS_REGION}\",\"role\":\"${SAGEMAKER_PIPELINE_ROLE_ARN}\",\"default_bucket\":\"${ARTIFACT_BUCKET}\",\"pipeline_name\":\"${SAGEMAKER_PIPELINE_NAME}\",\"model_package_group_name\":\"${MODEL_PACKAGE_GROUP_NAME}\",\"hugging_face_model_id\":\"${HUGGING_FACE_MODEL_ID}\"}"
       - echo "Create/Update of the SageMaker Pipeline and execution completed."

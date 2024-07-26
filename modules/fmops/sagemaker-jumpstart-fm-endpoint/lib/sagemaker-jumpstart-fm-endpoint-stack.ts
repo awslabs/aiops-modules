@@ -96,7 +96,7 @@ export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
     cdk_nag.NagSuppressions.addResourceSuppressions(this.role, [
       {
         id: "AwsSolutions-IAM5",
-        reason: "Resource access restriced to S3 buckets (with a prefix) and ECR images",
+        reason: "Resource access restricted to S3 buckets (with a prefix) and ECR images",
       },
     ]);
   }

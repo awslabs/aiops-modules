@@ -3,6 +3,8 @@ from typing import Any, List
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
 
+from sagemaker_model_monitoring.utils import generate_unique_id
+
 
 class DataQualityConstruct(Construct):
     """
@@ -32,6 +34,26 @@ class DataQualityConstruct(Construct):
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # CloudFormation doesn't seem to properly wait for the job definition name to be properly populated if we allow
+        # it to autogenerate it. Generate one which will hopefully not conflict.
+        unique_id = generate_unique_id(
+            monitor_image_uri,
+            endpoint_name,
+            model_bucket_name,
+            data_quality_checkstep_output_prefix,
+            data_quality_output_prefix,
+            kms_key_id,
+            model_monitor_role_arn,
+            security_group_id,
+            subnet_ids,
+            instance_count,
+            instance_type,
+            instance_volume_size_in_gb,
+            max_runtime_in_seconds,
+            schedule_expression,
+        )
+        job_definition_name = f"{endpoint_name}-data-quality-{unique_id}"
 
         data_quality_job_definition = sagemaker.CfnDataQualityJobDefinition(
             self,
@@ -65,7 +87,7 @@ class DataQualityConstruct(Construct):
                     volume_kms_key_id=kms_key_id,
                 )
             ),
-            job_definition_name=f"{endpoint_name}-data-quality-def",
+            job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
             data_quality_baseline_config=sagemaker.CfnDataQualityJobDefinition.DataQualityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnDataQualityJobDefinition.ConstraintsResourceProperty(
@@ -97,6 +119,6 @@ class DataQualityConstruct(Construct):
                     schedule_expression=schedule_expression,
                 ),
             ),
-            monitoring_schedule_name=f"{endpoint_name}-data-quality",
+            monitoring_schedule_name=f"{job_definition_name}-schedule",
         )
-        data_quality_monitor_schedule.add_depends_on(data_quality_job_definition)
+        data_quality_monitor_schedule.add_dependency(data_quality_job_definition)

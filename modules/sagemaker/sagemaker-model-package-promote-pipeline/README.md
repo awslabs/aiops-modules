@@ -10,7 +10,7 @@ A Seedfarmer module to deploy a Pipeline to promote SageMaker Model Packages in 
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 
@@ -24,7 +24,7 @@ A Seedfarmer module to deploy a Pipeline to promote SageMaker Model Packages in 
 - `sagemaker_project_id`: The SageMaker project id to associate with the model package group.
 - `sagemaker_project_name`: The SageMaker project name to associate with the model package group.
 - `kms_key_arn`: The KMS Key ARN to encrypt model artifacts.
-- `retain_on_delete`: Wether or not to retain model package resources on delete. Defaults True. This applies only to the sagemaker model package resources and not to the resources in this stack.
+- `retain_on_delete`: Whether to retain model package resources on delete. Defaults True. This applies only to the sagemaker model package resources and not to the resources in this stack.
 
 ### Sample manifest declaration
 

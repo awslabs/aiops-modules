@@ -23,6 +23,8 @@ class BuildPipelineConstruct(Construct):
         construct_id: str,
         project_name: str,
         project_id: str,
+        domain_id: str,
+        domain_arn: str,
         model_package_group_name: str,
         model_bucket: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
@@ -50,6 +52,10 @@ class BuildPipelineConstruct(Construct):
         )
         aws_cdk.Tags.of(build_app_repository).add("sagemaker:project-id", project_id)
         aws_cdk.Tags.of(build_app_repository).add("sagemaker:project-name", project_name)
+        if domain_id:
+            aws_cdk.Tags.of(build_app_repository).add("sagemaker:domain-id", domain_id)
+        if domain_arn:
+            aws_cdk.Tags.of(build_app_repository).add("sagemaker:domain-arn", domain_arn)
 
         sagemaker_seedcode_bucket = s3.Bucket.from_bucket_name(
             self,
@@ -234,6 +240,8 @@ class BuildPipelineConstruct(Construct):
                     "SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=security_group_ids),
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
+                    "SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
+                    "SAGEMAKER_DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=domain_arn),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "AWS_REGION": codebuild.BuildEnvironmentVariable(value=Aws.REGION),
                     "SAGEMAKER_PIPELINE_NAME": codebuild.BuildEnvironmentVariable(

@@ -10,7 +10,7 @@ This module creates an Amazon EventBridge Bus for cross-account events.
 
 ## Inputs/Outputs
 
-### Input Paramenters
+### Input Parameters
 
 #### Required
 

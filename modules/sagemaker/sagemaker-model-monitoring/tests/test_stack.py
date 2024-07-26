@@ -18,7 +18,10 @@ def stack_defaults() -> None:
 
 
 def stack_model_package_input(
-    enable_data_quality_monitor: bool = False, enable_model_quality_monitor: bool = False
+    enable_data_quality_monitor: bool = False,
+    enable_model_quality_monitor: bool = False,
+    enable_model_bias_monitor: bool = False,
+    enable_model_explainability_monitor: bool = False,
 ) -> cdk.Stack:
     from sagemaker_model_monitoring import settings, stack
 
@@ -48,6 +51,8 @@ def stack_model_package_input(
         kms_key_id=kms_key_id,
         enable_data_quality_monitor=enable_data_quality_monitor,
         enable_model_quality_monitor=enable_model_quality_monitor,
+        enable_model_bias_monitor=enable_model_bias_monitor,
+        enable_model_explainability_monitor=enable_model_explainability_monitor,
     )
 
     return stack.SageMakerModelMonitoringStack(
@@ -73,8 +78,25 @@ def test_synthesize_stack_model_quality(stack_defaults: None) -> None:
     template.resource_count_is("AWS::SageMaker::ModelQualityJobDefinition", 1)
 
 
+def test_synthesize_stack_model_bias(stack_defaults: None) -> None:
+    stack = stack_model_package_input(enable_model_bias_monitor=True)
+    template = Template.from_stack(stack)
+    template.resource_count_is("AWS::SageMaker::ModelBiasJobDefinition", 1)
+
+
+def test_synthesize_stack_model_explainability(stack_defaults: None) -> None:
+    stack = stack_model_package_input(enable_model_explainability_monitor=True)
+    template = Template.from_stack(stack)
+    template.resource_count_is("AWS::SageMaker::ModelExplainabilityJobDefinition", 1)
+
+
 def test_no_cdk_nag_errors(stack_defaults: None) -> None:
-    stack = stack_model_package_input(enable_data_quality_monitor=True, enable_model_quality_monitor=True)
+    stack = stack_model_package_input(
+        enable_data_quality_monitor=True,
+        enable_model_quality_monitor=True,
+        enable_model_bias_monitor=True,
+        enable_model_explainability_monitor=True,
+    )
     cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
 
     nag_errors = Annotations.from_stack(stack).find_error(

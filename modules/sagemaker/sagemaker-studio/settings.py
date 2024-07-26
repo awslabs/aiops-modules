@@ -35,6 +35,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     app_image_config_name: Optional[str] = Field(default=None)
     image_name: Optional[str] = Field(default=None)
     enable_custom_sagemaker_projects: bool = Field(default=False)
+    enable_domain_resource_isolation: bool = Field(default=True)
     auth_mode: Literal["IAM", "SSO"] = Field(default="IAM")
 
     data_science_users: List[str] = Field(default=[])

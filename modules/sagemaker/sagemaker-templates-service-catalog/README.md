@@ -16,7 +16,14 @@ The module contains ogranizational SageMaker Project Templates vended as Service
 
 The template contains an example SageMaker Pipeline to train a model on Abalone dataset using XGBoost, and perform model evaluation.
 
-![Abalone wtih XGBoost](docs/_static/abalone-xgboost-template.png "Abalone with XGBoost Template Architecture")
+![Abalone with XGBoost](docs/_static/abalone-xgboost-template.png "Abalone with XGBoost Template Architecture")
+
+#### LLM fine-tuning and evaluation
+
+The template is based on LLM fine-tuning template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/tree/main/mlops-multi-account-cdk/mlops-sm-project-template/mlops_sm_project_template/templates/finetune_deploy_llm_product).
+
+![LLM fine-tuning and evaluation template](docs/_static/llm-evaluate.png "LLM Evaluate Template Architecture")
+![SM pipeline graph](docs/_static/llm-evaluation-pipeline-graph.png "SM Pipeline graph")
 
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 
@@ -62,6 +69,8 @@ The template is based on basic multi-account template from [AWS Enterprise MLOps
   - `prod-vpc-id` - id of VPC in prod environment
   - `prod-subnet-ids` - list of subnet ids
   - `prod-security-group-ids` - list of security group ids
+  - `sagemaker-domain-id`: SageMaker domain id
+  - `sagemaker-domain-arn`: SageMaker domain ARN. Used to tag resources with the `domain-arn`, which is used for domain resource isolation. If domain resource isolation is enabled `sagemaker-domain-arn` must be provided to ensure correct access to resources within the domain
 
 ### Sample manifest declaration
 
@@ -131,6 +140,18 @@ parameters:
         group: networking
         name: networking-prod
         key: PrivateSubnetIds
+  - name: sagemaker-domain-id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker-domain-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
 ```
 
 ### Outputs (module metadata):
