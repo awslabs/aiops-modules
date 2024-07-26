@@ -8,7 +8,7 @@ The modules in this repository are decoupled from each other and can be aggregat
 
 The modules in this repository are / must be generic for reuse without affiliation to any one particular project in Machine Learning and Foundation Model Operations domain.
 
-All modules in this repository adhere to the module structure defined in the the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
+All modules in this repository adhere to the module structure defined in the [SeedFarmer Guide](https://seed-farmer.readthedocs.io/en/latest)
 
 - [Project Structure](https://seed-farmer.readthedocs.io/en/latest/project_development.html)
 - [Module Development](https://seed-farmer.readthedocs.io/en/latest/module_development.html)
@@ -18,6 +18,18 @@ All modules in this repository adhere to the module structure defined in the the
 ## Deployment
 
 See deployment steps in the [Deployment Guide](DEPLOYMENT.md).
+
+## Project Manifests
+
+End-to-end example use-cases built using modules in this repository.
+
+| Type                                                                                        | Description                                                                                                                                                                                                  |
+|---------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [MLOps with Amazon SageMaker](manifests/mlops-sagemaker/)                                   | Set up environment for MLOps with Amazon SageMaker. Deploy secure Amazon SageMaker Studio Domain, and provisions SageMaker Project Templates using Service Catalog, including model training and deployment. |
+| [Mlflow experiments tracking with Amazon SageMaker](manifests/mlflow-experiments-tracking/) | An example using Mlflow experiments tracking with Amazon SageMaker. Deploy self-hosted Mlflow instance on AWS Fargate, and Amazon SageMaker Studio Domain environment.                                       |
+| [MWAA ML Training](manifests/mwaa-ml-training/)                                             | An example orchestrating ML training jobs with Managed Workflows for Apache Airflow (MWAA). Deploys MWAA and an example ML training DAG.                                                                     |
+| [Q&A RAG](manifests/fmops-qna-rag/)                                                         | Deploy AppSync GraphQL endpoint for Q&A chatbot with RAG based on OpenSearch, and data ingestion infrastructure.                                                                                             |
+| [Ray on EKS](manifests/ray-on-eks/)                                                         | Run Ray on AWS EKS. Deploys an AWS EKS cluster, KubeRay Ray Operator, and a Ray Cluster with autoscaling enabled.                                                                                            |
 
 ## Modules
 
