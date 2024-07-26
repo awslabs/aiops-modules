@@ -9,9 +9,6 @@ spec:
   # If `enableInTreeAutoscaling` is true, the Autoscaler sidecar will be added to the Ray head pod.
   # Ray Autoscaler integration is Beta with KubeRay >= 0.3.0 and Ray >= 2.0.0.
   enableInTreeAutoscaling: true
-  # `autoscalerOptions` is an OPTIONAL field specifying configuration overrides for the Ray Autoscaler.
-  # The example configuration shown below below represents the DEFAULT values.
-  # (You may delete autoscalerOptions if the defaults are suitable.)
   autoscalerOptions:
     # `upscalingMode` is "Default" or "Aggressive."
     # Conservative: Upscaling is rate-limited; the number of pending worker pods is at most the size of the Ray cluster.
@@ -20,9 +17,6 @@ spec:
     upscalingMode: Default
     # `idleTimeoutSeconds` is the number of seconds to wait before scaling down a worker pod which is not using Ray resources.
     idleTimeoutSeconds: 60
-    # `image` optionally overrides the Autoscaler's container image. The Autoscaler uses the same image as the Ray container by default.
-    ## image: "my-repo/my-custom-autoscaler-image:tag"
-    # `imagePullPolicy` optionally overrides the Autoscaler container's default image pull policy (IfNotPresent).
     imagePullPolicy: IfNotPresent
     # Optionally specify the Autoscaler container's securityContext.
     securityContext: {}
@@ -46,10 +40,6 @@ spec:
     rayStartParams:
       # Setting "num-cpus: 0" to avoid any Ray actors or tasks being scheduled on the Ray head Pod.
       num-cpus: "0"
-      # Use `resources` to optionally specify custom resource annotations for the Ray node.
-      # The value of `resources` is a string-integer mapping.
-      # Currently, `resources` must be provided in the specific format demonstrated below:
-      # resources: '"{\"Custom1\": 1, \"Custom2\": 5}"'
     # Pod template
     template:
       spec:
@@ -57,7 +47,7 @@ spec:
         containers:
         # The Ray head container
         - name: ray-head
-          image: rayproject/ray-ml:2.23.0
+          image: rayproject/ray-ml:2.30.0-gpu
           ports:
           - containerPort: 6379
             name: gcs
@@ -77,28 +67,16 @@ spec:
               cpu: "1"
               memory: "8G"
           volumeMounts:
-            # - mountPath: /home/ray/samples
-            #   name: ray-example-configmap
             - mountPath: /tmp/ray
               name: log-volume   # Mount for Ray logs
-            # - mountPath: /ray/export
-            #   name: ray-storage
             - mountPath: /ray/export
+              subPath: ray/export # shouldnt have / at the beginning
               name: persistent-storage # Mount shared filesystem (FSx for Lustre)
         tolerations:
-          - key: "training"
+          - key: "nvidia.com/gpu"
             value: "true"
             effect: "NoSchedule"
         volumes:
-          # - name: ray-example-configmap
-          #   configMap:
-          #     name: ray-example
-          #     defaultMode: 0777
-          #     items:
-          #       - key: detached_actor.py
-          #         path: detached_actor.py
-          #       - key: terminate_detached_actor.py
-          #         path: terminate_detached_actor.py
           - name: log-volume
             emptyDir: {}
           - name: persistent-storage
@@ -126,29 +104,28 @@ spec:
         serviceAccountName: ray-on-eks-ray-on-eks
         containers:
         - name: ray-worker
-          image: rayproject/ray-ml:2.23.0
+          image: rayproject/ray-ml:2.30.0-gpu
           lifecycle:
             preStop:
               exec:
                 command: ["/bin/sh","-c","ray stop"]
           resources:
             limits:
-              cpu: "5"
-              memory: "10G"
+              cpu: "1"
+              memory: "8G"
             requests:
-              cpu: "5"
-              memory: "10G"
+              cpu: "1"
+              memory: "8G"
           volumeMounts:
             - mountPath: /dev/shm   # Mount for shared memory
               name: dshm
             - mountPath: /tmp/ray
               name: log-volume     # Mount for Ray logs
-            # - mountPath: /ray/export
-            #   name: ray-storage
             - mountPath: /ray/export
+              subPath: ray/export # shouldnt have / at the beginning
               name: persistent-storage # Mount shared filesystem (FSx for Lustre)
         tolerations:
-          - key: "training"
+          - key: "nvidia.com/gpu"
             value: "true"
             effect: "NoSchedule"
         volumes:
@@ -160,28 +137,3 @@ spec:
               medium: Memory
           - name: log-volume
             emptyDir: {}
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: ray-example
-#   namespace: ray
-# data:
-#   detached_actor.py: |
-#     import ray
-#     import sys
-
-#     @ray.remote(num_cpus=1)
-#     class Actor:
-#       pass
-
-#     ray.init(namespace="ray")
-#     Actor.options(name=sys.argv[1], lifetime="detached").remote()
-
-#   terminate_detached_actor.py: |
-#     import ray
-#     import sys
-
-#     ray.init(namespace="ray")
-#     detached_actor = ray.get_actor(sys.argv[1])
-#     ray.kill(detached_actor)
