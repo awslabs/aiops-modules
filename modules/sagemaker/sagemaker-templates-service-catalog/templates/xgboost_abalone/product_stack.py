@@ -30,9 +30,8 @@ class Product(servicecatalog.ProductStack):
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
-        vpc_id: str,
-        subnet_ids: List[str],
-        security_group_ids: List[str],
+        dev_subnet_ids: List[str],
+        dev_security_group_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -69,6 +68,24 @@ class Product(servicecatalog.ProductStack):
             type="String",
             description="Prod AWS account id. Required for cross-account model registry permissions.",
             default=prod_account_id,
+        ).value_as_string
+
+        enable_network_isolation = CfnParameter(
+            self,
+            "EnableNetworkIsolation",
+            type="String",
+            description="Enable network isolation",
+            allowed_values=["true", "false"],
+            default="false",
+        ).value_as_string
+
+        encrypt_inter_container_traffic = CfnParameter(
+            self,
+            "EncryptInterContainerTraffic",
+            type="String",
+            description="Encrypt inter container traffic",
+            allowed_values=["true", "false"],
+            default="false",
         ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
@@ -243,6 +260,10 @@ class Product(servicecatalog.ProductStack):
             model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             repo_asset=build_app_asset,
+            enable_network_isolation=enable_network_isolation,
+            encrypt_inter_container_traffic=encrypt_inter_container_traffic,
+            subnet_ids=dev_subnet_ids,
+            security_group_ids=dev_security_group_ids,
         )
 
         CfnOutput(

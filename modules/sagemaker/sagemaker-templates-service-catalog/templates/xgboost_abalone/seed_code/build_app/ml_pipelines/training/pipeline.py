@@ -36,8 +36,8 @@ from sagemaker.network import NetworkConfig
 
 # BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-ENABLE_NETWORK_ISOLATION = bool(os.getenv("ENABLE_NETWORK_ISOLATION", False))
-ENCRYPT_INTER_CONTAINER_TRAFFIC = bool(os.getenv("ENCRYPT_INTER_CONTAINER_TRAFFIC", False))
+ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true").lower() == "true"
+ENCRYPT_INTER_CONTAINER_TRAFFIC = os.getenv("ENCRYPT_INTER_CONTAINER_TRAFFIC", "true").lower() == "true"
 SUBNET_IDS = json.loads(os.getenv("SUBNET_IDS", "[]"))
 SECURITY_GROUP_IDS = json.loads(os.getenv("SECURITY_GROUP_IDS", "[]"))
 

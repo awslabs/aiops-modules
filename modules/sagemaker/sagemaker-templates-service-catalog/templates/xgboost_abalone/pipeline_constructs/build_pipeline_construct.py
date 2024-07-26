@@ -29,7 +29,8 @@ class BuildPipelineConstruct(Construct):
         model_bucket: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
         repo_asset: s3_assets.Asset,
-        vpc_id: str,
+        enable_network_isolation: str,
+        encrypt_inter_container_traffic: str,
         subnet_ids: List[str],
         security_group_ids: List[str],
         **kwargs: Any,
@@ -235,7 +236,10 @@ class BuildPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
-                    "VPC_ID": codebuild.BuildEnvironmentVariable(value=vpc_id),
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
+                    "ENCRYPT_INTER_CONTAINER_TRAFFIC": codebuild.BuildEnvironmentVariable(
+                        value=encrypt_inter_container_traffic,
+                    ),
                     "SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=subnet_ids),
                     "SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=security_group_ids),
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
