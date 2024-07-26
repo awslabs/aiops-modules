@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - refactor `ray-on-eks` to `ray-cluster` and `ray-operator` modules
 - downscope `ray-operator` service account permissions
 - add an example custom `ray-image`
+- document available manifests in readme
 
 ## v1.3.0
 
