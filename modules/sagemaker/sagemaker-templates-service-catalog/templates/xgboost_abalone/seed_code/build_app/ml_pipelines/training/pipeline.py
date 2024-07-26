@@ -12,9 +12,9 @@
 Implements a get_pipeline(**kwargs) method.
 """
 
-import os
 import json
 import logging
+import os
 from typing import Any, Optional
 
 import boto3
@@ -23,6 +23,7 @@ import sagemaker.session
 from sagemaker.estimator import Estimator
 from sagemaker.inputs import TrainingInput
 from sagemaker.model_metrics import MetricsSource, ModelMetrics
+from sagemaker.network import NetworkConfig
 from sagemaker.processing import ProcessingInput, ProcessingOutput, ScriptProcessor
 from sagemaker.workflow.condition_step import ConditionStep
 from sagemaker.workflow.conditions import ConditionLessThanOrEqualTo
@@ -32,7 +33,6 @@ from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.properties import PropertyFile
 from sagemaker.workflow.step_collections import RegisterModel
 from sagemaker.workflow.steps import ProcessingStep, TrainingStep
-from sagemaker.network import NetworkConfig
 
 # BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
