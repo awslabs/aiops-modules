@@ -4,10 +4,16 @@ toolchainRegion: us-east-1
 groups:
   - name: base
     path: manifests/ray-on-eks/base-modules.yaml
+  - name: images
+    path: manifests/ray-on-eks/images-modules.yaml
   - name: core
     path: manifests/ray-on-eks/core-modules.yaml
-  - name: ray-on-eks
-    path: manifests/ray-on-eks/ray-on-eks-modules.yaml
+  - name: integration
+    path: manifests/ray-on-eks/integration-modules.yaml
+  - name: ray-operator
+    path: manifests/ray-on-eks/ray-operator-modules.yaml
+  - name: ray-cluster
+    path: manifests/ray-on-eks/ray-cluster-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
