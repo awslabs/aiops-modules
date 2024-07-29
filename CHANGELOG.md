@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - downscope `ray-operator` service account permissions
 - add an example custom `ray-image`
 - document available manifests in readme
+- add permission for SM studio to describe apps when domain resource isolation is enabled
 
 ## v1.3.0
 
