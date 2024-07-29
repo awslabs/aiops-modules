@@ -6,42 +6,34 @@ import { SSM } from "aws-sdk";
 
 import { AmazonBedrockFinetuningStack } from "../lib/bedrock-finetuning-stack";
 
-function getModuleDependencies(resourceKeys: string[]): Record<string, string> {
+async function retrieveValueFromSSMParameter(
+  parameterName: string,
+): Promise<string> {
   const ssmClient = new SSM({ region: "us-east-1" });
-  const dependencies: Record<string, string> = {};
+  const param = await ssmClient
+    .getParameter({
+      Name: `/module-integration-tests/${parameterName}`,
+    })
+    .promise();
 
-  for (const key of resourceKeys) {
-    const paramPromise = ssmClient
-      .getParameter({
-        Name: `/module-integration-tests/${key}`,
-      })
-      .promise();
-
-    paramPromise.then(
-      (param) => {
-        dependencies[key] = param.Parameter?.Value as string;
-      },
-      (err) => {
-        console.error(`Error retrieving parameter: ${err}`);
-      },
-    );
+  const value = param.Parameter?.Value;
+  if (!value) {
+    throw new Error(`Parameter ${parameterName} not found`);
   }
 
-  return dependencies;
+  return value;
 }
 
 const app = new cdk.App();
 
-const dependencies = getModuleDependencies(["vpc-id", "vpc-private-subnets"]);
-const vpcId = dependencies["vpc-id"];
-const subnetIds = JSON.parse(dependencies["vpc-private-subnets"]);
-
+const vpcId = await retrieveValueFromSSMParameter("vpc-id");
+const subnetIds = await retrieveValueFromSSMParameter("vpc-private-subnets");
 const stack = new AmazonBedrockFinetuningStack(
   app,
   "bedrock-finetuning-integ-stack",
   {
-    vpcId,
-    subnetIds,
+    vpcId: vpcId,
+    subnetIds: JSON.parse(subnetIds),
     bedrockBaseModelID: "amazon.titan-text-express-v1:0:8k",
     projectName: "test-project",
     deploymentName: "test-deployment",
