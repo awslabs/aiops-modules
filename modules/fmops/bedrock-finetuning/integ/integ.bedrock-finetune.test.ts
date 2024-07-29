@@ -47,7 +47,7 @@ const stack = new AmazonBedrockFinetuningStack(
     deploymentName: "test-deployment",
     moduleName: "test-module",
     removalPolicy: "DESTROY",
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: "us-east-1" },
+    env: { region: "us-east-1" },
   },
 );
 
