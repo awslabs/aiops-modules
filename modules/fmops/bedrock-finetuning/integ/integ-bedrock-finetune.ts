@@ -6,15 +6,16 @@ import { SSM } from "aws-sdk";
 
 import { AmazonBedrockFinetuningStack } from "../lib/bedrock-finetuning-stack";
 
-
 function getModuleDependencies(resourceKeys: string[]): Record<string, string> {
   const ssmClient = new SSM({ region: "us-east-1" });
   const dependencies: Record<string, string> = {};
 
   for (const key of resourceKeys) {
-    const paramPromise = ssmClient.getParameter({
-      Name: `/module-integration-tests/${key}`,
-    }).promise();
+    const paramPromise = ssmClient
+      .getParameter({
+        Name: `/module-integration-tests/${key}`,
+      })
+      .promise();
 
     paramPromise.then(
       (param) => {
@@ -28,7 +29,6 @@ function getModuleDependencies(resourceKeys: string[]): Record<string, string> {
 
   return dependencies;
 }
-
 
 describe("Bedrock Finetuning Stack", () => {
   const app = new cdk.App();
@@ -52,23 +52,27 @@ describe("Bedrock Finetuning Stack", () => {
     },
   );
 
-  new integ_tests_alpha.IntegTest(app, "Integration Tests Bedrock Finetuning Module", {
-    testCases: [stack],
-    diffAssets: true,
-    stackUpdateWorkflow: true,
-    enableLookups: true,
-    cdkCommandOptions: {
-      deploy: {
-        args: {
-          requireApproval: cloud_assembly_schema.RequireApproval.NEVER,
-          json: true,
+  new integ_tests_alpha.IntegTest(
+    app,
+    "Integration Tests Bedrock Finetuning Module",
+    {
+      testCases: [stack],
+      diffAssets: true,
+      stackUpdateWorkflow: true,
+      enableLookups: true,
+      cdkCommandOptions: {
+        deploy: {
+          args: {
+            requireApproval: cloud_assembly_schema.RequireApproval.NEVER,
+            json: true,
+          },
         },
-      },
-      destroy: {
-        args: {
-          force: true,
+        destroy: {
+          args: {
+            force: true,
+          },
         },
       },
     },
-  });
+  );
 });
