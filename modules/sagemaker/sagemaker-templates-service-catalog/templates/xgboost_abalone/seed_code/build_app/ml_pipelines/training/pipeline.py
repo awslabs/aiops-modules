@@ -97,12 +97,10 @@ def get_pipeline(
 
     # define network config
     network_config = NetworkConfig(
-        dict(
-            subnets=SUBNET_IDS if SUBNET_IDS else None,
-            security_group_ids=SECURITY_GROUP_IDS if SECURITY_GROUP_IDS else None,
-            enable_network_isolation=ENABLE_NETWORK_ISOLATION,
-            encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
-        )
+        subnets=SUBNET_IDS if SUBNET_IDS else None,
+        security_group_ids=SECURITY_GROUP_IDS if SECURITY_GROUP_IDS else None,
+        enable_network_isolation=ENABLE_NETWORK_ISOLATION,
+        encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
     )
 
     # parameters for pipeline execution

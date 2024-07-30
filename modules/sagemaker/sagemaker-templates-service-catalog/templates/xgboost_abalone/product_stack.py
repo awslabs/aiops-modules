@@ -3,6 +3,7 @@
 
 from typing import Any, List
 
+import aws_cdk.aws_ec2 as ec2
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
@@ -30,8 +31,8 @@ class Product(servicecatalog.ProductStack):
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        dev_vpc_id: str,
         dev_subnet_ids: List[str],
-        dev_security_group_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -249,6 +250,13 @@ class Product(servicecatalog.ProductStack):
             removal_policy=RemovalPolicy.DESTROY,
         )
 
+        security_group_ids = []
+        if dev_vpc_id and dev_subnet_ids:
+            vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=dev_vpc_id)
+            security_group_ids = [ec2.SecurityGroup(self, "Security Group", vpc=vpc).security_group_id]
+        else:
+            dev_subnet_ids = []
+
         BuildPipelineConstruct(
             self,
             "build",
@@ -263,7 +271,7 @@ class Product(servicecatalog.ProductStack):
             enable_network_isolation=enable_network_isolation,
             encrypt_inter_container_traffic=encrypt_inter_container_traffic,
             subnet_ids=dev_subnet_ids,
-            security_group_ids=dev_security_group_ids,
+            security_group_ids=security_group_ids,
         )
 
         CfnOutput(
