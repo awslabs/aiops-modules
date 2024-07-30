@@ -44,6 +44,13 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
         cpu: "1"
         memory: "8G"
 ```
+- `worker_tolerations` - List of worker group tolerations. Empty by default (no tolerations). Example input:
+```yaml
+  - key: "nvidia.com/gpu"
+    value: "true"
+    # operator: "Equal"
+    effect: "NoSchedule"
+```
 - `tags` - List of additional tags to apply to all resources
 
 ## User Guide
@@ -185,4 +192,16 @@ parameters:
       limits:
         cpu: "4"
         memory: "24G"
+  - name: WorkerTolerations
+    value:
+      - key: "nvidia.com/gpu"
+        value: "true"
+        # operator: "Equal"
+        effect: "NoSchedule"
+  - name: PvcName
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName
 ```

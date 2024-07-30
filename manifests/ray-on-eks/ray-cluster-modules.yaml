@@ -62,15 +62,15 @@ parameters:
         group: images
         name: ray
         key: ImageUri
-  - name: pvc-name
-    valueFrom:
-      moduleMetadata:
-        group: integration
-        name: lustre-on-eks
-        key: PersistentVolumeClaimName
   - name: worker-tolerations
     value:
       - key: "nvidia.com/gpu"
         value: "true"
         # operator: "Equal"
         effect: "NoSchedule"
+  - name: pvc-name
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName

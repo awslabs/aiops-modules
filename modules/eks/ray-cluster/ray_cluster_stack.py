@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, List, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -36,7 +36,7 @@ class RayCluster(Stack):
         worker_min_replicas: int,
         worker_max_replicas: int,
         worker_resources: Dict[str, Dict[str, str]],
-        worker_tolerations: Optional[Dict[str, Dict[str, str]]],
+        worker_tolerations: List[Dict[str, str]],
         pvc_name: str,
         **kwargs: Any,
     ) -> None:
@@ -67,6 +67,18 @@ class RayCluster(Stack):
             kubectl_role_arn=eks_admin_role_arn,
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
+
+        volumes = [
+            {"name": "log-volume", "emptyDir": {}},
+            {"name": "dshm", "emptyDir": {"medium": "Memory"}},
+        ]
+        volume_mounts = [
+            {"mountPath": "/tmp/ray", "name": "log-volume"},
+            {"mountPath": "/dev/shm", "name": "dshm"},
+        ]
+        if pvc_name:
+            volumes.append({"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}})
+            volume_mounts.append({"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"})
 
         [image_repository, image_tag] = image_uri.split(":")
         eks_cluster.add_helm_chart(
@@ -108,17 +120,8 @@ class RayCluster(Stack):
                         },
                     },
                     "resources": head_resources,
-                    "volumes": [
-                        {"name": "log-volume", "emptyDir": {}},
-                        {"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}},
-                    ],
-                    "volumeMounts": [
-                        {
-                            "mountPath": "/tmp/ray",
-                            "name": "log-volume",
-                        },
-                        {"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"},
-                    ],
+                    "volumes": volumes,
+                    "volumeMounts": volume_mounts,
                 },
                 "worker": {
                     "replicas": worker_replicas,
@@ -126,24 +129,10 @@ class RayCluster(Stack):
                     "maxReplicas": worker_max_replicas,
                     "serviceAccountName": service_account_name,
                     "resources": worker_resources,
-                    #"securityContext": {"fsGroup": 100},
-                    "tolerations": [{"key": "nvidia.com/gpu", "value": "true", "effect": "NoSchedule"}], # TODO populate from manifest
-                    "volumes": [
-                        {"name": "log-volume", "emptyDir": {}},
-                        {"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}},
-                        {"name": "dshm", "emptyDir": {"medium": "Memory"}},
-                    ],
-                    "volumeMounts": [
-                        {
-                            "mountPath": "/tmp/ray",
-                            "name": "log-volume",
-                        },
-                        {"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"},
-                        {
-                            "mountPath": "/dev/shm",
-                            "name": "dshm",
-                        },
-                    ],
+                    # "securityContext": {"fsGroup": 100},
+                    "tolerations": worker_tolerations,
+                    "volumes": volumes,
+                    "volumeMounts": volume_mounts,
                 },
             },
         )

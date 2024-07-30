@@ -22,7 +22,7 @@ targetAccountMappings:
     default: true
     codebuildImage: aws/codebuild/standard:7.0
     parametersGlobal:
-      dockerCredentialsSecret: aws-aiops-docker-credentials
+      # dockerCredentialsSecret: aws-aiops-docker-credentials
       rayNamespaceName: ray
     regionMappings:
       - region: us-east-1
