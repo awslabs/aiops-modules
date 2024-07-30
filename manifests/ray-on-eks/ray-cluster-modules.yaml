@@ -68,4 +68,9 @@ parameters:
         group: integration
         name: lustre-on-eks
         key: PersistentVolumeClaimName
-  
+  - name: worker-tolerations
+    value:
+      - key: "nvidia.com/gpu"
+        value: "true"
+        # operator: "Equal"
+        effect: "NoSchedule"

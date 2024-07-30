@@ -80,14 +80,14 @@ parameters:
   - name: vpc-id
     valueFrom:
       moduleMetadata:
-        group: networking
-        name: basic-networking
+        group: base
+        name: networking
         key: VpcId
   - name: private-subnet-ids
     valueFrom:
       moduleMetadata:
-        group: networking
-        name: basic-networking
+        group: base
+        name: networking
         key: PrivateSubnetIds
   - name: fs_deployment_type
     value: SCRATCH_2
@@ -96,7 +96,7 @@ parameters:
   - name: data_bucket_name
     valueFrom:
       moduleMetadata:
-        group: storage
+        group: base
         name: buckets
         key: ArtifactsBucketName
   - name: dra_export_path

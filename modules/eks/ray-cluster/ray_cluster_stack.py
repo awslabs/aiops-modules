@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -36,6 +36,7 @@ class RayCluster(Stack):
         worker_min_replicas: int,
         worker_max_replicas: int,
         worker_resources: Dict[str, Dict[str, str]],
+        worker_tolerations: Optional[Dict[str, Dict[str, str]]],
         pvc_name: str,
         **kwargs: Any,
     ) -> None:
@@ -108,28 +109,16 @@ class RayCluster(Stack):
                     },
                     "resources": head_resources,
                     "volumes": [
-                        {
-                            "name": "log-volume", 
-                            "emptyDir": {}
-                        },
-                        {
-                            "name": "persistent-storage",
-                            "persistentVolumeClaim": {
-                                "claimName": pvc_name
-                            }
-                        },
+                        {"name": "log-volume", "emptyDir": {}},
+                        {"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}},
                     ],
                     "volumeMounts": [
                         {
-                            "mountPath": "/tmp/ray", 
+                            "mountPath": "/tmp/ray",
                             "name": "log-volume",
-                            },
-                        {
-                            "mountPath": "/ray/export", 
-                            "name": "persistent-storage",
-                            "subPath": "ray/export"
-                            },
-                        ],
+                        },
+                        {"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"},
+                    ],
                 },
                 "worker": {
                     "replicas": worker_replicas,
@@ -137,37 +126,24 @@ class RayCluster(Stack):
                     "maxReplicas": worker_max_replicas,
                     "serviceAccountName": service_account_name,
                     "resources": worker_resources,
+                    #"securityContext": {"fsGroup": 100},
+                    "tolerations": [{"key": "nvidia.com/gpu", "value": "true", "effect": "NoSchedule"}], # TODO populate from manifest
                     "volumes": [
-                        {
-                            "name": "log-volume", 
-                            "emptyDir": {}
-                        },
-                        {
-                            "name": "persistent-storage",
-                            "persistentVolumeClaim": {
-                                "claimName": pvc_name
-                            }
-                        },
-                        {
-                            "name": "dshm",
-                            "emptyDir": {"medium": "Memory"}
-                        }
+                        {"name": "log-volume", "emptyDir": {}},
+                        {"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}},
+                        {"name": "dshm", "emptyDir": {"medium": "Memory"}},
                     ],
                     "volumeMounts": [
                         {
-                            "mountPath": "/tmp/ray", 
+                            "mountPath": "/tmp/ray",
                             "name": "log-volume",
-                            },
-                        {
-                            "mountPath": "/ray/export", 
-                            "name": "persistent-storage",
-                            "subPath": "ray/export"
-                            },
+                        },
+                        {"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"},
                         {
                             "mountPath": "/dev/shm",
                             "name": "dshm",
-                        }
-                        ],
+                        },
+                    ],
                 },
             },
         )
