@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
+import json
 from typing import Any, List
 
 import aws_cdk
@@ -240,8 +240,8 @@ class BuildPipelineConstruct(Construct):
                     "ENCRYPT_INTER_CONTAINER_TRAFFIC": codebuild.BuildEnvironmentVariable(
                         value=encrypt_inter_container_traffic,
                     ),
-                    "SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=subnet_ids),
-                    "SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=security_group_ids),
+                    "SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(subnet_ids)),
+                    "SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(security_group_ids)),
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),
