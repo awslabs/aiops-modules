@@ -59,6 +59,6 @@ parameters:
         group: core
         name: fsx-lustre
         key: FSxLustreAttrDnsName
-  - name: dra_export_path
+  - name: DraExportPath
     valueFrom:
       parameterValue: draExportPath

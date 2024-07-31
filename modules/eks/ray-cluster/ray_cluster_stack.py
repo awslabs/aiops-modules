@@ -37,8 +37,9 @@ class RayCluster(Stack):
         worker_max_replicas: int,
         worker_resources: Dict[str, Dict[str, str]],
         worker_tolerations: List[Dict[str, str]],
+        worker_labels: Dict[str, str],
         pvc_name: Optional[str],
-        dra_export_path: Optional[str],
+        dra_export_path: str,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -136,6 +137,7 @@ class RayCluster(Stack):
                     "tolerations": worker_tolerations,
                     "volumes": volumes,
                     "volumeMounts": volume_mounts,
+                    "nodeSelector": worker_labels,
                 },
             },
         )

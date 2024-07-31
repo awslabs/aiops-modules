@@ -51,6 +51,12 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
     # operator: "Equal"
     effect: "NoSchedule"
 ```
+- `worker_labels` - Dictionary of worker group labels. Empty by default (no labels). Example input:
+```yaml
+    usage: gpu
+```
+- `pvc_name` - Persistent volume claim name. Empty by defeault. If no PVC is provided, the volume will not be mounted.
+- `dra_export_path` - Persistent volume mount path. Defaults to `/ray/export/`. Must start with a `/`.
 - `tags` - List of additional tags to apply to all resources
 
 ## User Guide
@@ -198,10 +204,16 @@ parameters:
         value: "true"
         # operator: "Equal"
         effect: "NoSchedule"
+  - name: WorkerLabels
+    value:
+      usage: gpu
   - name: PvcName
     valueFrom:
       moduleMetadata:
         group: integration
         name: lustre-on-eks
         key: PersistentVolumeClaimName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
 ```

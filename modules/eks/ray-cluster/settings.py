@@ -43,8 +43,8 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_admin_role_arn: str
     eks_oidc_arn: str
     service_account_name: str
-    pvc_name: Optional[str]
-    dra_export_path: Optional[str]
+    pvc_name: Optional[str] = Field(default=None)
+    dra_export_path: str = Field(default="/ray/export/")
     ray_version: str = Field(default="2.30.0")
     ray_cluster_helm_chart_version: str = Field(default="1.1.1")
     image_uri: str = Field(default="rayproject/ray-ml:2.30.0")
@@ -56,6 +56,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     worker_max_replicas: int = Field(default=10)
     worker_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
     worker_tolerations: List[Dict[str, str]] = Field(default=[])
+    worker_labels: Dict[str, str] = Field(default={})
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 
