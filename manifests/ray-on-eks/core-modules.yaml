@@ -4,35 +4,35 @@ dataFiles:
   - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/1.29.yaml?ref=release/1.11.0&depth=1
   - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/default.yaml?ref=release/1.11.0&depth=1
 parameters:
-  - name: vpc-id
+  - name: VpcId
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: VpcId
-  - name: controlplane-subnet-ids
+  - name: ControlplaneSubnetIds
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: PrivateSubnetIds
-  - name: dataplane-subnet-ids
+  - name: DataplaneSubnetIds
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: PrivateSubnetIds
-  - name: eks-admin-role-name
+  - name: EksAdminRoleName
     value: Admin
-  - name: eks-poweruser-role-name
+  - name: EksPoweruserRoleName
     value: PowerUser
-  - name: eks-read-only-role-name
+  - name: EksReadOnlyRoleName
     value: ReadOnly
-  - name: eks-version
+  - name: EksVersion
     value: "1.29"
     # valueFrom:
     #   envVariable: GLOBAL_EKS_VERSION
-  - name: eks-compute
+  - name: EksCompute
     value:
       eks_nodegroup_config:
         - eks_ng_name: ng1
@@ -62,7 +62,7 @@ parameters:
       eks_node_spot: False
       eks_secrets_envelope_encryption: True
       eks_api_endpoint_private: False
-  - name: eks-addons
+  - name: EksAddons
     value:
       # Autoscaling
       deploy_cluster_autoscaler: True 
@@ -75,38 +75,38 @@ parameters:
 name: fsx-lustre
 path: git::https://github.com/awslabs/idf-modules.git//modules/storage/fsx-lustre?ref=release/1.11.0&depth=1
 parameters:
-  - name: vpc-id
+  - name: VpcId
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: VpcId
-  - name: private-subnet-ids
+  - name: PrivateSubnetIds
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: PrivateSubnetIds
-  - name: fs_deployment_type
+  - name: FsDeploymentType
     value: SCRATCH_2
-  - name: storage_throughput
+  - name: StorageThroughput
     value: 50
-  - name: data_bucket_name
+  - name: DataBucketName
     valueFrom:
       moduleMetadata:
         group: base
         name: buckets
         key: ArtifactsBucketName
-  - name: dra_export_path
+  - name: DraExportPath
     valueFrom:
       parameterValue: draExportPath
-  - name: dra_import_path
+  - name: DraImportPath
     valueFrom:
       parameterValue: draImportPath
-  - name:  fsx_version
+  - name:  FsxVersion
     value : "2.15" 
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
-  - name: import_policy
+  - name: ImportPolicy
     value: "NEW_CHANGED_DELETED"

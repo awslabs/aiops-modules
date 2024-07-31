@@ -2,7 +2,7 @@ name: ray
 path: modules/eks/ray-image
 targetAccount: primary
 parameters:
-  - name: ecr-repo-name
+  - name: EcrRepoName
     valueFrom:
       moduleMetadata:
         group: base
