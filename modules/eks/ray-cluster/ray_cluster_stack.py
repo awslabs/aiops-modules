@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List, Optional, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -37,7 +37,8 @@ class RayCluster(Stack):
         worker_max_replicas: int,
         worker_resources: Dict[str, Dict[str, str]],
         worker_tolerations: List[Dict[str, str]],
-        pvc_name: str,
+        pvc_name: Optional[str],
+        dra_export_path: Optional[str],
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -78,7 +79,10 @@ class RayCluster(Stack):
         ]
         if pvc_name:
             volumes.append({"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}})
-            volume_mounts.append({"mountPath": "/ray/export", "name": "persistent-storage", "subPath": "ray/export"})
+            # subPath should never start with `/`
+            volume_mounts.append(
+                {"mountPath": dra_export_path, "name": "persistent-storage", "subPath": dra_export_path[1:]}
+            )
 
         [image_repository, image_tag] = image_uri.split(":")
         eks_cluster.add_helm_chart(
@@ -129,7 +133,6 @@ class RayCluster(Stack):
                     "maxReplicas": worker_max_replicas,
                     "serviceAccountName": service_account_name,
                     "resources": worker_resources,
-                    # "securityContext": {"fsGroup": 100},
                     "tolerations": worker_tolerations,
                     "volumes": volumes,
                     "volumeMounts": volume_mounts,

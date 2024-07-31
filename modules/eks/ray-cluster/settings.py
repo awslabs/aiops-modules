@@ -44,6 +44,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_oidc_arn: str
     service_account_name: str
     pvc_name: Optional[str]
+    dra_export_path: Optional[str]
     ray_version: str = Field(default="2.30.0")
     ray_cluster_helm_chart_version: str = Field(default="1.1.1")
     image_uri: str = Field(default="rayproject/ray-ml:2.30.0")

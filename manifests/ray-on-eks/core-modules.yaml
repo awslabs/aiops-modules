@@ -100,9 +100,11 @@ parameters:
         name: buckets
         key: ArtifactsBucketName
   - name: dra_export_path
-    value: "/ray/export/"
+    valueFrom:
+      parameterValue: draExportPath
   - name: dra_import_path
-    value: "/ray/import/"
+    valueFrom:
+      parameterValue: draImportPath
   - name:  fsx_version
     value : "2.15" 
   - name: Namespace

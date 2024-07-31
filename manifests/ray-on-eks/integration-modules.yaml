@@ -60,4 +60,5 @@ parameters:
         name: fsx-lustre
         key: FSxLustreAttrDnsName
   - name: dra_export_path
-    value: "/ray/export/"
+    valueFrom:
+      parameterValue: draExportPath

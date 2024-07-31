@@ -63,14 +63,20 @@ parameters:
         name: ray
         key: ImageUri
   - name: worker-tolerations
-    value:
+    value: # make sure to match w/ the taints on the GPU Nodegroup
       - key: "nvidia.com/gpu"
         value: "true"
         # operator: "Equal"
         effect: "NoSchedule"
+  - name: worker-labels
+    value: # make sure to match w/ the labels on the GPU Nodegroup
+      usage: gpu
   - name: pvc-name
     valueFrom:
       moduleMetadata:
         group: integration
         name: lustre-on-eks
         key: PersistentVolumeClaimName
+  - name: dra-export-path
+    valueFrom:
+      parameterValue: draExportPath
