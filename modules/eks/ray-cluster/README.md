@@ -44,6 +44,19 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
         cpu: "1"
         memory: "8G"
 ```
+- `worker_tolerations` - List of worker group tolerations. Empty by default (no tolerations). Example input:
+```yaml
+  - key: "nvidia.com/gpu"
+    value: "true"
+    # operator: "Equal"
+    effect: "NoSchedule"
+```
+- `worker_labels` - Dictionary of worker group labels. Empty by default (no labels). Example input:
+```yaml
+    usage: gpu
+```
+- `pvc_name` - Persistent volume claim name. Empty by defeault. If no PVC is provided, the volume will not be mounted.
+- `dra_export_path` - Persistent volume mount path. Defaults to `/ray/export/`. Must start with a `/`.
 - `tags` - List of additional tags to apply to all resources
 
 ## User Guide
@@ -185,4 +198,22 @@ parameters:
       limits:
         cpu: "4"
         memory: "24G"
+  - name: WorkerTolerations
+    value:
+      - key: "nvidia.com/gpu"
+        value: "true"
+        # operator: "Equal"
+        effect: "NoSchedule"
+  - name: WorkerLabels
+    value:
+      usage: gpu
+  - name: PvcName
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
 ```

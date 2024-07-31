@@ -23,6 +23,7 @@ rbac_stack = RbacStack(
     module_name=app_settings.settings.module_name,
     eks_cluster_name=app_settings.parameters.eks_cluster_name,
     eks_admin_role_arn=app_settings.parameters.eks_cluster_admin_role_arn,
+    eks_handler_role_arn=app_settings.parameters.eks_handler_role_arn,
     eks_oidc_arn=app_settings.parameters.eks_oidc_arn,
     eks_openid_issuer=app_settings.parameters.eks_openid_issuer,
     namespace_name=app_settings.parameters.namespace,

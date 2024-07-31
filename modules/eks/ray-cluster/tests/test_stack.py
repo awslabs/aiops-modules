@@ -46,6 +46,10 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
     worker_max_replicas = 10
     head_resources = {"limits": {"cpu": "1", "memory": "8G"}, "requests": {"cpu": "1", "memory": "8G"}}
     worker_resources = {"limits": {"cpu": "1", "memory": "8G"}, "requests": {"cpu": "1", "memory": "8G"}}
+    worker_tolerations = []
+    worker_labels = {}
+    pvc_name = "pvc"
+    dra_export_path = "/ray/export"
 
     return ray_cluster_stack.RayCluster(
         scope=app,
@@ -68,6 +72,10 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
         worker_min_replicas=worker_min_replicas,
         worker_max_replicas=worker_max_replicas,
         worker_resources=worker_resources,
+        worker_tolerations=worker_tolerations,
+        worker_labels=worker_labels,
+        pvc_name=pvc_name,
+        dra_export_path=dra_export_path,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

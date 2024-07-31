@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, List, Optional, cast
 
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -36,6 +36,10 @@ class RayCluster(Stack):
         worker_min_replicas: int,
         worker_max_replicas: int,
         worker_resources: Dict[str, Dict[str, str]],
+        worker_tolerations: List[Dict[str, str]],
+        worker_labels: Dict[str, str],
+        pvc_name: Optional[str],
+        dra_export_path: str,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -65,6 +69,21 @@ class RayCluster(Stack):
             kubectl_role_arn=eks_admin_role_arn,
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
+
+        volumes = [
+            {"name": "log-volume", "emptyDir": {}},
+            {"name": "dshm", "emptyDir": {"medium": "Memory"}},
+        ]
+        volume_mounts = [
+            {"mountPath": "/tmp/ray", "name": "log-volume"},
+            {"mountPath": "/dev/shm", "name": "dshm"},
+        ]
+        if pvc_name:
+            volumes.append({"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}})
+            # subPath should never start with `/`
+            volume_mounts.append(
+                {"mountPath": dra_export_path, "name": "persistent-storage", "subPath": dra_export_path[1:]}
+            )
 
         [image_repository, image_tag] = image_uri.split(":")
         eks_cluster.add_helm_chart(
@@ -106,8 +125,8 @@ class RayCluster(Stack):
                         },
                     },
                     "resources": head_resources,
-                    "volumes": [{"name": "log-volume", "emptyDir": {}}],
-                    "volumeMounts": [{"mountPath": "/tmp/ray", "name": "log-volume"}],
+                    "volumes": volumes,
+                    "volumeMounts": volume_mounts,
                 },
                 "worker": {
                     "replicas": worker_replicas,
@@ -115,8 +134,10 @@ class RayCluster(Stack):
                     "maxReplicas": worker_max_replicas,
                     "serviceAccountName": service_account_name,
                     "resources": worker_resources,
-                    "volumes": [{"name": "log-volume", "emptyDir": {}}],
-                    "volumeMounts": [{"mountPath": "/tmp/ray", "name": "log-volume"}],
+                    "tolerations": worker_tolerations,
+                    "volumes": volumes,
+                    "volumeMounts": volume_mounts,
+                    "nodeSelector": worker_labels,
                 },
             },
         )

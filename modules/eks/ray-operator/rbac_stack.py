@@ -7,6 +7,7 @@ from typing import Any, Optional, cast
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_eks as eks
 from aws_cdk import aws_iam as iam
+from aws_cdk.lambda_layer_kubectl_v29 import KubectlV29Layer
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class RbacStack(Stack):
         eks_admin_role_arn: str,
         eks_oidc_arn: str,
         eks_openid_issuer: str,
+        eks_handler_role_arn: str,
         namespace_name: str,
         data_bucket_name: Optional[str],
         **kwargs: Any,
@@ -48,12 +50,15 @@ class RbacStack(Stack):
 
         # Import EKS Cluster
         provider = eks.OpenIdConnectProvider.from_open_id_connect_provider_arn(self, "Provider", eks_oidc_arn)
+        handler_role = iam.Role.from_role_arn(self, "HandlerRole", eks_handler_role_arn)
         eks_cluster = eks.Cluster.from_cluster_attributes(
             self,
             "EKSCluster",
             cluster_name=eks_cluster_name,
             kubectl_role_arn=eks_admin_role_arn,
             open_id_connect_provider=provider,
+            kubectl_lambda_role=handler_role,
+            kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
         # Create namespace for Ray to use
