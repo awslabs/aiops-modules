@@ -27,7 +27,7 @@ from aws_cdk.aws_iam import (
 from aws_cdk.aws_lambda import Architecture
 from constructs import Construct
 import os
-from cdk_nag import NagSuppressions
+from cdk_nag import NagSuppressions, NagPackSuppression
 
 
 class LabelingInitStack(Stack):
@@ -127,14 +127,14 @@ class LabelingInitStack(Stack):
             encryption=s3.BucketEncryption.S3_MANAGED,
         )
 
+        suppression = NagPackSuppression(
+            id="AwsSolutions-S1",
+            reason="Artifact Bucket does not need access logs enabled for sample",
+        )
+
         NagSuppressions.add_resource_suppressions(
             data_bucket,
-            [
-                {
-                    "id": "AwsSolutions-S1",
-                    "reason": "Artifact Bucket does not need access logs enabled for sample",
-                }
-            ],
+            [suppression],
         )
 
         # Bucket policy to deny access to HTTP requests

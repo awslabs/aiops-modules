@@ -5,7 +5,7 @@ from aws_cdk import (
     Stack,
 )
 from constructs import Construct
-from cdk_nag import NagSuppressions
+from cdk_nag import NagSuppressions, NagPackSuppression
 from cdk_nag import AwsSolutionsChecks
 from lib.stacks.init import LabelingInitStack as InitStack
 from lib.stacks.labeling_pipeline import LabelingPipelineStack
@@ -70,32 +70,32 @@ class AppConfig(cdk.Stack):
 
 
 def add_security_checks(app: cdk.App, stacks: list[Stack]) -> None:
+    suppressions = [
+        NagPackSuppression(
+            id="AwsSolutions-IAM4",
+            reason="Suppress disallowed use of managed policies for increased simplicity as this is a sample. Scope down in production!",
+        ),
+        NagPackSuppression(
+            id="AwsSolutions-IAM5",
+            reason="Suppress disallowed use of wildcards in IAM policies for increased simplicity as this is a sample. Scope down in production!",
+        ),
+        NagPackSuppression(
+            id="AwsSolutions-L1",
+            reason="Using fixed python version for lambda functions as sample needs to be stable",
+        ),
+        NagPackSuppression(
+            id="AwsSolutions-CB3",
+            reason="Suppress warning for use of privileged mode for codebuild, as this is required for docker image build",
+        ),
+        NagPackSuppression(
+            id="AwsSolutions-CB4",
+            reason="Suppress required use of KMS for CodeBuild as it incurs additional cost. Consider using KMS for Codebuild in production",
+        ),
+    ]
+
     for stack in stacks:
-        NagSuppressions.add_stack_suppressions(
-            stack,
-            [
-                {
-                    "id": "AwsSolutions-IAM4",
-                    "reason": "Suppress disallowed use of managed policies for increased simplicity as this is a sample. Scope down in production!",
-                },
-                {
-                    "id": "AwsSolutions-IAM5",
-                    "reason": "Suppress disallowed use of wildcards in IAM policies for increased simplicity as this is a sample. Scope down in production!",
-                },
-                {
-                    "id": "AwsSolutions-L1",
-                    "reason": "Using fixed python version for lambda functions as sample needs to be stable",
-                },
-                {
-                    "id": "AwsSolutions-CB3",
-                    "reason": "Suppress warning for use of privileged mode for codebuild, as this is required for docker image build",
-                },
-                {
-                    "id": "AwsSolutions-CB4",
-                    "reason": "Suppress required use of KMS for CodeBuild as it incurs additional cost. Consider using KMS for Codebuild in production",
-                },
-            ],
-        )
+        NagSuppressions.add_stack_suppressions(stack, suppressions)
+
     AwsSolutionsChecks(verbose=True)
 
 
