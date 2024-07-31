@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 import boto3
 import json
 import os
@@ -44,7 +44,7 @@ LabelingjobConfig = namedtuple(
 )
 
 
-def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
+def handler(event: Dict[str, Any], context: object) -> Dict[str, str]:
     logger.info(f"# event={json.dumps(event)} , Environment {os.environ}")
     config = get_step_config(event)
     logger.info(f"StepConfig: {config}")
@@ -70,7 +70,7 @@ def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
     }
 
 
-def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
+def get_step_config(event: Dict[str, Any]) -> LabelingjobConfig:
     # file containing list of missing labels
     missing_labels = event["request"]["Payload"]["missing_labels"]
 
@@ -90,11 +90,11 @@ def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
     # execution id
     execution_id = event["executionId"].rsplit(":", 1)[-1]
     # setting workteam arn as public as default
-    workteam_arn = (
+    workteam_arn: Optional[str] = (
         f"arn:aws:sagemaker:{region}:394669845002:workteam/public-crowd/default"
     )
 
-    if use_private_workteam.lower() == "true":
+    if use_private_workteam:
         if "PRIVATE_WORKTEAM_ARN" in os.environ:
             workteam_arn = os.environ.get("PRIVATE_WORKTEAM_ARN")
         else:
@@ -124,8 +124,10 @@ def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
 
 
 def create_and_upload_manifest(
-    images=None, manifest_name="input.manifest", labeling_job_s3_uri=""
-)-> str:
+    images: List[str],
+    manifest_name: str = "input.manifest",
+    labeling_job_s3_uri: str = "",
+) -> str:
     parsed_url = urlparse(labeling_job_s3_uri, allow_fragments=False)
     bucket = parsed_url.netloc
     prefix = parsed_url.path[1:]
@@ -142,7 +144,9 @@ def create_and_upload_manifest(
     return f"s3://{bucket}/{prefix}/{manifest_name}"
 
 
-def create_labeling_job_config(config: LabelingjobConfig, manifest_uri) -> Dict[str, Any]:
+def create_labeling_job_config(
+    config: LabelingjobConfig, manifest_uri: str
+) -> Dict[str, Any]:
     region = boto3.session.Session().region_name
     prehuman_arn = "arn:aws:lambda:{}:{}:function:PRE-BoundingBox".format(
         region, AC_ARN_MAP[region]

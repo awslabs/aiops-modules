@@ -6,8 +6,8 @@ repoType: CODECOMMIT
 # the repo where the pipeline should pull its source from
 repoName: aiops-for-quality-inspection
 # the CodestarConnectionArn for your GitHub repository
-githubConnectionArn: <FILL_WITH_CONNECTION_ARN>
+githubConnectionArn:
 # the GitHub repo owner
-githubRepoOwner:
+githubRepoOwner: aiops
 # the git branch to use
 branchName: main

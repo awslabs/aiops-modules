@@ -18,7 +18,6 @@ verificationJobPrivateWorkteamArn: "arn:aws:sagemaker:eu-west-1:0000000000000:wo
 labelingPipelineSchedule: "cron(0 12 1 * ? *)"
 # featureGroupName in SageMaker Feature Store, where features should be saved
 featureGroupName: "tag-quality-inspection"
-assets_bucket: "tag-quality-inspection-bkt-2024"
 # modelPackageGroupName in model Registry
 modelPackageGroupName: "TagQualityInspectionPackageGroup"
 # modelPackageGroupName in model Registry

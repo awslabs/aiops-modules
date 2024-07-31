@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from aws_cdk import (
     Stack,
     Stage,
@@ -13,13 +14,19 @@ from aws_cdk import (
 
 from constructs import Construct
 
-from stacks.statemachine_pipeline import (
+from lib.stacks.statemachine_pipeline import (
     ExecuteStateMachinePipeline as StateMachinePipeline,
 )
 
 
 class LabelingPipelineStack(Stack):
-    def __init__(self, scope: Construct, id: str, props: dict, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        id: str,
+        props: Dict[str, Any],
+        **kwargs: Any,
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Pass in our artifacts bucket instead of creating a new one
@@ -78,31 +85,41 @@ class LabelingPipelineStack(Stack):
         rule = events.Rule(
             self,
             "Rule",
-            schedule=events.Schedule.expression(props.labeling_pipeline_schedule),
+            schedule=events.Schedule.expression(
+                props.get("labeling_pipeline_schedule", ""),
+            ),
         )
 
         rule.add_target(events_targets.CodePipeline(pipeline.pipeline))
 
-    def get_code_source(self, props: dict) -> pipelines.CodePipelineSource:
-        repo_type = props.repo_type
-
-        if repo_type == "CODECOMMIT" or repo_type == "CODECOMMIT_PROVIDED":
+    def get_code_source(
+        self,
+        props: dict[str, Any],
+    ) -> pipelines.CodePipelineSource:
+        if (
+            props.get("repo_type") == "CODECOMMIT"
+            or props.get("repo_type") == "CODECOMMIT_PROVIDED"
+        ):
             repo = codecommit.Repository.from_repository_name(
-                self, "ImportedRepo", props.repo_name
+                self, "ImportedRepo", props.get("repo_name", "")
             )
 
-            return pipelines.CodePipelineSource.code_commit(repo, props.branch_name)
+            return pipelines.CodePipelineSource.code_commit(
+                repo, props.get("branch_name", "")
+            )
 
         else:
             return pipelines.CodePipelineSource.connection(
-                f"{props['github_repo_owner']}/{props.repo_name}",
-                props.branch_name,
-                connection_arn=props.github_connection_arn,
+                f"{props.get('github_repo_owner')}/{props.get('repo_name')}",
+                props.get("branch_name", ""),
+                connection_arn=props.get("github_connection_arn", ""),
             )
 
 
 class DeployLabelingPipelineStage(Stage):
-    def __init__(self, scope: Construct, id: str, props: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, id: str, props: Dict[str, Any], **kwargs: Any
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
         labeling_pipeline_stack = StateMachinePipeline(

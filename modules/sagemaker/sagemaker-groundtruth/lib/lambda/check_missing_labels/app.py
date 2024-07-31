@@ -100,7 +100,9 @@ def split_s3_url(s3_url: str) -> Tuple[str, str]:
     return bucket, key
 
 
-def get_list_of_files(bucket: str, prefix: str, file_types: Optional[List[str]] = None) -> List[str]:
+def get_list_of_files(
+    bucket: str, prefix: str, file_types: Optional[List[str]] = None
+) -> List[str]:
     logger.info(f"Getting list of files for bucket {bucket} and prefix {prefix}")
     filtered_files: List[str] = []
 
@@ -148,7 +150,9 @@ def get_existing_labels(feature_group_name: str, query_results_s3uri: str) -> An
     return df[lambda_config.feature_name_s3uri].tolist()
 
 
-def get_images_without_labels(images: List[str], existing_labels: List[str]) -> List[str]:
+def get_images_without_labels(
+    images: List[str], existing_labels: List[str]
+) -> List[str]:
     missing_labels = [image for image in images if image not in existing_labels]
     logger.info(
         f"images: {len(images)} , existing_labels: {len(existing_labels)}, missing_labels: {len(missing_labels)}"

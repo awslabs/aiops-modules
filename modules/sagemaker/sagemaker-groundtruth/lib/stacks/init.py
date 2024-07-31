@@ -1,3 +1,4 @@
+from typing import Any
 from aws_cdk import (
     aws_lambda as lambda_,
     aws_logs as logs,
@@ -30,21 +31,34 @@ from cdk_nag import NagSuppressions
 
 
 class LabelingInitStack(Stack):
-    def __init__(self, scope: Construct, id: str, props: dict, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        id: str,
+        repo_name: str,
+        branch_name: str,
+        repo_type: str,
+        model_package_group_name: str,
+        model_package_group_description: str,
+        props: dict[str, Any],
+        **kwargs: Any,
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        if props.repo_type == "CODECOMMIT":
-            self.seed_code_commit_repo(props.repo_name, props.branch_name)
+        if repo_type == "CODECOMMIT":
+            self.seed_code_commit_repo(repo_name, branch_name)
 
         self.data_bucket = self.create_assets_bucket()
         seed_assets_role = self.create_seed_assets_role()
         bucket_deployment: s3deploy.BucketDeployment = (
             self.seed_initial_assets_to_bucket(self.data_bucket)
         )
-        self.feature_group = seed_labels_to_feature_store(
-            self, seed_assets_role, self.data_bucket, bucket_deployment, props
+        self.feature_group = self.seed_labels_to_feature_store(
+            seed_assets_role, self.data_bucket, bucket_deployment, props
         )
-        self.model_package_group = create_model_package_group(self, props)
+        self.model_package_group = self.create_model_package_group(
+            model_package_group_name, model_package_group_description
+        )
 
         CfnOutput(
             self,
@@ -217,96 +231,99 @@ class LabelingInitStack(Stack):
 
     _feature_group_name = "tag-quality-inspection"
 
-
-def seed_labels_to_feature_store(
-    self,
-    role: iam.Role,
-    data_bucket: s3.Bucket,
-    bucket_deployment: s3deploy.BucketDeployment,
-    props: dict,
-) -> sagemaker.CfnFeatureGroup:
-    offline_store_config = {
-        "S3StorageConfig": {"S3Uri": f"s3://{data_bucket.bucket_name}/feature-store/"}
-    }
-
-    feature_group = sagemaker.CfnFeatureGroup(
+    def seed_labels_to_feature_store(
         self,
-        "MyCfnFeatureGroup",
-        event_time_feature_name="event_time",
-        feature_definitions=[
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="source_ref", feature_type="String"
+        role: iam.Role,
+        data_bucket: s3.Bucket,
+        bucket_deployment: s3deploy.BucketDeployment,
+        props: dict[str, Any],
+    ) -> sagemaker.CfnFeatureGroup:
+        offline_store_config = {
+            "S3StorageConfig": {
+                "S3Uri": f"s3://{data_bucket.bucket_name}/feature-store/"
+            }
+        }
+
+        feature_group = sagemaker.CfnFeatureGroup(
+            self,
+            "MyCfnFeatureGroup",
+            event_time_feature_name="event_time",
+            feature_definitions=[
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="source_ref", feature_type="String"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="image_width", feature_type="Integral"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="image_height", feature_type="Integral"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="image_depth", feature_type="Integral"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="annotations", feature_type="String"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="event_time", feature_type="Fractional"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="labeling_job", feature_type="String"
+                ),
+                CfnFeatureGroup.FeatureDefinitionProperty(
+                    feature_name="status", feature_type="String"
+                ),
+            ],
+            feature_group_name=self._feature_group_name,
+            record_identifier_feature_name="source_ref",
+            description="Stores bounding box dataset for quality inspection",
+            offline_store_config=offline_store_config,
+            role_arn=role.role_arn,
+        )
+
+        seed_labels_function = lambda_.DockerImageFunction(
+            self,
+            "SeedLabelsToFeatureStoreFunction",
+            code=lambda_.DockerImageCode.from_image_asset(
+                os.path.join(
+                    os.path.dirname(__file__), "../lambda/seed_labels_to_feature_store"
+                )
             ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="image_width", feature_type="Integral"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="image_height", feature_type="Integral"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="image_depth", feature_type="Integral"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="annotations", feature_type="String"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="event_time", feature_type="Fractional"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="labeling_job", feature_type="String"
-            ),
-            CfnFeatureGroup.FeatureDefinitionProperty(
-                feature_name="status", feature_type="String"
-            ),
-        ],
-        feature_group_name=self._feature_group_name,
-        record_identifier_feature_name="source_ref",
-        description="Stores bounding box dataset for quality inspection",
-        offline_store_config=offline_store_config,
-        role_arn=role.role_arn,
-    )
+            architecture=Architecture.X86_64,
+            function_name="SeedLabelsToFeatureStoreFunction",
+            memory_size=1024,
+            role=role,
+            timeout=Duration.seconds(300),
+            log_retention=logs.RetentionDays.ONE_WEEK,
+        )
 
-    seed_labels_function = lambda_.DockerImageFunction(
-        self,
-        "SeedLabelsToFeatureStoreFunction",
-        code=lambda_.DockerImageCode.from_image_asset(
-            os.path.join(
-                os.path.dirname(__file__), "../lambda/seed_labels_to_feature_store"
-            )
-        ),
-        architecture=Architecture.X86_64,
-        function_name="SeedLabelsToFeatureStoreFunction",
-        memory_size=1024,
-        role=role,
-        timeout=Duration.seconds(300),
-        log_retention=logs.RetentionDays.ONE_WEEK,
-    )
+        custom_resource = CustomResource(
+            self,
+            "SeedLabelsCustomResource",
+            service_token=seed_labels_function.function_arn,
+            properties={
+                # "feature_group_name": props.feature_group_name,
+                "labels_uri": f"s3://{data_bucket.bucket_name}/pipeline/assets/labels/labels.csv"
+            },
+        )
 
-    custom_resource = CustomResource(
-        self,
-        "SeedLabelsCustomResource",
-        service_token=seed_labels_function.function_arn,
-        properties={
-            # "feature_group_name": props.feature_group_name,
-            "labels_uri": f"s3://{data_bucket.bucket_name}/pipeline/assets/labels/labels.csv"
-        },
-    )
+        feature_group.node.add_dependency(bucket_deployment)
 
-    feature_group.node.add_dependency(bucket_deployment)
+        custom_resource.node.add_dependency(feature_group)
 
-    custom_resource.node.add_dependency(feature_group)
+        return feature_group
 
-    return feature_group
+    def create_model_package_group(
+        self: Construct,
+        model_package_group_name: str,
+        model_package_group_description: str,
+    ) -> sagemaker.CfnModelPackageGroup:
+        cfn_model_package_group = sagemaker.CfnModelPackageGroup(
+            self,
+            "MyCfnModelPackageGroup",
+            model_package_group_name=model_package_group_name,
+            model_package_group_description=model_package_group_description,
+        )
+        cfn_model_package_group.apply_removal_policy(RemovalPolicy.DESTROY)
 
-
-def create_model_package_group(self, props: dict) -> sagemaker.CfnModelPackageGroup:
-    cfn_model_package_group = sagemaker.CfnModelPackageGroup(
-        self,
-        "MyCfnModelPackageGroup",
-        model_package_group_name=props.model_package_group_name,
-        model_package_group_description=props.model_package_group_description,
-    )
-
-    cfn_model_package_group.apply_removal_policy(RemovalPolicy.DESTROY)
-
-    return cfn_model_package_group
+        return cfn_model_package_group

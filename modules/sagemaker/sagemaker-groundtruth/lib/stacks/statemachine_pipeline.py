@@ -1,3 +1,4 @@
+from typing import Any, Union
 from aws_cdk import (
     Stack,
     aws_codecommit as codecommit,
@@ -13,11 +14,13 @@ import aws_cdk.aws_stepfunctions as sfn
 import aws_cdk.aws_stepfunctions_tasks as tasks
 from constructs import Construct
 
-from constructs.labeling_pipeline_assets import PipelineAssets
+from lib.constructs.labeling_pipeline_assets import PipelineAssets
 
 
 class ExecuteStateMachinePipeline(Stack):
-    def __init__(self, scope: Construct, id: str, props: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, id: str, props: dict[str, Any], **kwargs: Any
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
         self.props = props
@@ -69,42 +72,49 @@ class ExecuteStateMachinePipeline(Stack):
         )
 
     def get_code_source(
-        self, props: dict
-    ) -> codepipeline_actions.CodeCommitSourceAction:
+        self, props: dict[str, Any]
+    ) -> Union[
+        codepipeline_actions.CodeCommitSourceAction,
+        codepipeline_actions.CodeStarConnectionsSourceAction,
+    ]:
         source_output = codepipeline.Artifact()
-        repo_type = props.repo_type
+        repo_type = props.get("repo_type", "")
+        repo_name = props.get("repo_name", "")
         if repo_type == "CODECOMMIT" or repo_type == "CODECOMMIT_PROVIDED":
             repository = codecommit.Repository.from_repository_name(
-                self, "repository", props.repo_name
+                self, "repository", repo_name
             )
             return codepipeline_actions.CodeCommitSourceAction(
                 action_name="CodeCommit",
                 repository=repository,
-                branch=props.branch_name,
+                branch=props.get("branch_name"),
                 output=source_output,
                 trigger=codepipeline_actions.CodeCommitTrigger.NONE,
             )
         else:
             return codepipeline_actions.CodeStarConnectionsSourceAction(
-                action_name=f"{props.github_repo_owner}_{props.repo_name}",
-                branch=props.branch_name,
+                action_name=f"{props.get('github_repo_owner')}_{props.get('repo_name')}",
+                branch=props.get("branch_name"),
                 output=source_output,
-                owner=props.github_repo_owner,
-                repo=props.repo_name,
-                connection_arn=props.github_connection_arn,
+                owner=props.get("github_repo_owner", ""),
+                repo=props.get("repo_name", ""),
+                connection_arn=props.get("github_connection_arn", ""),
                 trigger_on_push=False,
             )
 
     def get_state_machine_definition(
-        self, pipeline_assets: PipelineAssets, props: dict, pipeline_role: iam.Role
-    ) -> sfn.StateMachine:
+        self,
+        pipeline_assets: PipelineAssets,
+        props: dict[str, Any],
+        pipeline_role: iam.Role,
+    ) -> sfn.Chain:
         success = sfn.Succeed(self, "Labeling Pipeline execution succeeded")
         fail = sfn.Fail(self, "Labeling Pipeline execution failed")
         check_missing_labels_lambda = pipeline_assets.check_missing_labels_lambda
         verification_job_lambda = pipeline_assets.verification_job_lambda
         labeling_job_lambda = pipeline_assets.labeling_job_lambda
         update_feature_store_lambda_function = (
-            pipeline_assets.update_feature_store_lambda
+            pipeline_assets.update_feature_store_lambda_function
         )
         check_missing_labels = tasks.LambdaInvoke(
             self, "CheckMissingLabels", lambda_function=check_missing_labels_lambda

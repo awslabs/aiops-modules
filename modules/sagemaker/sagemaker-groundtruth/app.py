@@ -1,3 +1,4 @@
+from typing import Any
 import aws_cdk as cdk
 import yaml
 from aws_cdk import (
@@ -6,15 +7,15 @@ from aws_cdk import (
 from constructs import Construct
 from cdk_nag import NagSuppressions
 from cdk_nag import AwsSolutionsChecks
-from stacks.init import LabelingInitStack as InitStack
-from stacks.labeling_pipeline import LabelingPipelineStack
-from stacks.statemachine_pipeline import ExecuteStateMachinePipeline
+from lib.stacks.init import LabelingInitStack as InitStack
+from lib.stacks.labeling_pipeline import LabelingPipelineStack
+from lib.stacks.statemachine_pipeline import ExecuteStateMachinePipeline
 
 app = cdk.App()
 
 
 class AppConfig(cdk.Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         with open("config.yaml") as file:
@@ -22,44 +23,53 @@ class AppConfig(cdk.Stack):
         with open("repo_config.yaml") as repo_file:
             repo_config_yaml = yaml.safe_load(repo_file)
 
-        self.repo_type = repo_config_yaml["repoType"]
-        self.repo_name = repo_config_yaml["repoName"]
-        self.branch_name = repo_config_yaml["branchName"]
-        # self.github_connection_arn = repo_config_yaml['githubConnectionArn']
-        # self.github_repo_owner = repo_config_yaml['githubRepoOwner']
-        self.pipeline_assets_prefix = config_yaml["pipelineAssetsPrefix"]
-        self.labeling_job_private_workteam_arn = config_yaml[
+        self.repo_type: str = repo_config_yaml["repoType"]
+        self.repo_name: str = repo_config_yaml["repoName"]
+        self.branch_name: str = repo_config_yaml["branchName"]
+        self.github_repo_owner: str = repo_config_yaml["githubRepoOwner"]
+        self.github_connection_arn: str = repo_config_yaml["githubConnectionArn"]
+        self.pipeline_assets_prefix: str = config_yaml["pipelineAssetsPrefix"]
+        self.labeling_job_private_workteam_arn: str = config_yaml[
             "labelingJobPrivateWorkteamArn"
         ]
-        self.use_private_workteam_for_labeling = config_yaml[
+        self.use_private_workteam_for_labeling: bool = config_yaml[
             "usePrivateWorkteamForLabeling"
         ]
-        self.use_private_workteam_for_verification = config_yaml[
+        self.use_private_workteam_for_verification: bool = config_yaml[
             "usePrivateWorkteamForVerification"
         ]
-        self.verification_job_private_workteam_arn = config_yaml[
+        self.verification_job_private_workteam_arn: str = config_yaml[
             "verificationJobPrivateWorkteamArn"
         ]
-        self.max_labels_per_labeling_job = config_yaml["maxLabelsPerLabelingJob"]
-        self.labeling_pipeline_schedule = config_yaml["labelingPipelineSchedule"]
-        self.feature_group_name = config_yaml["featureGroupName"]
-        # self.assets_bucket= str(config_yaml['assets_bucket'])
-        self.model_package_group_name = config_yaml["modelPackageGroupName"]
-        self.model_package_group_description = config_yaml[
+        self.max_labels_per_labeling_job: int = config_yaml["maxLabelsPerLabelingJob"]
+        self.labeling_pipeline_schedule: str = config_yaml["labelingPipelineSchedule"]
+        self.feature_group_name: str = config_yaml["featureGroupName"]
+        self.model_package_group_name: str = config_yaml["modelPackageGroupName"]
+        self.model_package_group_description: str = config_yaml[
             "modelPackageGroupDescription"
         ]
-        # self.feature_group_name=str(cdk.Fn.import_value("aiopsfeatureGroup")),
-        # self.assets_bucket=str(cdk.Fn.import_value("aiopsDataBucket")),
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "repo_type": self.repo_type,
+            "repo_name": self.repo_name,
+            "branch_name": self.branch_name,
+            "pipeline_assets_prefix": self.pipeline_assets_prefix,
+            "labeling_job_private_workteam_arn": self.labeling_job_private_workteam_arn,
+            "use_private_workteam_for_labeling": self.use_private_workteam_for_labeling,
+            "use_private_workteam_for_verification": self.use_private_workteam_for_verification,
+            "verification_job_private_workteam_arn": self.verification_job_private_workteam_arn,
+            "max_labels_per_labeling_job": self.max_labels_per_labeling_job,
+            "labeling_pipeline_schedule": self.labeling_pipeline_schedule,
+            "feature_group_name": self.feature_group_name,
+            "model_package_group_name": self.model_package_group_name,
+            "model_package_group_description": self.model_package_group_description,
+            "github_repo_owner": self.github_repo_owner,
+            "githubConnectionArn": self.github_connection_arn,
+        }
 
 
-# class LabelingPipelineStack(Stack):
-#    def __init__(self, scope: Construct, construct_id: str, app_config: AppConfig, **kwargs) -> None:
-#        super().__init__(scope, construct_id, **kwargs)
-
-# Define your labeling pipeline resources here
-
-
-def add_security_checks(app: cdk.App, stacks: list[Stack]):
+def add_security_checks(app: cdk.App, stacks: list[Stack]) -> None:
     for stack in stacks:
         NagSuppressions.add_stack_suppressions(
             stack,
@@ -89,18 +99,29 @@ def add_security_checks(app: cdk.App, stacks: list[Stack]):
     AwsSolutionsChecks(verbose=True)
 
 
-def main():
+def main() -> None:
     app_config = AppConfig(app, "aiops-config")
-    init_stack = InitStack(app, "aiops-init-stack", app_config)
+    app_config_dict = app_config.to_dict()
+    init_stack = InitStack(
+        app,
+        "aiops-init-stack",
+        app_config_dict.get("repo_name", ""),
+        app_config_dict.get("branch_name", ""),
+        app_config_dict.get("repo_type", ""),
+        app_config_dict.get("model_package_group_name", ""),
+        app_config_dict.get("model_package_group_description", ""),
+        app_config_dict,
+    )
+
     labeling_pipeline_stack = LabelingPipelineStack(
-        app, "aiops-labeling-infra-stack", app_config
+        app, "aiops-labeling-infra-stack", app_config_dict
     )
     # Add the dependency
     labeling_pipeline_stack.add_dependency(init_stack)
 
     # Statemachine stack
     statemachine_pipeline_stack = ExecuteStateMachinePipeline(
-        app, "aiops-statemachine-pipeline", app_config
+        app, "aiops-statemachine-pipeline", app_config_dict
     )
     statemachine_pipeline_stack.add_dependency(init_stack)
     statemachine_pipeline_stack.add_dependency(labeling_pipeline_stack)

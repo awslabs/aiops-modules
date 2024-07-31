@@ -45,7 +45,7 @@ LabelingjobConfig = namedtuple(
 )
 
 
-def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
+def handler(event: Dict[str, Any], context: object) -> Dict[str, str]:
     logger.info(f"# event={json.dumps(event)} , Environment {os.environ}")
     config = get_step_config(event)
     logger.info(f"StepConfig: {config}")
@@ -59,14 +59,14 @@ def handler(event: Dict[str,Any], context: object) -> Dict[str, str]:
     return {"LabelingJobName": labeling_job_config["LabelingJobName"]}
 
 
-def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
+def get_step_config(event: Dict[str, Any]) -> LabelingjobConfig:
     # file containing list of missing labels
     input_manifest = event["input_manifest"]
     # bucket/path where the job should write temp assets to
-    bucket = os.environ.get("BUCKET")
-    bucket_prefix = os.environ.get("PREFIX")
-    # the exectuion role used to kick off the labeling job
-    role = os.environ.get("ROLE")
+    bucket = os.environ.get("BUCKET", "")  # Provide a default value
+    bucket_prefix = os.environ.get("PREFIX", "")  # Provide a default value
+    # the execution role used to kick off the labeling job
+    role = os.environ.get("ROLE", "")  # Provide a default value
     # whether to use a private workteam
     use_private_workteam = os.environ.get("USE_PRIVATE_WORKTEAM")
     # execution id
@@ -75,20 +75,16 @@ def get_step_config(event: Dict[str,Any]) -> LabelingjobConfig:
     workteam_arn = (
         f"arn:aws:sagemaker:{region}:394669845002:workteam/public-crowd/default"
     )
+
     if use_private_workteam is not None:
         use_private_workteam_value = use_private_workteam.strip().casefold()
         if use_private_workteam_value == "true":
-            if "PRIVATE_WORKTEAM_ARN" in os.environ:
-                workteam_arn = os.environ.get("PRIVATE_WORKTEAM_ARN")
-                if workteam_arn is not None:
-                    workteam_arn = workteam_arn
-                else:
-                    raise Exception(
-                        "USE_PRIVATE_WORKTEAM set to True, but PRIVATE_WORKTEAM_ARN is None"
-                    )
+            private_workteam_arn = os.environ.get("PRIVATE_WORKTEAM_ARN")
+            if private_workteam_arn is not None:
+                workteam_arn = private_workteam_arn
             else:
                 raise Exception(
-                    "USE_PRIVATE_WORKTEAM set to True, make sure to also specify parameter 'PRIVATE_WORKTEAM_ARN'"
+                    "USE_PRIVATE_WORKTEAM set to True, but PRIVATE_WORKTEAM_ARN is None"
                 )
         elif use_private_workteam_value:
             # Handle other true values if needed

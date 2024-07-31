@@ -1,3 +1,4 @@
+from typing import Any
 from aws_cdk import (
     aws_iam as iam,
     aws_lambda as lambda_,
@@ -14,38 +15,53 @@ import string
 
 
 class PipelineAssets(Construct):
-    def __init__(self, scope: Construct, id: str, props: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, id: str, props: dict[str, Any], **kwargs: Any
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        self.props = props
+        self.props: dict[str, Any] = props
         print(self.props)
         # import the bucket created in init stack
         data_bucket_name = Fn.import_value("aiopsDataBucket")
+
+        feature_group_name: str = props.get("feature_group_name", "")
+        labeling_job_private_workteam_arn: str = props.get(
+            "labeling_job_private_workteam_arn", ""
+        )
+        verification_job_private_workteam_arn: str = props.get(
+            "verification_job_private_workteam_arn", ""
+        )
 
         # Create execution role for the Step Function pipeline
         pipeline_role = self.create_execution_role(data_bucket_name, props)
 
         # Create lambda function to check for missing labels
         self.check_missing_labels_lambda = self.create_missing_labels_lambda(
-            data_bucket_name, props, pipeline_role
+            data_bucket_name, feature_group_name, props, pipeline_role
         )
 
         # Create lambda function for SageMaker Ground Truth verification job
         self.verification_job_lambda = self.create_run_verification_job_lambda(
-            data_bucket_name, props, pipeline_role
+            data_bucket_name,
+            verification_job_private_workteam_arn,
+            props,
+            pipeline_role,
         )
 
         # Create lambda function for SageMaker Ground Truth labeling job
         self.labeling_job_lambda = self.create_run_labeling_job_lambda(
-            data_bucket_name, props, pipeline_role
+            data_bucket_name, labeling_job_private_workteam_arn, props, pipeline_role
         )
 
         # Create lambda function to update labels in the feature store
-        self.update_feature_store_lambda = self.update_feature_store_lambda(
-            data_bucket_name, props, pipeline_role
+        self.update_feature_store_lambda_function = self.update_feature_store_lambda(
+            data_bucket_name, feature_group_name, props, pipeline_role
         )
 
-    def create_execution_role(self, data_bucket_name: str, props: dict) -> iam.Role:
+    def create_execution_role(
+        self, data_bucket_name: str, props: dict[str, Any]
+    ) -> iam.Role:
         random_string = "".join(
             random.choices(string.ascii_lowercase + string.digits, k=8)
         )
@@ -114,7 +130,11 @@ class PipelineAssets(Construct):
         return pipeline_role
 
     def update_feature_store_lambda(
-        self, data_bucket_name: str, props: dict, role: iam.Role
+        self,
+        data_bucket_name: str,
+        feature_group_name: str,
+        props: dict[str, Any],
+        role: iam.Role,
     ) -> lambda_.DockerImageFunction:
         return lambda_.DockerImageFunction(
             self,
@@ -131,7 +151,7 @@ class PipelineAssets(Construct):
             role=role,
             environment={
                 "ROLE": role.role_arn,
-                "FEATURE_GROUP_NAME": props.feature_group_name,
+                "FEATURE_GROUP_NAME": feature_group_name,
                 "FEATURE_NAME_S3URI": "source_ref",
                 "FEATURE_STORE_S3URI": f"s3://{data_bucket_name}/feature-store/",
                 "QUERY_RESULTS_S3URI": f"s3://{data_bucket_name}/tmp/feature_store_query_results",
@@ -139,7 +159,11 @@ class PipelineAssets(Construct):
         )
 
     def create_missing_labels_lambda(
-        self, data_bucket_name: str, props: dict, role: iam.Role
+        self,
+        data_bucket_name: str,
+        feature_group_name: str,
+        props: dict[str, Any],
+        role: iam.Role,
     ) -> lambda_.DockerImageFunction:
         print(props)
         missing_labels_lambda = lambda_.DockerImageFunction(
@@ -156,7 +180,7 @@ class PipelineAssets(Construct):
             role=role,
             timeout=Duration.seconds(300),
             environment={
-                "FEATURE_GROUP_NAME": props.feature_group_name,
+                "FEATURE_GROUP_NAME": feature_group_name,
                 "FEATURE_NAME_S3URI": "source_ref",
                 "INPUT_IMAGES_S3URI": f"s3://{data_bucket_name}/pipeline/assets/images/",
                 "QUERY_RESULTS_S3URI": f"s3://{data_bucket_name}/tmp/feature_store_query_results",
@@ -166,7 +190,11 @@ class PipelineAssets(Construct):
         return missing_labels_lambda
 
     def create_run_labeling_job_lambda(
-        self, data_bucket_name: str, props: dict, role: iam.Role
+        self,
+        data_bucket_name: str,
+        labeling_job_private_workteam_arn: str,
+        props: dict[str, Any],
+        role: iam.Role,
     ) -> PythonFunction:
         return PythonFunction(
             self,
@@ -180,18 +208,24 @@ class PipelineAssets(Construct):
                 "BUCKET": data_bucket_name,
                 "PREFIX": "pipeline/assets",
                 "ROLE": role.role_arn,
-                "USE_PRIVATE_WORKTEAM": str(props.use_private_workteam_for_labeling),
-                "PRIVATE_WORKTEAM_ARN": props.labeling_job_private_workteam_arn,
-                "MAX_LABELS": str(props.max_labels_per_labeling_job),
+                "USE_PRIVATE_WORKTEAM": str(
+                    props.get("use_private_workteam_for_labeling")
+                ),
+                "PRIVATE_WORKTEAM_ARN": labeling_job_private_workteam_arn,
+                "MAX_LABELS": str(props.get("max_labels_per_labeling_job")),
             },
         )
 
     def create_run_verification_job_lambda(
-        self, data_bucket_name: str, props: dict, role: iam.Role
+        self,
+        data_bucket_name: str,
+        verification_job_private_workteam_arn: str,
+        props: dict[str, Any],
+        role: iam.Role,
     ) -> PythonFunction:
         print(type(data_bucket_name))
-        print(props.use_private_workteam_for_verification)
-        print(props.verification_job_private_workteam_arn)
+        print(props.get("use_private_workteam_for_verification"))
+        print(props.get("verification_job_private_workteam_arn"))
         return PythonFunction(
             self,
             "RunVerificationJobLambda",
@@ -205,8 +239,8 @@ class PipelineAssets(Construct):
                 "PREFIX": "pipeline/assets",
                 "ROLE": role.role_arn,
                 "USE_PRIVATE_WORKTEAM": str(
-                    props.use_private_workteam_for_verification
+                    props.get("use_private_workteam_for_verification")
                 ),
-                "PRIVATE_WORKTEAM_ARN": props.verification_job_private_workteam_arn,
+                "PRIVATE_WORKTEAM_ARN": verification_job_private_workteam_arn,
             },
         )

@@ -36,7 +36,7 @@ except Exception as e:
 
 
 @helper.create
-def create(event: Dict[str,Any], context: object)-> str:
+def create(event: Dict[str, Any], context: object) -> str:
     logger.info(f"check-missing-labels called with event {event}")
     lambda_config = initialize_lambda_config(event)
     logger.info(f"Finished with lambda config {lambda_config}")
@@ -60,11 +60,11 @@ def create(event: Dict[str,Any], context: object)-> str:
 
 
 @helper.delete
-def delete(event: Dict[str,Any], context: object) -> None:
+def delete(event: Dict[str, Any], context: object) -> None:
     logger.info("Deletion of labels not required")
 
 
-def initialize_lambda_config(event: Dict[str,Any]) -> LambdaConfig:
+def initialize_lambda_config(event: Dict[str, Any]) -> LambdaConfig:
     feature_group_name = (
         event["ResourceProperties"]["feature_group_name"]
         if "feature_group_name" in event["ResourceProperties"]
@@ -96,11 +96,11 @@ def read_file_from_s3(file: str) -> Any:
     return obj.get()["Body"].read().decode("utf-8")
 
 
-def parse_s3_uri(s3_url: str) ->Tuple[str, str]:
+def parse_s3_uri(s3_url: str) -> Tuple[str, str]:
     bucket = urlparse(s3_url, allow_fragments=False).netloc
     key = urlparse(s3_url, allow_fragments=False).path[1:]
     return bucket, key
 
 
-def handler(event: Dict[str,Any], context: object) -> None:
+def handler(event: Dict[str, Any], context: object) -> None:
     helper(event, context)
