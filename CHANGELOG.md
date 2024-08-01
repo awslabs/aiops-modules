@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - adds workflow specific to changes for `requirements-dev.txt` so all static checks are run
 - add `ray-cluster` module based on `kuberay-helm` charts
+- added FSx for Lustre to `ray-on-eks` manifest & persistent volume claim to `ray-cluster` module
+- added worker tolerations to `ray-cluster` module
 
 ### **Changed**
 
@@ -26,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add an example custom `ray-image`
 - document available manifests in readme
 - add permission for SM studio to describe apps when domain resource isolation is enabled
+- updated `ray-on-eks` manifest to use latest EKS IDF release
 
 ## v1.3.0
 
