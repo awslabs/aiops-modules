@@ -31,7 +31,7 @@ class Product(servicecatalog.ProductStack):
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
-        dev_vpc_id: str,
+        dev_vpc: ec2.IVpc,
         dev_subnet_ids: List[str],
         **kwargs: Any,
     ) -> None:
@@ -251,9 +251,8 @@ class Product(servicecatalog.ProductStack):
         )
 
         security_group_ids = []
-        if dev_vpc_id and dev_subnet_ids:
-            vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=dev_vpc_id)
-            security_group_ids = [ec2.SecurityGroup(self, "Security Group", vpc=vpc).security_group_id]
+        if dev_vpc and dev_subnet_ids:
+            security_group_ids = [ec2.SecurityGroup(self, "Security Group", vpc=dev_vpc).security_group_id]
         else:
             dev_subnet_ids = []
 
