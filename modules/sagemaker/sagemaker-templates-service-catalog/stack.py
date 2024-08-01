@@ -7,10 +7,10 @@ from typing import Any, List, Optional, Tuple
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
+from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_servicecatalog as servicecatalog
-from aws_cdk import aws_ec2 as ec2
 from constructs import Construct
 
 
@@ -76,7 +76,7 @@ class ServiceCatalogStack(Stack):
         )
 
         dev_vpc = None
-        if(dev_vpc_id):
+        if dev_vpc_id:
             dev_vpc = ec2.Vpc.from_lookup(self, "dev-vpc", vpc_id=dev_vpc_id)
 
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
