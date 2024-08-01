@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v1.4.0
+
+### **Added**
+
 - adds workflow specific to changes for `requirements-dev.txt` so all static checks are run
 - add `ray-cluster` module based on `kuberay-helm` charts
 - added FSx for Lustre to `ray-on-eks` manifest & persistent volume claim to `ray-cluster` module
