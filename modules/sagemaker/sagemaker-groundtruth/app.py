@@ -1,6 +1,5 @@
 from typing import Any, Optional
 import aws_cdk as cdk
-import yaml
 from aws_cdk import (
     Stack,
 )
@@ -26,19 +25,37 @@ class AppConfig(cdk.Stack):
         self.repo_name: str = app_settings.parameters.repoName
         self.branch_name: str = app_settings.parameters.branchName
         self.github_repo_owner: str = app_settings.parameters.githubRepoOwner
-        self.github_connection_arn: Optional[str] = app_settings.parameters.githubConnectionArn
-        self.pipeline_assets_prefix: str = app_settings.parameters.pipeline_assets_prefix
-        self.labeling_job_private_workteam_arn: Optional[
-            str] = app_settings.parameters.labeling_job_private_workteam_arn
-        self.use_private_workteam_for_labeling: bool = app_settings.parameters.use_private_workteam_for_labeling
-        self.use_private_workteam_for_verification: bool = app_settings.parameters.use_private_workteam_for_verification
-        self.verification_job_private_workteam_arn: Optional[
-            str] = app_settings.parameters.verification_job_private_workteam_arn
-        self.max_labels_per_labeling_job: int = app_settings.parameters.max_labels_per_labeling_job
-        self.labeling_pipeline_schedule: str = app_settings.parameters.labeling_pipeline_schedule
+        self.github_connection_arn: Optional[str] = (
+            app_settings.parameters.githubConnectionArn
+        )
+        self.pipeline_assets_prefix: str = (
+            app_settings.parameters.pipeline_assets_prefix
+        )
+        self.labeling_job_private_workteam_arn: Optional[str] = (
+            app_settings.parameters.labeling_job_private_workteam_arn
+        )
+        self.use_private_workteam_for_labeling: bool = (
+            app_settings.parameters.use_private_workteam_for_labeling
+        )
+        self.use_private_workteam_for_verification: bool = (
+            app_settings.parameters.use_private_workteam_for_verification
+        )
+        self.verification_job_private_workteam_arn: Optional[str] = (
+            app_settings.parameters.verification_job_private_workteam_arn
+        )
+        self.max_labels_per_labeling_job: int = (
+            app_settings.parameters.max_labels_per_labeling_job
+        )
+        self.labeling_pipeline_schedule: str = (
+            app_settings.parameters.labeling_pipeline_schedule
+        )
         self.feature_group_name: str = app_settings.parameters.feature_group_name
-        self.model_package_group_name: str = app_settings.parameters.model_package_group_name
-        self.model_package_group_description: str = app_settings.parameters.model_package_group_description
+        self.model_package_group_name: str = (
+            app_settings.parameters.model_package_group_name
+        )
+        self.model_package_group_description: str = (
+            app_settings.parameters.model_package_group_description
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {

@@ -1,8 +1,8 @@
 import os
 import sys
-from typing import Any
 
 import pytest
+
 
 @pytest.fixture(scope="function", autouse=True)
 def set_env_vars() -> None:
@@ -11,6 +11,7 @@ def set_env_vars() -> None:
 
     if "app" in sys.modules:
         del sys.modules["app"]
+
 
 def test_app() -> None:
     import app  # noqa: F401

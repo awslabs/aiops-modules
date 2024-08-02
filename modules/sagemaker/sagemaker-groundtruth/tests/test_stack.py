@@ -2,10 +2,11 @@ import pytest
 import yaml
 from aws_cdk import App
 from typing import Any
-from aws_cdk.assertions import Annotations, Match, Template
+from aws_cdk.assertions import Template
 from lib.stacks.init import LabelingInitStack
 from lib.stacks.labeling_pipeline import LabelingPipelineStack
 from lib.stacks.statemachine_pipeline import ExecuteStateMachinePipeline
+
 
 @pytest.fixture
 def app_config() -> dict[str, Any]:
@@ -21,10 +22,18 @@ def app_config() -> dict[str, Any]:
         "github_repo_owner": repo_config_yaml["githubRepoOwner"],
         "github_connection_arn": repo_config_yaml["githubConnectionArn"],
         "pipeline_assets_prefix": config_yaml["pipelineAssetsPrefix"],
-        "labeling_job_private_workteam_arn": config_yaml["labelingJobPrivateWorkteamArn"],
-        "use_private_workteam_for_labeling": config_yaml["usePrivateWorkteamForLabeling"],
-        "use_private_workteam_for_verification": config_yaml["usePrivateWorkteamForVerification"],
-        "verification_job_private_workteam_arn": config_yaml["verificationJobPrivateWorkteamArn"],
+        "labeling_job_private_workteam_arn": config_yaml[
+            "labelingJobPrivateWorkteamArn"
+        ],
+        "use_private_workteam_for_labeling": config_yaml[
+            "usePrivateWorkteamForLabeling"
+        ],
+        "use_private_workteam_for_verification": config_yaml[
+            "usePrivateWorkteamForVerification"
+        ],
+        "verification_job_private_workteam_arn": config_yaml[
+            "verificationJobPrivateWorkteamArn"
+        ],
         "max_labels_per_labeling_job": config_yaml["maxLabelsPerLabelingJob"],
         "labeling_pipeline_schedule": config_yaml["labelingPipelineSchedule"],
         "feature_group_name": config_yaml["featureGroupName"],
@@ -33,6 +42,7 @@ def app_config() -> dict[str, Any]:
     }
 
     return config
+
 
 def test_init_stack(app_config: dict[str, Any]) -> None:
     app = App()
@@ -56,7 +66,7 @@ def test_init_stack(app_config: dict[str, Any]) -> None:
             "AWS::CodeCommit::Repository",
             {
                 "RepositoryName": app_config["repo_name"],
-            }
+            },
         )
     # Test if the S3 bucket is created
     template.resource_count_is("AWS::S3::Bucket", 1)
@@ -73,9 +83,12 @@ def test_init_stack(app_config: dict[str, Any]) -> None:
     # Test if the SageMaker Model Package Group is created
     template.resource_count_is("AWS::SageMaker::ModelPackageGroup", 1)
 
+
 def test_labeling_pipeline_stack(app_config: dict[str, Any]) -> None:
     app = App()
-    labeling_pipeline_stack = LabelingPipelineStack(app, "aiops-labeling-infra-stack", app_config)
+    labeling_pipeline_stack = LabelingPipelineStack(
+        app, "aiops-labeling-infra-stack", app_config
+    )
 
     template = Template.from_stack(labeling_pipeline_stack)
 
@@ -90,7 +103,9 @@ def test_labeling_pipeline_stack(app_config: dict[str, Any]) -> None:
 
 def test_statemachine_pipeline_stack(app_config: dict[str, Any]) -> None:
     app = App()
-    statemachine_pipeline_stack = ExecuteStateMachinePipeline(app, "aiops-statemachine-pipeline", app_config)
+    statemachine_pipeline_stack = ExecuteStateMachinePipeline(
+        app, "aiops-statemachine-pipeline", app_config
+    )
 
     template = Template.from_stack(statemachine_pipeline_stack)
 
