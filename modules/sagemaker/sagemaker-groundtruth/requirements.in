@@ -3,4 +3,7 @@ constructs==10.0.91
 cdk-nag==2.12.29
 boto3~=1.21.0
 aws-cdk.aws-lambda-python-alpha==2.147.3a0
-urllib3=2.0.0
+urllib3==1.26.19
+attrs==23.2.0
+pydantic~=2.5.3
+pydantic-settings~=2.0.3

@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Optional
 import aws_cdk as cdk
 import yaml
 from aws_cdk import (
     Stack,
 )
+from settings import ApplicationSettings
 from constructs import Construct
 from cdk_nag import NagSuppressions, NagPackSuppression
 from cdk_nag import AwsSolutionsChecks
@@ -18,36 +19,26 @@ class AppConfig(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        with open("config.yaml") as file:
-            config_yaml = yaml.safe_load(file)
-        with open("repo_config.yaml") as repo_file:
-            repo_config_yaml = yaml.safe_load(repo_file)
+        # Load settings from settings.py
+        app_settings = ApplicationSettings()
 
-        self.repo_type: str = repo_config_yaml["repoType"]
-        self.repo_name: str = repo_config_yaml["repoName"]
-        self.branch_name: str = repo_config_yaml["branchName"]
-        self.github_repo_owner: str = repo_config_yaml["githubRepoOwner"]
-        self.github_connection_arn: str = repo_config_yaml["githubConnectionArn"]
-        self.pipeline_assets_prefix: str = config_yaml["pipelineAssetsPrefix"]
-        self.labeling_job_private_workteam_arn: str = config_yaml[
-            "labelingJobPrivateWorkteamArn"
-        ]
-        self.use_private_workteam_for_labeling: bool = config_yaml[
-            "usePrivateWorkteamForLabeling"
-        ]
-        self.use_private_workteam_for_verification: bool = config_yaml[
-            "usePrivateWorkteamForVerification"
-        ]
-        self.verification_job_private_workteam_arn: str = config_yaml[
-            "verificationJobPrivateWorkteamArn"
-        ]
-        self.max_labels_per_labeling_job: int = config_yaml["maxLabelsPerLabelingJob"]
-        self.labeling_pipeline_schedule: str = config_yaml["labelingPipelineSchedule"]
-        self.feature_group_name: str = config_yaml["featureGroupName"]
-        self.model_package_group_name: str = config_yaml["modelPackageGroupName"]
-        self.model_package_group_description: str = config_yaml[
-            "modelPackageGroupDescription"
-        ]
+        self.repo_type: str = app_settings.parameters.repoType
+        self.repo_name: str = app_settings.parameters.repoName
+        self.branch_name: str = app_settings.parameters.branchName
+        self.github_repo_owner: str = app_settings.parameters.githubRepoOwner
+        self.github_connection_arn: Optional[str] = app_settings.parameters.githubConnectionArn
+        self.pipeline_assets_prefix: str = app_settings.parameters.pipeline_assets_prefix
+        self.labeling_job_private_workteam_arn: Optional[
+            str] = app_settings.parameters.labeling_job_private_workteam_arn
+        self.use_private_workteam_for_labeling: bool = app_settings.parameters.use_private_workteam_for_labeling
+        self.use_private_workteam_for_verification: bool = app_settings.parameters.use_private_workteam_for_verification
+        self.verification_job_private_workteam_arn: Optional[
+            str] = app_settings.parameters.verification_job_private_workteam_arn
+        self.max_labels_per_labeling_job: int = app_settings.parameters.max_labels_per_labeling_job
+        self.labeling_pipeline_schedule: str = app_settings.parameters.labeling_pipeline_schedule
+        self.feature_group_name: str = app_settings.parameters.feature_group_name
+        self.model_package_group_name: str = app_settings.parameters.model_package_group_name
+        self.model_package_group_description: str = app_settings.parameters.model_package_group_description
 
     def to_dict(self) -> dict[str, Any]:
         return {
