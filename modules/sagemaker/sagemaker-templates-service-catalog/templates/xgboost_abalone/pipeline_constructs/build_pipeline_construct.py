@@ -175,6 +175,37 @@ class BuildPipelineConstruct(Construct):
                 ],
             ),
         )
+        sagemaker_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ec2:CreateNetworkInterface",
+                    "ec2:CreateNetworkInterfacePermission",
+                    "ec2:DeleteNetworkInterface",
+                ],
+                resources=[
+                    f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:network-interface/*",
+                    *[
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:subnet/{subnet_id}"
+                        for subnet_id in subnet_ids
+                    ],
+                    *[
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:security-group/{security_group_id}"
+                        for security_group_id in security_group_ids
+                    ],
+                ],
+            ),
+        )
+        sagemaker_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DescribeVpcs",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeDhcpOptions",
+                ],
+                resources=["*"],
+            ),
+        )
 
         # Grant extra permissions for the CodeBuild role
         codebuild_role.add_to_policy(
