@@ -1,0 +1,10 @@
+name: ray
+path: modules/eks/ray-image
+targetAccount: primary
+parameters:
+  - name: EcrRepoName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: ray-ecr
+        key: EcrRepositoryName

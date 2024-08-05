@@ -1,38 +1,38 @@
 name: eks
-path: git::https://github.com/awslabs/idf-modules.git//modules/compute/eks?ref=release/1.7.0&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/compute/eks?ref=release/1.11.0&depth=1
 dataFiles:
-  - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/1.29.yaml?ref=release/1.7.0&depth=1
-  - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/default.yaml?ref=release/1.7.0&depth=1
+  - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/1.29.yaml?ref=release/1.11.0&depth=1
+  - filePath: git::https://github.com/awslabs/idf-modules.git//data/eks_dockerimage-replication/versions/default.yaml?ref=release/1.11.0&depth=1
 parameters:
-  - name: vpc-id
+  - name: VpcId
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: VpcId
-  - name: controlplane-subnet-ids
+  - name: ControlplaneSubnetIds
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: PrivateSubnetIds
-  - name: dataplane-subnet-ids
+  - name: DataplaneSubnetIds
     valueFrom:
       moduleMetadata:
         group: base
         name: networking
         key: PrivateSubnetIds
-  - name: eks-admin-role-name
+  - name: EksAdminRoleName
     value: Admin
-  - name: eks-poweruser-role-name
+  - name: EksPoweruserRoleName
     value: PowerUser
-  - name: eks-read-only-role-name
+  - name: EksReadOnlyRoleName
     value: ReadOnly
-  - name: eks-version
+  - name: EksVersion
     value: "1.29"
     # valueFrom:
     #   envVariable: GLOBAL_EKS_VERSION
-  - name: eks-compute
+  - name: EksCompute
     value:
       eks_nodegroup_config:
         - eks_ng_name: ng1
@@ -41,19 +41,72 @@ parameters:
           eks_node_min_quantity: 1
           eks_node_disk_size: 200
           eks_node_instance_type: "m5.12xlarge"
+          eks_node_labels:
+            usage: core
         - eks_ng_name: ng-gpu
-          eks_node_quantity: 0
-          eks_node_max_quantity: 2
-          eks_node_min_quantity: 0
+          eks_node_quantity: 1
+          eks_node_max_quantity: 10
+          eks_node_min_quantity: 1
           eks_node_disk_size: 200
-          eks_node_instance_type: "g4dn.xlarge"
+          eks_node_instance_type: "g4dn.4xlarge"
           eks_node_labels:
             usage: gpu
+            nvidia.com/gpu.present: "true"
           use_gpu_ami: True
+          eks_node_taints:
+            - key: "nvidia.com/gpu"
+              value: "true"
+              # operator: "Equal"
+              effect: "NoSchedule"
+          install_nvidia_device_plugin: True
       eks_node_spot: False
-      eks_secrets_envelope_encryption: False
+      eks_secrets_envelope_encryption: True
       eks_api_endpoint_private: False
-  - name: eks-addons
+  - name: EksAddons
     value:
-      deploy_cluster_autoscaler: True # We deploy it unless set to False
-      deploy_metrics_server: True # We deploy it unless set to False
+      # Autoscaling
+      deploy_cluster_autoscaler: True 
+      deploy_metrics_server: True
+      # Observability
+      deploy_cloudwatch_observability_addon: True
+      # Storage
+      deploy_aws_fsx_csi: True
+---
+name: fsx-lustre
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/fsx-lustre?ref=release/1.11.0&depth=1
+parameters:
+  - name: VpcId
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: networking
+        key: VpcId
+  - name: PrivateSubnetIds
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: networking
+        key: PrivateSubnetIds
+  - name: FsDeploymentType
+    value: SCRATCH_2
+  - name: StorageThroughput
+    value: 50
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: buckets
+        key: ArtifactsBucketName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
+  - name: DraImportPath
+    valueFrom:
+      parameterValue: draImportPath
+  - name:  FsxVersion
+    value : "2.15" 
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: ImportPolicy
+    value: "NEW_CHANGED_DELETED"

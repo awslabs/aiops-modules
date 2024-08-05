@@ -5,16 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-=======
-
 ## UNRELEASED
 
 ### **Added**
 
 ### **Changed**
 
+## v1.4.0
+
+### **Added**
+
+- adds workflow specific to changes for `requirements-dev.txt` so all static checks are run
+- add `ray-cluster` module based on `kuberay-helm` charts
+- added FSx for Lustre to `ray-on-eks` manifest & persistent volume claim to `ray-cluster` module
+- added worker tolerations to `ray-cluster` module
+
+### **Changed**
+
 - add integration tests for `sagemaker-studio`
 - bump ecr module version to 1.10.0 to consume auto-delete images feature
+- add service account to kuberay
+- updated `get-modules` workflow to only run tests against changed files in `modules/**`
+- Updated the `sagemaker-templates-service-catalog` module documentation to match the code layout.
+- Modernize `sagemaker-templates-service-catalog` packaging and remove unused dependencies.
+- remove custom manifests via `dataFiles` from `ray-on-eks`
+- refactor `ray-on-eks` to `ray-cluster` and `ray-operator` modules
+- downscope `ray-operator` service account permissions
+- add an example custom `ray-image`
+- document available manifests in readme
+- add permission for SM studio to describe apps when domain resource isolation is enabled
+- updated `ray-on-eks` manifest to use latest EKS IDF release
 
 ## v1.3.0
 

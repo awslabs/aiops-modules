@@ -1,0 +1,82 @@
+name: ray-cluster
+path: modules/eks/ray-cluster
+parameters:
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: ServiceAccountName
+    valueFrom:
+      moduleMetadata:
+        group: ray-operator
+        name: ray-operator
+        key: EksServiceAccountName
+  - name: HeadResources
+    value:
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+  - name: WorkerReplicas
+    value: 1
+  - name: WorkerMinReplicas
+    value: 1
+  - name: WorkerMaxReplicas
+    value: 15
+  - name: WorkerResources
+    value:
+      requests:
+        cpu: "1"
+        memory: "8G"
+      limits:
+        cpu: "1"
+        memory: "8G"
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: buckets
+        key: ArtifactsBucketName
+  - name: ImageUri
+    valueFrom:
+      moduleMetadata:
+        group: images
+        name: ray
+        key: ImageUri
+  - name: WorkerTolerations
+    value: # make sure to match w/ the taints on the GPU Nodegroup
+      - key: "nvidia.com/gpu"
+        value: "true"
+        # operator: "Equal"
+        effect: "NoSchedule"
+  - name: WorkerLabels
+    value: # make sure to match w/ the labels on the GPU Nodegroup
+      usage: gpu
+  - name: PvcName
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
