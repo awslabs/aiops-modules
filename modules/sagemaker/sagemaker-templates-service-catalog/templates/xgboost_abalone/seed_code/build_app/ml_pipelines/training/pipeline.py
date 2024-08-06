@@ -102,6 +102,13 @@ def get_pipeline(
         enable_network_isolation=ENABLE_NETWORK_ISOLATION,
         encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
     )
+    # define network config without network isolation to allow S3 access for preprocessor
+    network_config_without_isolation = NetworkConfig(
+        subnets=SUBNET_IDS if SUBNET_IDS else None,
+        security_group_ids=SECURITY_GROUP_IDS if SECURITY_GROUP_IDS else None,
+        enable_network_isolation=False,
+        encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
+    )
 
     # parameters for pipeline execution
     processing_instance_count = ParameterInteger(name="ProcessingInstanceCount", default_value=1)
@@ -139,7 +146,7 @@ def get_pipeline(
         sagemaker_session=sagemaker_session,
         role=role,
         output_kms_key=bucket_kms_id,
-        network_config=network_config,
+        network_config=network_config_without_isolation,
     )
     step_process = ProcessingStep(
         name="PreprocessAbaloneData",

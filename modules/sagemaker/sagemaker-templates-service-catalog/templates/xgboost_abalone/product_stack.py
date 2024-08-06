@@ -75,7 +75,10 @@ class Product(servicecatalog.ProductStack):
             self,
             "EnableNetworkIsolation",
             type="String",
-            description="Enable network isolation",
+            description=(
+                "Enable network isolation. Will NOT enable network isolation on preprocess step as it requires access "
+                "to S3 for training data."
+            ),
             allowed_values=["true", "false"],
             default="false",
         ).value_as_string
