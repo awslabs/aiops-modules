@@ -29,7 +29,7 @@ End-to-end example use-cases built using modules in this repository.
 | [Mlflow experiments tracking with Amazon SageMaker](manifests/mlflow-experiments-tracking/) | An example using Mlflow experiments tracking with Amazon SageMaker. Deploy self-hosted Mlflow instance on AWS Fargate, and Amazon SageMaker Studio Domain environment.                                       |
 | [MWAA ML Training](manifests/mwaa-ml-training/)                                             | An example orchestrating ML training jobs with Managed Workflows for Apache Airflow (MWAA). Deploys MWAA and an example ML training DAG.                                                                     |
 | [Q&A RAG](manifests/fmops-qna-rag/)                                                         | Deploy AppSync GraphQL endpoint for Q&A chatbot with RAG based on OpenSearch, and data ingestion infrastructure.                                                                                             |
-| [Ray on EKS](manifests/ray-on-eks/README.MD)                                                | Run Ray on AWS EKS. Deploys an AWS EKS cluster, KubeRay Ray Operator, and a Ray Cluster with autoscaling enabled.                                                                                            |
+| [Ray on EKS](manifests/ray-on-eks/)                                                         | Run Ray on AWS EKS. Deploys an AWS EKS cluster, KubeRay Ray Operator, and a Ray Cluster with autoscaling enabled.                                                                                            |
 
 ## Modules
 
