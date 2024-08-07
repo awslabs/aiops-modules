@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 - added documentation for Ray on EKS manifests
+- Added network isolation and inter container encryption for xgboost template
 
 ### **Changed**
 

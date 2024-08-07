@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
-
-from typing import Any
+import json
+from typing import Any, List
 
 import aws_cdk
 from aws_cdk import Aws
@@ -29,6 +29,10 @@ class BuildPipelineConstruct(Construct):
         model_bucket: s3.IBucket,
         pipeline_artifact_bucket: s3.IBucket,
         repo_asset: s3_assets.Asset,
+        enable_network_isolation: str,
+        encrypt_inter_container_traffic: str,
+        subnet_ids: List[str],
+        security_group_ids: List[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -171,6 +175,37 @@ class BuildPipelineConstruct(Construct):
                 ],
             ),
         )
+        sagemaker_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ec2:CreateNetworkInterface",
+                    "ec2:CreateNetworkInterfacePermission",
+                    "ec2:DeleteNetworkInterface",
+                ],
+                resources=[
+                    f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:network-interface/*",
+                    *[
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:subnet/{subnet_id}"
+                        for subnet_id in subnet_ids
+                    ],
+                    *[
+                        f"arn:{Aws.PARTITION}:ec2:{Aws.REGION}:{Aws.ACCOUNT_ID}:security-group/{security_group_id}"
+                        for security_group_id in security_group_ids
+                    ],
+                ],
+            ),
+        )
+        sagemaker_execution_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "ec2:DescribeNetworkInterfaces",
+                    "ec2:DescribeVpcs",
+                    "ec2:DescribeSubnets",
+                    "ec2:DescribeDhcpOptions",
+                ],
+                resources=["*"],
+            ),
+        )
 
         # Grant extra permissions for the CodeBuild role
         codebuild_role.add_to_policy(
@@ -232,6 +267,12 @@ class BuildPipelineConstruct(Construct):
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
+                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
+                    "ENCRYPT_INTER_CONTAINER_TRAFFIC": codebuild.BuildEnvironmentVariable(
+                        value=encrypt_inter_container_traffic,
+                    ),
+                    "SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(subnet_ids)),
+                    "SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(security_group_ids)),
                     "SAGEMAKER_PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=project_name),
                     "SAGEMAKER_PROJECT_ID": codebuild.BuildEnvironmentVariable(value=project_id),
                     "SAGEMAKER_DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=domain_id),

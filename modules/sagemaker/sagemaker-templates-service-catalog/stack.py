@@ -7,6 +7,7 @@ from typing import Any, List, Optional, Tuple
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
+from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_servicecatalog as servicecatalog
@@ -74,6 +75,10 @@ class ServiceCatalogStack(Stack):
             managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")],
         )
 
+        dev_vpc = None
+        if dev_vpc_id:
+            dev_vpc = ec2.Vpc.from_lookup(self, "dev-vpc", vpc_id=dev_vpc_id)
+
         templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
         for template_name in next(os.walk(templates_dir))[1]:
             if template_name == "__pycache__":
@@ -90,6 +95,7 @@ class ServiceCatalogStack(Stack):
                 build_app_asset=build_app_asset,
                 deploy_app_asset=deploy_app_asset,
                 dev_vpc_id=dev_vpc_id,
+                dev_vpc=dev_vpc,
                 dev_subnet_ids=dev_subnet_ids,
                 dev_security_group_ids=dev_security_group_ids,
                 pre_prod_vpc_id=pre_prod_vpc_id,
