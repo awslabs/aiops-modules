@@ -31,6 +31,10 @@ End-to-end example use-cases built using modules in this repository.
 | [Q&A RAG](manifests/fmops-qna-rag/)                                                         | Deploy AppSync GraphQL endpoint for Q&A chatbot with RAG based on OpenSearch, and data ingestion infrastructure.                                                                                             |
 | [Ray on EKS](manifests/ray-on-eks/)                                                         | Run Ray on AWS EKS. Deploys an AWS EKS cluster, KubeRay Ray Operator, and a Ray Cluster with autoscaling enabled.                                                                                            |
 
+## One-Click Launch
+
+[![Launch Stack](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=aws-mlops-modules&templateURL=https://aws-mlops-public-artifacts.s3.amazonaws.com/templates/one-click-launch.yaml)
+
 ## Modules
 
 ### SageMaker Modules
