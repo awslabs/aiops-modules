@@ -20,6 +20,7 @@ from config.constants import (
     DOMAIN_ID,
     ECR_REPO_ARN,
     ENABLE_NETWORK_ISOLATION,
+    MAX_NAME_LENGTH,
     MODEL_BUCKET_ARN,
     MODEL_PACKAGE_GROUP_NAME,
     PROJECT_ID,
@@ -160,7 +161,8 @@ class DeployEndpointStack(Stack):
         latest_approved_model_package = get_approved_package()
 
         # Sagemaker Model
-        model_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-{timestamp}"
+        model_name = f"-{id}-{timestamp}"
+        model_name = MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(model_name)] + model_name
 
         vpc_config = None
         if subnet_ids:
@@ -187,7 +189,10 @@ class DeployEndpointStack(Stack):
         )
 
         # Sagemaker Endpoint Config
-        endpoint_config_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-ec-{timestamp}"
+        endpoint_config_name = f"-{id}-ec-{timestamp}"
+        endpoint_config_name = (
+            MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(endpoint_config_name)] + endpoint_config_name
+        )
 
         endpoint_config_production_variant = EndpointConfigProductionVariant()
 
@@ -226,7 +231,8 @@ class DeployEndpointStack(Stack):
         endpoint_config.add_dependency(model)
 
         # Sagemaker Endpoint
-        endpoint_name = f"{MODEL_PACKAGE_GROUP_NAME}-{id}-endpoint"
+        endpoint_name = f"-{id}-endpoint"
+        endpoint_name = MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(endpoint_name)] + endpoint_name
 
         endpoint = sagemaker.CfnEndpoint(
             self,
