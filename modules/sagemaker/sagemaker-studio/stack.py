@@ -136,9 +136,18 @@ class SagemakerStudioStack(Stack):
         event_handler = PythonFunction(
             self,
             "sg-project-function",
-            runtime=lambda_.Runtime.PYTHON_3_12,
+            runtime=lambda_.Runtime.PYTHON_3_11,
             entry="functions/sm_studio/enable_sm_projects",
             timeout=core.Duration.seconds(120),
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            [event_handler],
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-L1",
+                    reason="Not all partitions support latest runtime (Python 3.12)",
+                )
+            ],
         )
 
         event_handler.add_to_role_policy(
