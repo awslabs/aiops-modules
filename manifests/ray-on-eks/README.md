@@ -84,23 +84,164 @@ kubectl port-forward -n ray --address 0.0.0.0 service/kuberay-head-svc  8265:826
 ray job submit --address http://localhost:8265 -- python -c "import ray; ray.init(); print(ray.cluster_resources())"
 ```
 
-7. For a more elaborate example, get an example pytorch training job from the Ray repository:
+7. For a more elaborate example, create a file `pytorch_training_e2e.py` with the following content:
+
+```python
+import click
+import time
+import json
+import os
+import tempfile
+from typing import Dict
+
+import numpy as np
+from torchvision import transforms
+from torchvision.models import resnet18
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+import ray
+from ray import train
+from ray.train import Checkpoint, RunConfig, ScalingConfig
+from ray.train.torch import TorchTrainer
+
+
+def add_fake_labels(batch: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+    batch_size = len(batch["image"])
+    batch["label"] = np.zeros([batch_size], dtype=int)
+    return batch
+
+
+def transform_image(
+    batch: Dict[str, np.ndarray], transform: torch.nn.Module
+) -> Dict[str, np.ndarray]:
+    transformed_tensors = [transform(image).numpy() for image in batch["image"]]
+    batch["image"] = transformed_tensors
+    return batch
+
+
+def train_loop_per_worker(config):
+    raw_model = resnet18(pretrained=True)
+    model = train.torch.prepare_model(raw_model)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+
+    train_dataset_shard = train.get_dataset_shard("train")
+
+    for epoch in range(config["num_epochs"]):
+        running_loss = 0.0
+        for i, data in enumerate(
+            train_dataset_shard.iter_torch_batches(batch_size=config["batch_size"])
+        ):
+            # get the inputs; data is a list of [inputs, labels]
+            inputs = data["image"].to(device=train.torch.get_device())
+            labels = data["label"].to(device=train.torch.get_device())
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+            if i % 2000 == 1999:  # print every 2000 mini-batches
+                print(f"[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}")
+                running_loss = 0.0
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            torch.save(model.state_dict(), os.path.join(tmpdir, "model.pt"))
+            train.report(
+                dict(running_loss=running_loss),
+                checkpoint=Checkpoint.from_directory(tmpdir),
+            )
+
+
+@click.command(help="Run Batch prediction on Pytorch ResNet models.")
+@click.option("--data-size-gb", type=int, default=1)
+@click.option("--num-epochs", type=int, default=2)
+@click.option("--num-workers", type=int, default=1)
+@click.option("--smoke-test", is_flag=True, default=False)
+def main(data_size_gb: int, num_epochs=2, num_workers=1, smoke_test: bool = False):
+    data_url = (
+        f"s3://anonymous@air-example-data-2/{data_size_gb}G-image-data-synthetic-raw"
+    )
+    print(
+        "Running Pytorch image model training with "
+        f"{data_size_gb}GB data from {data_url}"
+    )
+    print(f"Training for {num_epochs} epochs with {num_workers} workers.")
+    start = time.time()
+
+    if smoke_test:
+        # Only read one image
+        data_url = [data_url + "/dog.jpg"]
+        print("Running smoke test on CPU with a single example")
+    else:
+        print(f"Running GPU training with {data_size_gb}GB data from {data_url}")
+
+    dataset = ray.data.read_images(data_url, size=(256, 256))
+
+    transform = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+
+    dataset = dataset.map_batches(add_fake_labels)
+    dataset = dataset.map_batches(transform_image, fn_kwargs={"transform": transform})
+
+    trainer = TorchTrainer(
+        train_loop_per_worker=train_loop_per_worker,
+        train_loop_config={"batch_size": 64, "num_epochs": num_epochs},
+        datasets={"train": dataset},
+        scaling_config=ScalingConfig(
+            num_workers=num_workers, use_gpu=int(not smoke_test)
+        ),
+        run_config=RunConfig(storage_path="/ray/export"),
+    )
+    trainer.fit()
+
+    total_time_s = round(time.time() - start, 2)
+
+    # For structured output integration with internal tooling
+    results = {"data_size_gb": data_size_gb, "num_epochs": num_epochs}
+    results["perf_metrics"] = [
+        {
+            "perf_metric_name": "total_time_s",
+            "perf_metric_value": total_time_s,
+            "perf_metric_type": "LATENCY",
+        },
+        {
+            "perf_metric_name": "throughout_MB_s",
+            "perf_metric_value": round(
+                num_epochs * data_size_gb * 1024 / total_time_s, 2
+            ),
+            "perf_metric_type": "THROUGHPUT",
+        },
+    ]
+
+    test_output_json = os.environ.get("TEST_OUTPUT_JSON", "/tmp/release_test_out.json")
+    with open(test_output_json, "wt") as f:
+        json.dump(results, f)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+8. Submit the job:
 
 ```
-wget https://raw.githubusercontent.com/ray-project/ray/ray-2.23.0/release/air_tests/air_benchmarks/workloads/pytorch_training_e2e.py
-```
-
-8. Replace local storage in the script with an S3 bucket:
-
-```
-sed -i -e 's|/mnt/cluster_storage|s3://my-bucket|g' pytorch_training_e2e.py
-```
-
-9. Submit a training job:
-
-```
-ray job submit --address http://localhost:8265 --working-dir="." -- python pytorch_training_e2e.py --smoke-test --num-workers 6
-
+ray job submit --address http://localhost:8265 --working-dir="." -- python pytorch_training_e2e.py
 ```
 
 9. Access the Ray Dashboard at `http://localhost:8265`:
