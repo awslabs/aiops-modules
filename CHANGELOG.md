@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- pin `ray-operator`, `ray-cluster`, and `ray-image` modules versions
+
 ## v1.4.0
 
 ### **Added**
