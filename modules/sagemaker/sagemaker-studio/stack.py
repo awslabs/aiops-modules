@@ -262,15 +262,15 @@ class SagemakerStudioStack(Stack):
         """
         custom_kernel_settings = {}
         if app_image_config_name is not None and image_name is not None:
-            custom_kernel_settings["kernel_gateway_app_settings"] = (
-                sagemaker.CfnDomain.KernelGatewayAppSettingsProperty(
-                    custom_images=[
-                        sagemaker.CfnDomain.CustomImageProperty(
-                            app_image_config_name=app_image_config_name,
-                            image_name=image_name,
-                        ),
-                    ],
-                )
+            custom_kernel_settings[
+                "kernel_gateway_app_settings"
+            ] = sagemaker.CfnDomain.KernelGatewayAppSettingsProperty(
+                custom_images=[
+                    sagemaker.CfnDomain.CustomImageProperty(
+                        app_image_config_name=app_image_config_name,
+                        image_name=image_name,
+                    ),
+                ],
             )
 
         return sagemaker.CfnDomain(
