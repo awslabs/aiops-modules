@@ -1,4 +1,4 @@
-transformers==4.38.0
+transformers[accelerate]==4.38.0
 torch>=2.0.0
 peft==0.4.0
 bitsandbytes==0.40.2
