@@ -217,7 +217,7 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
     const modelApprovalTopic = sns.Topic.fromTopicArn(
       this,
       'ModelApprovalTopic',
-      `arn:${cdk.Aws.PARTITION}:sns:${buildEnv.region}:${buildEnv.account}:${modelApprovalTopicName}`,
+      `arn:${cdk.Stack.of(this).partition}:sns:${buildEnv.region}:${buildEnv.account}:${modelApprovalTopicName}`,
     );
 
     modelApprovalTopic.addSubscription(
