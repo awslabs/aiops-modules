@@ -25,6 +25,7 @@ def stack_defaults():
         os.environ["SEEDFARMER_PARAMETER_EKS_OPENID_ISSUER"] = "sts.amazon.com"
         os.environ["SEEDFARMER_PARAMETER_EKS_CLUSTER_ENDPOINT"] = "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
         os.environ["SEEDFARMER_PARAMETER_EKS_CERT_AUTH_DATA"] = "cert"
+        os.environ["SEEDFARMER_PARAMETER_EKS_HANDLER_ROLE_ARN"] = "arn:aws:iam::123456789012:role/eks-test-YYYYYY"
         os.environ["SEEDFARMER_PARAMETER_NAMESPACE"] = "namespace"
 
         # Unload the app import so that subsequent tests don't reuse
