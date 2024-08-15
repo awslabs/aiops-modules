@@ -53,11 +53,11 @@ export class ModelBuildCodePipelineStack extends cdk.Stack {
     const codeBuildAssumeRole = iam.Role.fromRoleArn(
       this,
       'CodeBuildAssumeRole',
-      `arn:${cdk.Aws.PARTITION}:iam::${modelBuildEnvironment.account}:role/${codeBuildAssumeRoleName}`,
+      `arn:${cdk.Stack.of(this).partition}:iam::${modelBuildEnvironment.account}:role/${codeBuildAssumeRoleName}`,
     );
 
     // this role will be used by model build code (i.e., sagemaker service) to access aws resources in the model build environment
-    const sageMakerExecutionRoleArn = `arn:${cdk.Aws.PARTITION}:iam::${modelBuildEnvironment.account}:role/service-role/${sagemakerExecutionRoleName}`;
+    const sageMakerExecutionRoleArn = `arn:${cdk.Stack.of(this).partition}:iam::${modelBuildEnvironment.account}:role/service-role/${sagemakerExecutionRoleName}`;
 
     const codeBuildPolicy = new iam.Policy(this, 'CodeBuildPolicy', {
       document: new iam.PolicyDocument({
