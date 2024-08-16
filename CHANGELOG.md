@@ -19,8 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 - Added accelerate as extra for transformers in finetune llm template
-
-- limited name length in deploy template to avoid pipeline failures
+- Limited bucket name length in templates to avoid pipeline failures when using long project names
+- Increased timeout on finetune_llm_evaluation project from 1 hour (default) to 4 hours
 
 ## v1.4.0
 
