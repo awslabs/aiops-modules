@@ -47,7 +47,7 @@ jobs:
         run: |
           set -x
           # Get all the modules that have the file "deployspec.yaml"
-          MODULES=$(echo $ALL_CHANGED_FILES | cut -d/ -f 2-3 | uniq)
+          MODULES=$(echo $ALL_CHANGED_FILES | tr ' ' '\n' | cut -d/ -f 2-3 | uniq)
           # Create our json structure [{"module_name": "..."}]
           MODULES_JSON=$(echo "$MODULES" | jq -R -s 'split("\n")' | jq '[ .[] | select(length > 0) ]' | jq 'map({"module_name": .})')
           # Export the modules as json to the outputs
@@ -82,12 +82,16 @@ jobs:
             echo "language=python" >> "$GITHUB_OUTPUT"; \
           elif [ -f $MODULE_PATH/pyproject.toml ]; then \
             echo "language=python" >> "$GITHUB_OUTPUT"; \
+          else \
+            echo "language=none" >> "$GITHUB_OUTPUT"; \
           fi
       - name: Set up Python ${{ matrix.python-version }}
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Set up Node ${{ matrix.node-version }}
+        if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
@@ -105,6 +109,7 @@ jobs:
           cd $MODULE_PATH
           npm install
       - name: Static checks and linting
+        if: ${{ steps.determine-language.outputs.language != 'none' }}
         run: scripts/validate.sh --language ${{ steps.determine-language.outputs.language }} --path $MODULE_PATH/
       - name: Pytest
         if: ${{ steps.determine-language.outputs.language == 'python' }}

@@ -236,7 +236,7 @@ class BuildPipelineConstruct(Construct):
                     "secretsmanager:GetSecretValue",
                 ],
                 resources=[
-                    f"arn:aws:secretsmanager:{Aws.REGION}:{Aws.ACCOUNT_ID}:secret:{hf_access_token_secret}-??????"
+                    f"arn:{Aws.PARTITION}:secretsmanager:{Aws.REGION}:{Aws.ACCOUNT_ID}:secret:{hf_access_token_secret}-??????"
                 ],
             )
         )
