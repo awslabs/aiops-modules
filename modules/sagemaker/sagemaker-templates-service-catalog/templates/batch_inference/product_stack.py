@@ -92,7 +92,7 @@ class Product(servicecatalog.ProductStack):
         pipeline_artifact_bucket = s3.Bucket(
             self,
             "Pipeline Artifacts Bucket",
-            bucket_name=f"mlops-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
+            bucket_name=f"mlops-{sagemaker_project_name}-{Aws.ACCOUNT_ID}",
             encryption_key=kms_key_artifact,
             versioned=True,
             enforce_ssl=True,  # Blocks insecure requests to the bucket

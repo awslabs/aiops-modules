@@ -811,7 +811,11 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:sagemaker:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":sagemaker:",
                     {
                       "Ref": "AWS::Region",
                     },
@@ -877,7 +881,11 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:sagemaker:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":sagemaker:",
                     {
                       "Ref": "AWS::Region",
                     },
@@ -934,10 +942,54 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
               "Action": "sagemaker:*",
               "Effect": "Allow",
               "NotResource": [
-                "arn:aws:sagemaker:*:*:domain/*",
-                "arn:aws:sagemaker:*:*:user-profile/*",
-                "arn:aws:sagemaker:*:*:app/*",
-                "arn:aws:sagemaker:*:*:flow-definition/*",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":sagemaker:*:*:domain/*",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":sagemaker:*:*:user-profile/*",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":sagemaker:*:*:app/*",
+                    ],
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":sagemaker:*:*:flow-definition/*",
+                    ],
+                  ],
+                },
               ],
             },
             {
@@ -988,7 +1040,18 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
                     ],
                   ],
                 },
-                "arn:aws:s3:::sagemaker-*",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":s3:::sagemaker-*",
+                    ],
+                  ],
+                },
               ],
             },
             {
@@ -1014,7 +1077,11 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:kms:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":kms:",
                     {
                       "Ref": "AWS::Region",
                     },

@@ -659,7 +659,18 @@ exports[`ModelBuildCodePipelineStack to match snapshot 1`] = `
             {
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
-              "Resource": "arn:aws:iam::123456789012:role/codebuild-assume-role",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":iam::123456789012:role/codebuild-assume-role",
+                  ],
+                ],
+              },
               "Sid": "AssumeSageMakerAccessRole",
             },
             {
@@ -1144,7 +1155,18 @@ exports[`ModelBuildCodePipelineStack to match snapshot 1`] = `
             {
               "Name": "ASSUME_ROLE_ARN",
               "Type": "PLAINTEXT",
-              "Value": "arn:aws:iam::123456789012:role/codebuild-assume-role",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":iam::123456789012:role/codebuild-assume-role",
+                  ],
+                ],
+              },
             },
             {
               "Name": "ENV_TYPE",
@@ -1174,7 +1196,18 @@ exports[`ModelBuildCodePipelineStack to match snapshot 1`] = `
             {
               "Name": "SAGEMAKER_PIPELINE_ROLE_ARN",
               "Type": "PLAINTEXT",
-              "Value": "arn:aws:iam::123456789012:role/service-role/sagemaker-execution-role",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":iam::123456789012:role/service-role/sagemaker-execution-role",
+                  ],
+                ],
+              },
             },
             {
               "Name": "ARTIFACT_BUCKET",

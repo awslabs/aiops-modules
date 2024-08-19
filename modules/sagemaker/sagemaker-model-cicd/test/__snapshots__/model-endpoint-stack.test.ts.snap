@@ -137,7 +137,18 @@ exports[`ModelEndpointStack to match snapshot 1`] = `
                 },
               },
               "Effect": "Allow",
-              "Resource": "arn:aws:kms:us-east-1:123456789012:key/*",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":kms:us-east-1:123456789012:key/*",
+                  ],
+                ],
+              },
               "Sid": "ModelArtifactsBucketKeyAccess",
             },
           ],

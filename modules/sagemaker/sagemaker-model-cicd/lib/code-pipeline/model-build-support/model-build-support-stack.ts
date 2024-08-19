@@ -148,7 +148,7 @@ export class ModelBuildSupportStack extends cdk.Stack {
           sid: 'ModelPackageGroup',
           actions: ['sagemaker:DescribeModelPackageGroup'],
           resources: [
-            `arn:aws:sagemaker:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:model-package-group/${modelPackageGroupName}`,
+            `arn:${cdk.Stack.of(this).partition}:sagemaker:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:model-package-group/${modelPackageGroupName}`,
           ],
           principals: allCrossAccountPrincipals,
         }),
@@ -161,7 +161,7 @@ export class ModelBuildSupportStack extends cdk.Stack {
             'sagemaker:CreateModel',
           ],
           resources: [
-            `arn:aws:sagemaker:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:model-package/${modelPackageGroupName}/*`,
+            `arn:${cdk.Stack.of(this).partition}:sagemaker:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:model-package/${modelPackageGroupName}/*`,
           ],
           principals: allCrossAccountPrincipals,
         }),
@@ -205,10 +205,10 @@ export class ModelBuildSupportStack extends cdk.Stack {
           new iam.PolicyStatement({
             actions: ['sagemaker:*'],
             notResources: [
-              'arn:aws:sagemaker:*:*:domain/*',
-              'arn:aws:sagemaker:*:*:user-profile/*',
-              'arn:aws:sagemaker:*:*:app/*',
-              'arn:aws:sagemaker:*:*:flow-definition/*',
+              `arn:${cdk.Stack.of(this).partition}:sagemaker:*:*:domain/*`,
+              `arn:${cdk.Stack.of(this).partition}:sagemaker:*:*:user-profile/*`,
+              `arn:${cdk.Stack.of(this).partition}:sagemaker:*:*:app/*`,
+              `arn:${cdk.Stack.of(this).partition}:sagemaker:*:*:flow-definition/*`,
             ],
           }),
           new iam.PolicyStatement({
@@ -238,7 +238,7 @@ export class ModelBuildSupportStack extends cdk.Stack {
             resources: [
               sagemakerArtifactsBucket.bucketArn,
               `${sagemakerArtifactsBucket.bucketArn}/*`,
-              'arn:aws:s3:::sagemaker-*',
+              `arn:${cdk.Stack.of(this).partition}:s3:::sagemaker-*`,
             ],
           }),
           new iam.PolicyStatement({
@@ -255,7 +255,7 @@ export class ModelBuildSupportStack extends cdk.Stack {
             ],
             effect: iam.Effect.ALLOW,
             resources: [
-              `arn:aws:kms:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:key/*`,
+              `arn:${cdk.Stack.of(this).partition}:kms:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:key/*`,
             ],
           }),
         ],

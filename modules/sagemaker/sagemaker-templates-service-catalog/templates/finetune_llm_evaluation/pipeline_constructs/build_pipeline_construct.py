@@ -229,6 +229,7 @@ class BuildPipelineConstruct(Construct):
             project_name=f"{project_name}-{construct_id}",
             role=codebuild_role,  # figure out what actually this role would need
             build_spec=codebuild.BuildSpec.from_source_filename("buildspec.yml"),
+            timeout=aws_cdk.Duration.hours(4),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
