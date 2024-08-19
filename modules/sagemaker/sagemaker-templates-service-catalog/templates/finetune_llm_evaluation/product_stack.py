@@ -115,7 +115,7 @@ class Product(servicecatalog.ProductStack):
         model_bucket = s3.Bucket(
             self,
             "S3 Artifact",
-            bucket_name=f"mlops-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
+            bucket_name=f"mlops-{sagemaker_project_name}-{Aws.ACCOUNT_ID}",
             encryption_key=kms_key,
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,
@@ -230,7 +230,7 @@ class Product(servicecatalog.ProductStack):
         pipeline_artifact_bucket = s3.Bucket(
             self,
             "Pipeline Bucket",
-            bucket_name=f"pipeline-{sagemaker_project_name}-{sagemaker_project_id}-{Aws.ACCOUNT_ID}",
+            bucket_name=f"pipeline-{sagemaker_project_name}-{Aws.ACCOUNT_ID}",
             encryption_key=kms_key,
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,

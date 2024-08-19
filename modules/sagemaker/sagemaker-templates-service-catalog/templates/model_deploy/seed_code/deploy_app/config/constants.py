@@ -18,6 +18,8 @@
 import json
 import os
 
+MAX_NAME_LENGTH = 63
+
 MODEL_BUCKET_ARN = os.environ["MODEL_BUCKET_ARN"]
 MODEL_PACKAGE_GROUP_NAME = os.getenv("MODEL_PACKAGE_GROUP_NAME", "")
 
