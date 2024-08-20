@@ -3,35 +3,35 @@ deploy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.145.0
-      - pip install -r requirements.txt
+        - npm install -g aws-cdk@2.145.0
+        - pip install -r requirements.txt
     build:
       commands:
-      - cdk deploy --all --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
-      - seedfarmer metadata convert -f cdk-exports.json || true
-      - export EKS_SERVICE_ACCOUNT_ROLE=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".EksServiceAccountRoleArn")
-      # Assume the RAY_CLUSTER_ADMIN_ROLE and add our new service account role as a user in the aws_auth ConfigMap
-      - eval $(aws sts assume-role --role-arn ${SEEDFARMER_PARAMETER_EKS_CLUSTER_ADMIN_ROLE_ARN} --role-session-name test | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
-      - |
-        eksctl get iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
-        && echo "IAM Identity Mapping already found" \
-        || eksctl create iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} --username ${SEEDFARMER_MODULE_NAME}
-      # Un-Assume the EKS_CLUSTER_ADMIN_ROLE or the rest of the deploy will fail
-      - unset AWS_ACCESS_KEY_ID && unset AWS_SECRET_ACCESS_KEY && unset AWS_SESSION_TOKEN
+        - cdk deploy --all --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
+        - seedfarmer metadata convert -f cdk-exports.json || true
+        - export EKS_SERVICE_ACCOUNT_ROLE=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".EksServiceAccountRoleArn")
+        # Assume the RAY_CLUSTER_ADMIN_ROLE and add our new service account role as a user in the aws_auth ConfigMap
+        - eval $(aws sts assume-role --role-arn ${SEEDFARMER_PARAMETER_EKS_CLUSTER_ADMIN_ROLE_ARN} --role-session-name test | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+        - |
+          eksctl get iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
+          && echo "IAM Identity Mapping already found" \
+          || eksctl create iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} --username ${SEEDFARMER_MODULE_NAME}
+        # Un-Assume the EKS_CLUSTER_ADMIN_ROLE or the rest of the deploy will fail
+        - unset AWS_ACCESS_KEY_ID && unset AWS_SECRET_ACCESS_KEY && unset AWS_SESSION_TOKEN
 destroy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.145.0
-      - pip install -r requirements.txt
+        - npm install -g aws-cdk@2.145.0
+        - pip install -r requirements.txt
     build:
       commands:
-      # Assume the EKS_CLUSTER_ADMIN_ROLE and delete our service account role from the aws_auth ConfigMap
-      - eval $(aws sts assume-role --role-arn ${SEEDFARMER_PARAMETER_EKS_CLUSTER_ADMIN_ROLE_ARN} --role-session-name test | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
-      - |
-        eksctl get iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
-        && eksctl delete iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
-        || echo "IAM Identity Mapping not found"
-      # Un-Assume the EKS_CLUSTER_ADMIN_ROLE or the rest of the deploy will fail
-      - unset AWS_ACCESS_KEY_ID && unset AWS_SECRET_ACCESS_KEY && unset AWS_SESSION_TOKEN
-      - cdk destroy --force --all --app "python app.py"
+        # Assume the EKS_CLUSTER_ADMIN_ROLE and delete our service account role from the aws_auth ConfigMap
+        - eval $(aws sts assume-role --role-arn ${SEEDFARMER_PARAMETER_EKS_CLUSTER_ADMIN_ROLE_ARN} --role-session-name test | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+        - |
+          eksctl get iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
+          && eksctl delete iamidentitymapping --cluster ${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME} --arn ${EKS_SERVICE_ACCOUNT_ROLE} \
+          || echo "IAM Identity Mapping not found"
+        # Un-Assume the EKS_CLUSTER_ADMIN_ROLE or the rest of the deploy will fail
+        - unset AWS_ACCESS_KEY_ID && unset AWS_SECRET_ACCESS_KEY && unset AWS_SESSION_TOKEN
+        - cdk destroy --force --all --app "python app.py"

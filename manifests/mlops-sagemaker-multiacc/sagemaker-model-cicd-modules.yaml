@@ -1,4 +1,4 @@
-name: model # replace with name of the ML model you prefer
+name: model  # replace with name of the ML model you prefer
 path: modules/sagemaker/sagemaker-model-cicd
 targetAccount: tooling
 parameters:

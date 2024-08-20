@@ -65,7 +65,7 @@ parameters:
   - name: EksAddons
     value:
       # Autoscaling
-      deploy_cluster_autoscaler: True 
+      deploy_cluster_autoscaler: True
       deploy_metrics_server: True
       # Observability
       deploy_cloudwatch_observability_addon: True
@@ -103,8 +103,8 @@ parameters:
   - name: DraImportPath
     valueFrom:
       parameterValue: draImportPath
-  - name:  FsxVersion
-    value : "2.15" 
+  - name: FsxVersion
+    value: "2.15"
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName

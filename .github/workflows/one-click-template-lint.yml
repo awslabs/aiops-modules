@@ -2,7 +2,7 @@ name: Check One-Click Launch Template
 
 on:
   push:
-    branches: 
+    branches:
       - "main"
     paths:
       - "one-click-launch.yaml"

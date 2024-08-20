@@ -1,4 +1,4 @@
 project: aiops
 description: This is for local testing - intended for contributions
 manifestValidationFailOnUnknownFields: true
-#projectPolicyPath: <some relative path to this file>
+# projectPolicyPath: <some relative path to this file>

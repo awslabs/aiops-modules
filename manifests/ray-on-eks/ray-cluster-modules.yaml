@@ -63,13 +63,13 @@ parameters:
         name: ray
         key: ImageUri
   - name: WorkerTolerations
-    value: # make sure to match w/ the taints on the GPU Nodegroup
+    value:  # make sure to match w/ the taints on the GPU Nodegroup
       - key: "nvidia.com/gpu"
         value: "true"
         # operator: "Equal"
         effect: "NoSchedule"
   - name: WorkerLabels
-    value: # make sure to match w/ the labels on the GPU Nodegroup
+    value:  # make sure to match w/ the labels on the GPU Nodegroup
       usage: gpu
   - name: PvcName
     valueFrom:

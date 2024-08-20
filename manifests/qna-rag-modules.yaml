@@ -2,7 +2,7 @@ name: qna-rag
 path: modules/fmops/qna-rag
 parameters:
   - name: cognito-pool-id
-    #Replace below value with valid congnito pool id
+    # Replace below value with valid congnito pool id
     value: us-east-1_XXXXX
   - name: os-domain-endpoint
     valueFrom:

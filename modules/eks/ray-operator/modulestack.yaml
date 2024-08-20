@@ -58,8 +58,8 @@ Resources:
               - "logs:CreateLogGroup"
               - "logs:Describe*"
               - "logs:DescribeLogGroups"
-            Resource: 
-            - !Sub "arn:${AWS::Partition}:logs::${AWS::AccountId}:log-group/*"
+            Resource:
+              - !Sub "arn:${AWS::Partition}:logs::${AWS::AccountId}:log-group/*"
           - Effect: Allow
             Action:
               - "iam:Get*"
