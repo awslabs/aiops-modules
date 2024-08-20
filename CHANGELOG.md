@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added accelerate as extra for transformers in finetune llm template
 - Limited bucket name length in templates to avoid pipeline failures when using long project names
 - Increased timeout on finetune_llm_evaluation project from 1 hour (default) to 4 hours
-
 - pin `ray-operator`, `ray-cluster`, and `ray-image` modules versions
+- pin module versions for all manifests
 
 ## v1.4.0
 
