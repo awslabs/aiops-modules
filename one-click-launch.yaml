@@ -209,7 +209,7 @@ Resources:
               commands:
                 - echo Build started on `date`
                 - echo 'Cloning aiops repo...'
-                - git clone https://github.com/awslabs/aiops-modules.git --branch ${VERSION_TAG}
+                - git clone https://github.com/awslabs/aiops-modules.git --tag ${VERSION_TAG}
                 - echo 'Cloning complete'
                 - cd aiops-modules/
                 - echo 'Installing dependencies...'
