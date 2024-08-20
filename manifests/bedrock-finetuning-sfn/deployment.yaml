@@ -1,0 +1,17 @@
+name: mlops
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/bedrock-finetuning-sfn/networking-modules.yaml
+  - name: bedrock-finetuning
+    path: manifests/bedrock-finetuning-sfn/bedrock-finetuning-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true
