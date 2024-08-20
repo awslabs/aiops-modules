@@ -1,5 +1,5 @@
 name: qna-rag
-path: modules/fmops/qna-rag
+path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/qna-rag?ref=release/1.4.0&depth=1
 parameters:
   - name: cognito-pool-id
     # Replace below value with valid congnito pool id

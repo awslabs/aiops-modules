@@ -16,6 +16,8 @@ groups:
     path: examples/manifests/sagemaker-model-package-promote-pipeline-modules.yaml
   - name: personas
     path: examples/manifests/personas-modules.yaml
+  - name: fmops
+    path: examples/manifests/fmops-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:

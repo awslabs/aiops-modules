@@ -1,7 +1,7 @@
 # This is an example manifest group.
 # Replace the parameters with the parameters for your model below prior the deployment.
 name: monitor
-path: modules/sagemaker/sagemaker-model-monitoring
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-monitoring?ref=release/1.4.0&depth=1
 parameters:
   - name: sagemaker_project_id
     value: project-1

@@ -1,9 +1,11 @@
-name: bedrock-finetuning
-path: modules/fmops/bedrock-finetuning
+name: jumpstart-hf-asrwhisper-endpoint
+path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/sagemaker-jumpstart-fm-endpoint?ref=release/1.4.0&depth=1
 targetAccount: primary
 parameters:
-  - name: bedrock-base-model-ID
-    value: amazon.titan-text-express-v1
+  - name: jump-start-model-name
+    value: HUGGINGFACE_ASR_WHISPER_BASE_2_0_0
+  - name: instance-type
+    value: ml.g5.2xlarge
   - name: vpc_id
     valueFrom:
       moduleMetadata:
@@ -16,5 +18,3 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
-  - name: removal-policy
-    value: DESTROY
