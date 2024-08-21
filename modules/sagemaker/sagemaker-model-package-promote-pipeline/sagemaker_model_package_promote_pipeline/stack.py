@@ -95,7 +95,11 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
 
         self.kms_key = kms.Key.from_key_arn(self, "KMSKey", self.kms_key_arn) if self.kms_key_arn else None
 
-        self.code_asset = self.setup_code_assets()
+        self.code_asset = s3_assets.Asset(
+            self,
+            "CodeAsset",
+            path=os.path.join(os.path.dirname(os.path.realpath(__file__)), "seed_code"),
+        )
         self.pipeline = self.setup_pipeline()
         self.rule = self.setup_events()
 
@@ -286,35 +290,6 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
         )
 
         return project
-
-    def setup_code_assets(self) -> s3_assets.Asset:
-        """Deploy seed code to an S3 bucket.
-
-        Returns
-        -------
-            A Asset instance.
-        """
-        zip_image = cdk.DockerImage.from_build("images/zip-image")
-        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "seed_code")
-
-        bundling = cdk.BundlingOptions(
-            image=zip_image,
-            command=[
-                "sh",
-                "-c",
-                """zip -r /asset-output/code_asset.zip .""",
-            ],
-            output_type=cdk.BundlingOutput.ARCHIVED,
-        )
-
-        code_asset = s3_assets.Asset(
-            self,
-            "CodeAsset",
-            path=path,
-            bundling=bundling,
-        )
-
-        return code_asset
 
     def setup_events(self) -> Optional[events.Rule]:
         """Setup an event rule
