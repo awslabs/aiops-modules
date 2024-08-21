@@ -11,7 +11,7 @@ parameters:
         name: event-bus
         key: EventBusArn
   - name: target_account_ids
-    value: '["444333222555"]' # Accounts that must have read-only permissions on the model pkg group
+    value: '["444333222555"]'  # Accounts that must have read-only permissions on the model pkg group
   - name: sagemaker_project_id
     value: 123123
   - name: sagemaker_project_name
@@ -26,7 +26,7 @@ parameters:
   - name: model_package_group_description
     value: Test model package group module - Target
   - name: target_account_ids
-    value: '["111222333444"]' # Accounts that must have read-only permissions on the model pkg group
+    value: '["111222333444"]'  # Accounts that must have read-only permissions on the model pkg group
   - name: sagemaker_project_id
     value: 123123
   - name: sagemaker_project_name

@@ -3,20 +3,20 @@ deploy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.137.0
-      - pip install -r requirements.txt
+        - npm install -g aws-cdk@2.137.0
+        - pip install -r requirements.txt
     build:
       commands:
-      - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports_personas.json
-      # Export metadata
-      - seedfarmer metadata convert -f cdk-exports_personas.json || true
+        - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports_personas.json
+        # Export metadata
+        - seedfarmer metadata convert -f cdk-exports_personas.json || true
 destroy:
   phases:
     install:
       commands:
-      - npm install -g aws-cdk@2.137.0
-      - pip install -r requirements.txt
+        - npm install -g aws-cdk@2.137.0
+        - pip install -r requirements.txt
     build:
       commands:
-      # execute the CDK
-      - cdk destroy --force --app "python app.py"
+        # execute the CDK
+        - cdk destroy --force --app "python app.py"

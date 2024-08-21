@@ -249,7 +249,7 @@ Resources:
                     "UniqueId": "$UUID",
                     "Status": "$STATUS",
                     "Reason": "$STATUS",
-                    "Data": "Deployment of solution has finished or stopped. See status." 
+                    "Data": "Deployment of solution has finished or stopped. See status."
                   }
                   EOF
                   cat /tmp/payload.json

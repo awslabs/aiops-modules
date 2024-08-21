@@ -16,10 +16,10 @@ parameters:
         key: PrivateSubnetIds
   - name: data_science_users
     value:
-    - ds-user-1
+      - ds-user-1
   - name: lead_data_science_users
     value:
-    - lead-ds-user-1
+      - lead-ds-user-1
   - name: server_lifecycle_name
     value: studio-auto-shutdown
   - name: studio_bucket_name

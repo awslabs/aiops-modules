@@ -40,7 +40,7 @@ destroy:
         - echo $EFS_ID
         - echo $DOMAIN_ID
         - >
-          if [[ $RETAIN_EFS == "FALSE"  ]]; then 
+          if [[ $RETAIN_EFS == "FALSE"  ]]; then
               echo "DELETING EFS"
               python scripts/delete_efs.py ${EFS_ID} ${DOMAIN_ID} || true
           fi;
