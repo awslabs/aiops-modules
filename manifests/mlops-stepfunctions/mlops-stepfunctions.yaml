@@ -1,0 +1,3 @@
+name: stepfunctions
+path: modules/examples/mlops-stepfunctions/
+targetAccount: primary

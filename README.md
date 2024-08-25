@@ -72,6 +72,12 @@ End-to-end example use-cases built using modules in this repository.
 | [Example DAG for MLOps Module](modules/examples/airflow-dags/README.md) |  Deploys a Sample DAG in MWAA demonstrating MLOPs and it is using MWAA module from IDF   |
 
 
+### MLOps using Step Functions Module
+
+| Type                                                                    | Description                                                                              |
+|-------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| [Example for MLOps using Step Functions](modules/examples/mlops-stepfunctions/README.md) |  Deploys a AWS State Machine in AWS Step Functions demonstrating how to implement the MLOPs using AWS Step Functions   |
+
 ### EKS Modules
 
 | Type                                                      | Description                                                  |

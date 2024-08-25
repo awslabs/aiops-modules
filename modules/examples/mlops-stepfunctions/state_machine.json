@@ -1,0 +1,152 @@
+{
+  "StartAt": "CheckPreProcessingRun",
+  "States": {
+    "CheckPreProcessingRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.preprocessing.run",
+          "BooleanEquals": true,
+          "Next": "PreProcessingJob"
+        }
+      ],
+      "Default": "CheckTrainingRun"
+    },
+    "PreProcessingJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createProcessingJob.sync",
+      "Parameters": {
+        "AppSpecification.$": "$.preprocessing.input.AppSpecification",
+        "Environment.$": "$.preprocessing.input.Environment",
+        "NetworkConfig.$": "$.preprocessing.input.NetworkConfig",
+        "ProcessingInputs.$": "$.preprocessing.input.ProcessingInputs",
+        "ProcessingOutputConfig.$": "$.preprocessing.input.ProcessingOutputConfig",
+        "ProcessingResources.$": "$.preprocessing.input.ProcessingResources",
+        "RoleArn.$": "$.preprocessing.input.RoleArn",
+        "StoppingCondition.$": "$.preprocessing.input.StoppingCondition",
+        "Tags.$": "$.preprocessing.input.Tags",
+        "ProcessingJobName.$": "$$.Execution.Name"
+      },
+      "ResultPath": "$.preprocessing.result",
+      "Next": "CheckTrainingRun"
+    },
+    "CheckTrainingRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.training.run",
+          "BooleanEquals": true,
+          "Next": "TrainingJob"
+        }
+      ],
+      "Default": "CheckEvaluationRun"
+    },
+    "TrainingJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync",
+      "ResultPath": "$.training.result",
+      "Parameters": {
+        "AlgorithmSpecification.$": "$.training.input.AlgorithmSpecification",
+        "HyperParameters.$": "$.training.input.HyperParameters",
+        "InputDataConfig.$": "$.training.input.InputDataConfig",
+        "OutputDataConfig.$": "$.training.input.OutputDataConfig",
+        "ResourceConfig.$": "$.training.input.ResourceConfig",
+        "RoleArn.$": "$.training.input.RoleArn",
+        "Environment.$": "$.training.input.Environment",
+        "StoppingCondition.$": "$.training.input.StoppingCondition",
+        "Tags.$": "$.training.input.Tags",
+        "RetryStrategy.$": "$.training.input.RetryStrategy",
+        "VpcConfig.$": "$.training.input.VpcConfig",
+        "TrainingJobName.$": "$$.Execution.Name"
+      },
+      "Next": "CheckEvaluationRun"
+    },
+    "CheckEvaluationRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.evaluation.run",
+          "BooleanEquals": true,
+          "Next": "EvaluationJob"
+        }
+      ],
+      "Default": "CreateModelCheck"
+    },
+    "EvaluationJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createProcessingJob.sync",
+      "ResultPath": "$.evaluation.result",
+      "Parameters": {
+        "AppSpecification.$": "$.evaluation.input.AppSpecification",
+        "Environment.$": "$.evaluation.input.Environment",
+        "NetworkConfig.$": "$.evaluation.input.NetworkConfig",
+        "ProcessingInputs.$": "$.evaluation.input.ProcessingInputs",
+        "ProcessingOutputConfig.$": "$.evaluation.input.ProcessingOutputConfig",
+        "ProcessingResources.$": "$.evaluation.input.ProcessingResources",
+        "RoleArn.$": "$.evaluation.input.RoleArn",
+        "StoppingCondition.$": "$.evaluation.input.StoppingCondition",
+        "Tags.$": "$.evaluation.input.Tags",
+        "ProcessingJobName.$": "States.Format('evaluation-{}', $$.Execution.Name)"
+      },
+      "Next": "CreateModelCheck"
+    },
+    "CreateModelCheck": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.CreateModel.run",
+          "BooleanEquals": true,
+          "Next": "CreateModelTask"
+        }
+      ],
+      "Default": "CheckBatchTransformRun"
+    },
+    "CreateModelTask": {
+      "Parameters": {
+        "Containers.$": "$.CreateModel.input.Containers",
+        "EnableNetworkIsolation.$": "$.CreateModel.input.EnableNetworkIsolation",
+        "PrimaryContainer.$": "$.CreateModel.input.PrimaryContainer",
+        "VpcConfig.$": "$.CreateModel.input.VpcConfig",
+        "ExecutionRoleArn.$": "$.CreateModel.input.ExecutionRoleArn",
+        "ModelName.$": "States.Format('model-{}', $$.Execution.Name)"
+      },
+      "Resource": "arn:aws:states:::sagemaker:createModel",
+      "Type": "Task",
+      "ResultPath": "$.CreateModel.result",
+      "Next": "CheckBatchTransformRun"
+    },
+    "CheckBatchTransformRun": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.batchTransform.run",
+          "BooleanEquals": true,
+          "Next": "BatchTransformJob"
+        }
+      ],
+      "Default": "Pass"
+    },
+    "BatchTransformJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTransformJob.sync",
+      "ResultPath": "$.batchTransform.result",
+      "Parameters": {
+        "ModelName.$": "States.Format('model-{}', $$.Execution.Name)",
+        "BatchStrategy.$": "$.batchTransform.input.BatchStrategy",
+        "Environment.$": "$.batchTransform.input.Environment",
+        "MaxConcurrentTransforms.$": "$.batchTransform.input.MaxConcurrentTransforms",
+        "MaxPayloadInMB.$": "$.batchTransform.input.MaxPayloadInMB ",
+        "Tags.$": "$.batchTransform.input.Tags ",
+        "TransformInput.$": "$.batchTransform.input.TransformInput",
+        "TransformOutput.$": "$.batchTransform.input.TransformOutput",
+        "TransformResources.$": "$.batchTransform.input.TransformResources",
+        "TransformJobName.$": "States.Format('batch-{}', $$.Execution.Name)"
+      },
+      "Next": "Pass"
+    },
+    "Pass": {
+      "Type": "Pass",
+      "End": true
+    }
+  }
+}

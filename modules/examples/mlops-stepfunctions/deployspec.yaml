@@ -1,0 +1,38 @@
+publishGenericEnvVariables: true
+deploy:
+  phases:
+    install:
+      commands:
+      - npm install -g aws-cdk@2.153.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      - >
+        echo "SEEDFARMER_MODULE_METADATA: ${SEEDFARMER_MODULE_METADATA}"
+      - cdk deploy --require-approval never --progress events --app "python app.py" --outputs-file ./cdk-exports.json
+      - seedfarmer metadata convert -f cdk-exports.json || true
+      - export MLOPS_BUCKET=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".MlOpsBucket")
+      - export SAGEMAKER_EXECUTION_ROLE=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".SageMakerExecutionRole")
+      - export IMAGE_URI=$(cat SEEDFARMER_MODULE_METADATA | jq -r ".ImageUri")
+      - >
+        echo "MLOPS_BUCKET: ${MLOPS_BUCKET}"
+      - >
+        echo "SAGEMAKER_EXECUTION_ROLE: ${SAGEMAKER_EXECUTION_ROLE}"
+      - sed -i "s/MLOPS_BUCKET/${MLOPS_BUCKET}/g" scripts/input.yaml
+      - export SAGEMAKER_EXECUTION_ROLE=$(echo ${SAGEMAKER_EXECUTION_ROLE} | sed -e "s#/#\\\/#g")
+      - sed -i "s/SAGEMAKER_EXECUTION_ROLE/${SAGEMAKER_EXECUTION_ROLE}/g" scripts/input.yaml
+      - export IMAGE_URI=$(echo ${IMAGE_URI} | sed -e "s#/#\\\/#g")
+      - sed -i "s/IMAGE_URI/${IMAGE_URI}/g" scripts/input.yaml
+      - tar -czf scripts/source.tar.gz -C scripts inference.py
+      - aws s3 cp --recursive scripts/ s3://$MLOPS_BUCKET/demo/scripts/
+destroy:
+  phases:
+    install:
+      commands:
+      - npm install -g aws-cdk@2.137.0
+      - pip install -r requirements.txt
+    build:
+      commands:
+      - export MLOPS_BUCKET=$(echo ${SEEDFARMER_MODULE_METADATA} | jq -r ".MlOpsBucket")
+      - aws s3 rm --recursive s3://$MLOPS_BUCKET/
+      - cdk destroy --force --app "python app.py"
