@@ -8,17 +8,17 @@ Parameters:
 
 Resources:
   Policy:
-    Type: 'AWS::IAM::Policy'
+    Type: "AWS::IAM::Policy"
     Properties:
       PolicyDocument:
         Statement:
-        - Action:
-            - "s3:Put*"
-            - "s3:Delete*"
-            - "s3:Get*"
-            - "s3:List*"
-          Effect: Allow
-          Resource: "*"
+          - Action:
+              - "s3:Put*"
+              - "s3:Delete*"
+              - "s3:Get*"
+              - "s3:List*"
+            Effect: Allow
+            Resource: "*"
         Version: 2012-10-17
       PolicyName: "mlops-stepfunctions-modulespecific-policy"
       Roles: [!Ref RoleName]
