@@ -9,7 +9,7 @@ import aws_cdk.aws_events_targets as events_targets
 import aws_cdk.aws_iam as aws_iam
 import aws_cdk.aws_s3 as aws_s3
 import aws_cdk.aws_stepfunctions as sfn
-from aws_cdk import Aws, RemovalPolicy, Stack
+from aws_cdk import Aws, Duration, RemovalPolicy, Stack
 from aws_cdk.aws_lambda import Runtime
 from aws_cdk.aws_lambda_python_alpha import PythonFunction
 from cdk_nag import NagPackSuppression, NagSuppressions
@@ -162,6 +162,7 @@ class MLOPSSFNResources(Stack):
             handler="lambda_handler",
             role=lambda_role,
             environment={"STATE_MACHINE_ARN": state_machine.state_machine_arn},
+            timeout=Duration.seconds(60),
         )
 
         lambda_role.attach_inline_policy(aws_iam.Policy(self, "SFNExecutionPolicy", document=sfn_execution_for_lambda))
