@@ -1,3 +1,8 @@
 name: stepfunctions
 path: modules/examples/mlops-stepfunctions/
 targetAccount: primary
+dataFiles:
+  - filePath: data/mlops-stepfunctions/config/input.yaml
+parameters:
+  - name: config-file-path
+    value: data/mlops-stepfunctions/config/input.yaml
