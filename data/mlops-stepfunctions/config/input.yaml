@@ -17,7 +17,7 @@ preprocessing:
       - InputName: input
         AppManaged: false
         S3Input:
-          S3Uri: s3://sagemaker-sample-data-us-east-1/processing/census
+          S3Uri: s3://sagemaker-sample-data-AWS_REGION_NAME/processing/census
           LocalPath: /opt/ml/processing/input
           S3DataType: S3Prefix
           S3InputMode: File
