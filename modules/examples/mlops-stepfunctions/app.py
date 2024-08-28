@@ -4,7 +4,6 @@
 import aws_cdk
 import cdk_nag
 from aws_cdk import App
-from pydantic import ValidationError
 from sagemaker import image_uris  # type: ignore[import-untyped]
 from sagemaker.sklearn import defaults  # type: ignore[import-untyped]
 
@@ -13,11 +12,8 @@ from stack import MLOPSSFNResources
 
 app = App()
 
-try:
-    app_settings = ApplicationSettings()
-except ValidationError as e:
-    print(e)
-    raise e
+app_settings = ApplicationSettings()
+
 
 stack = MLOPSSFNResources(
     scope=app,
