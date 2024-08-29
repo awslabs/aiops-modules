@@ -1,0 +1,15 @@
+name: mlops-stepfunctions
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: stepfunctions
+    path: manifests/mlops-stepfunctions/mlops-stepfunctions.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true

@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template deploys a Module specific IAM permissions
+
+Parameters:
+  RoleName:
+    Type: String
+    Description: The name of the IAM Role
+
+Resources:
+  Policy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:Put*"
+              - "s3:Delete*"
+              - "s3:Get*"
+              - "s3:List*"
+            Effect: Allow
+            Resource: "*"
+        Version: 2012-10-17
+      PolicyName: "mlops-stepfunctions-modulespecific-policy"
+      Roles: [!Ref RoleName]

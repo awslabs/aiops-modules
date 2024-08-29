@@ -1,0 +1,10 @@
+name: stepfunctions
+path: modules/examples/mlops-stepfunctions/
+targetAccount: primary
+parameters:
+  - name: model-name
+    # Replace value with the valid model name
+    value: demo
+  - name: schedule
+    # Replace the value with cron schedule to execute the state machine created for MLOps
+    value: "0 6 * * ? *"
