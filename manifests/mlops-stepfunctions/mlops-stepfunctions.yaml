@@ -5,6 +5,6 @@ parameters:
   - name: model-name
     # Replace value with the valid model name
     value: demo
-  - name: hours
-    # Replace the value with the hours at what time the StateMachine Needs to run in UTC daily
-    value: "18"
+  - name: schedule
+    # Replace the value with cron schedule to execute the state machine created for MLOps
+    value: "0 6 * * ? *"

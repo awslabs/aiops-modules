@@ -36,7 +36,7 @@ def stack_model_package_input() -> cdk.Stack:
         deployment_name=deployment_name,
         module_name=module_name,
         model_name="demo",
-        hours="18",
+        schedule="0 6 * * ? *",
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

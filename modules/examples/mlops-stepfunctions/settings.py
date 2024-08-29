@@ -28,7 +28,7 @@ class ModuleSettings(CdkBaseSettings):
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
     model_name: str = Field(default="demo")
-    hours: str = Field(default="18")  # 6PM UTC
+    schedule: str
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

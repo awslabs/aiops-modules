@@ -36,7 +36,7 @@ See deployment steps in the [Deployment Guide](../../../DEPLOYMENT.md).
 #### Required
 
 - `model-name` : Model Identifier  (default it is "demo")
-- `hours`: Time in UTC hour to schedule the event to run the statemachine daily.
+- `schedule`: cron expression to schedule the event to run the statemachine.
 
 ## Sample manifest declaration
 
@@ -47,8 +47,8 @@ path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/mlops-
 parameters:
   - name: model-name
     value: demo
-  - name: hours
-    value: "18"
+  - name: schedule
+    value: "0 6 * * ? *"
 ```
 
 ### Module Metadata Outputs

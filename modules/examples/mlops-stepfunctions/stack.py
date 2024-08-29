@@ -28,7 +28,7 @@ class MLOPSSFNResources(Stack):
         deployment_name: str,
         module_name: str,
         model_name: str,
-        hours: str,
+        schedule: str,
         **kwargs: Any,
     ) -> None:
         # MLOPS Env vars
@@ -175,13 +175,7 @@ class MLOPSSFNResources(Stack):
         event_rule = events.Rule(
             self,
             "MyEventRule",
-            schedule=events.Schedule.cron(
-                minute="0",
-                hour=hours,
-                month="*",
-                week_day="*",
-                year="*",
-            ),
+            schedule=events.Schedule.expression(f"cron({schedule})"),
         )
         # Define the custom input as an event
 
