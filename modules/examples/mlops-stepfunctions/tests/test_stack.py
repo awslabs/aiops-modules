@@ -28,8 +28,6 @@ def stack_model_package_input() -> cdk.Stack:
     module_name = "test-module"
 
     app_prefix = f"{project_name}-{deployment_name}-{module_name}"
-    bucket_policy_arn = "arn:aws:iam::123456789012:policy/bucketPolicy"
-    permission_boundary_arn = "arn:aws:iam::123456789012:policy/boundary"
 
     return stack.MLOPSSFNResources(
         scope=app,
@@ -37,8 +35,8 @@ def stack_model_package_input() -> cdk.Stack:
         project_name=project_name,
         deployment_name=deployment_name,
         module_name=module_name,
-        bucket_policy_arn=bucket_policy_arn,
-        permission_boundary_arn=permission_boundary_arn,
+        model_name="demo",
+        hours="18",
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
