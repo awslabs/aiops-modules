@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import aws_cdk.aws_events as events
 import aws_cdk.aws_events_targets as events_targets
@@ -27,8 +27,8 @@ class MLOPSSFNResources(Stack):
         project_name: str,
         deployment_name: str,
         module_name: str,
-        bucket_policy_arn: Optional[str] = None,
-        permission_boundary_arn: Optional[str] = None,
+        model_name: str,
+        hours: str,
         **kwargs: Any,
     ) -> None:
         # MLOPS Env vars
@@ -141,6 +141,7 @@ class MLOPSSFNResources(Stack):
             state_machine_type=sfn.StateMachineType.STANDARD,
             role=sfn_exec_role,
         )
+        self.state_machine_arn = state_machine.state_machine_arn
 
         sfn_execution_for_lambda = aws_iam.PolicyDocument(
             statements=[
@@ -164,6 +165,7 @@ class MLOPSSFNResources(Stack):
             environment={"STATE_MACHINE_ARN": state_machine.state_machine_arn},
             timeout=Duration.seconds(60),
         )
+        self.lambda_function_arn = lambda_function.function_arn
 
         lambda_role.attach_inline_policy(aws_iam.Policy(self, "SFNExecutionPolicy", document=sfn_execution_for_lambda))
         lambda_role.attach_inline_policy(aws_iam.Policy(self, "S3AccessRole", document=s3_access_statements))
@@ -175,7 +177,7 @@ class MLOPSSFNResources(Stack):
             "MyEventRule",
             schedule=events.Schedule.cron(
                 minute="0",
-                hour="18",  # 6 PM UTC
+                hour=hours,
                 month="*",
                 week_day="*",
                 year="*",
@@ -186,7 +188,7 @@ class MLOPSSFNResources(Stack):
         custom_input = {
             "config": {
                 "bucket": mlops_assets_bucket.bucket_name,
-                "prefix": "demo/scripts/input.yaml",
+                "prefix": f"{model_name}/scripts/input.yaml",
             }
             # Add more key-value pairs as needed
         }

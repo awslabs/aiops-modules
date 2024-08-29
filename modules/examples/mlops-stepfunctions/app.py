@@ -21,8 +21,8 @@ stack = MLOPSSFNResources(
     project_name=app_settings.seedfarmer_settings.project_name,
     deployment_name=app_settings.seedfarmer_settings.deployment_name,
     module_name=app_settings.seedfarmer_settings.module_name,
-    bucket_policy_arn=app_settings.module_settings.bucket_policy_arn,
-    permission_boundary_arn=app_settings.module_settings.permission_boundary_arn,
+    model_name=app_settings.module_settings.model_name,
+    hours=app_settings.module_settings.hours,
     env=aws_cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,
@@ -40,6 +40,8 @@ aws_cdk.CfnOutput(
             "MlOpsBucket": stack.mlops_assets_bucket.bucket_name,
             "SageMakerExecutionRole": stack.sagemaker_execution_role.role_arn,
             "ImageUri": image_uri,
+            "StateMachine": stack.state_machine_arn,
+            "LambdaFunction": stack.lambda_function_arn,
         }
     ),
 )

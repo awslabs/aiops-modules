@@ -1,5 +1,5 @@
 app_id: aiops
-model_id: demo
+model_id: MODEL_NAME
 job_prefix: mlops
 preprocessing:
   run: true
@@ -25,7 +25,7 @@ preprocessing:
       - InputName: Code
         AppManaged: false
         S3Input:
-          S3Uri: s3://MLOPS_BUCKET/demo/scripts
+          S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/scripts
           LocalPath: /opt/ml/processing/code
           S3DataType: S3Prefix
           S3InputMode: File
@@ -35,13 +35,13 @@ preprocessing:
         - OutputName: train
           AppManaged: false
           S3Output:
-            S3Uri: s3://MLOPS_BUCKET/demo/processing/train
+            S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/processing/train
             LocalPath: /opt/ml/processing/train
             S3UploadMode: EndOfJob
         - OutputName: test
           AppManaged: false
           S3Output:
-            S3Uri: s3://MLOPS_BUCKET/demo/processing/test
+            S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/processing/test
             LocalPath: /opt/ml/processing/test
             S3UploadMode: EndOfJob
     StoppingCondition:
@@ -71,16 +71,16 @@ training:
         DataSource:
           S3DataSource:
             S3DataType: S3Prefix
-            S3Uri: s3://MLOPS_BUCKET/demo/processing/train
+            S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/processing/train
             S3DataDistributionType: FullyReplicated
       - ChannelName: code
         DataSource:
           S3DataSource:
             S3DataType: S3Prefix
-            S3Uri: s3://MLOPS_BUCKET/demo/scripts
+            S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/scripts
             S3DataDistributionType: FullyReplicated
     OutputDataConfig:
-      S3OutputPath: s3://MLOPS_BUCKET/demo/model/
+      S3OutputPath: s3://MLOPS_BUCKET/MODEL_NAME/model/
     StoppingCondition:
       MaxRuntimeInSeconds: 3600
     Tags:
@@ -106,7 +106,7 @@ evaluation:
       - InputName: input
         AppManaged: false
         S3Input:
-          S3Uri: s3://MLOPS_BUCKET/demo/model/SFN_EXECUTION_ID/output/model.tar.gz
+          S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/model/SFN_EXECUTION_ID/output/model.tar.gz
           LocalPath: /opt/ml/processing/model
           S3DataType: S3Prefix
           S3InputMode: File
@@ -114,7 +114,7 @@ evaluation:
       - InputName: Code
         AppManaged: false
         S3Input:
-          S3Uri: s3://MLOPS_BUCKET/demo/scripts
+          S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/scripts
           LocalPath: /opt/ml/processing/code
           S3DataType: S3Prefix
           S3InputMode: File
@@ -122,7 +122,7 @@ evaluation:
       - InputName: test
         AppManaged: false
         S3Input:
-          S3Uri: s3://MLOPS_BUCKET/demo/processing/test
+          S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/processing/test
           LocalPath: /opt/ml/processing/test
           S3DataType: S3Prefix
           S3InputMode: File
@@ -132,7 +132,7 @@ evaluation:
         - OutputName: evaluation
           AppManaged: false
           S3Output:
-            S3Uri: s3://MLOPS_BUCKET/demo/evaluation/output
+            S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/evaluation/output
             LocalPath: /opt/ml/processing/evaluation
             S3UploadMode: EndOfJob
     StoppingCondition:
@@ -153,10 +153,10 @@ CreateModel:
     VpcConfig:
     PrimaryContainer:
       Image: IMAGE_URI
-      ModelDataUrl: s3://MLOPS_BUCKET/demo/model/SFN_EXECUTION_ID/output/model.tar.gz
+      ModelDataUrl: s3://MLOPS_BUCKET/MODEL_NAME/model/SFN_EXECUTION_ID/output/model.tar.gz
       Environment:
         SAGEMAKER_PROGRAM: inference.py
-        SAGEMAKER_SUBMIT_DIRECTORY: s3://MLOPS_BUCKET/demo/scripts/source.tar.gz
+        SAGEMAKER_SUBMIT_DIRECTORY: s3://MLOPS_BUCKET/MODEL_NAME/scripts/source.tar.gz
 
     ExecutionRoleArn: SAGEMAKER_EXECUTION_ROLE
 
@@ -174,11 +174,11 @@ batchTransform:
       DataSource:
         S3DataSource:
           S3DataType: S3Prefix
-          S3Uri: s3://MLOPS_BUCKET/demo/processing/test/test_features.csv
+          S3Uri: s3://MLOPS_BUCKET/MODEL_NAME/processing/test/test_features.csv
     TransformOutput:
       Accept: text/csv
       AssembleWith: Line
-      S3OutputPath: s3://MLOPS_BUCKET/demo/batch-output/SFN_EXECUTION_ID/
+      S3OutputPath: s3://MLOPS_BUCKET/MODEL_NAME/batch-output/SFN_EXECUTION_ID/
     TransformResources:
       InstanceType: ml.m5.xlarge
       InstanceCount: 1

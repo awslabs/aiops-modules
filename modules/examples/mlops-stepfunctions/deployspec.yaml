@@ -25,8 +25,9 @@ deploy:
         - sed -i "s/SAGEMAKER_EXECUTION_ROLE/${SAGEMAKER_EXECUTION_ROLE}/g" scripts/input.yaml
         - export IMAGE_URI=$(echo ${IMAGE_URI} | sed -e "s#/#\\\/#g")
         - sed -i "s/IMAGE_URI/${IMAGE_URI}/g" scripts/input.yaml
+        - sed -i "s/MODEL_NAME/${SEEDFARMER_PARAMETER_MODEL_NAME}/g" scripts/input.yaml
         - tar -czf scripts/source.tar.gz -C scripts inference.py
-        - aws s3 cp --recursive scripts/ s3://$MLOPS_BUCKET/demo/scripts/
+        - aws s3 cp --recursive scripts/ s3://$MLOPS_BUCKET/$SEEDFARMER_PARAMETER_MODEL_NAME/scripts/
 destroy:
   phases:
     install:

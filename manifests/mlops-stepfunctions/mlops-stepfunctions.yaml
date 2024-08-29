@@ -4,5 +4,11 @@ targetAccount: primary
 dataFiles:
   - filePath: data/mlops-stepfunctions/config/input.yaml
 parameters:
+  - name: model-name
+    # Replace value with the valid model name
+    value: aws
+  - name: hours
+    # Replace the value with the hours at what time the StateMachine Needs to run in UTC daily
+    value: "18"
   - name: config-file-path
     value: data/mlops-stepfunctions/config/input.yaml

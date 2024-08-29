@@ -26,53 +26,47 @@ Here's a typical workflow:
 
 # Deployment Guide
 
-## Set-up the environment(s)
+See deployment steps in the [Deployment Guide](../../../DEPLOYMENT.md).
 
-1. Clone the repository and checkout a release branch using the below command:
 
-```
-git clone --origin upstream --branch release/1.4.0 https://github.com/awslabs/aiops-modules
-```
-The release version can be replaced with the version of interest.
+## Inputs/Outputs
 
-2. Move into the `aiops-modules` repository:
-```
-cd aiops-modules
-```
-3. Create and activate a Virtual environment
-```
-python3 -m venv .venv && source .venv/bin/activate
-```
-4. Install the requirements
-```
-pip install -r ./requirements.txt
-```
-5. Set environment variables
+### Input Parameters
 
-Replace the values below with your AWS account id and Administrator IAM Role.
+#### Required
+
+- `model-name` : Model Identifier  (default it is "demo")
+- `hours`: Time in UTC hour to schedule the event to run the statemachine daily.
+
+## Sample manifest declaration
+
+Create a manifest file under appropriate location, for example examples/manifests
 ```
-export PRIMARY_ACCOUNT=XXXXXXXXXXXX
-export ADMIN_ROLE_ARN=arn:aws:iam::XXXXXXXXXXXX:role/XXXXX
+name: mlops-stepfunctions
+path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/mlops-stepfunctions?ref=release/1.4.0&depth=1
+parameters:
+  - name: model-name
+    value: demo
+  - name: hours
+    value: "18"
 ```
 
-5. Bootstrap the CDK environment (one time per region) with CDK V2. Assuming you are deploying in `us-east-1`:
-```
-cdk bootstrap aws://${PRIMARY_ACCOUNT}/us-east-1
-```
-6. Bootstrap AWS Account(s)
+### Module Metadata Outputs
 
-Assuming that you will be using a single account, follow the guide [here](https://seed-farmer.readthedocs.io/en/latest/bootstrapping.html#) to bootstrap your account(s) to function as a toolchain and target account.
+- `MlOpsBucket`: Name of the Bucket where Model Artifacts are stored.
+- `SageMakerExecutionRole`: Execution Roles used by SageMaker Service.
+- `ImageUri`: Docker Image URI used by SageMaker Jobs.
+- `StateMachine`: ARN of State Machine.
+- `LambdaFunction`: ARN of Lambda function which starts the execution of State Machine.
 
-Following is the command to bootstrap your existing account to a toolchain and target account.
-```
-seedfarmer bootstrap toolchain --project aiops --trusted-principal ${ADMIN_ROLE_ARN} --as-target
-```
+#### Output Example
 
-## Deployment
-
-Pick the manifest to deploy. Manifests are located in `manifests/` directory. For example, to deploy this modules, run:
-
-!Note: if you are deploying into a region different from `us-east-1`, change the `regionMappings` in `deployment.yaml`.
-```
-seedfarmer apply manifests/mlops-stepfunctions/deployment.yaml
+```yaml
+metadata: | {
+    "MlOpsBucket": "",
+    "SageMakerExecutionRole": "arn:aws:iam::123456789012:role/SageMakerExecutionRole",
+    "ImageUri": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+    "StateMachine": "arn:aws:states:us-east-1:123456789012:stateMachine:MLOpsStateMachine",
+    "LambdaFunction": "arn:aws:lambda:us-east-1:123456789012:function:MlOpsLambdaFunction",
+}
 ```
