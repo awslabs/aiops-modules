@@ -22,6 +22,299 @@ Here's a typical workflow:
 
 5. Model Deployment: Deploy your trained model to a SageMaker endpoint, making it available for real-time inference or batch processing.
 
+#### sample event for lambda function which will start the state machine
+```json
+{
+  "config": {
+    "bucket": "mlops-bucket",
+    "prefix": "demo/scripts/input.yaml"
+  }
+}
+```
+
+### input to step function
+Input to the state machine will be the json data generated from the yaml which is mentioned in input of lambda function as prefix.
+
+Update the input.yaml as required. Refer https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html for supported inputs by step functions to connect to sagemaker.
+
+#### sample input which is used to start the state machine.
+
+```json
+{
+  "app_id": "aiops",
+  "model_id": "demo",
+  "job_prefix": "mlops",
+  "preprocessing": {
+    "run": true,
+    "input": {
+      "AppSpecification": {
+        "ImageUri": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+        "ContainerEntrypoint": [
+          "python3",
+          "/opt/ml/processing/code/preprocessing.py"
+        ]
+      },
+      "ProcessingResources": {
+        "ClusterConfig": {
+          "InstanceType": "ml.m5.xlarge",
+          "InstanceCount": 1,
+          "VolumeSizeInGB": 50
+        }
+      },
+      "ProcessingInputs": [
+        {
+          "InputName": "input",
+          "AppManaged": false,
+          "S3Input": {
+            "S3Uri": "s3://sagemaker-sample-data-us-east-1/processing/census",
+            "LocalPath": "/opt/ml/processing/input",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        },
+        {
+          "InputName": "Code",
+          "AppManaged": false,
+          "S3Input": {
+            "S3Uri": "s3://mlops-bucket/demo/scripts",
+            "LocalPath": "/opt/ml/processing/code",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        }
+      ],
+      "ProcessingOutputConfig": {
+        "Outputs": [
+          {
+            "OutputName": "train",
+            "AppManaged": false,
+            "S3Output": {
+              "S3Uri": "s3://mlops-bucket/demo/processing/train",
+              "LocalPath": "/opt/ml/processing/train",
+              "S3UploadMode": "EndOfJob"
+            }
+          },
+          {
+            "OutputName": "test",
+            "AppManaged": false,
+            "S3Output": {
+              "S3Uri": "s3://mlops-bucket/demo/processing/test",
+              "LocalPath": "/opt/ml/processing/test",
+              "S3UploadMode": "EndOfJob"
+            }
+          }
+        ]
+      },
+      "StoppingCondition": {
+        "MaxRuntimeInSeconds": 3600
+      },
+      "AppManaged": false,
+      "Tags": [
+        {
+          "Key": "APP_ID",
+          "Value": "aiops"
+        }
+      ],
+      "Environment": null,
+      "NetworkConfig": null,
+      "RoleArn": "arn:aws:iam::123456789012:role/SageMakerExecutionRole"
+    }
+  },
+  "training": {
+    "run": true,
+    "input": {
+      "AlgorithmSpecification": {
+        "TrainingImage": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+        "ContainerEntrypoint": [
+          "python3",
+          "/opt/ml/input/data/code/train.py"
+        ],
+        "TrainingInputMode": "FastFile"
+      },
+      "HyperParameters": null,
+      "ResourceConfig": {
+        "InstanceType": "ml.m5.xlarge",
+        "InstanceCount": 1,
+        "VolumeSizeInGB": 50
+      },
+      "InputDataConfig": [
+        {
+          "ChannelName": "training",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://mlops-bucket/demo/processing/train",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          }
+        },
+        {
+          "ChannelName": "code",
+          "DataSource": {
+            "S3DataSource": {
+              "S3DataType": "S3Prefix",
+              "S3Uri": "s3://mlops-bucket/demo/scripts",
+              "S3DataDistributionType": "FullyReplicated"
+            }
+          }
+        }
+      ],
+      "OutputDataConfig": {
+        "S3OutputPath": "s3://mlops-bucket/demo/model/"
+      },
+      "StoppingCondition": {
+        "MaxRuntimeInSeconds": 3600
+      },
+      "Tags": [
+        {
+          "Key": "APP_ID",
+          "Value": "aiops"
+        }
+      ],
+      "Environment": null,
+      "RetryStrategy": null,
+      "VpcConfig": null,
+      "RoleArn": "arn:aws:iam::123456789012:role/SageMakerExecutionRole"
+    }
+  },
+  "evaluation": {
+    "run": true,
+    "input": {
+      "AppSpecification": {
+        "ImageUri": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+        "ContainerEntrypoint": [
+          "python3",
+          "/opt/ml/processing/code/evaluation.py"
+        ]
+      },
+      "ProcessingResources": {
+        "ClusterConfig": {
+          "InstanceType": "ml.m5.xlarge",
+          "InstanceCount": 1,
+          "VolumeSizeInGB": 50
+        }
+      },
+      "ProcessingInputs": [
+        {
+          "InputName": "input",
+          "AppManaged": false,
+          "S3Input": {
+            "S3Uri": "s3://mlops-bucket/demo/model/mlops-demo-1724940337/output/model.tar.gz",
+            "LocalPath": "/opt/ml/processing/model",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        },
+        {
+          "InputName": "Code",
+          "AppManaged": false,
+          "S3Input": {
+            "S3Uri": "s3://mlops-bucket/demo/scripts",
+            "LocalPath": "/opt/ml/processing/code",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        },
+        {
+          "InputName": "test",
+          "AppManaged": false,
+          "S3Input": {
+            "S3Uri": "s3://mlops-bucket/demo/processing/test",
+            "LocalPath": "/opt/ml/processing/test",
+            "S3DataType": "S3Prefix",
+            "S3InputMode": "File",
+            "S3DataDistributionType": "FullyReplicated"
+          }
+        }
+      ],
+      "ProcessingOutputConfig": {
+        "Outputs": [
+          {
+            "OutputName": "evaluation",
+            "AppManaged": false,
+            "S3Output": {
+              "S3Uri": "s3://mlops-bucket/demo/evaluation/output",
+              "LocalPath": "/opt/ml/processing/evaluation",
+              "S3UploadMode": "EndOfJob"
+            }
+          }
+        ]
+      },
+      "StoppingCondition": {
+        "MaxRuntimeInSeconds": 3600
+      },
+      "AppManaged": false,
+      "Tags": [
+        {
+          "Key": "APP_ID",
+          "Value": "aiops"
+        }
+      ],
+      "Environment": null,
+      "NetworkConfig": null,
+      "RoleArn": "arn:aws:iam::123456789012:role/SageMakerExecutionRole"
+    }
+  },
+  "CreateModel": {
+    "run": true,
+    "input": {
+      "EnableNetworkIsolation": null,
+      "Containers": null,
+      "VpcConfig": null,
+      "PrimaryContainer": {
+        "Image": "683313688378.dkr.ecr.us-east-1.amazonaws.com/sagemaker-scikit-learn:1.2-1-cpu-py3",
+        "ModelDataUrl": "s3://mlops-bucket/demo/model/mlops-demo-1724940337/output/model.tar.gz",
+        "Environment": {
+          "SAGEMAKER_PROGRAM": "inference.py",
+          "SAGEMAKER_SUBMIT_DIRECTORY": "s3://mlops-bucket/demo/scripts/source.tar.gz"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::123456789012:role/SageMakerExecutionRole"
+    }
+  },
+  "batchTransform": {
+    "run": true,
+    "input": {
+      "BatchStrategy": "MultiRecord",
+      "Environment": {
+        "APP_ID": "aiops"
+      },
+      "MaxConcurrentTransforms": 2,
+      "MaxPayloadInMB": 50,
+      "TransformInput": {
+        "ContentType": "text/csv",
+        "SplitType": "Line",
+        "DataSource": {
+          "S3DataSource": {
+            "S3DataType": "S3Prefix",
+            "S3Uri": "s3://mlops-bucket/demo/processing/test/test_features.csv"
+          }
+        }
+      },
+      "TransformOutput": {
+        "Accept": "text/csv",
+        "AssembleWith": "Line",
+        "S3OutputPath": "s3://mlops-bucket/demo/batch-output/mlops-demo-1724940337/"
+      },
+      "TransformResources": {
+        "InstanceType": "ml.m5.xlarge",
+        "InstanceCount": 1
+      },
+      "Tags": [
+        {
+          "Key": "APP_ID",
+          "Value": "aiops"
+        }
+      ]
+    }
+  }
+}
+```
+
 
 
 # Deployment Guide
@@ -35,8 +328,11 @@ See deployment steps in the [Deployment Guide](../../../DEPLOYMENT.md).
 
 #### Required
 
-- `model-name` : Model Identifier  (default it is "demo")
 - `schedule`: cron expression to schedule the event to run the statemachine.
+
+#### Optional
+
+- `model-name` : Model Identifier  (default it is "demo")
 
 ## Sample manifest declaration
 
