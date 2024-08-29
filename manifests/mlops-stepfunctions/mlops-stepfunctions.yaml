@@ -6,7 +6,7 @@ dataFiles:
 parameters:
   - name: model-name
     # Replace value with the valid model name
-    value: aws
+    value: demo
   - name: hours
     # Replace the value with the hours at what time the StateMachine Needs to run in UTC daily
     value: "18"
