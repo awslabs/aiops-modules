@@ -15,6 +15,8 @@ def stack_defaults() -> None:
     os.environ["SEEDFARMER_PARAMETER_BUCKET_POLICY_ARN"] = "12345"
     os.environ["SEEDFARMER_PERMISSION_BOUNDARY_ARN"] = "sagemaker-project"
 
+    os.environ["SEEDFARMER_PARAMETER_SCHEDULE"] = "0 6 * * ? *"
+
     # Unload the app import so that subsequent tests don't reuse
     if "app" in sys.modules:
         del sys.modules["app"]
