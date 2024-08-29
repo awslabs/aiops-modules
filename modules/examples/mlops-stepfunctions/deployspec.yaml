@@ -18,7 +18,6 @@ deploy:
           echo "MLOPS_BUCKET: ${MLOPS_BUCKET}"
         - >
           echo "SAGEMAKER_EXECUTION_ROLE: ${SAGEMAKER_EXECUTION_ROLE}"
-        - cp $SEEDFARMER_PARAMETER_CONFIG_FILE_PATH scripts/input.yaml
         - sed -i "s/AWS_REGION_NAME/${AWS_DEFAULT_REGION}/g" scripts/input.yaml
         - sed -i "s/MLOPS_BUCKET/${MLOPS_BUCKET}/g" scripts/input.yaml
         - export SAGEMAKER_EXECUTION_ROLE=$(echo ${SAGEMAKER_EXECUTION_ROLE} | sed -e "s#/#\\\/#g")
