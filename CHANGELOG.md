@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
-
+- added documentation for MWAA Sagemaker training DAG manifest
 - added documentation for Ray on EKS manifests
 - added network isolation and inter container encryption for xgboost template
 - added partition support for modules:
