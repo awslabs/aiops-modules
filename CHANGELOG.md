@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
-
+Sagemaker GroundTruth module that deploys a set of lambda functions and a StepFunction to orchestrate them.
+The module is used to identify missing labels from images stored on Amazon S3 bucket. Then label and validate them.
 ### **Changed**
 
 - add integration tests for `sagemaker-studio`
