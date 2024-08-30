@@ -19,6 +19,9 @@ The IAM roles created by the stack can optionally have a permissions boundary ap
 
 ![MWAA Module Architecture](docs/aiops_mwaa_module.png "MWAA Module Architecture")
 
+### Modules Inventory
+
+- [MWAA DAG Module](modules/examples/airflow-dags/README.md)
 ## Deployment
 The stack is deployed as part of the overall Airflow deployment process. For deployment instructions, please refer to the [DEPLOYMENT.MD](DEPLOYMENT.md) file.
 
