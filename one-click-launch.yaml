@@ -3,8 +3,8 @@ Description: Creates AIOps setup for Developers
 Parameters:
   VersionTag:
     Type: String
-    Default: v1.4.0
-    Description: Version. Should reference version tag in the repository e.g v1.4.0.
+    Default: v1.5.0
+    Description: Version. Should reference version tag in the repository e.g v1.5.0.
   ManifestPath:
     Type: String
     Default: manifests/mlops-sagemaker/deployment.yaml

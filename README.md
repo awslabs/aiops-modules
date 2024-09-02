@@ -31,6 +31,7 @@ End-to-end example use-cases built using modules in this repository.
 | [Q&A on PDF documents with RAG](manifests/fmops-qna-rag/)                                                 | Deploy AppSync GraphQL endpoint for Q&A chatbot with RAG based on OpenSearch, and data ingestion infrastructure.                                                                                             |
 | [Ray on Amazon Elastic Kubernetes Service (EKS)](manifests/ray-on-eks/)                                   | Run Ray on AWS EKS. Deploys an AWS EKS cluster, KubeRay Ray Operator, and a Ray Cluster with autoscaling enabled.                                                                                            |
 | [Bedrock Fine-Tuning with Step Functions](manifests/bedrock-finetuning-sfn/)                              | Continuously Fine-tune a Foundation Model with Bedrock Fine-Tuning jobs and AWS Step Functions.                                                                                                              |
+| [MLOps with Step Functions](manifests/mlops-stepfunctions/)                                               | Automate machine learning lifecycle using Amazon SageMaker and AWS Step Functions.                                                                                                                           |
 
 
 ## Modules
