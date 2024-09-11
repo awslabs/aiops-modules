@@ -7,6 +7,8 @@ from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource
 from constructs import Construct
+from aws_cdk import SecretValue
+from aws_cdk.aws_codepipeline_actions import GitHubTrigger
 
 from .deploy_endpoint_stack import DeployEndpointStack
 
@@ -133,10 +135,18 @@ class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        repository = codecommit.Repository.from_repository_name(
-            self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
-        )
+        # repository = codecommit.Repository.from_repository_name(
+        #     self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
+        # )
 
+        repository_name=self.node.try_get_context("repo"),
+        repository_owner=self.node.try_get_context("owner"),
+
+        # source=codebuild.Source.git_hub(
+        #         owner=repository_owner,
+        #         repo=f"{sagemaker_project_name}-deploy"
+        # ),
+        
         codepipeline_role = iam.Role(
             self,
             "CodePipelineRole",
@@ -160,7 +170,13 @@ class PipelineStack(cdk.Stack):
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
             synth=CodeBuildStep(
                 "Synth",
-                input=CodePipelineSource.code_commit(repository=repository, branch="main"),
+                # input=CodePipelineSource.code_commit(repository=repository, branch="main"),
+                input=CodePipelineSource.git_hub(
+                    f"{repository_owner}/{repository_name}", 
+                    "main",
+                    authentication=SecretValue.secrets_manager("github_access_secret", json_field="Token"),
+                    trigger=GitHubTrigger.WEBHOOK
+                ),
                 install_commands=[
                     "npm install -g aws-cdk",
                 ],

@@ -49,6 +49,10 @@ class ModuleSettings(CdkBaseSettings):
 
     sagemaker_domain_id: str = Field(default="")
     sagemaker_domain_arn: str = Field(default="")
+    
+    repository_type: str = Field(default="GitHub")
+    repository_access_token: str = Field(default="")
+    repository_owner: str = Field(default="")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
