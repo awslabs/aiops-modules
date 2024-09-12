@@ -32,7 +32,7 @@ To send us a pull request, please:
 1. Fork the repository and follow the [deployment guide](docs/deployment_guide.md) for deploying MLOps modules.
 
 ```sh
-git clone https://github.com/{your-account}/mlops-modules.git
+git clone https://github.com/{your-account}/aiops-modules.git
 ```
 
 2. Then, prepare your local environment before you move forward with the development.
