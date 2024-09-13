@@ -49,9 +49,16 @@ The template contains an example CI/CD pipeline to deploy the model endpoints to
 
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 
+## Prerequesites:
+#TODO: Update detials for GitHub Access token and AWS CodeConnection
+
 ## Inputs and outputs:
 ### Required inputs:
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
+  - `repository_type` - 
+  - `repository_owner` - 
+  - `repository_access_token` - 
+  - `aws_codeconnection_arn` - 
 
 ### Optional Inputs:
   - `portfolio-name` - name of the Service Catalog Portfolio
