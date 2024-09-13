@@ -9,6 +9,8 @@ parameters:
     value: acbhatt12
   - name: repository_access_token
     value: github_token
+  - name: aws_codeconnection_arn
+    value: arn:aws:codeconnections:ap-southeast-2:730335543059:connection/dc8eccdf-d8d4-4fbb-85ac-ba2697f7121b
   - name: portfolio-access-role-arn
     valueFrom:
       moduleMetadata:

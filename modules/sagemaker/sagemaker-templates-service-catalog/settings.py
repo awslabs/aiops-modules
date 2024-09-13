@@ -52,6 +52,7 @@ class ModuleSettings(CdkBaseSettings):
     
     repository_type: str = Field(default="GitHub")
     repository_access_token: str = Field(default="")
+    aws_codeconnection_arn: str = Field(default="")
     repository_owner: str = Field(default="")
 
     tags: Optional[Dict[str, str]] = Field(default=None)

@@ -13,6 +13,8 @@ from aws_cdk.aws_codepipeline_actions import GitHubTrigger
 from .deploy_endpoint_stack import DeployEndpointStack
 
 ENV = {
+    "CODE_CONNECTION_ARN": constants.CODE_CONNECTION_ARN,
+    "SOURCE_REPOSITORY": constants.SOURCE_REPOSITORY,
     "MODEL_PACKAGE_GROUP_NAME": constants.MODEL_PACKAGE_GROUP_NAME,
     "MODEL_BUCKET_ARN": constants.MODEL_BUCKET_ARN,
     "PROJECT_ID": constants.PROJECT_ID,
@@ -134,18 +136,6 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
 class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        # repository = codecommit.Repository.from_repository_name(
-        #     self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
-        # )
-
-        repository_name=self.node.try_get_context("repo"),
-        repository_owner=self.node.try_get_context("owner"),
-
-        # source=codebuild.Source.git_hub(
-        #         owner=repository_owner,
-        #         repo=f"{sagemaker_project_name}-deploy"
-        # ),
         
         codepipeline_role = iam.Role(
             self,
@@ -163,19 +153,17 @@ class PipelineStack(cdk.Stack):
             path="/service-role/",
         )
         synth_codebuild_role.attach_inline_policy(create_inline_policy(self, "SynthStagePolicy"))
-
+    
         pipeline = CodePipeline(
             self,
             "Pipeline",
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
             synth=CodeBuildStep(
                 "Synth",
-                # input=CodePipelineSource.code_commit(repository=repository, branch="main"),
-                input=CodePipelineSource.git_hub(
-                    f"{repository_owner}/{repository_name}", 
+                input=CodePipelineSource.connection(
+                    constants.SOURCE_REPOSITORY,
                     "main",
-                    authentication=SecretValue.secrets_manager("github_access_secret", json_field="Token"),
-                    trigger=GitHubTrigger.WEBHOOK
+                    connection_arn=constants.CODE_CONNECTION_ARN
                 ),
                 install_commands=[
                     "npm install -g aws-cdk",

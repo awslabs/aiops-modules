@@ -281,6 +281,7 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_arn: str,
         repository_type: str,
         repository_access_token: str,
+        aws_codeconnection_arn: str,
         repository_owner: str,
         **kwargs: Any,
     ) -> None:
@@ -386,17 +387,6 @@ class Product(servicecatalog.ProductStack):
             s3_bucket_object_key=deploy_app_asset.s3_object_key
         )
 
-        # Create source repo from seed bucket/key
-        repository = codecommit.Repository(
-            self,
-            "Deploy App Code Repo",
-            repository_name=f"{sagemaker_project_name}-deploy",
-            code=codecommit.Code.from_asset(
-                asset=deploy_app_asset,
-                branch="main",
-            ),
-        )
-
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
@@ -410,16 +400,28 @@ class Product(servicecatalog.ProductStack):
         #     self, "CodeBuildGitHubCreds",
         #     access_token=SecretValue.secrets_manager("github_access_secret")
         # )
+
+        # # Import the source credentials
+        # codebuild.CfnSourceCredential(
+        #     self, 
+        #     "CodeBuildSourceCredential",
+        #     auth_type="PERSONAL_ACCESS_TOKEN",
+        #     server_type="GITHUB",
+        #     token=SecretValue.secrets_manager("github_access_secret", json_field="Token").to_string()
+        # )
+
+        # TODO: Need to implement resing same GitHub credentials instead of creating one. 
+        # Build fails if credentials exists it tries to create new one. We might need to have Custom Resource 
+        # that checks if Source Credential exists for GitHub and create only if it doesn't exists
+        
         # Import the source credentials
         codebuild.CfnSourceCredential(
             self, 
             "CodeBuildSourceCredential",
-            auth_type="PERSONAL_ACCESS_TOKEN",
+            auth_type="CODECONNECTIONS",
             server_type="GITHUB",
-            token=SecretValue.secrets_manager("github_access_secret", json_field="Token").to_string()
+            token=aws_codeconnection_arn
         )
-
-        cdk_deploy_command=f'cdk deploy --require-approval never --app "python app.py" --context owner={repository_owner} --context repo={sagemaker_project_name}-deploy'
 
         project = codebuild.Project(
             self,
@@ -432,9 +434,7 @@ class Product(servicecatalog.ProductStack):
                             "commands": [
                                 "npm install -g aws-cdk",
                                 "python -m pip install -r requirements.txt",
-                                # 'cdk deploy --require-approval never --app "python app.py" ',
-                                # 'cdk deploy --require-approval never --app "python app.py" --context owner={repository_owner} --context repo="{sagemaker_project_name}-deploy" ',
-                                cdk_deploy_command,
+                                'cdk deploy --require-approval never --app "python app.py" ',
                             ]
                         }
                     },
@@ -444,10 +444,11 @@ class Product(servicecatalog.ProductStack):
                 owner=repository_owner,
                 repo=f"{sagemaker_project_name}-deploy"
             ),
-            # source=codebuild.Source.code_commit(repository=repository),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
+                    "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
+                    "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(value=f"{repository_owner}/{sagemaker_project_name}-deploy"),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
@@ -499,8 +500,15 @@ class Product(servicecatalog.ProductStack):
                             resources=["*"]
                         ),
                         iam.PolicyStatement(
-                            actions=["secretsmanager:GetSecretValue"],
-                            resources=[f"arn:aws:secretsmanager:{Aws.REGION}:{Aws.ACCOUNT_ID}:secret:github_access_secret*"]
+                            actions=[
+                                "codeconnections:UseConnection", 
+                                "codeconnections:PassConnection",
+                                "codeconnections:GetConnection",
+                                "codeconnections:GetConnectionToken"
+                            ],
+                            resources=[
+                                f"arn:aws:codeconnections:*:{Aws.ACCOUNT_ID}:connection/*"
+                            ],
                         ),
                         iam.PolicyStatement(
                             sid="ModelPackageGroup",
