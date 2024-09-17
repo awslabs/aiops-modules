@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
-
+- added support for GitHub as replacement of AWS CodeCommit for sagemaker-templates-service-catalog module
 ### **Changed**
 
 - updated mlflow version to 2.16.0 to support LLM tracing
