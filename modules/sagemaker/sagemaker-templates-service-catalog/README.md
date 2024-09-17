@@ -51,14 +51,16 @@ The template is based on basic multi-account template from [AWS Enterprise MLOps
 
 ## Prerequesites:
 #TODO: Update detials for GitHub Access token and AWS CodeConnection
+- Target AWS account should contain AWS Secret Manager secret that contains GitHub personal access token with required permissions to manage repository. Refer guide [Creating a fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) in order to create access token.
+- Template also requires AWS CodeConnection created for GitHub provider in order to integrated GitHub repositories AWS CodeBuild and AWS CodePipeline. Refer guide [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html) in order to create connection with GitHub.
 
 ## Inputs and outputs:
 ### Required inputs:
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
-  - `repository_type` - 
-  - `repository_owner` - 
-  - `repository_access_token` - 
-  - `aws_codeconnection_arn` - 
+  - `repository_type` - type of repository to be integrated with Sagemaker template source code, default is GitHub
+  - `repository_owner` - owner or organisation of project code repository 
+  - `repository_access_token` - AWS Secret Manager secret name where access token is stored, this is used to create repository from template
+  - `aws_codeconnection_arn` -  AWS CodeConnection ARN for repository provider, currently template supports GitHub provider
 
 ### Optional Inputs:
   - `portfolio-name` - name of the Service Catalog Portfolio
