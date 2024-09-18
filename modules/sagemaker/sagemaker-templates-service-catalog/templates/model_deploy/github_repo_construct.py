@@ -17,6 +17,7 @@ class GitHubRepositoryCreator(Construct):
         github_owner: str,
         s3_bucket_name: str,
         s3_bucket_object_key: str,
+        code_connection_arn: str,
         **kwargs,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -122,6 +123,7 @@ def lambda_handler(event, context):
         github_owner = event['ResourceProperties']['GitHubOwner']
         s3_bucket_name = event['ResourceProperties']['S3BucketName']
         s3_bucket_object_key = event['ResourceProperties']['S3BucketObjectKey']
+        code_connection_arn = event['ResourceProperties']['CodeConnectionArn']
 
         print(f"Creating GitHub repository '{repo_name}'")
         print(f"Description: {repo_description}")
@@ -188,6 +190,16 @@ def lambda_handler(event, context):
             github_source_credential = any(cred['serverType'] == 'GITHUB' for cred in existing_source_credentials)
             print(f"GitHub source credential already exists: {github_source_credential}")
 
+            if github_source_credential is False:
+                codebuild.import_source_credentials(
+                    token=code_connection_arn,
+                    serverType="GITHUB",
+                    authType="CODECONNECTIONS"
+                )
+                print(f"GitHub source credential imported successfully")
+            else:
+                print(f"GitHub source credential already exists")
+
             response_data = {
                 'RepoName': repo_name,
                 'RepoUrl': f"https://github.com/{github_owner}/{repo_name}.git",
@@ -232,7 +244,10 @@ def lambda_handler(event, context):
         # Add another policy statement to list source credentials for CodeBuild
         github_repo_creator_lambda.add_to_role_policy(
             iam.PolicyStatement(
-                actions=["codebuild:ListSourceCredentials"],
+                actions=[
+                    "codebuild:ListSourceCredentials",
+                    "codebuild:ImportSourceCredentials"
+                ],
                 resources=["*"],
             )
         )
@@ -247,6 +262,7 @@ def lambda_handler(event, context):
                 "GitHubOwner": github_owner,
                 "S3BucketName": s3_bucket_name,
                 "S3BucketObjectKey": s3_bucket_object_key,
+                "CodeConnectionArn": code_connection_arn,
             },
         )
         self.cutom_resource = github_repo_resource

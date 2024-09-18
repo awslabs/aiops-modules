@@ -148,32 +148,9 @@ class Product(servicecatalog.ProductStack):
             repo_description=f"Deployment repository for SageMaker project {sagemaker_project_name}",
             github_owner=repository_owner,
             s3_bucket_name=deploy_app_asset.s3_bucket_name,
-            s3_bucket_object_key=deploy_app_asset.s3_object_key
+            s3_bucket_object_key=deploy_app_asset.s3_object_key,
+            code_connection_arn=aws_codeconnection_arn
         )
-
-        # Retrieve the list of existing source credentials from codebuild
-        # codebuild = boto3.client('codebuild')
-        # response = codebuild.list_source_credentials()
-        # existing_source_credentials = response['sourceCredentialsInfos']
-        # # Check if a source credential for GitHub already exists
-        # github_source_credential = any(cred['serverType'] == 'GITHUB' for cred in existing_source_credentials)
-        # print(f"GitHub source credential already exists: {github_source_credential}")
-
-        github_source_credential_token = github_repo.cutom_resource.get_att("GitHubSourceCredential")
-        github_source_credential = Lazy.string(github_source_credential_token)
-
-        if github_source_credential.lower() == "false":
-            # Import the source credentials
-            codebuild.CfnSourceCredential(
-                self, 
-                "CodeBuildSourceCredential",
-                auth_type="CODECONNECTIONS",
-                server_type="GITHUB",
-                token=aws_codeconnection_arn
-            )
-        else:
-            CfnOutput(self, id="githubCredentailsExists123456789", value=github_source_credential.lower(), export_name="githubCredentailsExists123456789")
-
 
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
@@ -387,3 +364,4 @@ def handler(event, context):
             },
         )
         custom_resource.node.add_dependency(project)
+        custom_resource.node.add_dependency(github_repo)
