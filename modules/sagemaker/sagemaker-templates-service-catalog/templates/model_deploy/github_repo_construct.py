@@ -1,3 +1,5 @@
+from typing import Any
+
 from aws_cdk import Aws, CustomResource, Duration
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
@@ -16,7 +18,7 @@ class GitHubRepositoryCreator(Construct):
         s3_bucket_name: str,
         s3_bucket_object_key: str,
         code_connection_arn: str,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
@@ -248,9 +250,10 @@ def lambda_handler(event, context):
         )
 
         # Grant the Lambda function permission to read the GitHub token from Secrets Manager
-        github_repo_creator_lambda.role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
-        )
+        if github_repo_creator_lambda.role:
+            github_repo_creator_lambda.role.add_managed_policy(
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
+            )
         github_repo_creator_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
