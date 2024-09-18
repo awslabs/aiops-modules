@@ -114,25 +114,20 @@ def extract_zip_file(zip_file_path, extract_dir):
 def lambda_handler(event, context):
     print(f"Received event: {json.dumps(event)}")
 
+    secret_name = os.environ['GITHUB_TOKEN_SECRET_NAME']
+    repo_name = event['ResourceProperties']['RepoName']
+    repo_description = event['ResourceProperties']['RepoDescription']
+    github_owner = event['ResourceProperties']['GitHubOwner']
+    s3_bucket_name = event['ResourceProperties']['S3BucketName']
+    s3_bucket_object_key = event['ResourceProperties']['S3BucketObjectKey']
+    code_connection_arn = event['ResourceProperties']['CodeConnectionArn']
+
+    # Get GitHub token from Secrets Manager
+    secrets_manager = boto3.client('secretsmanager')
+    secret = secrets_manager.get_secret_value(SecretId=secret_name)
+    github_token = json.loads(secret['SecretString'])['github_token']
+
     if event['RequestType'] == 'Create':
-        secret_name = os.environ['GITHUB_TOKEN_SECRET_NAME']
-        repo_name = event['ResourceProperties']['RepoName']
-        repo_description = event['ResourceProperties']['RepoDescription']
-        github_owner = event['ResourceProperties']['GitHubOwner']
-        s3_bucket_name = event['ResourceProperties']['S3BucketName']
-        s3_bucket_object_key = event['ResourceProperties']['S3BucketObjectKey']
-        code_connection_arn = event['ResourceProperties']['CodeConnectionArn']
-
-        print(f"Creating GitHub repository '{repo_name}'")
-        print(f"Description: {repo_description}")
-        print(f"Owner: {github_owner}")
-        print(f"S3 bucket: {s3_bucket_name}")
-
-        # Get GitHub token from Secrets Manager
-        secrets_manager = boto3.client('secretsmanager')
-        secret = secrets_manager.get_secret_value(SecretId=secret_name)
-        github_token = json.loads(secret['SecretString'])['github_token']
-
         # Create GitHub repository
         headers = {
             'Authorization': f'token {github_token}',
@@ -209,7 +204,26 @@ def lambda_handler(event, context):
 
 
     elif event['RequestType'] == 'Delete':
-        # Optionally, delete the GitHub repository
+        # Delete GitHub repository using GitHub API
+        headers = {
+            'Authorization': f'token {github_token}',
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+        }
+
+        req = urllib.request.Request(f"https://api.github.com/repos/{github_owner}/{repo_name}",
+                    headers=headers,
+                    method='DELETE')
+        try:
+            with urllib.request.urlopen(req) as response:
+                response_code = response.getcode()
+                if response_code == 204:
+                    print(f"Repository {repo_name} deleted successfully")
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error: {e.code} - {e.reason}")
+            print(e.read().decode())
+            raise
+
         cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
     else:
         # raise Exception(f"Invalid request type: {event['RequestType']}")
