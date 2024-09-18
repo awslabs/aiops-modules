@@ -46,23 +46,23 @@ def init_and_push_repo(repo_url, local_dir):
 
     # Initialize a new repository
     subprocess.run(['git', 'init'], cwd=local_dir, check=True)
-    
+
     # Configure Git user (replace with your desired values or use environment variables)
     subprocess.run(['git', 'config', 'user.email', "user@aiops.com"], cwd=local_dir, check=True)
     subprocess.run(['git', 'config', 'user.name', "aiops-user"], cwd=local_dir, check=True)
-    
+
     # Add all files to the repository
     subprocess.run(['git', 'add', '.'], cwd=local_dir, check=True)
-    
+
     # Commit the changes
     subprocess.run(['git', 'commit', '-m', "Initial commit with files from S3"], cwd=local_dir, check=True)
 
     # Configure main branch
     subprocess.run(['git', 'branch', '-M', 'main'], cwd=local_dir, check=True)
-    
+
     # Add the remote origin
     subprocess.run(['git', 'remote', 'add', 'origin', repo_url], cwd=local_dir, check=True)
-    
+
     # Push to the remote repository
     subprocess.run(['git', 'push', '-u', 'origin', 'main'], cwd=local_dir, check=True)
 
@@ -85,7 +85,7 @@ def download_s3_bucket_v2(bucket_name, download_dir):
         path, filename = os.path.split(obj.key)
         local_dir = os.path.join(download_dir, path)
         os.makedirs(local_dir, exist_ok=True)
-        
+
         file_path = os.path.join(local_dir, filename)
         bucket.download_file(obj.key, file_path)
         print(f"Downloaded {obj.key} to {file_path}")
@@ -146,7 +146,7 @@ def lambda_handler(event, context):
         }).encode('utf-8')
 
         req = urllib.request.Request('https://api.github.com/user/repos', data=data, headers=headers, method='POST')
-        
+
         try:
             with urllib.request.urlopen(req) as response:
                 repo_data = json.loads(response.read().decode())
@@ -161,7 +161,7 @@ def lambda_handler(event, context):
         # Download entire S3 bucket
         s3 = boto3.client('s3')
         with tempfile.TemporaryDirectory() as tmp_dir:
-            
+
             # Generate a unique directory name
             # random_suffix = generate_random_string()
             # tmp_dir = f"/tmp/repo_{random_suffix}"
@@ -229,7 +229,7 @@ def lambda_handler(event, context):
             layers=[
                 lambdafunction.LayerVersion.from_layer_version_arn(
                     self, "git-lambda2", "arn:aws:lambda:us-east-1:553035198032:layer:git-lambda2:8"
-                )  # TODO: This needs to be changed, check how can be add layer with git instead of adding vailable third party layer
+                )  # TODO: Check how can be add layer with git instead of adding vailable third party layer
             ],
         )
 
