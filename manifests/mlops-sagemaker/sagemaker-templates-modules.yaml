@@ -6,11 +6,11 @@ parameters:
   - name: repository_type
     value: GitHub
   - name: repository_owner
-    value: acbhatt12
+    value: <github_account_owner>
   - name: repository_access_token
     value: github_token
   - name: aws_codeconnection_arn
-    value: <ARN>
+    value: <arn>
   - name: portfolio-access-role-arn
     valueFrom:
       moduleMetadata:
