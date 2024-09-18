@@ -1,9 +1,7 @@
-from aws_cdk import Aws, CustomResource, Duration, SecretValue, CfnOutput, Token
-
+from aws_cdk import Aws, CustomResource, Duration
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from constructs import Construct
-import boto3
 
 
 class GitHubRepositoryCreator(Construct):
@@ -21,8 +19,8 @@ class GitHubRepositoryCreator(Construct):
         **kwargs,
     ) -> None:
         super().__init__(scope, id, **kwargs)
-        
-        github_lambda_func_code="""
+
+        github_lambda_func_code = """
 import json
 import os
 import boto3
@@ -229,12 +227,16 @@ def lambda_handler(event, context):
                 "GITHUB_TOKEN_SECRET_NAME": github_token_secret_name,
             },
             layers=[
-                lambdafunction.LayerVersion.from_layer_version_arn(self, "git-lambda2", "arn:aws:lambda:us-east-1:553035198032:layer:git-lambda2:8") #TODO: This needs to be changed
+                lambdafunction.LayerVersion.from_layer_version_arn(
+                    self, "git-lambda2", "arn:aws:lambda:us-east-1:553035198032:layer:git-lambda2:8"
+                )  # TODO: This needs to be changed, check how can be add layer with git instead of adding vailable third party layer
             ],
         )
 
         # Grant the Lambda function permission to read the GitHub token from Secrets Manager
-        github_repo_creator_lambda.role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess"))
+        github_repo_creator_lambda.role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
+        )
         github_repo_creator_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 actions=["secretsmanager:GetSecretValue"],
@@ -244,10 +246,7 @@ def lambda_handler(event, context):
         # Add another policy statement to list source credentials for CodeBuild
         github_repo_creator_lambda.add_to_role_policy(
             iam.PolicyStatement(
-                actions=[
-                    "codebuild:ListSourceCredentials",
-                    "codebuild:ImportSourceCredentials"
-                ],
+                actions=["codebuild:ListSourceCredentials", "codebuild:ImportSourceCredentials"],
                 resources=["*"],
             )
         )

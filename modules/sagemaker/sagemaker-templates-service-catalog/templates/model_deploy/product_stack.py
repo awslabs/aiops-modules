@@ -4,18 +4,18 @@
 
 import json
 from typing import Any, List
-import boto3
 
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags, CfnOutput, SecretValue, Token, Lazy
-
+from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
+
 from templates.model_deploy.github_repo_construct import GitHubRepositoryCreator
+
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = (
@@ -149,7 +149,7 @@ class Product(servicecatalog.ProductStack):
             github_owner=repository_owner,
             s3_bucket_name=deploy_app_asset.s3_bucket_name,
             s3_bucket_object_key=deploy_app_asset.s3_object_key,
-            code_connection_arn=aws_codeconnection_arn
+            code_connection_arn=aws_codeconnection_arn,
         )
 
         # Import model bucket
@@ -174,15 +174,14 @@ class Product(servicecatalog.ProductStack):
                     },
                 }
             ),
-            source=codebuild.Source.git_hub(
-                owner=repository_owner,
-                repo=f"{sagemaker_project_name}-deploy"
-            ),
+            source=codebuild.Source.git_hub(owner=repository_owner, repo=f"{sagemaker_project_name}-deploy"),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
                     "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
-                    "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(value=f"{repository_owner}/{sagemaker_project_name}-deploy"),
+                    "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
+                        value=f"{repository_owner}/{sagemaker_project_name}-deploy"
+                    ),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
@@ -215,7 +214,6 @@ class Product(servicecatalog.ProductStack):
             ),
         )
 
-
         # Verify that the project.role is not None
         if project.role is None:
             raise ValueError("project.role is None, unable to attach inline policy")
@@ -229,20 +227,18 @@ class Product(servicecatalog.ProductStack):
                             actions=[
                                 "codebuild:ImportSourceCredentials",
                                 "codebuild:DeleteSourceCredentials",
-                                "codebuild:ListSourceCredentials"
+                                "codebuild:ListSourceCredentials",
                             ],
-                            resources=["*"]
+                            resources=["*"],
                         ),
                         iam.PolicyStatement(
                             actions=[
-                                "codeconnections:UseConnection", 
+                                "codeconnections:UseConnection",
                                 "codeconnections:PassConnection",
                                 "codeconnections:GetConnection",
-                                "codeconnections:GetConnectionToken"
+                                "codeconnections:GetConnectionToken",
                             ],
-                            resources=[
-                                f"arn:aws:codeconnections:*:{Aws.ACCOUNT_ID}:connection/*"
-                            ],
+                            resources=[f"arn:aws:codeconnections:*:{Aws.ACCOUNT_ID}:connection/*"],
                         ),
                         iam.PolicyStatement(
                             sid="ModelPackageGroup",
@@ -283,7 +279,7 @@ class Product(servicecatalog.ProductStack):
                     ],
                 )
             )
-        
+
         # Create custom resource as lamda function that triggers codebuild project
         custom_resource_lambda_role = iam.Role(
             self,

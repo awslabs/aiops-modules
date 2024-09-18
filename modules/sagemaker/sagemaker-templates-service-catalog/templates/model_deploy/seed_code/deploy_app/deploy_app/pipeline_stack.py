@@ -3,12 +3,9 @@ from typing import Any
 
 import aws_cdk as cdk
 import config.constants as constants
-from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource
 from constructs import Construct
-from aws_cdk import SecretValue
-from aws_cdk.aws_codepipeline_actions import GitHubTrigger
 
 from .deploy_endpoint_stack import DeployEndpointStack
 
@@ -136,7 +133,7 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
 class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        
+
         codepipeline_role = iam.Role(
             self,
             "CodePipelineRole",
@@ -153,7 +150,7 @@ class PipelineStack(cdk.Stack):
             path="/service-role/",
         )
         synth_codebuild_role.attach_inline_policy(create_inline_policy(self, "SynthStagePolicy"))
-    
+
         pipeline = CodePipeline(
             self,
             "Pipeline",
@@ -161,9 +158,7 @@ class PipelineStack(cdk.Stack):
             synth=CodeBuildStep(
                 "Synth",
                 input=CodePipelineSource.connection(
-                    constants.SOURCE_REPOSITORY,
-                    "main",
-                    connection_arn=constants.CODE_CONNECTION_ARN
+                    constants.SOURCE_REPOSITORY, "main", connection_arn=constants.CODE_CONNECTION_ARN
                 ),
                 install_commands=[
                     "npm install -g aws-cdk",
