@@ -38,7 +38,7 @@ class ServiceCatalogStack(Stack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: str,
-        repository_access_token: str,
+        access_token_secret_name: str,
         aws_codeconnection_arn: str,
         repository_owner: str,
         **kwargs: Any,
@@ -115,7 +115,7 @@ class ServiceCatalogStack(Stack):
                 sagemaker_domain_id=sagemaker_domain_id,
                 sagemaker_domain_arn=sagemaker_domain_arn,
                 repository_type=repository_type,
-                repository_access_token=repository_access_token,
+                access_token_secret_name=access_token_secret_name,
                 aws_codeconnection_arn=aws_codeconnection_arn,
                 repository_owner=repository_owner,
             )

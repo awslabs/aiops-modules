@@ -44,7 +44,7 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: str,
-        repository_access_token: str,
+        access_token_secret_name: str,
         aws_codeconnection_arn: str,
         repository_owner: str,
         **kwargs: Any,
@@ -143,7 +143,7 @@ class Product(servicecatalog.ProductStack):
         github_repo = GitHubRepositoryCreator(
             self,
             "DeployAppGitHubRepo",
-            github_token_secret_name=repository_access_token,
+            github_token_secret_name=access_token_secret_name,
             repo_name=f"{sagemaker_project_name}-deploy",
             repo_description=f"Deployment repository for SageMaker project {sagemaker_project_name}",
             github_owner=repository_owner,
@@ -238,7 +238,7 @@ class Product(servicecatalog.ProductStack):
                                 "codeconnections:GetConnection",
                                 "codeconnections:GetConnectionToken",
                             ],
-                            resources=[f"arn:aws:codeconnections:*:{Aws.ACCOUNT_ID}:connection/*"],
+                            resources=[aws_codeconnection_arn],
                         ),
                         iam.PolicyStatement(
                             sid="ModelPackageGroup",

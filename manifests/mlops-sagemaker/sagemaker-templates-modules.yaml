@@ -3,13 +3,13 @@ name: service-catalog
 path: modules/sagemaker/sagemaker-templates-service-catalog
 targetAccount: primary
 parameters:
-  - name: repository_type
+  - name: repository-type
     value: GitHub
-  - name: repository_owner
+  - name: repository-owner
     value: <github_account_owner>
-  - name: repository_access_token
+  - name: access-token-secret-name
     value: github_token
-  - name: aws_codeconnection_arn
+  - name: aws-codeconnection-arn
     value: <arn>
   - name: portfolio-access-role-arn
     valueFrom:
