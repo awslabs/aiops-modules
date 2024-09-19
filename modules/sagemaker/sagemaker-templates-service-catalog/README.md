@@ -58,7 +58,7 @@ The template is based on basic multi-account template from [AWS Enterprise MLOps
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
   - `repository-type` - type of repository to be integrated with Sagemaker template source code, default is GitHub
   - `repository-owner` - owner or organisation of project code repository 
-  - `access_token_secret_name` - AWS Secret Manager secret name where access token is stored, this is used to manage repository from template
+  - `access-token-secret-name` - AWS Secret Manager secret name where access token is stored, this is used to manage repository from template
   - `aws-codeconnection-arn` -  AWS CodeConnection ARN for repository provider, currently template supports GitHub provider
 
 ### Optional Inputs:
