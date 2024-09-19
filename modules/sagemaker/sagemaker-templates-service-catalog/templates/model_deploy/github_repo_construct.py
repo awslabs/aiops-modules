@@ -197,8 +197,7 @@ def lambda_handler(event, context):
 
             response_data = {
                 'RepoName': repo_name,
-                'RepoUrl': f"https://github.com/{github_owner}/{repo_name}.git",
-                'GitHubSourceCredential': github_source_credential
+                'RepoUrl': f"https://github.com/{github_owner}/{repo_name}.git"
             }
 
             # Send a successful response back to CloudFormation
