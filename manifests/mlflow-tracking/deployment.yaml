@@ -1,0 +1,23 @@
+name: mlflow-tracking
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/mlflow-tracking/networking-modules.yaml
+  - name: storage
+    path: manifests/mlflow-tracking/storage-modules.yaml
+  - name: sagemaker-studio
+    path: manifests/mlflow-tracking/sagemaker-studio-modules.yaml
+  - name: images
+    path: manifests/mlflow-tracking/images-modules.yaml
+  - name: mlflow
+    path: manifests/mlflow-tracking/mlflow-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true

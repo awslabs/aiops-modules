@@ -2,7 +2,7 @@
 
 ## Description
 
-This module creates an mlflow container image and pushes to the specified Elastic Container Repository.
+This module creates an mlflow tracking server container image and pushes to the specified Elastic Container Repository.
 
 ## Inputs/Outputs
 
