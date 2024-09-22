@@ -1,0 +1,31 @@
+name: ray-on-eks
+forceDependencyRedeploy: True
+toolchainRegion: us-east-1
+groups:
+  - name: base
+    path: manifests/ray-on-eks/base-modules.yaml
+  - name: images
+    path: manifests/ray-on-eks/images-modules.yaml
+  - name: core
+    path: manifests/fine-tuning-6B/core-modules.yaml
+  - name: integration
+    path: manifests/ray-on-eks/integration-modules.yaml
+  - name: ray-operator
+    path: manifests/ray-on-eks/ray-operator-modules.yaml
+  - name: ray-cluster
+    path: manifests/fine-tuning-6B/ray-cluster-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    codebuildImage: aws/codebuild/standard:7.0
+    parametersGlobal:
+      rayNamespaceName: ray
+      draImportPath: /ray/import/
+      draExportPath: /ray/export/
+      dockerCredentialsSecret: docker-credential
+    regionMappings:
+      - region: us-east-1
+        default: true
