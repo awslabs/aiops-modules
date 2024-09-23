@@ -1,0 +1,10 @@
+name: ray
+path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-image?ref=release/1.5.0&depth=1
+targetAccount: primary
+parameters:
+  - name: EcrRepoName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: ray-ecr
+        key: EcrRepositoryName

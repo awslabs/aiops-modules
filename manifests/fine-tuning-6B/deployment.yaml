@@ -1,17 +1,17 @@
-name: ray-on-eks
+name: fine-tuning-6B
 forceDependencyRedeploy: True
 toolchainRegion: us-east-1
 groups:
   - name: base
-    path: manifests/ray-on-eks/base-modules.yaml
+    path: manifests/fine-tuning-6B/base-modules.yaml
   - name: images
-    path: manifests/ray-on-eks/images-modules.yaml
+    path: manifests/fine-tuning-6B/images-modules.yaml
   - name: core
     path: manifests/fine-tuning-6B/core-modules.yaml
   - name: integration
-    path: manifests/ray-on-eks/integration-modules.yaml
+    path: manifests/fine-tuning-6B/integration-modules.yaml
   - name: ray-operator
-    path: manifests/ray-on-eks/ray-operator-modules.yaml
+    path: manifests/fine-tuning-6B/ray-operator-modules.yaml
   - name: ray-cluster
     path: manifests/fine-tuning-6B/ray-cluster-modules.yaml
 targetAccountMappings:
@@ -25,7 +25,6 @@ targetAccountMappings:
       rayNamespaceName: ray
       draImportPath: /ray/import/
       draExportPath: /ray/export/
-      dockerCredentialsSecret: docker-credential
     regionMappings:
       - region: us-east-1
         default: true
