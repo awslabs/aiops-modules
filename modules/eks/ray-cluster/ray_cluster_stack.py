@@ -32,6 +32,8 @@ class RayCluster(Stack):
         enable_autoscaling: bool,
         autoscaler_idle_timeout_seconds: int,
         head_resources: Dict[str, Dict[str, str]],
+        head_tolerations: List[Dict[str, str]],
+        head_labels: Dict[str, str],
         worker_replicas: int,
         worker_min_replicas: int,
         worker_max_replicas: int,
@@ -127,6 +129,8 @@ class RayCluster(Stack):
                     "resources": head_resources,
                     "volumes": volumes,
                     "volumeMounts": volume_mounts,
+                    "tolerations": head_tolerations,
+                    "nodeSelector": head_labels,
                 },
                 "worker": {
                     "replicas": worker_replicas,
