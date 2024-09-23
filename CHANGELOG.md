@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - updated mlflow version to 2.16.0 to support LLM tracing
 - remove CDK overhead from `mlflow-image` module
 - renamed mlflow manifests and updated README.MD
+- added head tolerations & node labels for flexible ray cluster pods scheduling
 
 ## v1.5.0
 
