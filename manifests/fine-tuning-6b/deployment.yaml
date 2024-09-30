@@ -1,19 +1,19 @@
-name: fine-tuning-6B
+name: fine-tuning-6b
 forceDependencyRedeploy: True
 toolchainRegion: us-east-1
 groups:
   - name: base
-    path: manifests/fine-tuning-6B/base-modules.yaml
+    path: manifests/fine-tuning-6b/base-modules.yaml
   - name: images
-    path: manifests/fine-tuning-6B/images-modules.yaml
+    path: manifests/fine-tuning-6b/images-modules.yaml
   - name: core
-    path: manifests/fine-tuning-6B/core-modules.yaml
+    path: manifests/fine-tuning-6b/core-modules.yaml
   - name: integration
-    path: manifests/fine-tuning-6B/integration-modules.yaml
+    path: manifests/fine-tuning-6b/integration-modules.yaml
   - name: ray-operator
-    path: manifests/fine-tuning-6B/ray-operator-modules.yaml
+    path: manifests/fine-tuning-6b/ray-operator-modules.yaml
   - name: ray-cluster
-    path: manifests/fine-tuning-6B/ray-cluster-modules.yaml
+    path: manifests/fine-tuning-6b/ray-cluster-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
