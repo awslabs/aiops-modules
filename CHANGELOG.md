@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+
+### **Changed**
+
+## v1.6.0
+
+### **Added**
 - added new manifest `manifests/fine-tuning-6B`
 
 ### **Changed**

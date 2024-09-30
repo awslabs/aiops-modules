@@ -1,5 +1,5 @@
 name: ray-operator
-path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-operator?ref=release/1.5.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-operator?ref=release/1.6.0&depth=1
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
