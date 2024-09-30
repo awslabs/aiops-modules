@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pin `ray-operator`, `ray-cluster`, and `ray-image` modules versions
 - pin module versions for all manifests
 - the `sagemaker/sagemaker-model-package-promote-pipeline` module no longer generates a Docker image
+- lowercase `fine-tuning-6b` deployment name due to CDK resource naming constraints
 
 ## v1.4.0
 
