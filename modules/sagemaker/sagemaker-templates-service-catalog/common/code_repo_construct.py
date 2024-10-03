@@ -1,10 +1,16 @@
 from typing import Any
+from enum import Enum
 
 from aws_cdk import Aws, CustomResource, Duration
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from constructs import Construct
 
+class RepositoryType(str, Enum):
+    GITHUB = "GitHub"
+    GITLAB = "GitLab"
+    GITHUB_ENTERPRISE = "GitHub Enterprise"
+    GITLAB_ENTERPRISE = "GitLab Enterprise"
 
 class GitHubRepositoryCreator(Construct):
     def __init__(
@@ -237,6 +243,7 @@ def lambda_handler(event, context):
             runtime=lambdafunction.Runtime.PYTHON_3_12,
             handler="index.lambda_handler",
             code=lambdafunction.Code.from_inline(github_lambda_func_code),
+            memory_size=512,
             timeout=Duration.seconds(300),
             environment={
                 "GITHUB_TOKEN_SECRET_NAME": github_token_secret_name,

@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from common.code_repo_construct import RepositoryType
 
 class CdkBaseSettings(BaseSettings, ABC):
     """Defines common configuration for settings."""
@@ -50,7 +50,7 @@ class ModuleSettings(CdkBaseSettings):
     sagemaker_domain_id: str = Field(default="")
     sagemaker_domain_arn: str = Field(default="")
 
-    repository_type: str = Field(default="GitHub")
+    repository_type: RepositoryType = Field(default=RepositoryType.GITHUB)
     access_token_secret_name: str = Field(default="github_token")
     aws_codeconnection_arn: str = Field(default="")
     repository_owner: str = Field(default="")

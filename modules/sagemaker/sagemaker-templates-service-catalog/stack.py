@@ -4,6 +4,8 @@
 import importlib
 import os
 from typing import Any, List, Optional, Tuple
+from common.code_repo_construct import RepositoryType
+
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
@@ -37,7 +39,7 @@ class ServiceCatalogStack(Stack):
         prod_security_group_ids: List[str],
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
-        repository_type: str,
+        repository_type: RepositoryType,
         access_token_secret_name: str,
         aws_codeconnection_arn: str,
         repository_owner: str,

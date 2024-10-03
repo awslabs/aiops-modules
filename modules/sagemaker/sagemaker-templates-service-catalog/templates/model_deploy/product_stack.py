@@ -14,7 +14,7 @@ from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
-from templates.model_deploy.github_repo_construct import GitHubRepositoryCreator
+from common.code_repo_construct import RepositoryType, GitHubRepositoryCreator
 
 
 class Product(servicecatalog.ProductStack):
@@ -43,7 +43,7 @@ class Product(servicecatalog.ProductStack):
         prod_security_group_ids: List[str],
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
-        repository_type: str,
+        repository_type: RepositoryType,
         access_token_secret_name: str,
         aws_codeconnection_arn: str,
         repository_owner: str,
