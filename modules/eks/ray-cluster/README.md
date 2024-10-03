@@ -32,6 +32,17 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
         cpu: "1"
         memory: "8G"
 ```
+- `head_tolerations` - List of head group tolerations. Empty by default (no tolerations). Example input:
+```yaml
+  - key: "nvidia.com/gpu"
+    value: "true"
+    # operator: "Equal"
+    effect: "NoSchedule"
+```
+- `head_labels` - Dictionary of head group labels. Empty by default (no labels). Example input:
+```yaml
+    usage: gpu
+```
 - `worker_replicas` - The requested number of the Pod replicas in worker group. Defaults to `1`.
 - `worker_min_replicas` - The minimum number of the Pod replicas in worker group. Defaults to `1`.
 - `worker_max_replicas` - The maximum number of the Pod replicas in worker group. Defaults to `10`.

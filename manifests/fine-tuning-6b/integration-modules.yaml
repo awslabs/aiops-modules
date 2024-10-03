@@ -1,5 +1,5 @@
-name: ray-operator
-path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-operator?ref=release/1.6.0&depth=1
+name: lustre-on-eks
+path: git::https://github.com/awslabs/idf-modules.git//modules/integration/fsx-lustre-on-eks?ref=release/1.11.0&depth=1
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
@@ -19,30 +19,12 @@ parameters:
         group: core
         name: eks
         key: EksClusterName
-  - name: EksClusterEndpoint
-    valueFrom:
-      moduleMetadata:
-        group: core
-        name: eks
-        key: EksClusterEndpoint
   - name: EksOidcArn
     valueFrom:
       moduleMetadata:
         group: core
         name: eks
         key: EksOidcArn
-  - name: EksOpenidIssuer
-    valueFrom:
-      moduleMetadata:
-        group: core
-        name: eks
-        key: EksClusterOpenIdConnectIssuer
-  - name: EksCertAuthData
-    valueFrom:
-      moduleMetadata:
-        group: core
-        name: eks
-        key: EksClusterCertAuthData
   - name: EksClusterSecurityGroupId
     valueFrom:
       moduleMetadata:
@@ -52,9 +34,30 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
-  - name: DataBucketName
+  - name: FsxFileSystemId
     valueFrom:
       moduleMetadata:
-        group: base
-        name: buckets
-        key: ArtifactsBucketName
+        group: core
+        name: fsx-lustre
+        key: FSxLustreFileSystemId
+  - name: FsxSecurityGroupId
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: fsx-lustre
+        key: FSxLustreSecurityGroup
+  - name: FsxMountName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: fsx-lustre
+        key: FSxLustreMountName
+  - name: FsxDnsName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: fsx-lustre
+        key: FSxLustreAttrDnsName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
