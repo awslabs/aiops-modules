@@ -1,16 +1,18 @@
-from typing import Any
 from enum import Enum
+from typing import Any
 
 from aws_cdk import Aws, CustomResource, Duration
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from constructs import Construct
 
+
 class RepositoryType(str, Enum):
     GITHUB = "GitHub"
     GITLAB = "GitLab"
     GITHUB_ENTERPRISE = "GitHub Enterprise"
     GITLAB_ENTERPRISE = "GitLab Enterprise"
+
 
 class GitHubRepositoryCreator(Construct):
     def __init__(

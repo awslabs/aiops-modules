@@ -4,8 +4,6 @@
 import importlib
 import os
 from typing import Any, List, Optional, Tuple
-from common.code_repo_construct import RepositoryType
-
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
@@ -14,6 +12,8 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_servicecatalog as servicecatalog
 from constructs import Construct
+
+from common.code_repo_construct import RepositoryType
 
 
 class ServiceCatalogStack(Stack):

@@ -14,7 +14,7 @@ from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType, GitHubRepositoryCreator
+from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
 
 
 class Product(servicecatalog.ProductStack):

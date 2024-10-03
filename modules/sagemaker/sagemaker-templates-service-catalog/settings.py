@@ -5,7 +5,9 @@ from typing import Dict, List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from common.code_repo_construct import RepositoryType
+
 
 class CdkBaseSettings(BaseSettings, ABC):
     """Defines common configuration for settings."""
