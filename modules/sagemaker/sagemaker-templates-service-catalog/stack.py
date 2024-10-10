@@ -13,6 +13,8 @@ from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_servicecatalog as servicecatalog
 from constructs import Construct
 
+from common.code_repo_construct import RepositoryType
+
 
 class ServiceCatalogStack(Stack):
     def __init__(
@@ -37,6 +39,10 @@ class ServiceCatalogStack(Stack):
         prod_security_group_ids: List[str],
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -110,6 +116,10 @@ class ServiceCatalogStack(Stack):
                 prod_security_group_ids=prod_security_group_ids,
                 sagemaker_domain_id=sagemaker_domain_id,
                 sagemaker_domain_arn=sagemaker_domain_arn,
+                repository_type=repository_type,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
             )
 
             product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)

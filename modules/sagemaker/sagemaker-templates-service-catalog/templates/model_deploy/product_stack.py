@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+
 import json
 from typing import Any, List
 
@@ -8,11 +9,12 @@ import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
-from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
 from constructs import Construct
+
+from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
 
 
 class Product(servicecatalog.ProductStack):
@@ -41,6 +43,10 @@ class Product(servicecatalog.ProductStack):
         prod_security_group_ids: List[str],
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -133,15 +139,17 @@ class Product(servicecatalog.ProductStack):
             f"{model_package_group_name}"
         )
 
-        # Create source repo from seed bucket/key
-        repository = codecommit.Repository(
+        # Create GitHub repository
+        github_repo = GitHubRepositoryCreator(
             self,
-            "Deploy App Code Repo",
-            repository_name=f"{sagemaker_project_name}-deploy",
-            code=codecommit.Code.from_asset(
-                asset=deploy_app_asset,
-                branch="main",
-            ),
+            "DeployAppGitHubRepo",
+            github_token_secret_name=access_token_secret_name,
+            repo_name=f"{sagemaker_project_name}-deploy",
+            repo_description=f"Deployment repository for SageMaker project {sagemaker_project_name}",
+            github_owner=repository_owner,
+            s3_bucket_name=deploy_app_asset.s3_bucket_name,
+            s3_bucket_object_key=deploy_app_asset.s3_object_key,
+            code_connection_arn=aws_codeconnection_arn,
         )
 
         # Import model bucket
@@ -166,10 +174,14 @@ class Product(servicecatalog.ProductStack):
                     },
                 }
             ),
-            source=codebuild.Source.code_commit(repository=repository),
+            source=codebuild.Source.git_hub(owner=repository_owner, repo=f"{sagemaker_project_name}-deploy"),
             environment=codebuild.BuildEnvironment(
                 build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
                 environment_variables={
+                    "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
+                    "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
+                        value=f"{repository_owner}/{sagemaker_project_name}-deploy"
+                    ),
                     "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
                     "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
                     "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
@@ -201,6 +213,7 @@ class Product(servicecatalog.ProductStack):
                 },
             ),
         )
+
         # Verify that the project.role is not None
         if project.role is None:
             raise ValueError("project.role is None, unable to attach inline policy")
@@ -210,6 +223,23 @@ class Product(servicecatalog.ProductStack):
                     self,
                     "Policy",
                     statements=[
+                        iam.PolicyStatement(
+                            actions=[
+                                "codebuild:ImportSourceCredentials",
+                                "codebuild:DeleteSourceCredentials",
+                                "codebuild:ListSourceCredentials",
+                            ],
+                            resources=["*"],
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "codeconnections:UseConnection",
+                                "codeconnections:PassConnection",
+                                "codeconnections:GetConnection",
+                                "codeconnections:GetConnectionToken",
+                            ],
+                            resources=[aws_codeconnection_arn],
+                        ),
                         iam.PolicyStatement(
                             sid="ModelPackageGroup",
                             actions=[
@@ -249,6 +279,7 @@ class Product(servicecatalog.ProductStack):
                     ],
                 )
             )
+
         # Create custom resource as lamda function that triggers codebuild project
         custom_resource_lambda_role = iam.Role(
             self,
@@ -259,6 +290,7 @@ class Product(servicecatalog.ProductStack):
                     statements=[
                         iam.PolicyStatement(
                             actions=[
+                                "codebuild:ImportSourceCredentials",
                                 "codebuild:StartBuild",
                                 "codebuild:BatchGetBuilds",
                                 "codebuild:DescribeTestCases",
@@ -328,3 +360,4 @@ def handler(event, context):
             },
         )
         custom_resource.node.add_dependency(project)
+        custom_resource.node.add_dependency(github_repo)

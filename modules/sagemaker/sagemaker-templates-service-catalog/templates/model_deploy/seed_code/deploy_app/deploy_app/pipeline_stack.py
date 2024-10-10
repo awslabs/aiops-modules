@@ -3,7 +3,6 @@ from typing import Any
 
 import aws_cdk as cdk
 import config.constants as constants
-from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource
 from constructs import Construct
@@ -11,6 +10,8 @@ from constructs import Construct
 from .deploy_endpoint_stack import DeployEndpointStack
 
 ENV = {
+    "CODE_CONNECTION_ARN": constants.CODE_CONNECTION_ARN,
+    "SOURCE_REPOSITORY": constants.SOURCE_REPOSITORY,
     "MODEL_PACKAGE_GROUP_NAME": constants.MODEL_PACKAGE_GROUP_NAME,
     "MODEL_BUCKET_ARN": constants.MODEL_BUCKET_ARN,
     "PROJECT_ID": constants.PROJECT_ID,
@@ -133,10 +134,6 @@ class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        repository = codecommit.Repository.from_repository_name(
-            self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
-        )
-
         codepipeline_role = iam.Role(
             self,
             "CodePipelineRole",
@@ -160,7 +157,9 @@ class PipelineStack(cdk.Stack):
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
             synth=CodeBuildStep(
                 "Synth",
-                input=CodePipelineSource.code_commit(repository=repository, branch="main"),
+                input=CodePipelineSource.connection(
+                    constants.SOURCE_REPOSITORY, "main", connection_arn=constants.CODE_CONNECTION_ARN
+                ),
                 install_commands=[
                     "npm install -g aws-cdk",
                 ],
