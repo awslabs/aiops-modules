@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 - added support for GitHub as replacement of AWS CodeCommit for sagemaker-templates-service-catalog module
 ### **Changed**
+- updated manifests to idf release 1.12.0
 
 ## v1.6.0
 
