@@ -51,6 +51,9 @@ The template is based on basic multi-account template from [AWS Enterprise MLOps
 
 As part for third party code repository (like GitHub) integration, SageMaker templates will be able to manage (create, delete) repositories. As an example, if sagemaker-templates-service-catalog module model_deploy is used then it would create code repository with directly into owner account provided into configuration. Repository will be named after SageMaker project name in AWS account `{sagemaker-project}-deploy`. For example, if SageMaker project name is `aiops-abalone-model` then GitHub repository would be created with name `aiops-abalone-model-deploy`.
 
+> [!IMPORTANT] 
+> It is important to note AWS CodeCommit is no longer available to new customers. Existing customers of AWS CodeCommit can continue to use the service as normal. 
+
 ## Prerequesites:
 - Target AWS account should contain AWS Secret Manager secret that contains GitHub personal access token with required permissions to manage repository. Refer guide [Creating a fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) in order to create access token.
 - Template also requires AWS CodeConnection created for GitHub provider in order to integrated GitHub repositories AWS CodeBuild and AWS CodePipeline. Refer guide [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html) in order to create connection with GitHub.
