@@ -52,7 +52,7 @@ class ModuleSettings(CdkBaseSettings):
     sagemaker_domain_id: str = Field(default="")
     sagemaker_domain_arn: str = Field(default="")
 
-    repository_type: RepositoryType = Field(default=RepositoryType.GITHUB)
+    repository_type: RepositoryType = Field(default=RepositoryType.CODECOMMIT)
     access_token_secret_name: str = Field(default="github_token")
     aws_codeconnection_arn: str = Field(default="")
     repository_owner: str = Field(default="")

@@ -8,6 +8,7 @@ from constructs import Construct
 
 
 class RepositoryType(str, Enum):
+    CODECOMMIT = "CodeCommit"
     GITHUB = "GitHub"
     GITLAB = "GitLab"
     GITHUB_ENTERPRISE = "GitHub Enterprise"

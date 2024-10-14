@@ -3,12 +3,13 @@
 
 
 import json
-from typing import Any, List
+from typing import Any, List, Optional
 
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
+from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
@@ -22,6 +23,106 @@ class Product(servicecatalog.ProductStack):
         "Creates a self-mutating CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
     )
     TEMPLATE_NAME: str = "Deployment pipeline that deploys model endpoints to dev, pre-prod, and prod"
+
+    def create_codebuild_with_github(
+        self,
+        env_vars: str,
+        sagemaker_project_name: str,
+        deploy_app_asset: s3_assets.Asset,
+        code_pipeline_deploy_project_name: str,
+        access_token_secret_name: str,
+        repository_owner: str,
+        aws_codeconnection_arn: str,
+    ):
+        # Create GitHub repository
+        github_repo = GitHubRepositoryCreator(
+            self,
+            "DeployAppGitHubRepo",
+            github_token_secret_name=access_token_secret_name,
+            repo_name=f"{sagemaker_project_name}-deploy",
+            repo_description=f"Deployment repository for SageMaker project {sagemaker_project_name}",
+            github_owner=repository_owner,
+            s3_bucket_name=deploy_app_asset.s3_bucket_name,
+            s3_bucket_object_key=deploy_app_asset.s3_object_key,
+            code_connection_arn=aws_codeconnection_arn,
+        )
+        github_env_vars = {
+            "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
+            "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
+                value=f"{repository_owner}/{sagemaker_project_name}-deploy"
+            ),
+        }
+        # Append github_env_vars into codebuild_env_vars
+        codebuild_env_vars = {**env_vars, **github_env_vars}
+
+        project = codebuild.Project(
+            self,
+            code_pipeline_deploy_project_name,
+            build_spec=codebuild.BuildSpec.from_object(
+                {
+                    "version": "0.2",
+                    "phases": {
+                        "build": {
+                            "commands": [
+                                "npm install -g aws-cdk",
+                                "python -m pip install -r requirements.txt",
+                                "export REPOSITORY_TYPE=GitHub",
+                                'cdk deploy --require-approval never --app "python app.py" ',
+                            ]
+                        }
+                    },
+                }
+            ),
+            source=codebuild.Source.git_hub(owner=repository_owner, repo=f"{sagemaker_project_name}-deploy"),
+            environment=codebuild.BuildEnvironment(
+                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
+                environment_variables=codebuild_env_vars,
+            ),
+        )
+        return project, github_repo
+
+    def create_codebuild_with_codecommit(
+        self,
+        env_vars: str,
+        sagemaker_project_name: str,
+        deploy_app_asset: s3_assets.Asset,
+        code_pipeline_deploy_project_name: str,
+    ):
+        # Create CodeCommit repo from seed bucket/key
+        repository = codecommit.Repository(
+            self,
+            "Deploy App Code Repo",
+            repository_name=f"{sagemaker_project_name}-deploy",
+            code=codecommit.Code.from_asset(
+                asset=deploy_app_asset,
+                branch="main",
+            ),
+        )
+        project = codebuild.Project(
+            self,
+            code_pipeline_deploy_project_name,
+            build_spec=codebuild.BuildSpec.from_object(
+                {
+                    "version": "0.2",
+                    "phases": {
+                        "build": {
+                            "commands": [
+                                "npm install -g aws-cdk",
+                                "python -m pip install -r requirements.txt",
+                                "export REPOSITORY_TYPE=CodeCommit",
+                                'cdk deploy --require-approval never --app "python app.py" ',
+                            ]
+                        }
+                    },
+                }
+            ),
+            source=codebuild.Source.code_commit(repository=repository),
+            environment=codebuild.BuildEnvironment(
+                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
+                environment_variables=env_vars,
+            ),
+        )
+        return project
 
     def __init__(
         self,
@@ -44,9 +145,9 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str] = None,
+        aws_codeconnection_arn: Optional[str] = None,
+        repository_owner: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -139,80 +240,54 @@ class Product(servicecatalog.ProductStack):
             f"{model_package_group_name}"
         )
 
-        # Create GitHub repository
-        github_repo = GitHubRepositoryCreator(
-            self,
-            "DeployAppGitHubRepo",
-            github_token_secret_name=access_token_secret_name,
-            repo_name=f"{sagemaker_project_name}-deploy",
-            repo_description=f"Deployment repository for SageMaker project {sagemaker_project_name}",
-            github_owner=repository_owner,
-            s3_bucket_name=deploy_app_asset.s3_bucket_name,
-            s3_bucket_object_key=deploy_app_asset.s3_object_key,
-            code_connection_arn=aws_codeconnection_arn,
-        )
-
         # Import model bucket
         model_bucket = s3.Bucket.from_bucket_name(self, "ModelBucket", bucket_name=model_bucket_name)
 
+        codebuild_env_vars = {
+            "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
+            "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
+            "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
+            "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=sagemaker_project_name),
+            "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_id),
+            "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_arn),
+            "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
+            "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
+            "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
+            "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(dev_subnet_ids)),
+            "DEV_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(dev_security_group_ids)),
+            "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_vpc_id),
+            "PRE_PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_account_id),
+            "PRE_PROD_REGION": codebuild.BuildEnvironmentVariable(value=pre_prod_region),
+            "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(pre_prod_subnet_ids)),
+            "PRE_PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
+                value=json.dumps(pre_prod_security_group_ids)
+            ),
+            "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
+            "PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=prod_account_id),
+            "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
+            "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
+            "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_security_group_ids)),
+            "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
+        }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 
-        project = codebuild.Project(
-            self,
-            code_pipeline_deploy_project_name,
-            build_spec=codebuild.BuildSpec.from_object(
-                {
-                    "version": "0.2",
-                    "phases": {
-                        "build": {
-                            "commands": [
-                                "npm install -g aws-cdk",
-                                "python -m pip install -r requirements.txt",
-                                'cdk deploy --require-approval never --app "python app.py" ',
-                            ]
-                        }
-                    },
-                }
-            ),
-            source=codebuild.Source.git_hub(owner=repository_owner, repo=f"{sagemaker_project_name}-deploy"),
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
-                environment_variables={
-                    "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
-                    "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
-                        value=f"{repository_owner}/{sagemaker_project_name}-deploy"
-                    ),
-                    "MODEL_PACKAGE_GROUP_NAME": codebuild.BuildEnvironmentVariable(value=model_package_group_name),
-                    "MODEL_BUCKET_ARN": codebuild.BuildEnvironmentVariable(value=model_bucket.bucket_arn),
-                    "PROJECT_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_project_id),
-                    "PROJECT_NAME": codebuild.BuildEnvironmentVariable(value=sagemaker_project_name),
-                    "DOMAIN_ID": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_id),
-                    "DOMAIN_ARN": codebuild.BuildEnvironmentVariable(value=sagemaker_domain_arn),
-                    "DEV_VPC_ID": codebuild.BuildEnvironmentVariable(value=dev_vpc_id),
-                    "DEV_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=dev_account_id),
-                    "DEV_REGION": codebuild.BuildEnvironmentVariable(value=dev_region),
-                    "DEV_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(dev_subnet_ids)),
-                    "DEV_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
-                        value=json.dumps(dev_security_group_ids)
-                    ),
-                    "PRE_PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_vpc_id),
-                    "PRE_PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=pre_prod_account_id),
-                    "PRE_PROD_REGION": codebuild.BuildEnvironmentVariable(value=pre_prod_region),
-                    "PRE_PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(pre_prod_subnet_ids)),
-                    "PRE_PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
-                        value=json.dumps(pre_prod_security_group_ids)
-                    ),
-                    "PROD_VPC_ID": codebuild.BuildEnvironmentVariable(value=prod_vpc_id),
-                    "PROD_ACCOUNT_ID": codebuild.BuildEnvironmentVariable(value=prod_account_id),
-                    "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
-                    "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
-                    "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(
-                        value=json.dumps(prod_security_group_ids)
-                    ),
-                    "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
-                },
-            ),
-        )
+        if repository_type == RepositoryType.CODECOMMIT:
+            project = self.create_codebuild_with_codecommit(
+                env_vars=codebuild_env_vars,
+                sagemaker_project_name=sagemaker_project_name,
+                deploy_app_asset=deploy_app_asset,
+                code_pipeline_deploy_project_name=code_pipeline_deploy_project_name,
+            )
+        elif repository_type == RepositoryType.GITHUB:
+            project, github_repo = self.create_codebuild_with_github(
+                env_vars=codebuild_env_vars,
+                sagemaker_project_name=sagemaker_project_name,
+                deploy_app_asset=deploy_app_asset,
+                code_pipeline_deploy_project_name=code_pipeline_deploy_project_name,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
+            )
 
         # Verify that the project.role is not None
         if project.role is None:
@@ -223,23 +298,6 @@ class Product(servicecatalog.ProductStack):
                     self,
                     "Policy",
                     statements=[
-                        iam.PolicyStatement(
-                            actions=[
-                                "codebuild:ImportSourceCredentials",
-                                "codebuild:DeleteSourceCredentials",
-                                "codebuild:ListSourceCredentials",
-                            ],
-                            resources=["*"],
-                        ),
-                        iam.PolicyStatement(
-                            actions=[
-                                "codeconnections:UseConnection",
-                                "codeconnections:PassConnection",
-                                "codeconnections:GetConnection",
-                                "codeconnections:GetConnectionToken",
-                            ],
-                            resources=[aws_codeconnection_arn],
-                        ),
                         iam.PolicyStatement(
                             sid="ModelPackageGroup",
                             actions=[
@@ -279,6 +337,32 @@ class Product(servicecatalog.ProductStack):
                     ],
                 )
             )
+            if repository_type == RepositoryType.GITHUB:
+                project.role.attach_inline_policy(
+                    iam.Policy(
+                        self,
+                        "GitHubSecretsManagerPolicy",
+                        statements=[
+                            iam.PolicyStatement(
+                                actions=[
+                                    "codebuild:ImportSourceCredentials",
+                                    "codebuild:DeleteSourceCredentials",
+                                    "codebuild:ListSourceCredentials",
+                                ],
+                                resources=["*"],
+                            ),
+                            iam.PolicyStatement(
+                                actions=[
+                                    "codeconnections:UseConnection",
+                                    "codeconnections:PassConnection",
+                                    "codeconnections:GetConnection",
+                                    "codeconnections:GetConnectionToken",
+                                ],
+                                resources=[aws_codeconnection_arn],
+                            ),
+                        ],
+                    )
+                )
 
         # Create custom resource as lamda function that triggers codebuild project
         custom_resource_lambda_role = iam.Role(
@@ -360,4 +444,5 @@ def handler(event, context):
             },
         )
         custom_resource.node.add_dependency(project)
-        custom_resource.node.add_dependency(github_repo)
+        if repository_type == RepositoryType.GITHUB:
+            custom_resource.node.add_dependency(github_repo)

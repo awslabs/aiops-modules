@@ -40,9 +40,9 @@ class ServiceCatalogStack(Stack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str] = None,
+        aws_codeconnection_arn: Optional[str] = None,
+        repository_owner: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
