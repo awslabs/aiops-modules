@@ -270,16 +270,17 @@ class Product(servicecatalog.ProductStack):
             "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
-
+        
+        codebuild_project: codebuild.Project
         if repository_type == RepositoryType.CODECOMMIT:
-            project = self.create_codebuild_with_codecommit(
+            codebuild_project = self.create_codebuild_with_codecommit(
                 env_vars=codebuild_env_vars,
                 sagemaker_project_name=sagemaker_project_name,
                 deploy_app_asset=deploy_app_asset,
                 code_pipeline_deploy_project_name=code_pipeline_deploy_project_name,
             )
         elif repository_type == RepositoryType.GITHUB:
-            project, github_repo = self.create_codebuild_with_github(
+            codebuild_project, github_repo = self.create_codebuild_with_github(
                 env_vars=codebuild_env_vars,
                 sagemaker_project_name=sagemaker_project_name,
                 deploy_app_asset=deploy_app_asset,
@@ -289,80 +290,76 @@ class Product(servicecatalog.ProductStack):
                 repository_owner=repository_owner,
             )
 
-        # Verify that the project.role is not None
-        if project.role is None:
-            raise ValueError("project.role is None, unable to attach inline policy")
-        else:
-            project.role.attach_inline_policy(
+        codebuild_project.role.attach_inline_policy(
+            iam.Policy(
+                self,
+                "Policy",
+                statements=[
+                    iam.PolicyStatement(
+                        sid="ModelPackageGroup",
+                        actions=[
+                            "sagemaker:DescribeModelPackageGroup",
+                        ],
+                        resources=[model_package_group_arn],
+                    ),
+                    iam.PolicyStatement(
+                        sid="ModelPackage",
+                        actions=[
+                            "sagemaker:DescribeModelPackage",
+                            "sagemaker:ListModelPackages",
+                            "sagemaker:UpdateModelPackage",
+                            "sagemaker:CreateModel",
+                        ],
+                        resources=[model_package_arn],
+                    ),
+                    iam.PolicyStatement(
+                        actions=[
+                            "sts:AssumeRole",
+                        ],
+                        effect=iam.Effect.ALLOW,
+                        resources=[
+                            f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/cdk*",
+                            f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/cdk*",
+                            f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/cdk*",
+                        ],
+                    ),
+                    iam.PolicyStatement(
+                        actions=["ssm:GetParameter"],
+                        resources=[
+                            f"arn:{Aws.PARTITION}:ssm:{dev_region}:{dev_account_id}:parameter/*",
+                            f"arn:{Aws.PARTITION}:ssm:{pre_prod_region}:{pre_prod_account_id}:parameter/*",
+                            f"arn:{Aws.PARTITION}:ssm:{prod_region}:{prod_account_id}:parameter/*",
+                        ],
+                    ),
+                ],
+            )
+        )
+        if repository_type == RepositoryType.GITHUB:
+            codebuild_project.role.attach_inline_policy(
                 iam.Policy(
                     self,
-                    "Policy",
+                    "GitHubSecretsManagerPolicy",
                     statements=[
                         iam.PolicyStatement(
-                            sid="ModelPackageGroup",
                             actions=[
-                                "sagemaker:DescribeModelPackageGroup",
+                                "codebuild:ImportSourceCredentials",
+                                "codebuild:DeleteSourceCredentials",
+                                "codebuild:ListSourceCredentials",
                             ],
-                            resources=[model_package_group_arn],
-                        ),
-                        iam.PolicyStatement(
-                            sid="ModelPackage",
-                            actions=[
-                                "sagemaker:DescribeModelPackage",
-                                "sagemaker:ListModelPackages",
-                                "sagemaker:UpdateModelPackage",
-                                "sagemaker:CreateModel",
-                            ],
-                            resources=[model_package_arn],
+                            resources=["*"],
                         ),
                         iam.PolicyStatement(
                             actions=[
-                                "sts:AssumeRole",
+                                "codeconnections:UseConnection",
+                                "codeconnections:PassConnection",
+                                "codeconnections:GetConnection",
+                                "codeconnections:GetConnectionToken",
                             ],
-                            effect=iam.Effect.ALLOW,
-                            resources=[
-                                f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/cdk*",
-                                f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/cdk*",
-                                f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/cdk*",
-                            ],
-                        ),
-                        iam.PolicyStatement(
-                            actions=["ssm:GetParameter"],
-                            resources=[
-                                f"arn:{Aws.PARTITION}:ssm:{dev_region}:{dev_account_id}:parameter/*",
-                                f"arn:{Aws.PARTITION}:ssm:{pre_prod_region}:{pre_prod_account_id}:parameter/*",
-                                f"arn:{Aws.PARTITION}:ssm:{prod_region}:{prod_account_id}:parameter/*",
-                            ],
+                            resources=[aws_codeconnection_arn],
                         ),
                     ],
                 )
             )
-            if repository_type == RepositoryType.GITHUB:
-                project.role.attach_inline_policy(
-                    iam.Policy(
-                        self,
-                        "GitHubSecretsManagerPolicy",
-                        statements=[
-                            iam.PolicyStatement(
-                                actions=[
-                                    "codebuild:ImportSourceCredentials",
-                                    "codebuild:DeleteSourceCredentials",
-                                    "codebuild:ListSourceCredentials",
-                                ],
-                                resources=["*"],
-                            ),
-                            iam.PolicyStatement(
-                                actions=[
-                                    "codeconnections:UseConnection",
-                                    "codeconnections:PassConnection",
-                                    "codeconnections:GetConnection",
-                                    "codeconnections:GetConnectionToken",
-                                ],
-                                resources=[aws_codeconnection_arn],
-                            ),
-                        ],
-                    )
-                )
 
         # Create custom resource as lamda function that triggers codebuild project
         custom_resource_lambda_role = iam.Role(
@@ -380,7 +377,7 @@ class Product(servicecatalog.ProductStack):
                                 "codebuild:DescribeTestCases",
                             ],
                             effect=iam.Effect.ALLOW,
-                            resources=[project.project_arn],
+                            resources=[codebuild_project.project_arn],
                         ),
                         iam.PolicyStatement(
                             actions=[
@@ -430,7 +427,7 @@ def handler(event, context):
             role=custom_resource_lambda_role,
             code=lambdafunction.Code.from_inline(lambda_func_code),
             environment={
-                "CODE_BUILD_PROJECT_NAME": project.project_name,
+                "CODE_BUILD_PROJECT_NAME": codebuild_project.project_name,
             },
             timeout=Duration.minutes(5),
         )
@@ -440,9 +437,9 @@ def handler(event, context):
             "Custom::CodeBuildTriggerResourceType",
             service_token=custom_resource_lambda.function_arn,
             properties={
-                "CodeBuildProjectName": project.project_name,
+                "CodeBuildProjectName": codebuild_project.project_name,
             },
         )
-        custom_resource.node.add_dependency(project)
+        custom_resource.node.add_dependency(codebuild_project)
         if repository_type == RepositoryType.GITHUB:
             custom_resource.node.add_dependency(github_repo)
