@@ -133,54 +133,6 @@ def create_inline_policy(scope: Construct, identifier: str) -> iam.Policy:
 
 
 class PipelineStack(cdk.Stack):
-    def create_codepipeline_with_codeccommit(self, synth_codebuild_role: iam.Role, codepipeline_role: iam.Role):
-        repository = codecommit.Repository.from_repository_name(
-            self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
-        )
-
-        pipeline = CodePipeline(
-            self,
-            "Pipeline",
-            pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
-            synth=CodeBuildStep(
-                "Synth",
-                input=CodePipelineSource.code_commit(repository=repository, branch="main"),
-                install_commands=[
-                    "npm install -g aws-cdk",
-                ],
-                commands=["python -m pip install -r requirements.txt", 'cdk synth --app "python app.py" '],
-                role=synth_codebuild_role,
-                env=ENV,
-            ),
-            cross_account_keys=True,
-            self_mutation=True,
-            role=codepipeline_role,
-        )
-        return pipeline
-
-    def create_codepipeline_with_github(self, synth_codebuild_role: iam.Role, codepipeline_role: iam.Role):
-        pipeline = CodePipeline(
-            self,
-            "Pipeline",
-            pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
-            synth=CodeBuildStep(
-                "Synth",
-                input=CodePipelineSource.connection(
-                    constants.SOURCE_REPOSITORY, "main", connection_arn=constants.CODE_CONNECTION_ARN
-                ),
-                install_commands=[
-                    "npm install -g aws-cdk",
-                ],
-                commands=["python -m pip install -r requirements.txt", 'cdk synth --app "python app.py" '],
-                role=synth_codebuild_role,
-                env=ENV,
-            ),
-            cross_account_keys=True,
-            self_mutation=True,
-            role=codepipeline_role,
-        )
-        return pipeline
-
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -202,9 +154,33 @@ class PipelineStack(cdk.Stack):
         synth_codebuild_role.attach_inline_policy(create_inline_policy(self, "SynthStagePolicy"))
 
         if constants.REPOSITORY_TYPE == "CodeCommit":
-            pipeline = self.create_codepipeline_with_codeccommit(synth_codebuild_role, codepipeline_role)
+            repository = codecommit.Repository.from_repository_name(
+                self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
+            )
+            pipeline_source = CodePipelineSource.code_commit(repository=repository, branch="main")
         elif constants.REPOSITORY_TYPE == "GitHub":
-            pipeline = self.create_codepipeline_with_github(synth_codebuild_role, codepipeline_role)
+            pipeline_source = CodePipelineSource.connection(
+                constants.SOURCE_REPOSITORY, "main", connection_arn=constants.CODE_CONNECTION_ARN
+            )
+
+        pipeline = CodePipeline(
+            self,
+            "Pipeline",
+            pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
+            synth=CodeBuildStep(
+                "Synth",
+                input=pipeline_source,
+                install_commands=[
+                    "npm install -g aws-cdk",
+                ],
+                commands=["python -m pip install -r requirements.txt", 'cdk synth --app "python app.py" '],
+                role=synth_codebuild_role,
+                env=ENV,
+            ),
+            cross_account_keys=True,
+            self_mutation=True,
+            role=codepipeline_role,
+        )
 
         pipeline.add_stage(
             DevStage(

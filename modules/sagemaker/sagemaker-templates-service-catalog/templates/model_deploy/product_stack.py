@@ -24,14 +24,12 @@ class Product(servicecatalog.ProductStack):
     )
     TEMPLATE_NAME: str = "Deployment pipeline that deploys model endpoints to dev, pre-prod, and prod"
 
-    def create_codebuild_with_github(
+    def codebuild_source_for_github(
         self,
-        env_vars: str,
+        repository_owner: str,
         sagemaker_project_name: str,
         deploy_app_asset: s3_assets.Asset,
-        code_pipeline_deploy_project_name: str,
         access_token_secret_name: str,
-        repository_owner: str,
         aws_codeconnection_arn: str,
     ):
         # Create GitHub repository
@@ -46,47 +44,14 @@ class Product(servicecatalog.ProductStack):
             s3_bucket_object_key=deploy_app_asset.s3_object_key,
             code_connection_arn=aws_codeconnection_arn,
         )
-        github_env_vars = {
-            "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
-            "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
-                value=f"{repository_owner}/{sagemaker_project_name}-deploy"
-            ),
-        }
-        # Append github_env_vars into codebuild_env_vars
-        codebuild_env_vars = {**env_vars, **github_env_vars}
+        return codebuild.Source.git_hub(
+            owner=repository_owner, repo=f"{sagemaker_project_name}-deploy", branch_or_ref="main"
+        ), github_repo
 
-        project = codebuild.Project(
-            self,
-            code_pipeline_deploy_project_name,
-            build_spec=codebuild.BuildSpec.from_object(
-                {
-                    "version": "0.2",
-                    "phases": {
-                        "build": {
-                            "commands": [
-                                "npm install -g aws-cdk",
-                                "python -m pip install -r requirements.txt",
-                                "export REPOSITORY_TYPE=GitHub",
-                                'cdk deploy --require-approval never --app "python app.py" ',
-                            ]
-                        }
-                    },
-                }
-            ),
-            source=codebuild.Source.git_hub(owner=repository_owner, repo=f"{sagemaker_project_name}-deploy"),
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
-                environment_variables=codebuild_env_vars,
-            ),
-        )
-        return project, github_repo
-
-    def create_codebuild_with_codecommit(
+    def codebuild_source_for_codecommit(
         self,
-        env_vars: str,
         sagemaker_project_name: str,
         deploy_app_asset: s3_assets.Asset,
-        code_pipeline_deploy_project_name: str,
     ):
         # Create CodeCommit repo from seed bucket/key
         repository = codecommit.Repository(
@@ -98,31 +63,7 @@ class Product(servicecatalog.ProductStack):
                 branch="main",
             ),
         )
-        project = codebuild.Project(
-            self,
-            code_pipeline_deploy_project_name,
-            build_spec=codebuild.BuildSpec.from_object(
-                {
-                    "version": "0.2",
-                    "phases": {
-                        "build": {
-                            "commands": [
-                                "npm install -g aws-cdk",
-                                "python -m pip install -r requirements.txt",
-                                "export REPOSITORY_TYPE=CodeCommit",
-                                'cdk deploy --require-approval never --app "python app.py" ',
-                            ]
-                        }
-                    },
-                }
-            ),
-            source=codebuild.Source.code_commit(repository=repository),
-            environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
-                environment_variables=env_vars,
-            ),
-        )
-        return project
+        return codebuild.Source.code_commit(repository=repository)
 
     def __init__(
         self,
@@ -270,25 +211,51 @@ class Product(servicecatalog.ProductStack):
             "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
-        
-        codebuild_project: codebuild.Project
+
+        codebuild_source: codebuild.Source
         if repository_type == RepositoryType.CODECOMMIT:
-            codebuild_project = self.create_codebuild_with_codecommit(
-                env_vars=codebuild_env_vars,
-                sagemaker_project_name=sagemaker_project_name,
-                deploy_app_asset=deploy_app_asset,
-                code_pipeline_deploy_project_name=code_pipeline_deploy_project_name,
-            )
+            codebuild_source = self.codebuild_source_for_codecommit(sagemaker_project_name, deploy_app_asset)
         elif repository_type == RepositoryType.GITHUB:
-            codebuild_project, github_repo = self.create_codebuild_with_github(
-                env_vars=codebuild_env_vars,
-                sagemaker_project_name=sagemaker_project_name,
-                deploy_app_asset=deploy_app_asset,
-                code_pipeline_deploy_project_name=code_pipeline_deploy_project_name,
-                access_token_secret_name=access_token_secret_name,
-                aws_codeconnection_arn=aws_codeconnection_arn,
-                repository_owner=repository_owner,
+            codebuild_source, github_repo = self.codebuild_source_for_github(
+                repository_owner,
+                sagemaker_project_name,
+                deploy_app_asset,
+                access_token_secret_name,
+                aws_codeconnection_arn,
             )
+            github_env_vars = {
+                "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
+                "SOURCE_REPOSITORY": codebuild.BuildEnvironmentVariable(
+                    value=f"{repository_owner}/{sagemaker_project_name}-deploy"
+                ),
+            }
+            # Append github_env_vars into codebuild_env_vars
+            codebuild_env_vars = {**codebuild_env_vars, **github_env_vars}
+
+        codebuild_project = codebuild.Project(
+            self,
+            code_pipeline_deploy_project_name,
+            build_spec=codebuild.BuildSpec.from_object(
+                {
+                    "version": "0.2",
+                    "phases": {
+                        "build": {
+                            "commands": [
+                                "npm install -g aws-cdk",
+                                "python -m pip install -r requirements.txt",
+                                f"export REPOSITORY_TYPE={repository_type.value}",
+                                'cdk deploy --require-approval never --app "python app.py" ',
+                            ]
+                        }
+                    },
+                }
+            ),
+            source=codebuild_source,
+            environment=codebuild.BuildEnvironment(
+                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
+                environment_variables=codebuild_env_vars,
+            ),
+        )
 
         codebuild_project.role.attach_inline_policy(
             iam.Policy(

@@ -61,12 +61,11 @@ As part for third party code repository (like GitHub) integration, SageMaker tem
 ## Inputs and outputs:
 ### Required inputs:
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
-  - `repository-type` - type of repository to be integrated with Sagemaker template source code, exp. `GitHub`. If `CodeCommit` is set then other GitHub repository params are ignored 
+### Optional Inputs:
+  - `repository-type` - type of repository to be integrated with Sagemaker template source code, exp. `GitHub`. If `CodeCommit` is provided then other GitHub repository params are ignored. This is optional parameter, if not provided `CodeCommit` is set as default
   - `repository-owner` - owner or organisation of project code repository 
   - `access-token-secret-name` - AWS Secret Manager secret name where access token is stored, this is used to manage repository from template
   - `aws-codeconnection-arn` -  AWS CodeConnection ARN for repository provider, currently template supports GitHub provider
-
-### Optional Inputs:
   - `portfolio-name` - name of the Service Catalog Portfolio
   - `portfolio-owner` - owner of the Service Catalog Portfolio
   - `dev-vpc-id` - id of VPC in dev environment
@@ -166,8 +165,9 @@ parameters:
         name: studio
         key: StudioDomainArn
 ```
-### Sample manifest example with GitHub as source repositiry
+### Sample manifest example for source repository options
 [sagemaker-templates-modules-github.yaml](/examples/manifests/sagemaker-templates-modules-github.yaml)
+[sagemaker-templates-modules-codecommit.yaml](/examples/manifests/sagemaker-templates-modules-codecommit.yaml)
 
 ### Outputs (module metadata):
   - `ServiceCatalogPortfolioName` - the name of the Service Catalog Portfolio
