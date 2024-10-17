@@ -55,7 +55,9 @@ def stack(stack_defaults) -> cdk.Stack:
     sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
     repository_type = RepositoryType.CODECOMMIT
     access_token_secret_name = "github_token"
-    aws_codeconnection_arn = "arn:aws:codeconnections:xxxxxx:xxxxxxxxxxxx:connection/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    aws_codeconnection_arn = (
+        "arn:aws:codeconnections:xxxxxx:xxxxxxxxxxxx:connection/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    )
     repository_owner = "github-test-owner"
 
     return stack.ServiceCatalogStack(
