@@ -213,7 +213,7 @@ class Product(servicecatalog.ProductStack):
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 
-        codebuild_source: codebuild.Source
+        codebuild_source: ISource
         if repository_type == RepositoryType.CODECOMMIT:
             codebuild_source = self.codebuild_source_for_codecommit(sagemaker_project_name, deploy_app_asset)
         elif repository_type == RepositoryType.GITHUB:
