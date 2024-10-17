@@ -13,6 +13,7 @@ from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from aws_cdk import aws_s3 as s3
+from aws_cdk.aws_codebuild import ISource
 from constructs import Construct
 
 from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
@@ -31,7 +32,7 @@ class Product(servicecatalog.ProductStack):
         deploy_app_asset: s3_assets.Asset,
         access_token_secret_name: str,
         aws_codeconnection_arn: str,
-    ) -> Tuple[codebuild.Source, GitHubRepositoryCreator]:
+    ) -> Tuple[ISource, GitHubRepositoryCreator]:
         # Create GitHub repository
         github_repo = GitHubRepositoryCreator(
             self,
@@ -52,7 +53,7 @@ class Product(servicecatalog.ProductStack):
         self,
         sagemaker_project_name: str,
         deploy_app_asset: s3_assets.Asset,
-    ) -> codebuild.Source:
+    ) -> ISource:
         # Create CodeCommit repo from seed bucket/key
         repository = codecommit.Repository(
             self,
