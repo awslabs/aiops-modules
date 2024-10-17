@@ -1,8 +1,9 @@
 name: service-catalog
-
 path: modules/sagemaker/sagemaker-templates-service-catalog
 targetAccount: primary
 parameters:
+  - name: repository-type
+    value: CodeCommit
   - name: portfolio-access-role-arn
     valueFrom:
       moduleMetadata:

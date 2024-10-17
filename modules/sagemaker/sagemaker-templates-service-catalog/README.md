@@ -49,11 +49,27 @@ The template contains an example CI/CD pipeline to deploy the model endpoints to
 
 The template is based on basic multi-account template from [AWS Enterprise MLOps Framework](https://github.com/aws-samples/aws-enterprise-mlops-framework/blob/main/mlops-multi-account-cdk/mlops-sm-project-template/README.md#sagemaker-project-stack).
 
+#### Third-party Code Repository Integration 
+SageMaker templates support third party code repository (GitHub) integration along with default AWS CodeCommit. As part of integration, SageMaker templates will be able to manage (create, delete) repositories. As an example, if `sagemaker-templates-service-catalog` template configured to use GitHub as repository type then it would create code repository directly into GitHub account provided with manifest configuration. Repository will be named after SageMaker project name in AWS account `{sagemaker-project}-deploy`. For example, if SageMaker project name is `aiops-abalone-model` then GitHub repository would be created with name `aiops-abalone-model-deploy`.
+
+
+## Prerequesites:
+### AWS CodeCommit repository integration
+- There isn't any prerequesite for using CodeCommit repository with SageMaker templates. It is supported as default repository.
+> [!IMPORTANT] 
+> It is important to note AWS CodeCommit is no longer available to new customers. Existing customers of AWS CodeCommit can continue to use the service as normal. 
+### GitHub repository integration
+- Target AWS account should contain AWS Secret Manager secret that contains GitHub personal access token with required permissions to manage repository. Refer guide [Creating a fine-grained personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) in order to create access token.
+- Template also requires AWS CodeConnection created for GitHub provider in order to integrated GitHub repositories AWS CodeBuild and AWS CodePipeline. Refer guide [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html) in order to create connection with GitHub.
+
 ## Inputs and outputs:
 ### Required inputs:
   - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
-
 ### Optional Inputs:
+  - `repository-type` - type of repository to be integrated with Sagemaker template source code, exp. `GitHub`. If `CodeCommit` is provided then other GitHub repository params are ignored. This is optional parameter, if not provided `CodeCommit` is set as default
+  - `repository-owner` - owner or organisation of project code repository 
+  - `access-token-secret-name` - AWS Secret Manager secret name where access token is stored, this is used to manage repository from template
+  - `aws-codeconnection-arn` -  AWS CodeConnection ARN for repository provider, currently template supports GitHub provider
   - `portfolio-name` - name of the Service Catalog Portfolio
   - `portfolio-owner` - owner of the Service Catalog Portfolio
   - `dev-vpc-id` - id of VPC in dev environment
@@ -153,6 +169,9 @@ parameters:
         name: studio
         key: StudioDomainArn
 ```
+### Sample manifest example for source repository options
+[sagemaker-templates-modules-github.yaml](/examples/manifests/sagemaker-templates-modules-github.yaml)
+[sagemaker-templates-modules-codecommit.yaml](/examples/manifests/sagemaker-templates-modules-codecommit.yaml)
 
 ### Outputs (module metadata):
   - `ServiceCatalogPortfolioName` - the name of the Service Catalog Portfolio
