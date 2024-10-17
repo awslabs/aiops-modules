@@ -3,7 +3,7 @@
 
 
 import json
-from typing import Any, List, Optional
+from typing import Any, List, Tuple
 
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_servicecatalog as servicecatalog
@@ -31,7 +31,7 @@ class Product(servicecatalog.ProductStack):
         deploy_app_asset: s3_assets.Asset,
         access_token_secret_name: str,
         aws_codeconnection_arn: str,
-    ):
+    ) -> Tuple[codebuild.Source, GitHubRepositoryCreator]:
         # Create GitHub repository
         github_repo = GitHubRepositoryCreator(
             self,
@@ -52,7 +52,7 @@ class Product(servicecatalog.ProductStack):
         self,
         sagemaker_project_name: str,
         deploy_app_asset: s3_assets.Asset,
-    ):
+    ) -> codebuild.Source:
         # Create CodeCommit repo from seed bucket/key
         repository = codecommit.Repository(
             self,
@@ -86,9 +86,9 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: RepositoryType,
-        access_token_secret_name: Optional[str] = None,
-        aws_codeconnection_arn: Optional[str] = None,
-        repository_owner: Optional[str] = None,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -256,52 +256,52 @@ class Product(servicecatalog.ProductStack):
                 environment_variables=codebuild_env_vars,
             ),
         )
-
-        codebuild_project.role.attach_inline_policy(
-            iam.Policy(
-                self,
-                "Policy",
-                statements=[
-                    iam.PolicyStatement(
-                        sid="ModelPackageGroup",
-                        actions=[
-                            "sagemaker:DescribeModelPackageGroup",
-                        ],
-                        resources=[model_package_group_arn],
-                    ),
-                    iam.PolicyStatement(
-                        sid="ModelPackage",
-                        actions=[
-                            "sagemaker:DescribeModelPackage",
-                            "sagemaker:ListModelPackages",
-                            "sagemaker:UpdateModelPackage",
-                            "sagemaker:CreateModel",
-                        ],
-                        resources=[model_package_arn],
-                    ),
-                    iam.PolicyStatement(
-                        actions=[
-                            "sts:AssumeRole",
-                        ],
-                        effect=iam.Effect.ALLOW,
-                        resources=[
-                            f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/cdk*",
-                            f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/cdk*",
-                            f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/cdk*",
-                        ],
-                    ),
-                    iam.PolicyStatement(
-                        actions=["ssm:GetParameter"],
-                        resources=[
-                            f"arn:{Aws.PARTITION}:ssm:{dev_region}:{dev_account_id}:parameter/*",
-                            f"arn:{Aws.PARTITION}:ssm:{pre_prod_region}:{pre_prod_account_id}:parameter/*",
-                            f"arn:{Aws.PARTITION}:ssm:{prod_region}:{prod_account_id}:parameter/*",
-                        ],
-                    ),
-                ],
+        if codebuild_project.role is not None:
+            codebuild_project.role.attach_inline_policy(
+                iam.Policy(
+                    self,
+                    "Policy",
+                    statements=[
+                        iam.PolicyStatement(
+                            sid="ModelPackageGroup",
+                            actions=[
+                                "sagemaker:DescribeModelPackageGroup",
+                            ],
+                            resources=[model_package_group_arn],
+                        ),
+                        iam.PolicyStatement(
+                            sid="ModelPackage",
+                            actions=[
+                                "sagemaker:DescribeModelPackage",
+                                "sagemaker:ListModelPackages",
+                                "sagemaker:UpdateModelPackage",
+                                "sagemaker:CreateModel",
+                            ],
+                            resources=[model_package_arn],
+                        ),
+                        iam.PolicyStatement(
+                            actions=[
+                                "sts:AssumeRole",
+                            ],
+                            effect=iam.Effect.ALLOW,
+                            resources=[
+                                f"arn:{Aws.PARTITION}:iam::{dev_account_id}:role/cdk*",
+                                f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:role/cdk*",
+                                f"arn:{Aws.PARTITION}:iam::{prod_account_id}:role/cdk*",
+                            ],
+                        ),
+                        iam.PolicyStatement(
+                            actions=["ssm:GetParameter"],
+                            resources=[
+                                f"arn:{Aws.PARTITION}:ssm:{dev_region}:{dev_account_id}:parameter/*",
+                                f"arn:{Aws.PARTITION}:ssm:{pre_prod_region}:{pre_prod_account_id}:parameter/*",
+                                f"arn:{Aws.PARTITION}:ssm:{prod_region}:{prod_account_id}:parameter/*",
+                            ],
+                        ),
+                    ],
+                )
             )
-        )
-        if repository_type == RepositoryType.GITHUB:
+        if repository_type == RepositoryType.GITHUB and codebuild_project.role is not None:
             codebuild_project.role.attach_inline_policy(
                 iam.Policy(
                     self,
