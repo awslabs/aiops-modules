@@ -1,0 +1,21 @@
+name: ground-truth-labeling
+path: modules/sagemaker/sagemaker-ground-truth-labeling
+targetAccount: primary
+parameters:
+  - name: job_name
+    value: 'sentiment-classification'
+  - name: task_type
+    value: 'text_single_label_classification'
+
+  - name: labeling-workteam-arn
+    value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
+  - name: labeling-instructions-template-s3-uri
+    value: 's3://<bucket_name>/text_single_label_labeling_template.html'
+  - name: labeling-categories-s3-uri
+    value: 's3://<bucket_name>/text_single_label_labeling_categories.json'
+  - name: labeling-task-title
+    value: 'Labeling - Classification: Classify all texts as either positive, neutral or negative'
+  - name: labeling-task-description
+    value: 'Classify all texts as either positive, neutral or negative'
+  - name: labeling-task-keywords
+    value: [ 'text', 'classification', 'sentiment' ]
