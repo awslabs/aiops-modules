@@ -1,0 +1,30 @@
+name: fine-tuning-6b
+forceDependencyRedeploy: True
+toolchainRegion: us-east-1
+groups:
+  - name: base
+    path: manifests/fine-tuning-6b/base-modules.yaml
+  - name: images
+    path: manifests/fine-tuning-6b/images-modules.yaml
+  - name: core
+    path: manifests/fine-tuning-6b/core-modules.yaml
+  - name: integration
+    path: manifests/fine-tuning-6b/integration-modules.yaml
+  - name: ray-operator
+    path: manifests/fine-tuning-6b/ray-operator-modules.yaml
+  - name: ray-cluster
+    path: manifests/fine-tuning-6b/ray-cluster-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    codebuildImage: aws/codebuild/standard:7.0
+    parametersGlobal:
+      rayNamespaceName: ray
+      draImportPath: /ray/import/
+      draExportPath: /ray/export/
+    regionMappings:
+      - region: us-east-1
+        default: true

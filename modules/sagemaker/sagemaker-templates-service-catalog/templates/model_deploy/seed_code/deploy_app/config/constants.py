@@ -19,7 +19,9 @@ import json
 import os
 
 MAX_NAME_LENGTH = 63
-
+REPOSITORY_TYPE = os.getenv("REPOSITORY_TYPE", "CodeCommit")  # Default to CODECOMMIT if not set
+CODE_CONNECTION_ARN = os.getenv("CODE_CONNECTION_ARN", "")
+SOURCE_REPOSITORY = os.getenv("SOURCE_REPOSITORY", "")
 MODEL_BUCKET_ARN = os.environ["MODEL_BUCKET_ARN"]
 MODEL_PACKAGE_GROUP_NAME = os.getenv("MODEL_PACKAGE_GROUP_NAME", "")
 

@@ -8,8 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added GitHub as alternate option for code repository support along with AWS CodeCommit for sagemaker-templates-service-catalog module
+### **Changed**
+- updated manifests to idf release 1.12.0
+
+## v1.6.0
+
+### **Added**
+- added new manifest `manifests/fine-tuning-6B`
 
 ### **Changed**
+
+- updated mlflow version to 2.16.0 to support LLM tracing
+- remove CDK overhead from `mlflow-image` module
+- renamed mlflow manifests and updated README.MD
+- added head tolerations & node labels for flexible ray cluster pods scheduling
 
 ## v1.5.0
 
@@ -31,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pin `ray-operator`, `ray-cluster`, and `ray-image` modules versions
 - pin module versions for all manifests
 - the `sagemaker/sagemaker-model-package-promote-pipeline` module no longer generates a Docker image
+- lowercase `fine-tuning-6b` deployment name due to CDK resource naming constraints
 
 ## v1.4.0
 
