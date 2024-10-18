@@ -1,0 +1,21 @@
+name: ground-truth-labeling
+path: modules/sagemaker/sagemaker-ground-truth-labeling
+targetAccount: primary
+parameters:
+  - name: job_name
+    value: 'vehicle-classification'
+  - name: task_type
+    value: 'image_single_label_classification'
+
+  - name: labeling-workteam-arn
+    value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
+  - name: labeling-instructions-template-s3-uri
+    value: 's3://<bucket_name>/image_single_label_labeling_template.html'
+  - name: labeling-categories-s3-uri
+    value: 's3://<bucket_name>/image_single_label_labeling_categories.json'
+  - name: labeling-task-title
+    value: 'Labeling - Classification: Classify all images as containing a plane or a boat'
+  - name: labeling-task-description
+    value: 'Classify all images as containing a plane or a boat using the appropriate label'
+  - name: labeling-task-keywords
+    value: [ 'image', 'object', 'classification' ]
