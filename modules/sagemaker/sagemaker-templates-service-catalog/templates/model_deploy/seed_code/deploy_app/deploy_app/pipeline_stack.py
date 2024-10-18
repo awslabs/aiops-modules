@@ -11,6 +11,9 @@ from constructs import Construct
 from .deploy_endpoint_stack import DeployEndpointStack
 
 ENV = {
+    "REPOSITORY_TYPE": constants.REPOSITORY_TYPE,
+    "CODE_CONNECTION_ARN": constants.CODE_CONNECTION_ARN,
+    "SOURCE_REPOSITORY": constants.SOURCE_REPOSITORY,
     "MODEL_PACKAGE_GROUP_NAME": constants.MODEL_PACKAGE_GROUP_NAME,
     "MODEL_BUCKET_ARN": constants.MODEL_BUCKET_ARN,
     "PROJECT_ID": constants.PROJECT_ID,
@@ -133,10 +136,6 @@ class PipelineStack(cdk.Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        repository = codecommit.Repository.from_repository_name(
-            self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
-        )
-
         codepipeline_role = iam.Role(
             self,
             "CodePipelineRole",
@@ -154,13 +153,23 @@ class PipelineStack(cdk.Stack):
         )
         synth_codebuild_role.attach_inline_policy(create_inline_policy(self, "SynthStagePolicy"))
 
+        if constants.REPOSITORY_TYPE == "CodeCommit":
+            repository = codecommit.Repository.from_repository_name(
+                self, "Repository", repository_name=f"{constants.PROJECT_NAME}-deploy"
+            )
+            pipeline_source = CodePipelineSource.code_commit(repository=repository, branch="main")
+        elif constants.REPOSITORY_TYPE == "GitHub":
+            pipeline_source = CodePipelineSource.connection(
+                constants.SOURCE_REPOSITORY, "main", connection_arn=constants.CODE_CONNECTION_ARN
+            )
+
         pipeline = CodePipeline(
             self,
             "Pipeline",
             pipeline_name=f"{constants.PROJECT_NAME}-pipeline",
             synth=CodeBuildStep(
                 "Synth",
-                input=CodePipelineSource.code_commit(repository=repository, branch="main"),
+                input=pipeline_source,
                 install_commands=[
                     "npm install -g aws-cdk",
                 ],

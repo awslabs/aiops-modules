@@ -10,6 +10,8 @@ import cdk_nag
 import pytest
 from aws_cdk.assertions import Annotations, Match, Template
 
+from common.code_repo_construct import RepositoryType
+
 
 @pytest.fixture(scope="function")
 def stack_defaults():
@@ -51,6 +53,12 @@ def stack(stack_defaults) -> cdk.Stack:
     prod_security_group_ids = ["sg"]
     sagemaker_domain_id = "domain_id"
     sagemaker_domain_arn = f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}"
+    repository_type = RepositoryType.CODECOMMIT
+    access_token_secret_name = "github_token"
+    aws_codeconnection_arn = (
+        "arn:aws:codeconnections:xxxxxx:xxxxxxxxxxxx:connection/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    )
+    repository_owner = "github-test-owner"
 
     return stack.ServiceCatalogStack(
         app,
@@ -77,6 +85,10 @@ def stack(stack_defaults) -> cdk.Stack:
         ),
         sagemaker_domain_id=sagemaker_domain_id,
         sagemaker_domain_arn=sagemaker_domain_arn,
+        repository_type=repository_type,
+        access_token_secret_name=access_token_secret_name,
+        aws_codeconnection_arn=aws_codeconnection_arn,
+        repository_owner=repository_owner,
     )
 
 
