@@ -34,7 +34,6 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
     eks_cluster_name = "cluster"
     eks_cluster_admin_role_arn = "arn:aws:iam::123456789012:role/eks-testing-XXXXXX"
     eks_oidc_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/XXXXXXXX"
-    eks_openid_issuer = "sts.amazon.com"
     eks_handler_role_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/YYYYYYYY"
     namespace = "namespace"
     data_bucket_name = "bucket"

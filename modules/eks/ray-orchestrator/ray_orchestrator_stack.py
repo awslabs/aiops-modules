@@ -105,7 +105,7 @@ class RayOrchestrator(Stack):
                                     "-c",
                                     (
                                         'pip install ray"[default,client]"==2.30.0 && cd /home/ray/sample/ && '
-                                        'ray job submit --address ray://kuberay-head-svc:10001 '
+                                        "ray job submit --address ray://kuberay-head-svc:10001 "
                                         '--working-dir="." -- python job.py'
                                     ),
                                 ],
@@ -115,10 +115,7 @@ class RayOrchestrator(Stack):
                         "volumes": [
                             {
                                 "name": "code-sample",
-                                "configMap": {
-                                    "name": "rayjob",
-                                    "items": [{"key": "job.py", "path": "job.py"}]
-                                },
+                                "configMap": {"name": "rayjob", "items": [{"key": "job.py", "path": "job.py"}]},
                             }
                         ],
                     },
