@@ -58,7 +58,7 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
 
 
 @pytest.fixture(scope="function")
-def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
+def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
     import ray_orchestrator_stack
 
     app = cdk.App()
@@ -74,6 +74,9 @@ def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
     eks_cluster_endpoint = "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
     eks_cert_auth_data = "auth"
     namespace = "namespace"
+    step_function_timeout = 60
+    service_account_name = "service-account"
+    service_account_role_arn = "arn:aws:iam::123456789012:role/XXXXXXXX"
 
     return ray_orchestrator_stack.RayOrchestrator(
         scope=app,
@@ -87,8 +90,9 @@ def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         eks_openid_connect_provider_arn=eks_oidc_arn,
         eks_cert_auth_data=eks_cert_auth_data,
         namespace_name=namespace,
-        service_account_name=rbac_stack.service_account.service_account_name,
-        service_account_role_arn=rbac_stack.service_account.role.role_arn,
+        step_function_timeout=step_function_timeout,
+        service_account_name=service_account_name,
+        service_account_role_arn=service_account_role_arn,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
@@ -101,7 +105,7 @@ def test_synthesize_rbac_stack(rbac_stack: cdk.Stack) -> None:
     template.resource_count_is("AWS::IAM::Role", 2)
 
 
-def test_synthesize_ray_stack(ray_stack: cdk.Stack) -> None:
-    template = Template.from_stack(ray_stack)
+def test_synthesize_ray_orchestrator_stack(ray_orchestrator_stack: cdk.Stack) -> None:
+    template = Template.from_stack(ray_orchestrator_stack)
     template.resource_count_is("AWS::StepFunctions::StateMachine", 1)
     template.resource_count_is("AWS::Logs::LogGroup", 1)

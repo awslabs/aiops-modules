@@ -33,6 +33,7 @@ class RayOrchestrator(Stack):
         eks_openid_connect_provider_arn: str,
         eks_cert_auth_data: str,
         namespace_name: str,
+        step_function_timeout: int,
         service_account_name: str,
         service_account_role_arn: str,
         **kwargs: Any,
@@ -125,7 +126,7 @@ class RayOrchestrator(Stack):
 
         ek_run_job_state = sfn.CustomState(
             self,
-            "EksRunJobState",
+            "StartTrainingJob",
             state_json={
                 "Type": "Task",
                 "Resource": "arn:aws:states:::eks:runJob.sync",
@@ -144,9 +145,9 @@ class RayOrchestrator(Stack):
 
         self.sm = sfn.StateMachine(  # noqa: F841
             self,
-            "EKSRunJob",
+            "TrainingOnEks",
             definition_body=sfn.DefinitionBody.from_chainable(sfn.Chain.start(ek_run_job_state)),
-            timeout=Duration.minutes(15),
+            timeout=Duration.minutes(int(step_function_timeout)),
             logs=sfn.LogOptions(destination=self.log_group, level=sfn.LogLevel.ALL),
             role=service_account_role,
         )

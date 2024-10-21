@@ -42,6 +42,7 @@ ray_orchestrator_stack = RayOrchestrator(
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
     eks_cert_auth_data=app_settings.parameters.eks_cert_auth_data,
     namespace_name=app_settings.parameters.namespace,
+    step_function_timeout=app_settings.parameters.step_function_timeout,
     service_account_name=rbac_stack.service_account.service_account_name,
     service_account_role_arn=rbac_stack.service_account.role.role_arn,
     env=env,

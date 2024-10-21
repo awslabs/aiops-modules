@@ -27,6 +27,7 @@ def stack_defaults():
         os.environ["SEEDFARMER_PARAMETER_EKS_CERT_AUTH_DATA"] = "cert"
         os.environ["SEEDFARMER_PARAMETER_EKS_HANDLER_ROLE_ARN"] = "arn:aws:iam::123456789012:role/eks-test-YYYYYY"
         os.environ["SEEDFARMER_PARAMETER_NAMESPACE"] = "namespace"
+        os.environ["SEEDFARMER_PARAMETER_STEP_FUNCTION_TIMEOUT"] = "60"
 
         # Unload the app import so that subsequent tests don't reuse
         if "app" in sys.modules:
