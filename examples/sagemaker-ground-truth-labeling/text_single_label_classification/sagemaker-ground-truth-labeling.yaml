@@ -18,4 +18,4 @@ parameters:
   - name: labeling-task-description
     value: 'Classify all texts as either positive, neutral or negative'
   - name: labeling-task-keywords
-    value: [ 'text', 'classification', 'sentiment' ]
+    value: ['text', 'classification', 'sentiment']

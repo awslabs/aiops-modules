@@ -18,4 +18,4 @@ parameters:
   - name: labeling-task-description
     value: 'Classify all images as containing a plane and/or a boat, selecting all of the appropriate labels'
   - name: labeling-task-keywords
-    value: [ 'image', 'object', 'multi classification' ]
+    value: ['image', 'object', 'multi classification']

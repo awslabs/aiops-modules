@@ -18,4 +18,4 @@ parameters:
   - name: labeling-task-description
     value: 'Classify all texts selecting all of the appropriate labels'
   - name: labeling-task-keywords
-    value: [ 'text', 'multi classification', 'sentiment' ]
+    value: ['text', 'multi classification', 'sentiment']
