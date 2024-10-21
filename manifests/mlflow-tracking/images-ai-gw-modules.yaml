@@ -1,0 +1,10 @@
+name: mlflow-ai-gw-image
+path: modules/mlflow/mlflow-ai-gw-image/
+targetAccount: primary
+parameters:
+  - name: ecr-repository-name
+    valueFrom:
+      moduleMetadata:
+        group: storage
+        name: ecr-mlflow-ai-gw
+        key: EcrRepositoryName
