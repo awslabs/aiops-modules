@@ -16,4 +16,4 @@ parameters:
   - name: labeling-task-description
     value: 'Evaluate all texts and select the identify the entities from the provided values'
   - name: labeling-task-keywords
-    value: [ 'text', 'named entity recognition', 'detection' ]
+    value: ['text', 'named entity recognition', 'detection']

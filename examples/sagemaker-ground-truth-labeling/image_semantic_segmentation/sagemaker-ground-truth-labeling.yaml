@@ -18,8 +18,8 @@ parameters:
   - name: labeling-task-description
     value: 'Fill all planes and boats in the image using the appropriate label'
   - name: labeling-task-keywords
-    value: [ 'image', 'object', 'detection' ]
-    
+    value: ['image', 'object', 'detection']
+
   - name: verification-workteam-arn
     value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
   - name: verification-instructions-template-s3-uri

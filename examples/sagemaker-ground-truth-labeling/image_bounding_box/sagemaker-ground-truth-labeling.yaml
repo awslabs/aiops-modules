@@ -6,7 +6,7 @@ parameters:
     value: 'plane-and-boat-bounding-box'
   - name: task_type
     value: 'image_bounding_box'
-  
+
   - name: labeling-workteam-arn
     value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
   - name: labeling-instructions-template-s3-uri
@@ -18,7 +18,7 @@ parameters:
   - name: labeling-task-description
     value: 'Draw bounding boxes around all planes and boats in the image'
   - name: labeling-task-keywords
-    value: [ 'image', 'object', 'detection' ]
+    value: ['image', 'object', 'detection']
 
   - name: verification-workteam-arn
     value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
