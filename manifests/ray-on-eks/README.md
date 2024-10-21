@@ -11,12 +11,13 @@ file system. Additionally, a custom Ray container image is supported.
 
 ### Architecture
 
-![Ray on Amazon EKS Architecture](docs/ray-on-eks-architecture.jpg "Ray on Amazon EKS Architecture")
+![Ray on Amazon EKS Architecture](docs/ray-on-eks-architecture.png "Ray on Amazon EKS Architecture")
 
 ### Modules Inventory
 
 - [Ray Operator Module](modules/eks/ray-operator/README.md)
 - [Ray Cluster Module](modules/eks/ray-cluster/README.md)
+- [Ray Orchestrator Module](modules/eks/ray-orchestrator/README.md)
 - [Ray Image Module](modules/eks/ray-image/README.md)
 - [EKS Module](https://github.com/awslabs/idf-modules/tree/main/modules/compute/eks)
 - [FSx for Lustre Module](https://github.com/awslabs/idf-modules/tree/main/modules/storage/fsx-lustre)
