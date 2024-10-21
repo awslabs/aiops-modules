@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added `ray-orchestrator` module
 
 ### **Changed**
 - updated manifests to idf release 1.12.0
