@@ -34,8 +34,6 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_endpoint: str
     eks_oidc_arn: str
     eks_cert_auth_data: str
-    eks_service_account_name: str
-    eks_service_account_role_arn: str
     data_bucket_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 

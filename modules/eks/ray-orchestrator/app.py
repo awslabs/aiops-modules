@@ -42,8 +42,6 @@ ray_orchestrator_stack = RayOrchestrator(
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
     eks_cert_auth_data=app_settings.parameters.eks_cert_auth_data,
     namespace_name=app_settings.parameters.namespace,
-    # service_account_name=app_settings.parameters.eks_service_account_name,
-    # service_account_role_arn=app_settings.parameters.eks_service_account_role_arn,
     service_account_name=rbac_stack.service_account.service_account_name,
     service_account_role_arn=rbac_stack.service_account.role.role_arn,
     env=env,
@@ -62,8 +60,8 @@ CfnOutput(
     id="metadata",
     value=ray_orchestrator_stack.to_json_string(
         {
-            "ServiceAccountName": rbac_stack.service_account.service_account_name,
-            "ServiceAccountRoleArn": rbac_stack.service_account.role.role_arn,
+            "EksServiceAccountName": rbac_stack.service_account.service_account_name,
+            "EksServiceAccountRoleArn": rbac_stack.service_account.role.role_arn,
             "StateMachineArn": ray_orchestrator_stack.sm.state_machine_arn,
             "LogGroupArn": ray_orchestrator_stack.log_group.log_group_arn,
         }

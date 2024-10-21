@@ -85,7 +85,7 @@ class RbacStack(Stack):
                 )
             )
 
-        service_account_role.assume_role_policy.add_statements(
+        service_account_role.assume_role_policy.add_statements(  # type: ignore
             iam.PolicyStatement(
                 effect=iam.Effect.ALLOW,
                 actions=["sts:AssumeRole"],
@@ -177,7 +177,7 @@ class RbacStack(Stack):
                 "roleRef": {
                     "apiGroup": "rbac.authorization.k8s.io",
                     "kind": "ClusterRole",
-                    "name": f"system-access-{module_name}",
+                    "name": module_name,
                 },
                 "subjects": [
                     {"kind": "User", "name": module_name},
