@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
+import os
 from typing import Any, cast
 
 from aws_cdk import Duration, Stack, Tags
@@ -13,6 +14,8 @@ from aws_cdk.lambda_layer_kubectl_v29 import KubectlV29Layer
 from constructs import Construct, IConstruct
 
 _logger: logging.Logger = logging.getLogger(__name__)
+
+project_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class RayOrchestrator(Stack):
@@ -53,13 +56,29 @@ class RayOrchestrator(Stack):
             self, "OIDCProvider", eks_openid_connect_provider_arn
         )
 
-        eks.Cluster.from_cluster_attributes(
+        cluster = eks.Cluster.from_cluster_attributes(
             self,
             "EKSCluster",
             cluster_name=eks_cluster_name,
             open_id_connect_provider=provider,
             kubectl_role_arn=eks_admin_role_arn,
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
+        )
+
+        with open(os.path.join(project_dir, "scripts/training-6B.py"), "r") as f:
+            ray_job_file = f.read()
+
+        cluster.add_manifest(
+            "RayJobConfigMap",
+            {
+                "apiVersion": "v1",
+                "kind": "ConfigMap",
+                "metadata": {
+                    "name": "rayjob",
+                    "namespace": namespace_name,
+                },
+                "data": {"job.py": ray_job_file},
+            },
         )
 
         service_account_role = iam.Role.from_role_arn(self, "ServiceAccountRole", service_account_role_arn)
@@ -79,18 +98,27 @@ class RayOrchestrator(Stack):
                         "serviceAccountName": service_account_name,
                         "containers": [
                             {
-                                "name": "ray-hello-world-1",
+                                "name.$": "States.Format('job-{}', $$.Execution.Name)",
                                 "image": "python:3.9.19",
                                 "command": [
                                     "sh",
                                     "-c",
                                     (
-                                        'pip install ray"[client]"==2.30.0 && python -c '
-                                        '"import ray; '
-                                        "ray.init(address='ray://kuberay-head-svc:10001'); "
-                                        'print(ray.cluster_resources())"'
+                                        'pip install ray"[default,client]"==2.30.0 && cd /home/ray/sample/ && '
+                                        'ray job submit --address ray://kuberay-head-svc:10001 '
+                                        '--working-dir="." -- python job.py'
                                     ),
                                 ],
+                                "volumeMounts": [{"name": "code-sample", "mountPath": "/home/ray/sample"}],
+                            }
+                        ],
+                        "volumes": [
+                            {
+                                "name": "code-sample",
+                                "configMap": {
+                                    "name": "rayjob",
+                                    "items": [{"key": "job.py", "path": "job.py"}]
+                                },
                             }
                         ],
                     },
