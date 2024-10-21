@@ -54,7 +54,7 @@ Resources:
               - "logs:Describe*"
               - "logs:DescribeLogGroups"
             Resource:
-            - !Sub "arn:aws:logs::${AWS::AccountId}:log-group/*"
+              - !Sub "arn:aws:logs::${AWS::AccountId}:log-group/*"
           - Effect: Allow
             Action:
               - "iam:Get*"
