@@ -20,9 +20,9 @@ This module orchestrates submission of a training job to the Ray Cluster using A
 
 #### Optional
 
-- `step_function_timeout` - Step function timeout in minutes
+- `step_function_timeout` - Step function timeout in minutes. Defaults to `360`
 - `data_bucket_name` - Name of the bucket to grant service account permissions to
-- `tags` - List of additional tags to apply to all resources
+- `tags` - A dictionary of additional tags to apply to all resources. Defaults to None
 
 ## User Guide
 
