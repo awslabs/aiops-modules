@@ -2,7 +2,7 @@
 
 ## Description
 
-This module orcehstrates submission of a training job to the Ray Cluster using AWS Step Functions.
+This module orchestrates submission of a training job to the Ray Cluster using AWS Step Functions.
 
 ## Inputs/Outputs
 
