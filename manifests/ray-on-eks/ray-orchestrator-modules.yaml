@@ -1,0 +1,48 @@
+name: ray-orchestrator
+path: modules/eks/ray-orchestrator
+parameters:
+  - name: Namespace
+    valueFrom:
+      parameterValue: rayNamespaceName
+  - name: EksClusterAdminRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterMasterRoleArn
+  - name: EksHandlerRoleArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksHandlerRoleArn
+  - name: EksClusterName
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterName
+  - name: EksClusterEndpoint
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterEndpoint
+  - name: EksOidcArn
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksOidcArn
+  - name: EksCertAuthData
+    valueFrom:
+      moduleMetadata:
+        group: core
+        name: eks
+        key: EksClusterCertAuthData
+  - name: DataBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: buckets
+        key: ArtifactsBucketName
