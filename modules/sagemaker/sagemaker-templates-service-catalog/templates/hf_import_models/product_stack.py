@@ -27,8 +27,9 @@ from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
 
-from templates.hf_import_models.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 from common.code_repo_construct import RepositoryType
+from templates.hf_import_models.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
+
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Enables the import of Hugging Face models"

@@ -14,7 +14,9 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
-from common.code_repo_construct import RepositoryType, GitHubRepositoryCreator
+
+from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
+
 
 class BuildPipelineConstruct(Construct):
     def __init__(
@@ -40,7 +42,7 @@ class BuildPipelineConstruct(Construct):
         # Define resource name
         sagemaker_pipeline_name = f"{project_name}-{project_id}"
         sagemaker_pipeline_description = f"{project_name} Model Build Pipeline"
-        
+
         # Create source repo from seed bucket/key
         if repository_type == RepositoryType.CODECOMMIT:
             build_app_repository = codecommit.Repository(

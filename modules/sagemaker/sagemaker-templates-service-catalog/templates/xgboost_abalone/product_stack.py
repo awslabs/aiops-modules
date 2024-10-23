@@ -13,10 +13,11 @@ import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnOutput, CfnParameter, RemovalPolicy, Tags
 from constructs import Construct
 
+from common.code_repo_construct import RepositoryType
 from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
-from common.code_repo_construct import RepositoryType
+
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone dataset."

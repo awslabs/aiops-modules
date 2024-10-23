@@ -10,7 +10,9 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
-from common.code_repo_construct import RepositoryType, GitHubRepositoryCreator
+
+from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
+
 
 class BuildPipelineConstruct(Construct):
     def __init__(

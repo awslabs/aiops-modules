@@ -8,8 +8,9 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
 
-from templates.batch_inference.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 from common.code_repo_construct import RepositoryType
+from templates.batch_inference.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
+
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Creates a SageMaker pipeline for executing batch transforms."
