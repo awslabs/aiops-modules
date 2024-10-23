@@ -37,6 +37,7 @@ class BuildPipelineConstruct(Construct):
         super().__init__(scope, construct_id, **kwargs)
 
         # Create source repo from seed bucket/key
+        build_app_repository: codecommit.IRepository
         if repository_type == RepositoryType.CODECOMMIT:
             build_app_repository = codecommit.Repository(
                 self,
@@ -54,7 +55,7 @@ class BuildPipelineConstruct(Construct):
             if domain_arn:
                 Tags.of(build_app_repository).add("sagemaker:domain-arn", domain_arn)
         elif repository_type == RepositoryType.GITHUB:
-            build_app_repository = GitHubRepositoryCreator(
+            GitHubRepositoryCreator(
                 self,
                 "Build App Code Repo",
                 github_token_secret_name=access_token_secret_name,
