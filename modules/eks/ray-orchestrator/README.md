@@ -2,7 +2,7 @@
 
 ## Description
 
-This module orchestrates submission of a training job to the Ray Cluster using AWS Step Functions.
+This module orchestrates submission of a Ray training job to the Ray Cluster and an inference job using AWS Step Functions.
 
 ## Inputs/Outputs
 
@@ -22,6 +22,8 @@ This module orchestrates submission of a training job to the Ray Cluster using A
 
 - `step_function_timeout` - Step function timeout in minutes. Defaults to `360`
 - `data_bucket_name` - Name of the bucket to grant service account permissions to
+- `pvc_name` - Persistent volume claim name. Empty by defeault. If no PVC is provided, the volume will not be mounted.
+- `dra_export_path` - Persistent volume mount path. Defaults to `/ray/export/`. Must start with a `/`.
 - `tags` - A dictionary of additional tags to apply to all resources. Defaults to None
 
 ## User Guide
@@ -111,6 +113,15 @@ parameters:
         group: base
         name: buckets
         key: ArtifactsBucketName
+  - name: PvcName
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
 ```
 
 ## Module Metadata Outputs

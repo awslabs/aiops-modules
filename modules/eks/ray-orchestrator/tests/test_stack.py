@@ -77,6 +77,8 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
     step_function_timeout = 60
     service_account_name = "service-account"
     service_account_role_arn = "arn:aws:iam::123456789012:role/XXXXXXXX"
+    pvc_name = "pvc"
+    dra_export_path = "/ray/export"
 
     return ray_orchestrator_stack.RayOrchestrator(
         scope=app,
@@ -93,6 +95,8 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         step_function_timeout=step_function_timeout,
         service_account_name=service_account_name,
         service_account_role_arn=service_account_role_arn,
+        pvc_name=pvc_name,
+        dra_export_path=dra_export_path,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

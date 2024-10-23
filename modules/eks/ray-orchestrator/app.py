@@ -45,6 +45,8 @@ ray_orchestrator_stack = RayOrchestrator(
     step_function_timeout=app_settings.parameters.step_function_timeout,
     service_account_name=rbac_stack.service_account.service_account_name,
     service_account_role_arn=rbac_stack.service_account.role.role_arn,
+    pvc_name=app_settings.parameters.pvc_name,
+    dra_export_path=app_settings.parameters.dra_export_path,
     env=env,
 )
 

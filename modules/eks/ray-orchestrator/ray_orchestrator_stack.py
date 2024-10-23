@@ -3,7 +3,7 @@
 
 import logging
 import os
-from typing import Any, cast
+from typing import Any, Optional, cast
 
 from aws_cdk import Duration, Stack, Tags
 from aws_cdk import aws_eks as eks
@@ -36,6 +36,8 @@ class RayOrchestrator(Stack):
         step_function_timeout: int,
         service_account_name: str,
         service_account_role_arn: str,
+        pvc_name: Optional[str],
+        dra_export_path: str,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -66,8 +68,12 @@ class RayOrchestrator(Stack):
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
         )
 
+        service_account_role = iam.Role.from_role_arn(self, "ServiceAccountRole", service_account_role_arn)
+
         with open(os.path.join(project_dir, "scripts/training-6B.py"), "r") as f:
-            ray_job_file = f.read()
+            training_job_file = f.read()
+        with open(os.path.join(project_dir, "scripts/inference-6B.py"), "r") as f:
+            inference_job_file = f.read()
 
         cluster.add_manifest(
             "RayJobConfigMap",
@@ -78,18 +84,19 @@ class RayOrchestrator(Stack):
                     "name": "rayjob",
                     "namespace": namespace_name,
                 },
-                "data": {"job.py": ray_job_file},
+                "data": {
+                    "training-6B.py": training_job_file,
+                    "inference-6B.py": inference_job_file,
+                },
             },
         )
 
-        service_account_role = iam.Role.from_role_arn(self, "ServiceAccountRole", service_account_role_arn)
-
-        body = {
+        training_body = {
             "apiVerson": "batch/v1",
             "kind": "Job",
             "metadata": {
                 "namespace": namespace_name,
-                "name.$": "States.Format('job-{}', $$.Execution.Name)",
+                "name.$": "States.Format('job-training-{}', $$.Execution.Name)",
             },
             "spec": {
                 "backoffLimit": 1,
@@ -99,7 +106,7 @@ class RayOrchestrator(Stack):
                         "serviceAccountName": service_account_name,
                         "containers": [
                             {
-                                "name.$": "States.Format('job-{}', $$.Execution.Name)",
+                                "name.$": "States.Format('job-training-{}', $$.Execution.Name)",
                                 "image": "python:3.9.19",
                                 "command": [
                                     "sh",
@@ -107,7 +114,7 @@ class RayOrchestrator(Stack):
                                     (
                                         'pip install ray"[default,client]"==2.30.0 && cd /home/ray/sample/ && '
                                         "ray job submit --address ray://kuberay-head-svc:10001 "
-                                        '--working-dir="." -- python job.py'
+                                        '--working-dir="." -- python training-6B.py'
                                     ),
                                 ],
                                 "volumeMounts": [{"name": "code-sample", "mountPath": "/home/ray/sample"}],
@@ -116,7 +123,10 @@ class RayOrchestrator(Stack):
                         "volumes": [
                             {
                                 "name": "code-sample",
-                                "configMap": {"name": "rayjob", "items": [{"key": "job.py", "path": "job.py"}]},
+                                "configMap": {
+                                    "name": "rayjob",
+                                    "items": [{"key": "training-6B.py", "path": "training-6B.py"}],
+                                },
                             }
                         ],
                     },
@@ -124,7 +134,62 @@ class RayOrchestrator(Stack):
             },
         }
 
-        ek_run_job_state = sfn.CustomState(
+        volumes = [
+            {
+                "name": "code-sample",
+                "configMap": {"name": "rayjob", "items": [{"key": "inference-6B.py", "path": "inference-6B.py"}]},
+            }
+        ]
+        volume_mounts = [{"name": "code-sample", "mountPath": "/home/ray/sample"}]
+
+        # Mount the PVC to inference container to read model artifacts
+        if pvc_name:
+            volumes.append({"name": "persistent-storage", "persistentVolumeClaim": {"claimName": pvc_name}})
+            # subPath should never start with `/`
+            volume_mounts.append(
+                {"mountPath": dra_export_path, "name": "persistent-storage", "subPath": dra_export_path[1:]}
+            )
+
+        inference_body = {
+            "apiVerson": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "namespace": namespace_name,
+                "name.$": "States.Format('job-inference-{}', $$.Execution.Name)",
+            },
+            "spec": {
+                "backoffLimit": 1,
+                "template": {
+                    "spec": {
+                        "restartPolicy": "Never",
+                        "serviceAccountName": service_account_name,
+                        "containers": [
+                            {
+                                "name.$": "States.Format('job-inference-{}', $$.Execution.Name)",
+                                "image": "rayproject/ray-ml:2.30.0",
+                                "command": [
+                                    "sh",
+                                    "-c",
+                                    ("cd /home/ray/sample/ && " "python inference-6B.py"),
+                                ],
+                                "volumeMounts": volume_mounts,
+                            }
+                        ],
+                        "volumes": volumes,
+                        "nodeSelector": {"usage": "gpu"},
+                        "tolerations": [
+                            {
+                                "key": "nvidia.com/gpu",
+                                "value": "true",
+                                "effect": "NoSchedule",
+                            }
+                        ],
+                    },
+                },
+            },
+        }
+
+        ek_run_training_job_state = sfn.CustomState(
             self,
             "StartTrainingJob",
             state_json={
@@ -136,7 +201,24 @@ class RayOrchestrator(Stack):
                     "CertificateAuthority": eks_cert_auth_data,
                     "Endpoint": eks_cluster_endpoint,
                     "LogOptions": {"RetrieveLogs": True},
-                    "Job": body,
+                    "Job": training_body,
+                },
+            },
+        )
+
+        ek_run_inference_job_state = sfn.CustomState(
+            self,
+            "StartInference",
+            state_json={
+                "Type": "Task",
+                "Resource": "arn:aws:states:::eks:runJob.sync",
+                "Parameters": {
+                    "ClusterName": eks_cluster_name,
+                    "Namespace": namespace_name,
+                    "CertificateAuthority": eks_cert_auth_data,
+                    "Endpoint": eks_cluster_endpoint,
+                    "LogOptions": {"RetrieveLogs": True},
+                    "Job": inference_body,
                 },
             },
         )
@@ -146,7 +228,9 @@ class RayOrchestrator(Stack):
         self.sm = sfn.StateMachine(  # noqa: F841
             self,
             "TrainingOnEks",
-            definition_body=sfn.DefinitionBody.from_chainable(sfn.Chain.start(ek_run_job_state)),
+            definition_body=sfn.DefinitionBody.from_chainable(
+                sfn.Chain.start(ek_run_training_job_state).next(ek_run_inference_job_state)
+            ),
             timeout=Duration.minutes(int(step_function_timeout)),
             logs=sfn.LogOptions(destination=self.log_group, level=sfn.LogLevel.ALL),
             role=service_account_role,

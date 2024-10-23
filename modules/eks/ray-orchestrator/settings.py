@@ -36,6 +36,8 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cert_auth_data: str
     step_function_timeout: int = Field(default=360)
     data_bucket_name: Optional[str] = Field(default=None)
+    pvc_name: Optional[str] = Field(default=None)
+    dra_export_path: str = Field(default="/ray/export/")
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

@@ -46,3 +46,12 @@ parameters:
         group: base
         name: buckets
         key: ArtifactsBucketName
+  - name: PvcName
+    valueFrom:
+      moduleMetadata:
+        group: integration
+        name: lustre-on-eks
+        key: PersistentVolumeClaimName
+  - name: DraExportPath
+    valueFrom:
+      parameterValue: draExportPath
