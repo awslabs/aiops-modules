@@ -16,7 +16,7 @@ from constructs import Construct
 from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
-
+from common.code_repo_construct import RepositoryType
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone dataset."
@@ -33,6 +33,10 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_arn: str,
         dev_vpc: ec2.IVpc,
         dev_subnet_ids: List[str],
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -274,6 +278,10 @@ class Product(servicecatalog.ProductStack):
             encrypt_inter_container_traffic=encrypt_inter_container_traffic,
             subnet_ids=dev_subnet_ids,
             security_group_ids=security_group_ids,
+            repository_type=repository_type,
+            access_token_secret_name=access_token_secret_name,
+            aws_codeconnection_arn=aws_codeconnection_arn,
+            repository_owner=repository_owner,
         )
 
         CfnOutput(

@@ -28,7 +28,7 @@ from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
 
 from templates.hf_import_models.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
-
+from common.code_repo_construct import RepositoryType
 
 class Product(servicecatalog.ProductStack):
     DESCRIPTION: str = "Enables the import of Hugging Face models"
@@ -42,6 +42,10 @@ class Product(servicecatalog.ProductStack):
         deploy_app_asset: s3_assets.Asset,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
@@ -221,6 +225,10 @@ class Product(servicecatalog.ProductStack):
             model_package_group_name=model_package_group_name,
             hf_access_token_secret=hf_access_token_secret,
             hf_model_id=hf_model_id,
+            repository_type=repository_type,
+            access_token_secret_name=access_token_secret_name,
+            aws_codeconnection_arn=aws_codeconnection_arn,
+            repository_owner=repository_owner,
         )
 
         CfnOutput(

@@ -15,6 +15,7 @@ from constructs import Construct
 from templates.finetune_llm_evaluation.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
+from common.code_repo_construct import RepositoryType
 
 
 class Product(servicecatalog.ProductStack):
@@ -33,6 +34,10 @@ class Product(servicecatalog.ProductStack):
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -247,6 +252,10 @@ class Product(servicecatalog.ProductStack):
             model_bucket=model_bucket,
             pipeline_artifact_bucket=pipeline_artifact_bucket,
             repo_asset=build_app_asset,
+            repository_type=repository_type,
+            access_token_secret_name=access_token_secret_name,
+            aws_codeconnection_arn=aws_codeconnection_arn,
+            repository_owner=repository_owner,
         )
 
         CfnOutput(

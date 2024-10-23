@@ -10,7 +10,7 @@ from aws_cdk import aws_iam as iam
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
-
+from common.code_repo_construct import RepositoryType, GitHubRepositoryCreator
 
 class BuildPipelineConstruct(Construct):
     def __init__(
@@ -26,26 +26,43 @@ class BuildPipelineConstruct(Construct):
         model_package_group_name: str,
         model_bucket: s3.IBucket,
         base_job_prefix: str,
+        repository_type: RepositoryType,
+        access_token_secret_name: str,
+        aws_codeconnection_arn: str,
+        repository_owner: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Create source repo from seed bucket/key
-        build_app_repository = codecommit.Repository(
-            self,
-            "Build App Code Repo",
-            repository_name=f"{project_name}-{construct_id}",
-            code=codecommit.Code.from_asset(
-                asset=repo_asset,
-                branch="main",
-            ),
-        )
-        Tags.of(build_app_repository).add("sagemaker:project-id", project_id)
-        Tags.of(build_app_repository).add("sagemaker:project-name", project_name)
-        if domain_id:
-            Tags.of(build_app_repository).add("sagemaker:domain-id", domain_id)
-        if domain_arn:
-            Tags.of(build_app_repository).add("sagemaker:domain-arn", domain_arn)
+        if repository_type == RepositoryType.CODECOMMIT:
+            build_app_repository = codecommit.Repository(
+                self,
+                "Build App Code Repo",
+                repository_name=f"{project_name}-{construct_id}",
+                code=codecommit.Code.from_asset(
+                    asset=repo_asset,
+                    branch="main",
+                ),
+            )
+            Tags.of(build_app_repository).add("sagemaker:project-id", project_id)
+            Tags.of(build_app_repository).add("sagemaker:project-name", project_name)
+            if domain_id:
+                Tags.of(build_app_repository).add("sagemaker:domain-id", domain_id)
+            if domain_arn:
+                Tags.of(build_app_repository).add("sagemaker:domain-arn", domain_arn)
+        elif repository_type == RepositoryType.GITHUB:
+            build_app_repository = GitHubRepositoryCreator(
+                self,
+                "Build App Code Repo",
+                github_token_secret_name=access_token_secret_name,
+                repo_name=f"{project_name}-{construct_id}",
+                repo_description=f"Repository for project {project_name}",
+                github_owner=repository_owner,
+                s3_bucket_name=repo_asset.s3_bucket_name,
+                s3_bucket_object_key=repo_asset.s3_object_key,
+                code_connection_arn=aws_codeconnection_arn,
+            )
 
         sagemaker_seedcode_bucket = s3.Bucket.from_bucket_name(
             self, "SageMaker Seedcode Bucket", f"sagemaker-servicecatalog-seedcode-{Aws.REGION}"
@@ -189,14 +206,26 @@ class BuildPipelineConstruct(Construct):
 
         # add a source stage
         source_stage = build_pipeline.add_stage(stage_name="Source")
-        source_stage.add_action(
-            codepipeline_actions.CodeCommitSourceAction(
-                action_name="Source",
-                output=source_artifact,
-                repository=build_app_repository,
-                branch="main",
+        if repository_type == RepositoryType.CODECOMMIT:
+            source_stage.add_action(
+                codepipeline_actions.CodeCommitSourceAction(
+                    action_name="Source",
+                    output=source_artifact,
+                    repository=build_app_repository,
+                    branch="main",
+                )
             )
-        )
+        elif repository_type == RepositoryType.GITHUB:
+            source_stage.add_action(
+                codepipeline_actions.CodeStarConnectionsSourceAction(
+                    action_name="Source",
+                    owner=repository_owner,
+                    repo=f"{project_name}-{construct_id}",
+                    output=source_artifact,
+                    branch="main",
+                    connection_arn=aws_codeconnection_arn,
+                )
+            )
 
         # add a build stage
         build_stage = build_pipeline.add_stage(stage_name="Build")
