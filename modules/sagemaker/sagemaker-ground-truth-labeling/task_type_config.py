@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
 
 DEFAULT_LABELING_ATTRIBUTE_NAME = "label"
@@ -19,36 +20,22 @@ class UndefinedTaskTypeError(Exception):
     pass
 
 
+@dataclass
 class FeatureDefinitionConfig:
-    def __init__(
-        self,
-        feature_name: str,
-        feature_type: str,
-        output_key: List[Union[str, int]],
-    ):
-        self.feature_name = feature_name
-        self.feature_type = feature_type
-        self.output_key = output_key
+    feature_name: str
+    feature_type: str
+    output_key: List[Union[str, int]]
 
 
+@dataclass
 class TaskTypeConfig:
-    def __init__(
-        self,
-        task_type: str,
-        media_type: str,
-        source_key: str,
-        function_name: str,
-        labeling_attribute_name: str,
-        feature_group_config: List[FeatureDefinitionConfig],
-        verification_attribute_name: Optional[str] = None,
-    ):
-        self.task_type = task_type
-        self.media_type = media_type
-        self.source_key = source_key
-        self.function_name = function_name
-        self.labeling_attribute_name = labeling_attribute_name
-        self.verification_attribute_name = verification_attribute_name
-        self.feature_group_config = feature_group_config
+    task_type: str
+    media_type: str
+    source_key: str
+    function_name: str
+    labeling_attribute_name: str
+    feature_group_config: List[FeatureDefinitionConfig]
+    verification_attribute_name: Optional[str] = None
 
 
 class TaskTypeConfigManager:
