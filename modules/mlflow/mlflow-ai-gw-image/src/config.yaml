@@ -1,0 +1,13 @@
+endpoints:
+  - name: chat
+    endpoint_type: llm/v1/chat
+    model:
+      provider: bedrock
+      name: anthropic.claude-3-5-sonnet-20240620-v1:0
+      config:
+        aws_config:
+          aws_region: 'AWS_REGION'
+          aws_role_arn: 'AWS_ROLE_ARN'
+      limit:
+        renewal_period: minute
+        calls: 10

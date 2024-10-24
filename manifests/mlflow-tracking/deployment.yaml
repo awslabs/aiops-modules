@@ -12,6 +12,8 @@ groups:
     path: manifests/mlflow-tracking/images-modules.yaml
   - name: mlflow
     path: manifests/mlflow-tracking/mlflow-modules.yaml
+  - name: mlflow-ai-gw
+    path: manifests/mlflow-tracking/images-ai-gw-modules.yaml
 targetAccountMappings:
   - alias: primary
     accountId:
