@@ -1,0 +1,6 @@
+aws-cdk-lib~=2.162.1
+attrs==23.2.0
+pydantic~=2.7.1
+pydantic-settings~=2.2.1
+PyYAML==6.0.1
+aws-cdk.lambda-layer-kubectl-v29==2.0.0

@@ -11,12 +11,13 @@ file system. Additionally, a custom Ray container image is supported.
 
 ### Architecture
 
-![Ray on Amazon EKS Architecture](docs/ray-on-eks-architecture.jpg "Ray on Amazon EKS Architecture")
+![Ray on Amazon EKS Architecture](docs/ray-on-eks-architecture.png "Ray on Amazon EKS Architecture")
 
 ### Modules Inventory
 
 - [Ray Operator Module](modules/eks/ray-operator/README.md)
 - [Ray Cluster Module](modules/eks/ray-cluster/README.md)
+- [Ray Orchestrator Module](modules/eks/ray-orchestrator/README.md)
 - [Ray Image Module](modules/eks/ray-image/README.md)
 - [EKS Module](https://github.com/awslabs/idf-modules/tree/main/modules/compute/eks)
 - [FSx for Lustre Module](https://github.com/awslabs/idf-modules/tree/main/modules/storage/fsx-lustre)
@@ -31,7 +32,41 @@ For deployment instructions, please refer to [DEPLOYMENT.MD](https://github.com/
 
 ## User Guide
 
-### Submitting Jobs
+### Submitting Jobs using AWS Step Functions
+
+1. Navigate to AWS Step Functions and find step function starting with `TrainingOnEks`
+2. Start a new Step Function execution
+
+![Step Function Execution](docs/step-function.png "Step Function Execution")
+
+To observe the progress of the job using Ray Dashboard,
+
+1. Connect to EKS cluster
+```
+aws eks update-kubeconfig --region us-east-1 --name eks-cluster-xxx
+```
+
+2. Get Ray service endpoint:
+
+```
+kubectl get endpoints -n ray
+
+NAME               ENDPOINTS                                                      AGE
+kuberay-head-svc   ...:8080,...:10001,...:8000 + 2 more...                        98s
+kuberay-operator   ...:8080                                                       6m37s
+```
+
+3. Start port forwarding:
+
+```
+kubectl port-forward -n ray --address 0.0.0.0 service/kuberay-head-svc  8265:8265
+```
+
+4. Access the Ray Dashboard at `http://localhost:8265`:
+
+![Ray Dashboard](docs/ray-dashboard.png "Ray Dashboard")
+
+### Submitting Jobs from a local machine
 
 After deploying the manifest, follow the steps below to submit a job to the cluster.
 
