@@ -8,8 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added GitHub as code repository option along with AWS CodeCommit for sagemaker templates batch_inference, finetune_llm_evaluation, hf_import_models and xgboost_abalone
+- added `ray-orchestrator` module
 - added GitHub as alternate option for code repository support along with AWS CodeCommit for sagemaker-templates-service-catalog module
 - added SageMaker ground truth labeling module
+
 ### **Changed**
 - updated manifests to idf release 1.12.0
 
