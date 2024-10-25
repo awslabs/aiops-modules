@@ -36,10 +36,10 @@ parameters:
     value:
       eks_nodegroup_config:
         - eks_ng_name: ng1
-          eks_node_quantity: 2
-          eks_node_max_quantity: 5
+          eks_node_quantity: 1
+          eks_node_max_quantity: 1
           eks_node_min_quantity: 1
-          eks_node_disk_size: 200
+          eks_node_disk_size: 400
           eks_node_instance_type: "m5.12xlarge"
           eks_node_labels:
             usage: core
@@ -47,7 +47,7 @@ parameters:
           eks_node_quantity: 1
           eks_node_max_quantity: 10
           eks_node_min_quantity: 1
-          eks_node_disk_size: 200
+          eks_node_disk_size: 400
           eks_node_instance_type: "g4dn.4xlarge"
           eks_node_labels:
             usage: gpu
