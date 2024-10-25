@@ -1,0 +1,19 @@
+name: ground-truth-labeling
+path: modules/sagemaker/sagemaker-ground-truth-labeling
+targetAccount: primary
+parameters:
+  - name: job_name
+    value: 'named-entity-recognition'
+  - name: task_type
+    value: 'named_entity_recognition'
+
+  - name: labeling-workteam-arn
+    value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
+  - name: labeling-categories-s3-uri
+    value: 's3://<bucket_name>/named_entity_recognition_categories.json'
+  - name: labeling-task-title
+    value: 'Labeling - Named entity recognition: Indentify all entities in the text'
+  - name: labeling-task-description
+    value: 'Evaluate all texts and select the identify the entities from the provided values'
+  - name: labeling-task-keywords
+    value: ['text', 'named entity recognition', 'detection']

@@ -1,0 +1,34 @@
+name: ground-truth-labeling
+path: modules/sagemaker/sagemaker-ground-truth-labeling
+targetAccount: primary
+parameters:
+  - name: job_name
+    value: 'plane-and-boat-sem-seg'
+  - name: task_type
+    value: 'image_semantic_segmentation'
+
+  - name: labeling-workteam-arn
+    value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
+  - name: labeling-instructions-template-s3-uri
+    value: 's3://<bucket_name>/image_semantic_segmentation_labeling_template.html'
+  - name: labeling-categories-s3-uri
+    value: 's3://<bucket_name>/image_semantic_segmentation_labeling_categories.json'
+  - name: labeling-task-title
+    value: 'Labeling - Semantic segmentation: Fill all planes and boats in the image'
+  - name: labeling-task-description
+    value: 'Fill all planes and boats in the image using the appropriate label'
+  - name: labeling-task-keywords
+    value: ['image', 'object', 'detection']
+
+  - name: verification-workteam-arn
+    value: 'arn:aws:sagemaker:<region>:<account>:workteam/private-crowd/<workteam_name>'
+  - name: verification-instructions-template-s3-uri
+    value: 's3://<bucket_name>/image_semantic_segmentation_verification_template.liquid'
+  - name: verification-categories-s3-uri
+    value: 's3://<bucket_name>/image_semantic_segmentation_verification_categories.json'
+  - name: verification-task-title
+    value: 'Label verification - Semantic segmentation: Review the existing labels on the objects and choose the appropriate option.'
+  - name: verification-task-description
+    value: 'Verify that all of the planes and boats in the image are correctly labeled'
+  - name: verification-task-keywords
+    value: ['image', 'object', 'detection', 'label verification', 'semantic segmentation']
