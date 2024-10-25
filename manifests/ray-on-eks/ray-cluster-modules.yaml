@@ -1,5 +1,5 @@
 name: ray-cluster
-path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-cluster?ref=release/1.6.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-cluster?ref=release/1.7.0&depth=1
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:
@@ -34,8 +34,8 @@ parameters:
         cpu: "1"
         memory: "8G"
       limits:
-        cpu: "1"
-        memory: "8G"
+        cpu: "4"
+        memory: "16G"
   - name: WorkerReplicas
     value: 1
   - name: WorkerMinReplicas
@@ -45,11 +45,11 @@ parameters:
   - name: WorkerResources
     value:
       requests:
-        cpu: "1"
+        cpu: "4"
         memory: "8G"
       limits:
-        cpu: "1"
-        memory: "8G"
+        cpu: "14"
+        memory: "60G"
   - name: DataBucketName
     valueFrom:
       moduleMetadata:
