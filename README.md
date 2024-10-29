@@ -54,10 +54,11 @@ End-to-end example use-cases built using modules in this repository.
 
 ### Mlflow Modules
 
-| Type                                                                    | Description                                                                                                                                                                                       |
-|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)            | Creates Mlflow Docker container image and pushes the image to Elastic Container Registry                                                                                                          |
-| [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md) | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
+| Type                                                                          | Description                                                                                                                                                                                       |
+|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Mlflow Image Module](modules/mlflow/mlflow-image/README.md)                  | Creates Mlflow Tracing Server Docker image and pushes the image to Elastic Container Registry                                                                                                     |
+| [Mlflow on AWS Fargate Module](modules/mlflow/mlflow-fargate/README.md)       | Runs Mlflow container on AWS Fargate in a load-balanced Elastic Container Service. Supports Elastic File System and Relational Database Store for metadata persistence, and S3 for artifact store |
+| [Mlflow AI Gateway Image Module](modules/mlflow/mlflow-ai-gw-image/README.md) | Creates Mlflow AI Gateway Docker image and pushes the image to Elastic Container Registry                                                                                                         |
 
 ### FMOps/LLMOps Modules
 
