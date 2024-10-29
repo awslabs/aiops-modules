@@ -1,0 +1,28 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<crowd-form>
+  <crowd-bounding-box
+    name="boundingBox"
+    src="{{ task.input.taskObject | grant_read_access }}"
+    header="Please draw a box around all planes and boats in the image."
+    labels="{{ task.input.labels | to_json | escape }}"
+  >
+    <full-instructions header="Bounding box instructions">
+      <ol>
+        <li><strong>Inspect</strong> the image</li>
+        <li><strong>Determine</strong> if the specified label is/are visible in the picture.</li>
+        <li><strong>Outline</strong> each instance of the specified label in the image using the provided “Box” tool.</li>
+      </ol>
+      <ul>
+        <li>Boxes should fit tight around each object</li>
+        <li>Do not include parts of the object are overlapping or that cannot be seen, even though you think you can interpolate the whole shape.</li>
+        <li>Avoid including shadows.</li>
+        <li>If the target is off screen, draw the box up to the edge of the image.</li>
+      </ul>
+    </full-instructions>
+
+    <short-instructions>
+      <Strong>Outline</strong> each instance of the specified label in the image using the provided “Box” tool.
+      <!-- You may wish to include examples of correctly and incorrectly labeled images here -->
+    </short-instructions>
+  </crowd-bounding-box>
+</crowd-form>
