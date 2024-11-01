@@ -1,0 +1,25 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<crowd-form>
+    <crowd-classifier-multi-select
+      name="category"
+      categories="{{ task.input.labels | to_json | escape }}"
+      header="Select the relevant categories"
+      exclusion-category="{ text: 'None of the above' }"
+    >
+      <classification-target>
+        {{ task.input.taskObject }}
+      </classification-target>
+
+      <full-instructions header="Text Categorization Instructions">
+        <p><strong>Positive</strong> sentiment include: joy, excitement, delight</p>
+        <p><strong>Negative</strong> sentiment include: anger, sarcasm, anxiety</p>
+        <p><strong>Neutral</strong>: neither positive or negative, such as stating a fact</p>
+        <p>When the sentiment is mixed, such as both joy and sadness, use your judgment to choose the stronger emotion.</p>
+      </full-instructions>
+
+      <short-instructions>
+        Choose all categories that are expressed by the text.
+        <!-- You may wish to include examples of correctly and incorrectly labeled texts here -->
+      </short-instructions>
+    </crowd-classifier-multi-select>
+</crowd-form>

@@ -1,0 +1,39 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<crowd-form>
+  <crowd-image-classifier
+    name="annotatedResult"
+    src="{{ task.input.taskObject | grant_read_access }}"
+    header="Review the existing labels on the objects and choose the appropriate option."
+    categories="{{ task.input.labels | to_json | escape }}"
+    overlay="{
+      'boundingBox': {
+        labels: ['Plane','Boat'],
+        value: [
+          {% for box in task.input.manifestLine["label"].annotations %}
+            {% capture class_id %}{{ box.class_id }}{% endcapture %}
+            {% assign label = task.input.manifestLine["label-metadata"].class-map[class_id] %}
+          {
+            label: {{label | to_json}},
+            left: {{box.left}},
+            top: {{box.top}},
+            width: {{box.width}},
+            height: {{box.height}},
+          },
+          {% endfor %}
+        ]
+      }
+    }"
+  >
+    <full-instructions header="Label verification - Bounding box instructions">
+      <ol>
+        <li><strong>Read</strong> the task carefully and inspect the image.</li>
+        <li><strong>Read</strong> the options and review the examples provided to understand more about the labels.</li>
+        <li><strong>Choose</strong> the appropriate label that best suits the image.</li>
+      </ol>
+    </full-instructions>
+    <short-instructions>
+      <strong>Choose</strong> the appropriate label that best suits the image.
+      <!-- You may wish to include examples of correctly and incorrectly labeled images here -->
+    </short-instructions>
+  </crowd-image-classifier>
+</crowd-form>

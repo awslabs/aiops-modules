@@ -1,0 +1,44 @@
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+<crowd-form>
+  <crowd-image-classifier
+    name="annotatedResult"
+    src="{{ task.input.taskObject | grant_read_access }}"
+    header="Review the existing labels on the objects and choose the appropriate option."
+    categories="{{ task.input.labels | to_json | escape }}"
+    overlay="{
+      'semanticSegmentation': {
+        'labels': [
+          {% for key_value in task.input.manifestLine.label-ref-metadata.internal-color-map %}
+			{% assign item = key_value[1] %}
+			{% if item['class-name'] != 'BACKGROUND' %}
+			  '{{ item['class-name'] }}',
+			{% endif %}
+		  {% endfor %}
+        ],
+        labelMappings: {
+		  {% for key_value in task.input.manifestLine.label-ref-metadata.internal-color-map %}
+			{% assign item = key_value[1] %}
+            {% if item['class-name'] != 'BACKGROUND' %}
+              {{ item['class-name'] }}: {
+                color: '{{ item['hex-color'] }}'
+              },
+            {% endif %}
+          {% endfor %}
+		},
+        src: '{{ task.input.manifestLine['label-ref'] | grant_read_access }}',
+      }
+    }"
+  >
+    <full-instructions header="Label verification instructions">
+      <ol>
+        <li><strong>Read</strong> the task carefully and inspect the image.</li>
+        <li><strong>Read</strong> the options and review the examples provided to understand more about the labels.</li>
+        <li><strong>Choose</strong> the appropriate label that best suits the image.</li>
+      </ol>
+    </full-instructions>
+    <short-instructions>
+      <strong>Choose</strong> the appropriate label that best suits the image.
+      <!-- You may wish to include examples of correctly and incorrectly labeled images here -->
+    </short-instructions>
+  </crowd-image-classifier>
+</crowd-form>
