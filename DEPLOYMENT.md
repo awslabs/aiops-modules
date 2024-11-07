@@ -5,7 +5,7 @@
 1. Clone the repository and checkout a release branch using the below command:
 
 ```
-git clone --origin upstream --branch release/1.7.0 https://github.com/awslabs/aiops-modules
+git clone --origin upstream --branch release/1.7.1 https://github.com/awslabs/aiops-modules
 ```
 The release version can be replaced with the version of interest.
 
