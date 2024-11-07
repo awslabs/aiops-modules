@@ -8,10 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+
+### **Changed**
+
+## v1.7.1
+
+### **Added**
 - added `mlflow-ai-gw-image` module
 
 ### **Changed**
 - changed `ray-image` to pull from AWS Public ECR to avoid docker pull rate limits
+- changed `ray-orchestrator` sample script epochs to 0.01 to support demo scenarios
 
 ## v1.7.0
 
