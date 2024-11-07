@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added `mlflow-ai-gw-image` module
 
 ### **Changed**
-
+- changed `ray-image` to pull from AWS Public ECR to avoid docker pull rate limits
 
 ## v1.7.0
 
