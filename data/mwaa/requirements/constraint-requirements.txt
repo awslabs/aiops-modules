@@ -199,7 +199,7 @@ asttokens==2.4.1
 asyncssh==2.16.0
 atlasclient==1.0.0
 atlassian-python-api==3.41.15
-attrs==24.2.0
+attrs==23.2.0
 aws-sam-translator==1.91.0
 aws-xray-sdk==2.14.0
 azure-batch==14.2.0
@@ -279,7 +279,7 @@ decorator==5.1.1
 defusedxml==0.7.1
 deltalake==0.18.2
 diagrams==0.23.4
-dill==0.3.1.1
+dill==0.3.8
 distlib==0.3.8
 distro==1.9.0
 dnspython==2.6.1

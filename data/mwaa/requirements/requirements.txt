@@ -4,7 +4,7 @@ aiobotocore==2.14.0
 aioitertools==0.12.0
 cloudpickle==2.2.1 
 contextlib2==21.6.0 
-dill==0.3.1.1
+dill==0.3.8
 docker==7.1.0
 google-pasta==0.2.0 
 multiprocess==0.70.16
@@ -14,7 +14,7 @@ pathos==0.2.5
 pox==0.3.4 
 ppft==1.7.6.8
 s3fs==2024.6.1
-sagemaker==2.218.0 
+sagemaker==2.218.0
 schema==0.7.5 
 scipy==1.13.0
 smdebug-rulesconfig==1.0.1 
