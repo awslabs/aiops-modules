@@ -44,9 +44,9 @@ parameters:
           eks_node_labels:
             usage: core
         - eks_ng_name: ng-gpu
-          eks_node_quantity: 1
+          eks_node_quantity: 5
           eks_node_max_quantity: 10
-          eks_node_min_quantity: 1
+          eks_node_min_quantity: 5
           eks_node_disk_size: 400
           eks_node_instance_type: "g4dn.4xlarge"
           eks_node_labels:

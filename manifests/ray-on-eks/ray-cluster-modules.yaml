@@ -31,11 +31,11 @@ parameters:
   - name: HeadResources
     value:
       requests:
-        cpu: "1"
-        memory: "8G"
+        cpu: "8"
+        memory: "24G"
       limits:
-        cpu: "4"
-        memory: "16G"
+        cpu: "8"
+        memory: "24G"
   - name: WorkerReplicas
     value: 1
   - name: WorkerMinReplicas
@@ -45,8 +45,8 @@ parameters:
   - name: WorkerResources
     value:
       requests:
-        cpu: "4"
-        memory: "8G"
+        cpu: "14"
+        memory: "60G"
       limits:
         cpu: "14"
         memory: "60G"
