@@ -205,7 +205,7 @@ steps_per_epoch = train_ds_size // (batch_size * num_workers)
 trainer = TorchTrainer(
     train_loop_per_worker=train_func,
     train_loop_config={
-        "epochs": 0.01,
+        "epochs": 1,
         "batch_size": batch_size,  # per device
         "steps_per_epoch": steps_per_epoch,
     },
