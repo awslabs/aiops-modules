@@ -19,7 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 - changed `ray-image` to pull from AWS Public ECR to avoid docker pull rate limits
-- changed `ray-orchestrator` sample script epochs to 0.01 to support demo scenarios
+- changed `ray-orchestrator` to not retrieve full training job logs and avoid `States.DataLimitExceeded`
+- update `ray-on-eks` manifest cluster resources
 
 ## v1.7.0
 

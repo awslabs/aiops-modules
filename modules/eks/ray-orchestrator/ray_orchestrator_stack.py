@@ -200,7 +200,7 @@ class RayOrchestrator(Stack):
                     "Namespace": namespace_name,
                     "CertificateAuthority": eks_cert_auth_data,
                     "Endpoint": eks_cluster_endpoint,
-                    "LogOptions": {"RetrieveLogs": True},
+                    "LogOptions": {"RetrieveLogs": False},
                     "Job": training_body,
                 },
             },
