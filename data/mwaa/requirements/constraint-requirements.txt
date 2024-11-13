@@ -471,7 +471,7 @@ mypy-boto3-redshift-data==1.35.10
 mypy-boto3-s3==1.35.2
 mypy-extensions==1.0.0
 mypy==1.9.0
-mysql-connector-python==9.0.0
+mysql-connector-python==9.1.0
 mysqlclient==2.2.4
 nbclient==0.10.0
 nbformat==5.10.4
@@ -638,7 +638,7 @@ smbprotocol==1.14.0
 smmap==5.0.1
 sniffio==1.3.1
 snowballstemmer==2.2.0
-snowflake-connector-python==3.12.1
+snowflake-connector-python==3.12.3
 snowflake-sqlalchemy==1.6.1
 sortedcontainers==2.4.0
 soupsieve==2.6
