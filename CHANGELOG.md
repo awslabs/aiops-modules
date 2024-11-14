@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - update MWAA to 2.10.1
 - update MWAA dependencies
+- update ray modules to use kubectl handler role & update CDK to 2.166.0
 
 ## v1.7.1
 
@@ -22,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - changed `ray-image` to pull from AWS Public ECR to avoid docker pull rate limits
 - changed `ray-orchestrator` to not retrieve full training job logs and avoid `States.DataLimitExceeded`
 - update `ray-on-eks` manifest cluster resources
-- update ray operator, cluster & orchestrator modules to use kubectl handler role & update CDK to 2.166.0
 
 ## v1.7.0
 
