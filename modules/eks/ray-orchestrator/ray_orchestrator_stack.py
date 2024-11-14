@@ -29,6 +29,7 @@ class RayOrchestrator(Stack):
         module_name: str,
         eks_cluster_name: str,
         eks_admin_role_arn: str,
+        eks_handler_role_arn: str,
         eks_cluster_endpoint: str,
         eks_openid_connect_provider_arn: str,
         eks_cert_auth_data: str,
@@ -58,6 +59,7 @@ class RayOrchestrator(Stack):
         provider = eks.OpenIdConnectProvider.from_open_id_connect_provider_arn(
             self, "OIDCProvider", eks_openid_connect_provider_arn
         )
+        handler_role = iam.Role.from_role_arn(self, "HandlerRole", eks_handler_role_arn)
 
         cluster = eks.Cluster.from_cluster_attributes(
             self,
@@ -66,6 +68,7 @@ class RayOrchestrator(Stack):
             open_id_connect_provider=provider,
             kubectl_role_arn=eks_admin_role_arn,
             kubectl_layer=KubectlV29Layer(self, "Kubectlv29Layer"),
+            kubectl_lambda_role=handler_role,
         )
 
         service_account_role = iam.Role.from_role_arn(self, "ServiceAccountRole", service_account_role_arn)

@@ -3,7 +3,7 @@ deploy:
   phases:
     install:
       commands:
-        - npm install -g aws-cdk@2.162.1
+        - npm install -g aws-cdk@2.166.0
         - pip install -r requirements.txt
     build:
       commands:
@@ -23,7 +23,7 @@ destroy:
   phases:
     install:
       commands:
-        - npm install -g aws-cdk@2.162.1
+        - npm install -g aws-cdk@2.166.0
         - pip install -r requirements.txt
     build:
       commands:
