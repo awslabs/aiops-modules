@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - changed `ray-image` to pull from AWS Public ECR to avoid docker pull rate limits
 - changed `ray-orchestrator` to not retrieve full training job logs and avoid `States.DataLimitExceeded`
 - update `ray-on-eks` manifest cluster resources
-- update ray operator to use kubectl handler role & update CDK version
+- update ray operator & cluster modules to use kubectl handler role & update CDK version
 
 ## v1.7.0
 

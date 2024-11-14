@@ -41,6 +41,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     eks_cluster_name: str
     namespace: str
     eks_cluster_admin_role_arn: str
+    eks_handler_role_arn: str
     eks_oidc_arn: str
     service_account_name: str
     pvc_name: Optional[str] = Field(default=None)
