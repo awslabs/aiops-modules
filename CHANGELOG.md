@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
-## v1.8.0
+## v1.7.2
 
 ### **Added**
 
@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update MWAA dependencies
 - update ray modules to use kubectl handler role & update CDK to 2.166.0
 - update IDF module versions to 1.13.0
+- pin MWAA requirements file version
 
 ## v1.7.1
 
