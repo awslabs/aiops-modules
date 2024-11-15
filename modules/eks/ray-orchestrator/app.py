@@ -38,6 +38,7 @@ ray_orchestrator_stack = RayOrchestrator(
     module_name=app_settings.settings.module_name,
     eks_cluster_name=app_settings.parameters.eks_cluster_name,
     eks_admin_role_arn=app_settings.parameters.eks_cluster_admin_role_arn,
+    eks_handler_role_arn=app_settings.parameters.eks_handler_role_arn,
     eks_cluster_endpoint=app_settings.parameters.eks_cluster_endpoint,
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
     eks_cert_auth_data=app_settings.parameters.eks_cert_auth_data,

@@ -70,6 +70,7 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
 
     eks_cluster_name = "cluster"
     eks_cluster_admin_role_arn = "arn:aws:iam::123456789012:role/eks-testing-XXXXXX"
+    eks_handler_role_arn = "arn:aws:iam::123456789012:role/eks-testing-XXXXXX"
     eks_oidc_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/XXXXXXXX"
     eks_cluster_endpoint = "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
     eks_cert_auth_data = "auth"
@@ -88,6 +89,7 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         module_name=mod_name,
         eks_cluster_name=eks_cluster_name,
         eks_admin_role_arn=eks_cluster_admin_role_arn,
+        eks_handler_role_arn=eks_handler_role_arn,
         eks_cluster_endpoint=eks_cluster_endpoint,
         eks_openid_connect_provider_arn=eks_oidc_arn,
         eks_cert_auth_data=eks_cert_auth_data,

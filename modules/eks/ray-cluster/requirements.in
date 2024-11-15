@@ -1,5 +1,4 @@
-aws-cdk-lib~=2.145.0
-attrs==23.2.0
+aws-cdk-lib~=2.166.0
 pydantic~=2.7.1
 pydantic-settings~=2.2.1
 PyYAML==6.0.1

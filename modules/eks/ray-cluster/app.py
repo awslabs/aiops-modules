@@ -22,6 +22,7 @@ ray_cluster_stack = RayCluster(
     module_name=app_settings.settings.module_name,
     eks_cluster_name=app_settings.parameters.eks_cluster_name,
     eks_admin_role_arn=app_settings.parameters.eks_cluster_admin_role_arn,
+    eks_handler_role_arn=app_settings.parameters.eks_handler_role_arn,
     eks_openid_connect_provider_arn=app_settings.parameters.eks_oidc_arn,
     namespace_name=app_settings.parameters.namespace,
     service_account_name=app_settings.parameters.service_account_name,
