@@ -1,5 +1,5 @@
 name: ecr-mlflow
-path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=release/1.12.0&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=release/1.13.0&depth=1
 targetAccount: primary
 parameters:
   - name: image-tag-mutability
@@ -12,7 +12,7 @@ parameters:
     value: DESTROY
 ---
 name: ecr-mlflow-ai-gw
-path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=release/1.12.0&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/ecr?ref=release/1.13.0&depth=1
 targetAccount: primary
 parameters:
   - name: image-tag-mutability
@@ -25,7 +25,7 @@ parameters:
     value: DESTROY
 ---
 name: buckets
-path: git::https://github.com/awslabs/idf-modules.git//modules/storage/buckets?ref=release/1.12.0&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/buckets?ref=release/1.13.0&depth=1
 targetAccount: primary
 parameters:
   - name: encryption-type
@@ -34,7 +34,7 @@ parameters:
     value: DESTROY
 ---
 name: mlflow-mysql
-path: git::https://github.com/awslabs/idf-modules.git//modules/database/rds?ref=release/1.12.0&depth=1
+path: git::https://github.com/awslabs/idf-modules.git//modules/database/rds?ref=release/1.13.0&depth=1
 targetAccount: primary
 parameters:
   - name: vpc-id
