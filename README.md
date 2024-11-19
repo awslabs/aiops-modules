@@ -88,8 +88,8 @@ End-to-end example use-cases built using modules in this repository.
 |-----------------------------------------------------------|--------------------------------------------------------------|
 | [Ray Operator Module](modules/eks/ray-operator/README.md) | Provisions a Ray Operator on EKS.                            |
 | [Ray Cluster Module](modules/eks/ray-cluster/README.md)   | Provisions a Ray Cluster on EKS. Requires a Ray Operator.    |
+| [Ray Orchestrator Module](modules/eks/ray-orchestrator/README.md)       | Creates a Step Function to orcehstrate submission of a sample Ray job that fine-tunes [GPT-J 6B parameters Large Language Model](https://huggingface.co/EleutherAI/gpt-j-6b) on [tiny shakespeare](https://huggingface.co/datasets/karpathy/tiny_shakespeare) dataset and performs inference. |
 | [Ray Image Module](modules/eks/ray-image/README.md)       | An example that builds a custom Ray image and pushes to ECR. |
-
 
 ### Example Modules
 
