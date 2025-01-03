@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 ### **Changed**
+- enforce ssl on pipeline bucket in sagemaker templates module
 
 ## v1.7.2
 
