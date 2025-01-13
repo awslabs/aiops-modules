@@ -726,7 +726,7 @@ uv==0.4.1
 validators==0.33.0
 vertica-python==1.4.0
 vine==5.1.0
-virtualenv==20.26.3
+virtualenv==20.26.6
 watchtower==3.3.1
 wcwidth==0.2.13
 weaviate-client==4.7.1
