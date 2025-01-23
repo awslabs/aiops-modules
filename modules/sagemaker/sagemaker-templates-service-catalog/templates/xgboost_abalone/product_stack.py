@@ -255,6 +255,7 @@ class Product(servicecatalog.ProductStack):
             bucket_name=f"pipeline-{sagemaker_project_name}-{Aws.ACCOUNT_ID}",
             encryption_key=kms_key,
             versioned=True,
+            enforce_ssl=True,
             removal_policy=RemovalPolicy.DESTROY,
         )
 
