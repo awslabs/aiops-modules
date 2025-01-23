@@ -132,7 +132,7 @@ apache-airflow-providers-discord==3.8.0
 apache-airflow-providers-docker==3.13.0
 apache-airflow-providers-elasticsearch==5.5.0
 apache-airflow-providers-exasol==4.6.0
-apache-airflow-providers-fab==1.5.0
+apache-airflow-providers-fab==1.5.2
 apache-airflow-providers-facebook==3.6.0
 apache-airflow-providers-ftp==3.11.0
 apache-airflow-providers-github==2.7.0
@@ -287,7 +287,7 @@ docker==7.1.0
 docopt==0.6.2
 docstring_parser==0.16
 docutils==0.16
-duckdb==1.0.0
+duckdb==1.1.0
 elastic-transport==8.15.0
 elasticsearch==8.15.0
 email_validator==2.2.0
@@ -726,7 +726,7 @@ uv==0.4.1
 validators==0.33.0
 vertica-python==1.4.0
 vine==5.1.0
-virtualenv==20.26.3
+virtualenv==20.26.6
 watchtower==3.3.1
 wcwidth==0.2.13
 weaviate-client==4.7.1
