@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added snyk security scans workflow
 
 ### **Changed**
 - enforce ssl on pipeline bucket in sagemaker templates module
