@@ -45,6 +45,12 @@ studio_stack = stack.SagemakerStudioStack(
     enable_custom_sagemaker_projects=False,
     enable_domain_resource_isolation=True,
     auth_mode="IAM",
+    mlflow_enabled=False,
+    mlflow_server_name="mlflow",
+    mlflow_server_version=None,
+    mlflow_server_size=None,
+    mlflow_artifact_store_bucket_name=None,
+    mlflow_artifact_store_bucket_prefix="/",
     env=cdk.Environment(account=os.getenv("CDK_DEFAULT_ACCOUNT"), region="us-east-1"),
 )
 
