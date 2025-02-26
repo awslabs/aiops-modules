@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any
+from typing import Any, Optional
 
 from aws_cdk import Aws
 from aws_cdk import aws_iam as iam
@@ -14,6 +14,7 @@ class SMRoles(Construct):
         scope: Construct,
         construct_id: str,
         s3_bucket_prefix: str,
+        mlflow_artifact_store_bucket_name: Optional[str],
         env: str,
         **kwargs: Any,
     ) -> None:
@@ -197,6 +198,19 @@ class SMRoles(Construct):
                 ),
             ],
         )
+        mlflow_policy = iam.Policy(
+            self,
+            "mlflow_policy",
+            statements=[
+                iam.PolicyStatement(
+                    effect=iam.Effect.ALLOW,
+                    actions=[
+                        "sagemaker-mlflow:*",
+                    ],
+                    resources=["*"],
+                ),
+            ],
+        )
 
         # create role for each persona
 
@@ -229,6 +243,7 @@ class SMRoles(Construct):
         services_policy.attach_to_role(self.data_scientist_role)
         kms_policy.attach_to_role(self.data_scientist_role)
         s3_policy.attach_to_role(self.data_scientist_role)
+        mlflow_policy.attach_to_role(self.data_scientist_role)
 
         # role for Lead Data Scientist persona
         self.lead_data_scientist_role = iam.Role(
@@ -262,6 +277,7 @@ class SMRoles(Construct):
         kms_policy.attach_to_role(self.lead_data_scientist_role)
         s3_policy.attach_to_role(self.lead_data_scientist_role)
         cdk_deploy_policy.attach_to_role(self.lead_data_scientist_role)
+        mlflow_policy.attach_to_role(self.data_scientist_role)
 
         # default role for sagemaker persona
         self.sagemaker_studio_role = iam.Role(
@@ -291,3 +307,40 @@ class SMRoles(Construct):
         services_policy.attach_to_role(self.sagemaker_studio_role)
         kms_policy.attach_to_role(self.sagemaker_studio_role)
         s3_policy.attach_to_role(self.sagemaker_studio_role)
+
+        mlflow_tracking_server_policy = iam.Policy(
+            self,
+            "mlflow-server-policy",
+            statements=[
+                iam.PolicyStatement(
+                    effect=iam.Effect.ALLOW,
+                    actions=[
+                        "s3:Get*",
+                        "s3:Put*",
+                        "s3:List*",
+                    ],
+                    resources=[
+                        f"arn:{Aws.PARTITION}:s3:::{mlflow_artifact_store_bucket_name}*",
+                    ],
+                ),
+                iam.PolicyStatement(
+                    effect=iam.Effect.ALLOW,
+                    actions=[
+                        "sagemaker:AddTags",
+                        "sagemaker:CreateModelPackageGroup",
+                        "sagemaker:CreateModelPackage",
+                        "sagemaker:UpdateModelPackage",
+                        "sagemaker:DescribeModelPackageGroup",
+                    ],
+                    resources=["*"],
+                ),
+            ],
+        )
+
+        # Role for Mlflow Tracking Server
+        self.mlflow_tracking_server_role = iam.Role(
+            self,
+            "mlflow-role",
+            assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
+        )
+        mlflow_tracking_server_policy.attach_to_role(self.mlflow_tracking_server_role)
