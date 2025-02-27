@@ -277,7 +277,7 @@ class SMRoles(Construct):
         kms_policy.attach_to_role(self.lead_data_scientist_role)
         s3_policy.attach_to_role(self.lead_data_scientist_role)
         cdk_deploy_policy.attach_to_role(self.lead_data_scientist_role)
-        mlflow_policy.attach_to_role(self.data_scientist_role)
+        mlflow_policy.attach_to_role(self.lead_data_scientist_role)
 
         # default role for sagemaker persona
         self.sagemaker_studio_role = iam.Role(
