@@ -123,6 +123,8 @@ class SagemakerStudioStack(Stack):
             for user in lead_data_science_users
         ]
 
+        self.mlflow_server = None
+
         if mlflow_enabled:
             self.mlflow_server = self.mlflow_tracking_server(
                 mlflow_server_name=mlflow_server_name,

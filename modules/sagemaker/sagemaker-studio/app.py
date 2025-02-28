@@ -50,6 +50,7 @@ CfnOutput(
             "DataScientistRoleArn": stack.sm_roles.data_scientist_role.role_arn,
             "LeadDataScientistRoleArn": stack.sm_roles.lead_data_scientist_role.role_arn,
             "SageMakerExecutionRoleArn": stack.sm_roles.sagemaker_studio_role.role_arn,
+            "MlflowTrackingServerArn": stack.mlflow_server.attr_tracking_server_arn if stack.mlflow_server else None,
         }
     ),
 )
