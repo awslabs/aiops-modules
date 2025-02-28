@@ -79,7 +79,8 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   "StudioDomainEFSId": "fs-0a550ea71ecac4978",
   "StudioDomainId": "d-flfqmvy84hfq",
   "StudioDomainARN": "arn:aws:sagemaker:us-east-1:XXXXXXXXXXXX:domain/d-flfqmvy84hfq",
-  "StudioDomainName": "mlops-sagemaker-sagemaker-sagemaker-studio-studio-domain"
+  "StudioDomainName": "mlops-sagemaker-sagemaker-sagemaker-studio-studio-domain",
+  "MlflowTrackingServerArn":"arn:aws:sagemaker:us-east-1:XXXXXXXXXXXX:mlflow-tracking-server/mlflow"
 }
 ```
 
