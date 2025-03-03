@@ -41,6 +41,13 @@ class SeedFarmerParameters(CdkBaseSettings):
     data_science_users: List[str] = Field(default=[])
     lead_data_science_users: List[str] = Field(default=[])
 
+    mlflow_enabled: bool = Field(default=False)
+    mlflow_server_name: str = Field(default="mlflow")
+    mlflow_server_version: Optional[str] = Field(default=None)
+    mlflow_server_size: Optional[str] = Field(default=None)
+    mlflow_artifact_store_bucket_name: Optional[str] = Field(default=None)
+    mlflow_artifact_store_bucket_prefix: str = Field(default="/")
+
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

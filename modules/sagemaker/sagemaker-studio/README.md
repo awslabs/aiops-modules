@@ -52,6 +52,12 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `retain_efs` - True | False -- if set to True, the EFS volume will persist after domain deletion.  Default is True
   - `enable_custom_sagemaker_projects` - True | False -- if set to True, custom sagemaker projects will be enabled for the data science and lead data science users.  Default is False
   - `enable_domain_resource_isolation` - True | False -- if set to True, SageMaker cannot access resources from other domains.  Default is True
+  - `mlflow_enabled` - True | False -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
+  - `mlflow_server_name` - tracking server name, `mlflow` by default.
+  - `mlflow_server_version` - tracking server version. Leave empty for latest available.
+  - `mlflow_server_size` - tracking server size. Allowed values: ` Small | Medium | Large`.
+  - `mlflow_artifact_store_bucket_name` - name of the bucket used by MLFlow as artifact store. Required if `mlflow_enabled` is True.
+  - `mlflow_artifact_store_bucket_prefix` - prefix of the bucket used by MLFlow as artifact store. `/` by default.
 
 ### Outputs (module metadata):
   - `StudioDomainName` - the name of the domain created by Sagemaker Studio
@@ -73,7 +79,8 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   "StudioDomainEFSId": "fs-0a550ea71ecac4978",
   "StudioDomainId": "d-flfqmvy84hfq",
   "StudioDomainARN": "arn:aws:sagemaker:us-east-1:XXXXXXXXXXXX:domain/d-flfqmvy84hfq",
-  "StudioDomainName": "mlops-sagemaker-sagemaker-sagemaker-studio-studio-domain"
+  "StudioDomainName": "mlops-sagemaker-sagemaker-sagemaker-studio-studio-domain",
+  "MlflowTrackingServerArn":"arn:aws:sagemaker:us-east-1:XXXXXXXXXXXX:mlflow-tracking-server/mlflow"
 }
 ```
 

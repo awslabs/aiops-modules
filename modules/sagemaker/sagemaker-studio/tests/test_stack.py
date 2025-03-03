@@ -21,7 +21,7 @@ def stack_defaults() -> None:
 
 
 @pytest.fixture(scope="function")
-def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str) -> cdk.Stack:
+def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str, mlflow_enabled: bool) -> cdk.Stack:
     import stack
 
     app = cdk.App()
@@ -34,6 +34,11 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str
     lead_data_science_users = ["lead-ds-user-1"]
     app_image_config_name = None
     image_name = None
+    mlflow_server_name = "mlflow"
+    mlflow_server_version = None
+    mlflow_server_size = None
+    mlflow_artifact_store_bucket_name = "bucket"
+    mlflow_artifact_store_bucket_prefix = "/"
 
     return stack.SagemakerStudioStack(
         app,
@@ -48,6 +53,12 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str
         image_name=image_name,
         enable_custom_sagemaker_projects=enable_custom_sagemaker_projects,
         auth_mode=auth_mode,
+        mlflow_enabled=mlflow_enabled,
+        mlflow_server_name=mlflow_server_name,
+        mlflow_server_version=mlflow_server_version,
+        mlflow_server_size=mlflow_server_size,
+        mlflow_artifact_store_bucket_name=mlflow_artifact_store_bucket_name,
+        mlflow_artifact_store_bucket_prefix=mlflow_artifact_store_bucket_prefix,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
@@ -57,19 +68,26 @@ def stack(stack_defaults, enable_custom_sagemaker_projects: bool, auth_mode: str
 
 
 @pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
+@pytest.mark.parametrize("mlflow_enabled", [True, False])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
-def test_synthesize_stack(stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str) -> None:
+def test_synthesize_stack(
+    stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str, mlflow_enabled: bool
+) -> None:
     template = Template.from_stack(stack)
 
     template.resource_count_is("AWS::SageMaker::Domain", 1)
     template.resource_count_is("AWS::SageMaker::UserProfile", 2)
     template.resource_count_is("AWS::EC2::SecurityGroup", 1)
-    template.resource_count_is("AWS::IAM::Role", 5 if enable_custom_sagemaker_projects else 3)
+    template.resource_count_is("AWS::IAM::Role", 6 if enable_custom_sagemaker_projects else 4)
+    template.resource_count_is("AWS::SageMaker::MlflowTrackingServer", 1 if mlflow_enabled else 0)
 
 
 @pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
+@pytest.mark.parametrize("mlflow_enabled", [True, False])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
-def test_no_cdk_nag_errors(stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str) -> None:
+def test_no_cdk_nag_errors(
+    stack: cdk.Stack, enable_custom_sagemaker_projects: bool, auth_mode: str, mlflow_enabled: bool
+) -> None:
     cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks())
 
     nag_errors = Annotations.from_stack(stack).find_error(

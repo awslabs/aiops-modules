@@ -33,6 +33,12 @@ class SagemakerStudioStack(Stack):
         enable_custom_sagemaker_projects: bool,
         enable_domain_resource_isolation: bool,
         auth_mode: str,
+        mlflow_enabled: bool,
+        mlflow_server_name: str,
+        mlflow_server_version: Optional[str],
+        mlflow_server_size: Optional[str],
+        mlflow_artifact_store_bucket_name: Optional[str],
+        mlflow_artifact_store_bucket_prefix: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -45,7 +51,7 @@ class SagemakerStudioStack(Stack):
         s3_bucket_prefix = studio_bucket_name or f"{construct_id}-bucket"
 
         # create roles to be used for sagemaker user profiles and attached to sagemaker studio domain
-        self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, kwargs["env"])
+        self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, mlflow_artifact_store_bucket_name, kwargs["env"])
 
         # setup security group to be used for sagemaker studio domain
         sagemaker_sg = ec2.SecurityGroup(
@@ -116,6 +122,17 @@ class SagemakerStudioStack(Stack):
             )
             for user in lead_data_science_users
         ]
+
+        self.mlflow_server = None
+
+        if mlflow_enabled:
+            self.mlflow_server = self.mlflow_tracking_server(
+                mlflow_server_name=mlflow_server_name,
+                mlflow_server_version=mlflow_server_version,
+                mlflow_server_size=mlflow_server_size,
+                mlflow_artifact_store_bucket_name=mlflow_artifact_store_bucket_name,
+                mlflow_artifact_store_bucket_prefix=mlflow_artifact_store_bucket_prefix,
+            )
 
         cdk_nag.NagSuppressions.add_resource_suppressions(
             self.sm_roles,
@@ -287,4 +304,23 @@ class SagemakerStudioStack(Stack):
             domain_name=domain_name,
             subnet_ids=subnet_ids,
             vpc_id=vpc_id,
+        )
+
+    def mlflow_tracking_server(
+        self,
+        mlflow_server_name: str,
+        mlflow_server_version: Optional[str],
+        mlflow_server_size: Optional[str],
+        mlflow_artifact_store_bucket_name: Optional[str],
+        mlflow_artifact_store_bucket_prefix: str,
+    ) -> sagemaker.CfnMlflowTrackingServer:
+        return sagemaker.CfnMlflowTrackingServer(
+            self,
+            "MlflowTrackingServer",
+            tracking_server_name=mlflow_server_name,
+            role_arn=self.sm_roles.mlflow_tracking_server_role.role_arn,
+            artifact_store_uri=f"s3://{mlflow_artifact_store_bucket_name}{mlflow_artifact_store_bucket_prefix}",
+            mlflow_version=mlflow_server_version,
+            tracking_server_size=mlflow_server_size,
+            automatic_model_registration=False,
         )
