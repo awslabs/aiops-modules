@@ -36,6 +36,9 @@ class SeedFarmerParameters(CdkBaseSettings):
     image_name: Optional[str] = Field(default=None)
     enable_custom_sagemaker_projects: bool = Field(default=False)
     enable_domain_resource_isolation: bool = Field(default=True)
+    enable_jupyterlab_app: bool = Field(default=False)
+    enable_jupyterlab_app_sharing: bool = Field(default=False)
+    jupyterlab_app_instance_type: Optional[str] = Field(default=None)
     auth_mode: Literal["IAM", "SSO"] = Field(default="IAM")
 
     data_science_users: List[str] = Field(default=[])

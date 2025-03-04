@@ -32,6 +32,9 @@ class SagemakerStudioStack(Stack):
         image_name: Optional[str],
         enable_custom_sagemaker_projects: bool,
         enable_domain_resource_isolation: bool,
+        enable_jupyterlab_app: bool,
+        enable_jupyterlab_app_sharing: bool,
+        jupyterlab_app_instance_type: Optional[str],
         auth_mode: str,
         mlflow_enabled: bool,
         mlflow_server_name: str,
@@ -53,22 +56,11 @@ class SagemakerStudioStack(Stack):
         # create roles to be used for sagemaker user profiles and attached to sagemaker studio domain
         self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, mlflow_artifact_store_bucket_name, kwargs["env"])
 
-        # setup security group to be used for sagemaker studio domain
-        sagemaker_sg = ec2.SecurityGroup(
-            self,
-            "SecurityGroup",
-            vpc=self.vpc,
-            description="Security Group for SageMaker Studio Notebook, Training Job and Hosting Endpoint",
-        )
-
-        sagemaker_sg.add_ingress_rule(sagemaker_sg, ec2.Port.all_traffic())
-
         # create sagemaker studio domain
         self.studio_domain = self.sagemaker_studio_domain(
             domain_name,
             self.sm_roles.sagemaker_studio_role,
             vpc_id=self.vpc.vpc_id,
-            security_group_ids=[sagemaker_sg.security_group_id],
             subnet_ids=[subnet.subnet_id for subnet in self.subnets],
             app_image_config_name=app_image_config_name,
             image_name=image_name,
@@ -94,31 +86,27 @@ class SagemakerStudioStack(Stack):
             )
 
         [
-            sagemaker.CfnUserProfile(
-                self,
-                f"ds-{user}",
-                domain_id=self.studio_domain.attr_domain_id,
-                user_profile_name=user,
-                user_settings=sagemaker.CfnUserProfile.UserSettingsProperty(
-                    execution_role=self.sm_roles.data_scientist_role.role_arn,
-                ),
-                single_sign_on_user_identifier="UserName" if auth_mode == "SSO" else None,
-                single_sign_on_user_value=user if auth_mode == "SSO" else None,
+            self.create_user_profile_and_space(
+                id=f"ds-{user}",
+                user=user,
+                auth_mode=auth_mode,
+                role_arn=self.sm_roles.data_scientist_role.role_arn,
+                enable_jupyterlab_app=enable_jupyterlab_app,
+                enable_jupyterlab_app_sharing=enable_jupyterlab_app_sharing,
+                jupyterlab_app_instance_type=jupyterlab_app_instance_type,
             )
             for user in data_science_users
         ]
 
         [
-            sagemaker.CfnUserProfile(
-                self,
-                f"lead-ds-{user}",
-                domain_id=self.studio_domain.attr_domain_id,
-                user_profile_name=user,
-                user_settings=sagemaker.CfnUserProfile.UserSettingsProperty(
-                    execution_role=self.sm_roles.lead_data_scientist_role.role_arn,
-                ),
-                single_sign_on_user_identifier="UserName" if auth_mode == "SSO" else None,
-                single_sign_on_user_value=user if auth_mode == "SSO" else None,
+            self.create_user_profile_and_space(
+                id=f"lead-ds-{user}",
+                user=user,
+                auth_mode=auth_mode,
+                role_arn=self.sm_roles.lead_data_scientist_role.role_arn,
+                enable_jupyterlab_app=enable_jupyterlab_app,
+                enable_jupyterlab_app_sharing=enable_jupyterlab_app_sharing,
+                jupyterlab_app_instance_type=jupyterlab_app_instance_type,
             )
             for user in lead_data_science_users
         ]
@@ -240,6 +228,7 @@ class SagemakerStudioStack(Stack):
                         f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:user-profile/{self.studio_domain.attr_domain_id}/*",
                         f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:project/*",
                         f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:app/*",
+                        f"arn:{core.Aws.PARTITION}:sagemaker:{core.Aws.REGION}:{core.Aws.ACCOUNT_ID}:space/*",
                     ],
                     conditions={
                         "StringNotEquals": {
@@ -260,7 +249,6 @@ class SagemakerStudioStack(Stack):
         self,
         domain_name: str,
         sagemaker_studio_role: iam.Role,
-        security_group_ids: List[str],
         subnet_ids: List[str],
         vpc_id: str,
         app_image_config_name: Optional[str],
@@ -273,10 +261,17 @@ class SagemakerStudioStack(Stack):
         :param domain_name: - name to assign to the SageMaker Studio Domain
         :param s3_bucket: - S3 bucket used for sharing notebooks between users
         :param sagemaker_studio_role: - IAM Execution Role for the domain
-        :param security_group_ids: - list of comma separated security group ids
         :param subnet_ids: - list of comma separated subnet ids
         :param vpc_id: - VPC Id for the domain
         """
+        sagemaker_sg = ec2.SecurityGroup(
+            self,
+            "SecurityGroup",
+            vpc=self.vpc,
+            description="Security Group for SageMaker Studio Notebook, Training Job and Hosting Endpoint",
+        )
+        sagemaker_sg.add_ingress_rule(sagemaker_sg, ec2.Port.all_traffic())
+
         custom_kernel_settings = {}
         if app_image_config_name is not None and image_name is not None:
             custom_kernel_settings["kernel_gateway_app_settings"] = (
@@ -297,7 +292,7 @@ class SagemakerStudioStack(Stack):
             app_network_access_type="VpcOnly",
             default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(
                 execution_role=sagemaker_studio_role.role_arn,
-                security_groups=security_group_ids,
+                security_groups=[sagemaker_sg.security_group_id],
                 sharing_settings=sagemaker.CfnDomain.SharingSettingsProperty(),
                 **custom_kernel_settings,  # type:ignore
             ),
@@ -324,3 +319,50 @@ class SagemakerStudioStack(Stack):
             tracking_server_size=mlflow_server_size,
             automatic_model_registration=False,
         )
+
+    def create_user_profile_and_space(
+        self,
+        id: str,
+        user: str,
+        auth_mode: str,
+        role_arn: str,
+        enable_jupyterlab_app: bool,
+        enable_jupyterlab_app_sharing: bool,
+        jupyterlab_app_instance_type: Optional[str],
+    ) -> sagemaker.CfnUserProfile:
+        user_profile = sagemaker.CfnUserProfile(
+            self,
+            id,
+            domain_id=self.studio_domain.attr_domain_id,
+            user_profile_name=user,
+            user_settings=sagemaker.CfnUserProfile.UserSettingsProperty(
+                execution_role=role_arn,
+            ),
+            single_sign_on_user_identifier="UserName" if auth_mode == "SSO" else None,
+            single_sign_on_user_value=user if auth_mode == "SSO" else None,
+        )
+
+        if enable_jupyterlab_app:
+            user_space = sagemaker.CfnSpace(
+                self,
+                f"space-{user}",
+                domain_id=self.studio_domain.attr_domain_id,
+                space_name=f"{user}-JupyterLab-space",
+                space_display_name=f"{user}-JupyterLab-space",
+                space_settings=sagemaker.CfnSpace.SpaceSettingsProperty(
+                    app_type="JupyterLab",
+                    jupyter_lab_app_settings=sagemaker.CfnSpace.SpaceJupyterLabAppSettingsProperty(
+                        default_resource_spec=sagemaker.CfnSpace.ResourceSpecProperty(
+                            instance_type=jupyterlab_app_instance_type,
+                        )
+                    )
+                    if jupyterlab_app_instance_type
+                    else None,
+                ),
+                ownership_settings=sagemaker.CfnSpace.OwnershipSettingsProperty(owner_user_profile_name=user),
+                space_sharing_settings=sagemaker.CfnSpace.SpaceSharingSettingsProperty(
+                    sharing_type="Shared" if enable_jupyterlab_app_sharing else "Private",
+                ),
+            )
+            user_space.add_dependency(user_profile)
+        return user_profile
