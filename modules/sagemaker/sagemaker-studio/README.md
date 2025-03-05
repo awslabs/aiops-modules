@@ -54,7 +54,7 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `enable_domain_resource_isolation` - `True | False` -- if set to True, SageMaker cannot access resources from other domains.  Default is True
   - `enable_jupyterlab_app` - `True | False` -- if set to True, JupyterLab space will be created for every user.  Default is False
   - `enable_jupyterlab_app_sharing` - `True | False` -- whether to create shared or private JupyterLab spaces.  Default is False (private)
-  - `jupyterlab_app_instance_type` - EC2 instance type.
+  - `jupyterlab_app_instance_type` - EC2 instance type for JupyterLab. Default is `ml.t3.medium`.
   - `mlflow_enabled` - `True | False` -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
   - `mlflow_server_name` - tracking server name, `mlflow` by default.
   - `mlflow_server_version` - tracking server version. Leave empty for latest available.
