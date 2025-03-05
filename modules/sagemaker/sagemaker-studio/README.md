@@ -50,9 +50,12 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `data_science_users` - a list of data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
   - `lead_data_science_users` - a list of lead data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
   - `retain_efs` - True | False -- if set to True, the EFS volume will persist after domain deletion.  Default is True
-  - `enable_custom_sagemaker_projects` - True | False -- if set to True, custom sagemaker projects will be enabled for the data science and lead data science users.  Default is False
-  - `enable_domain_resource_isolation` - True | False -- if set to True, SageMaker cannot access resources from other domains.  Default is True
-  - `mlflow_enabled` - True | False -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
+  - `enable_custom_sagemaker_projects` - `True | False` -- if set to True, custom sagemaker projects will be enabled for the data science and lead data science users.  Default is False
+  - `enable_domain_resource_isolation` - `True | False` -- if set to True, SageMaker cannot access resources from other domains.  Default is True
+  - `enable_jupyterlab_app` - `True | False` -- if set to True, JupyterLab space will be created for every user.  Default is False
+  - `enable_jupyterlab_app_sharing` - `True | False` -- whether to create shared or private JupyterLab spaces.  Default is False (private)
+  - `jupyterlab_app_instance_type` - EC2 instance type for JupyterLab. Default is `ml.t3.medium`.
+  - `mlflow_enabled` - `True | False` -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
   - `mlflow_server_name` - tracking server name, `mlflow` by default.
   - `mlflow_server_version` - tracking server version. Leave empty for latest available.
   - `mlflow_server_size` - tracking server size. Allowed values: ` Small | Medium | Large`.
