@@ -23,6 +23,7 @@ The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/ge
 
 - `vpc-id` - VPC id
 - `subnet-ids` - VPC subnet ids
+- `endpoint-name` - name of te endpoint. `{project}-{deloyment}-{module}` by default.
 
 ### Module Metadata Outputs
 

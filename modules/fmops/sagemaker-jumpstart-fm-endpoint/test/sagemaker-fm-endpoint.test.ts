@@ -8,6 +8,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   const projectName = "mlops";
   const deploymentName = "platform";
   const moduleName = "fm-endpoint";
+  const endpointName = "endpoint";
   const jumpStartModelName = "HUGGINGFACE_LLM_MISTRAL_7B_2_1_0";
   const instanceType = "ml.g5.2xlarge";
   const vpcId = "vpc-123";
@@ -19,6 +20,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
     projectName,
     deploymentName,
     moduleName,
+    endpointName,
     jumpStartModelName,
     instanceType,
     vpcId,
