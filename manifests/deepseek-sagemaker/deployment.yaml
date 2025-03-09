@@ -1,0 +1,19 @@
+name: deepseek-sagemaker
+toolchainRegion: us-east-1
+forceDependencyRedeploy: true
+groups:
+  - name: networking
+    path: manifests/deepseek-sagemaker/networking-modules.yaml
+  - name: endpoints
+    path: manifests/deepseek-sagemaker/sagemaker-endpoints-modules.yaml
+  - name: studio
+    path: manifests/deepseek-sagemaker/sagemaker-studio-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    regionMappings:
+      - region: us-east-1
+        default: true

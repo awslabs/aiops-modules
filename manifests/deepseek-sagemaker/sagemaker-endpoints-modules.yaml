@@ -1,0 +1,20 @@
+name: deepseek-jumpstart
+path: modules/fmops/sagemaker-jumpstart-fm-endpoint
+targetAccount: primary
+parameters:
+  - name: jump-start-model-name
+    value: DEEPSEEK_LLM_R1_DISTILL_LLAMA_8B_1_1_2
+  - name: instance-type
+    value: ml.g6.12xlarge
+  - name: vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
