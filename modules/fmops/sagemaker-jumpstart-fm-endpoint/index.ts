@@ -10,6 +10,7 @@ const projectName = process.env.SEEDFARMER_PROJECT_NAME;
 const deploymentName = process.env.SEEDFARMER_DEPLOYMENT_NAME;
 const moduleName = process.env.SEEDFARMER_MODULE_NAME;
 
+const endpointName: string | undefined = process.env.SEEDFARMER_PARAMETER_ENDPOINT_NAME;
 const jumpStartModelName: string = process.env.SEEDFARMER_PARAMETER_JUMP_START_MODEL_NAME!;
 const instanceType: string = process.env.SEEDFARMER_PARAMETER_INSTANCE_TYPE!;
 
@@ -22,6 +23,7 @@ const stack = new SagemakerJumpStartFmEndpointStack(app, `${projectName}-${deplo
   projectName,
   deploymentName,
   moduleName,
+  endpointName,
   jumpStartModelName,
   instanceType,
   vpcId,
