@@ -14,6 +14,7 @@ interface SagemakerJumpStartFmEndpointStackProps extends cdk.StackProps {
   projectName?: string;
   deploymentName?: string;
   moduleName?: string;
+  endpointName?: string;
   jumpStartModelName: string;
   instanceType: string;
   vpcId?: string | undefined;
@@ -87,6 +88,7 @@ export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
     }
 
     this.jumpStartEndpoint = new JumpStartSageMakerEndpoint(this, "JumpStartEndpoint", {
+      endpointName: props.endpointName ?? `${props.projectName}-${props.deploymentName}-${props.moduleName}`,
       model: JumpStartModel.of(props.jumpStartModelName),
       instanceType: SageMakerInstanceType.of(props.instanceType),
       role: this.role,

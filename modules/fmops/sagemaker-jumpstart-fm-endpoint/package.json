@@ -29,8 +29,8 @@
     "@typescript-eslint/parser": "^6.21.0"
   },
   "dependencies": {
-    "@cdklabs/generative-ai-cdk-constructs": "^0.1.74",
-    "aws-cdk-lib": "^2.130.0",
+    "@cdklabs/generative-ai-cdk-constructs": "^0.1.296",
+    "aws-cdk-lib": "^2.181.1",
     "constructs": "^10.3.0",
     "source-map-support": "^0.5.21"
   }
