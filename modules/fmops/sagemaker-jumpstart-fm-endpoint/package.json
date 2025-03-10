@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@cdklabs/generative-ai-cdk-constructs": "^0.1.296",
-    "aws-cdk": "^2",
     "aws-cdk-lib": "^2.181.1",
     "constructs": "^10.3.0",
     "source-map-support": "^0.5.21"
