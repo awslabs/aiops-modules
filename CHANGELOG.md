@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added snyk security scans workflow
 - added managed mlflow to `sagemaker-studio` module
 - added JupyterLab to `sagemaker-studio` module
+- added `deepseek-sagemaker` example manifest
 
 ### **Changed**
 - enforce ssl on pipeline bucket in sagemaker templates module
 - update architecture diagrams in `sagemaker-templates-service-catalog` with GitHub support
+- update CDK in `sagemaker-jumpstart-fm-endpoint` module
 
 ## v1.7.2
 
