@@ -62,7 +62,8 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `mlflow_artifact_store_bucket_name` - name of the bucket used by MLFlow as artifact store. Required if `mlflow_enabled` is True.
   - `mlflow_artifact_store_bucket_prefix` - prefix of the bucket used by MLFlow as artifact store. `/` by default.
 
-#### Additional CDK Sytnhesizer Inputs:
+#### Optional CDK Sytnhesizer Inputs:
+The following optional parameters allow to [customize the default CDK synthesizer](https://docs.aws.amazon.com/cdk/v2/guide/customize-synth.html). Leave them empty unless you need to customize the stack synthesis. Use with caution ⚠️.
   - `qualifier` - CDK qualifier. Empty by default.
   - `cloud_formation_execution_role` - CDK execution role. Empty by default.
   - `deploy_role_arn` - CDK deployment role.  Empty by default.
