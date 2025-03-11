@@ -8,8 +8,10 @@ from aws_cdk import CfnOutput
 from settings import ApplicationSettings
 from stack import SagemakerStudioStack
 
-app = aws_cdk.App()
 app_settings = ApplicationSettings()
+app = aws_cdk.App(
+    default_stack_synthesizer=app_settings.synthesizer.default_stack_synthesizer,
+)
 
 stack = SagemakerStudioStack(
     scope=app,
