@@ -62,6 +62,15 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `mlflow_artifact_store_bucket_name` - name of the bucket used by MLFlow as artifact store. Required if `mlflow_enabled` is True.
   - `mlflow_artifact_store_bucket_prefix` - prefix of the bucket used by MLFlow as artifact store. `/` by default.
 
+#### Optional CDK Sytnhesizer Inputs:
+The following optional parameters allow you to [customize the default CDK synthesizer](https://docs.aws.amazon.com/cdk/v2/guide/customize-synth.html). Leave them empty unless you need to customize the stack synthesis. Use with caution ⚠️.
+  - `qualifier` - CDK qualifier. Empty by default.
+  - `cloud_formation_execution_role` - CDK execution role. Empty by default.
+  - `deploy_role_arn` - CDK deployment role.  Empty by default.
+  - `file_asset_publishing_role_arn` - CDK file asset publishing role. Empty by default.
+  - `image_asset_publishing_role_arn` - CDK image asset publishing role. Empty by default.
+  - `lookup_role_arn` - CDK lookup role. Empty by default.
+
 ### Outputs (module metadata):
   - `StudioDomainName` - the name of the domain created by Sagemaker Studio
   - `StudioDomainId` - the Id of the domain created by Sagemaker Studio
