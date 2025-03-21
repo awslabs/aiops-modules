@@ -45,3 +45,16 @@ def test_auth_mode(stack_defaults):
 
     with pytest.raises(ValidationError):
         import app  # noqa: F401
+
+    del os.environ["SEEDFARMER_PARAMETER_AUTH_MODE"]
+
+
+def test_default_synthesizer(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_QUALIFIER"] = "dummy"
+    os.environ["SEEDFARMER_PARAMETER_CLOUD_FORMATION_EXECUTION_ROLE"] = "dummy"
+    os.environ["SEEDFARMER_PARAMETER_DEPLOY_ROLE_ARN"] = "dummy"
+    os.environ["SEEDFARMER_PARAMETER_FILE_ASSET_PUBLISHING_ROLE_ARN"] = "dummy"
+    os.environ["SEEDFARMER_PARAMETER_IMAGE_ASSET_PUBLISHING_ROLE_ARN"] = "dummy"
+    os.environ["SEEDFARMER_PARAMETER_LOOKUP_ROLE_ARN"] = "dummy"
+
+    import app as my_app  # noqa: F401

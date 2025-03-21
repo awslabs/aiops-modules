@@ -3,6 +3,7 @@
 from abc import ABC
 from typing import Dict, List, Literal, Optional
 
+from aws_cdk import DefaultStackSynthesizer
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -86,9 +87,47 @@ class CdkDefaultSettings(CdkBaseSettings):
     region: str
 
 
+class CdkDefaultSynthesizerProps(CdkBaseSettings):
+    """CDK Default Stack Synthesizer Properties."""
+
+    model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
+
+    qualifier: Optional[str] = Field(default=None)
+    cloud_formation_execution_role: Optional[str] = Field(default=None)
+    deploy_role_arn: Optional[str] = Field(default=None)
+    file_asset_publishing_role_arn: Optional[str] = Field(default=None)
+    image_asset_publishing_role_arn: Optional[str] = Field(default=None)
+    lookup_role_arn: Optional[str] = Field(default=None)
+
+    @computed_field  # type: ignore
+    @property
+    def default_stack_synthesizer(self) -> Optional[DefaultStackSynthesizer]:
+        """Customize stack synthesizer."""
+        if any(
+            [
+                self.qualifier,
+                self.cloud_formation_execution_role,
+                self.deploy_role_arn,
+                self.file_asset_publishing_role_arn,
+                self.image_asset_publishing_role_arn,
+                self.lookup_role_arn,
+            ]
+        ):
+            return DefaultStackSynthesizer(
+                qualifier=self.qualifier,
+                cloud_formation_execution_role=self.cloud_formation_execution_role,
+                deploy_role_arn=self.deploy_role_arn,
+                file_asset_publishing_role_arn=self.file_asset_publishing_role_arn,
+                image_asset_publishing_role_arn=self.image_asset_publishing_role_arn,
+                lookup_role_arn=self.lookup_role_arn,
+            )
+        return None
+
+
 class ApplicationSettings(CdkBaseSettings):
     """Application settings."""
 
     settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
     parameters: SeedFarmerParameters = Field(default_factory=SeedFarmerParameters)
     default: CdkDefaultSettings = Field(default_factory=CdkDefaultSettings)
+    synthesizer: CdkDefaultSynthesizerProps = Field(default_factory=CdkDefaultSynthesizerProps)
