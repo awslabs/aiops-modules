@@ -36,6 +36,8 @@ class SagemakerStudioStack(Stack):
         enable_jupyterlab_app_sharing: bool,
         jupyterlab_app_instance_type: Optional[str],
         auth_mode: str,
+        role_path: Optional[str],
+        permissions_boundary_arn: Optional[str],
         mlflow_enabled: bool,
         mlflow_server_name: str,
         mlflow_server_version: Optional[str],
@@ -54,7 +56,15 @@ class SagemakerStudioStack(Stack):
         s3_bucket_prefix = studio_bucket_name or f"{construct_id}-bucket"
 
         # create roles to be used for sagemaker user profiles and attached to sagemaker studio domain
-        self.sm_roles = SMRoles(self, "sm-roles", s3_bucket_prefix, mlflow_artifact_store_bucket_name, kwargs["env"])
+        self.sm_roles = SMRoles(
+            self,
+            "sm-roles",
+            s3_bucket_prefix=s3_bucket_prefix,
+            mlflow_artifact_store_bucket_name=mlflow_artifact_store_bucket_name,
+            role_path=role_path,
+            permissions_boundary_arn=permissions_boundary_arn,
+            env=kwargs["env"],
+        )
 
         # create sagemaker studio domain
         self.studio_domain = self.sagemaker_studio_domain(
@@ -69,11 +79,15 @@ class SagemakerStudioStack(Stack):
 
         if enable_custom_sagemaker_projects:
             self.enable_sagemaker_projects(
-                [
+                roles=[
                     self.sm_roles.sagemaker_studio_role.role_arn,
                     self.sm_roles.data_scientist_role.role_arn,
                     self.sm_roles.lead_data_scientist_role.role_arn,
                 ],
+                vpc=self.vpc,
+                subnets=self.subnets,
+                role_path=role_path,
+                permissions_boundary_arn=permissions_boundary_arn,
             )
 
         if enable_domain_resource_isolation:
@@ -137,14 +151,30 @@ class SagemakerStudioStack(Stack):
             ],
         )
 
-    def enable_sagemaker_projects(self, roles: List[str]) -> None:
+    def enable_sagemaker_projects(
+        self,
+        roles: List[str],
+        vpc: ec2.Vpc,
+        subnets: List[ec2.Subnet],
+        role_path: Optional[str],
+        permissions_boundary_arn: Optional[str],
+    ) -> None:
         event_handler = PythonFunction(
             self,
             "sg-project-function",
             runtime=lambda_.Runtime.PYTHON_3_11,
             entry="functions/sm_studio/enable_sm_projects",
             timeout=core.Duration.seconds(120),
+            vpc=vpc,
+            vpc_subnets=ec2.SubnetSelection(subnets=subnets),
         )
+
+        # Override IAM path and permissions boundary
+        if role_path:
+            event_handler.role.node.default_child.add_property_override("Path", role_path)
+        if permissions_boundary_arn:
+            event_handler.role.node.default_child.add_property_override("PermissionsBoundary", permissions_boundary_arn)
+
         cdk_nag.NagSuppressions.add_resource_suppressions(
             [event_handler],
             suppressions=[
