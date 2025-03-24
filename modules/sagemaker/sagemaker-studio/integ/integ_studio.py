@@ -49,7 +49,6 @@ studio_stack = stack.SagemakerStudioStack(
     jupyterlab_app_instance_type=None,
     auth_mode="IAM",
     role_path=None,
-    policy_path=None,
     permissions_boundary_arn=None,
     mlflow_enabled=False,
     mlflow_server_name="mlflow",
