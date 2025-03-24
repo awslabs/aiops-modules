@@ -154,8 +154,8 @@ class SagemakerStudioStack(Stack):
     def enable_sagemaker_projects(
         self,
         roles: List[str],
-        vpc: ec2.Vpc,
-        subnets: List[ec2.Subnet],
+        vpc: ec2.IVpc,
+        subnets: List[ec2.ISubnet],
         role_path: Optional[str],
         permissions_boundary_arn: Optional[str],
     ) -> None:
