@@ -159,6 +159,49 @@ class SagemakerStudioStack(Stack):
         role_path: Optional[str],
         permissions_boundary_arn: Optional[str],
     ) -> None:
+        permissions_boundary = (
+            iam.ManagedPolicy.from_managed_policy_arn(
+                self,
+                "Boundary",
+                managed_policy_arn=permissions_boundary_arn,
+            )
+            if permissions_boundary_arn
+            else None
+        )
+
+        lambda_role = iam.Role(
+            self,
+            "enable-projects-lambda-role",
+            path=role_path,
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            permissions_boundary=permissions_boundary,
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaBasicExecutionRole",
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaVPCAccessExecutionRole",
+                ),
+            ],
+            inline_policies={
+                "EnableSagemakerProjects": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "sagemaker:EnableSagemakerServicecatalogPortfolio",
+                                "servicecatalog:ListAcceptedPortfolioShares",
+                                "servicecatalog:AssociatePrincipalWithPortfolio",
+                                "servicecatalog:AcceptPortfolioShare",
+                                "iam:GetRole",
+                            ],
+                            resources=["*"],
+                        ),
+                    ],
+                ),
+            },
+        )
+
         event_handler = PythonFunction(
             self,
             "sg-project-function",
@@ -167,42 +210,32 @@ class SagemakerStudioStack(Stack):
             timeout=core.Duration.seconds(120),
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnets=subnets),
+            role=lambda_role,
         )
 
-        # Override IAM path and permissions boundary
-        if role_path:
-            event_handler.role.node.default_child.add_property_override("Path", role_path)
-        if permissions_boundary_arn:
-            event_handler.role.node.default_child.add_property_override("PermissionsBoundary", permissions_boundary_arn)
-
-        cdk_nag.NagSuppressions.add_resource_suppressions(
-            [event_handler],
-            suppressions=[
-                cdk_nag.NagPackSuppression(
-                    id="AwsSolutions-L1",
-                    reason="Not all partitions support latest runtime (Python 3.12)",
-                )
+        provider_role = iam.Role(
+            self,
+            "enable-projects-provider-role",
+            path=role_path,
+            assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+            permissions_boundary=permissions_boundary,
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaBasicExecutionRole",
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaVPCAccessExecutionRole",
+                ),
             ],
-        )
-
-        event_handler.add_to_role_policy(
-            iam.PolicyStatement(
-                effect=iam.Effect.ALLOW,
-                actions=[
-                    "sagemaker:EnableSagemakerServicecatalogPortfolio",
-                    "servicecatalog:ListAcceptedPortfolioShares",
-                    "servicecatalog:AssociatePrincipalWithPortfolio",
-                    "servicecatalog:AcceptPortfolioShare",
-                    "iam:GetRole",
-                ],
-                resources=["*"],
-            ),
         )
 
         provider = Provider(
             self,
             "sg-project-lead-provider",
             on_event_handler=event_handler,
+            vpc=vpc,
+            vpc_subnets=ec2.SubnetSelection(subnets=subnets),
+            role=provider_role,
         )
 
         core.CustomResource(
@@ -218,7 +251,16 @@ class SagemakerStudioStack(Stack):
         )
 
         cdk_nag.NagSuppressions.add_resource_suppressions(
-            [event_handler.role, provider],  # type: ignore[list-item]
+            [event_handler],
+            suppressions=[
+                cdk_nag.NagPackSuppression(
+                    id="AwsSolutions-L1",
+                    reason="Not all partitions support latest runtime (Python 3.12)",
+                )
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            [lambda_role, provider_role],  # type: ignore[list-item]
             apply_to_children=True,
             suppressions=[
                 cdk_nag.NagPackSuppression(

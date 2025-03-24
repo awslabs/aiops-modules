@@ -102,15 +102,22 @@ def test_synthesize_stack(
 
     template.resource_count_is("AWS::SageMaker::Domain", 1)
     template.resource_count_is("AWS::SageMaker::UserProfile", 2)
-    template.resource_count_is("AWS::EC2::SecurityGroup", 2 if enable_custom_sagemaker_projects else 1)
+    template.resource_count_is("AWS::EC2::SecurityGroup", 3 if enable_custom_sagemaker_projects else 1)
     template.resource_count_is("AWS::IAM::Role", 6 if enable_custom_sagemaker_projects else 4)
     template.resource_count_is("AWS::SageMaker::MlflowTrackingServer", 1 if mlflow_enabled else 0)
     template.resource_count_is("AWS::SageMaker::Space", 2 if enable_jupyterlab_app else 0)
 
-    # if role_path:
-    #     template.resource_properties_count_is(
-    #         "AWS::IAM::Role", {"Path": role_path}, 6 if enable_custom_sagemaker_projects else 4
-    #     )
+    if role_path:
+        template.resource_properties_count_is(
+            "AWS::IAM::Role", {"Path": role_path}, 6 if enable_custom_sagemaker_projects else 4
+        )
+
+    if permissions_boundary_arn:
+        template.resource_properties_count_is(
+            "AWS::IAM::Role",
+            {"PermissionsBoundary": permissions_boundary_arn},
+            6 if enable_custom_sagemaker_projects else 4,
+        )
 
 
 @pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
