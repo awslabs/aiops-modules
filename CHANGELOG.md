@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - added JupyterLab to `sagemaker-studio` module
 - added `deepseek-sagemaker` example manifest
 - added synthesizer props to `sagemaker-studio`
+- added IAM paths and permissions boundary to `sagemaker-studio`
 
 ### **Changed**
 - enforce ssl on pipeline bucket in sagemaker templates module

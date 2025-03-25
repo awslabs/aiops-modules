@@ -15,10 +15,23 @@ class SMRoles(Construct):
         construct_id: str,
         s3_bucket_prefix: str,
         mlflow_artifact_store_bucket_name: Optional[str],
+        role_path: Optional[str],
+        permissions_boundary_arn: Optional[str],
         env: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        permissions_boundary = (
+            iam.ManagedPolicy.from_managed_policy_arn(
+                self,
+                "Boundary",
+                permissions_boundary_arn,
+            )
+            if permissions_boundary_arn
+            else None
+        )
+
         cdk_deploy_policy = iam.Policy(
             self,
             "cdk_deploy_policy",
@@ -218,10 +231,12 @@ class SMRoles(Construct):
         self.data_scientist_role = iam.Role(
             self,
             "data-scientist-role",
+            path=role_path,
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
+            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -249,10 +264,12 @@ class SMRoles(Construct):
         self.lead_data_scientist_role = iam.Role(
             self,
             "lead-data-scientist-role",
+            path=role_path,
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
+            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -283,10 +300,12 @@ class SMRoles(Construct):
         self.sagemaker_studio_role = iam.Role(
             self,
             "sagemaker-studio-role",
+            path=role_path,
             assumed_by=iam.CompositePrincipal(
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
+            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -341,6 +360,8 @@ class SMRoles(Construct):
         self.mlflow_tracking_server_role = iam.Role(
             self,
             "mlflow-role",
+            path=role_path,
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
+            permissions_boundary=permissions_boundary,
         )
         mlflow_tracking_server_policy.attach_to_role(self.mlflow_tracking_server_role)

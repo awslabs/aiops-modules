@@ -45,6 +45,8 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `studio_domain_name` - name of the SageMaker Studio Domain
   - `studio_bucket_name` - name of the bucket used by studio
   - `auth_mode` - `IAM` or `SSO`. Defaults to `IAM`. Note: to use `SSO` auth type AWS Identity Center must be enabled and your usernames must match valid usernames of users in your directory.
+  - `role_path` - IAM Role Path. Empty by default.
+  - `permissions_boundary_arn` - IAM Policy ARN to attach to all roles as permissions boundary. Empty by default.
   - `app_image_config_name` - custom kernel app config name
   - `image_name` - custom kernel image name
   - `data_science_users` - a list of data science usernames to create. If SSO is enabled, must match valid usernames of users in your directory.
