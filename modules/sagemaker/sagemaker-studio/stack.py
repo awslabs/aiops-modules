@@ -34,6 +34,7 @@ class SagemakerStudioStack(Stack):
         enable_domain_resource_isolation: bool,
         enable_jupyterlab_app: bool,
         enable_jupyterlab_app_sharing: bool,
+        enable_docker_access: bool,
         jupyterlab_app_instance_type: Optional[str],
         auth_mode: str,
         role_path: Optional[str],
@@ -75,6 +76,7 @@ class SagemakerStudioStack(Stack):
             app_image_config_name=app_image_config_name,
             image_name=image_name,
             auth_mode=auth_mode,
+            enable_docker_access=enable_docker_access,
         )
 
         if enable_custom_sagemaker_projects:
@@ -326,6 +328,7 @@ class SagemakerStudioStack(Stack):
         app_image_config_name: Optional[str],
         image_name: Optional[str],
         auth_mode: str,
+        enable_docker_access: bool,
     ) -> sagemaker.CfnDomain:
         """
         Create the SageMaker Studio Domain
@@ -367,6 +370,11 @@ class SagemakerStudioStack(Stack):
                 security_groups=[sagemaker_sg.security_group_id],
                 sharing_settings=sagemaker.CfnDomain.SharingSettingsProperty(),
                 **custom_kernel_settings,  # type:ignore
+            ),
+            domain_settings=sagemaker.CfnDomain.DomainSettingsProperty(
+                docker_settings=sagemaker.CfnDomain.DockerSettingsProperty(
+                    enable_docker_access="ENABLED" if enable_docker_access else "DISABLED",
+                ),
             ),
             domain_name=domain_name,
             subnet_ids=subnet_ids,

@@ -39,6 +39,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     enable_domain_resource_isolation: bool = Field(default=True)
     enable_jupyterlab_app: bool = Field(default=False)
     enable_jupyterlab_app_sharing: bool = Field(default=False)
+    enable_docker_access: bool = Field(default=False)
     jupyterlab_app_instance_type: Optional[str] = Field(default=None)
     auth_mode: Literal["IAM", "SSO"] = Field(default="IAM")
     role_path: Optional[str] = Field(default=None)
