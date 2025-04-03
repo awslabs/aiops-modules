@@ -35,6 +35,7 @@ class SagemakerStudioStack(Stack):
         enable_jupyterlab_app: bool,
         enable_jupyterlab_app_sharing: bool,
         enable_docker_access: bool,
+        vpc_only_trusted_accounts: List[str],
         jupyterlab_app_instance_type: Optional[str],
         auth_mode: str,
         role_path: Optional[str],
@@ -77,6 +78,7 @@ class SagemakerStudioStack(Stack):
             image_name=image_name,
             auth_mode=auth_mode,
             enable_docker_access=enable_docker_access,
+            vpc_only_trusted_accounts=vpc_only_trusted_accounts,
         )
 
         if enable_custom_sagemaker_projects:
@@ -329,6 +331,7 @@ class SagemakerStudioStack(Stack):
         image_name: Optional[str],
         auth_mode: str,
         enable_docker_access: bool,
+        vpc_only_trusted_accounts: List[str],
     ) -> sagemaker.CfnDomain:
         """
         Create the SageMaker Studio Domain
@@ -337,7 +340,12 @@ class SagemakerStudioStack(Stack):
         :param s3_bucket: - S3 bucket used for sharing notebooks between users
         :param sagemaker_studio_role: - IAM Execution Role for the domain
         :param subnet_ids: - list of comma separated subnet ids
-        :param vpc_id: - VPC Id for the domain
+        :param vpc_id: -  VPC Id for the domain
+        :param app_image_config_name: - config name
+        :param image_name: - image name
+        :param auth_mode: - auth mode (IAM or SSO)
+        :param enable_docker_access: - flag to enable docker from studio
+        :param vpc_only_trusted_accounts: - list of trusted aws account ids in vpc only mode
         """
         sagemaker_sg = ec2.SecurityGroup(
             self,
@@ -374,6 +382,7 @@ class SagemakerStudioStack(Stack):
             domain_settings=sagemaker.CfnDomain.DomainSettingsProperty(
                 docker_settings=sagemaker.CfnDomain.DockerSettingsProperty(
                     enable_docker_access="ENABLED" if enable_docker_access else "DISABLED",
+                    vpc_only_trusted_accounts=vpc_only_trusted_accounts if vpc_only_trusted_accounts else None,
                 ),
             ),
             domain_name=domain_name,

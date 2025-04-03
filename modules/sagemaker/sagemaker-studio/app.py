@@ -29,6 +29,7 @@ stack = SagemakerStudioStack(
     enable_jupyterlab_app=app_settings.parameters.enable_jupyterlab_app,
     enable_jupyterlab_app_sharing=app_settings.parameters.enable_jupyterlab_app_sharing,
     enable_docker_access=app_settings.parameters.enable_docker_access,
+    vpc_only_trusted_accounts=app_settings.parameters.vpc_only_trusted_accounts,
     jupyterlab_app_instance_type=app_settings.parameters.jupyterlab_app_instance_type,
     auth_mode=app_settings.parameters.auth_mode,
     role_path=app_settings.parameters.role_path,

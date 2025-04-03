@@ -47,6 +47,7 @@ studio_stack = stack.SagemakerStudioStack(
     enable_jupyterlab_app=False,
     enable_jupyterlab_app_sharing=False,
     enable_docker_access=False,
+    vpc_only_trusted_accounts=[],
     jupyterlab_app_instance_type=None,
     auth_mode="IAM",
     role_path=None,
