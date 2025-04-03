@@ -60,8 +60,8 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `vpc_only_trusted_accounts` - list of trusted AWS accounts to pull Amazon ECR private registry images from when running Studio in VPC-only mode. Empty by default
   - `jupyterlab_app_instance_type` - EC2 instance type for JupyterLab. Default is `ml.t3.medium`.
   - `idle_timeout_in_minutes` - number of minutes of inactivity after which an app will be automatically stopped. Set according to your organization's idle timeout policies.
-  - `max_idle_timeout_in_minutes` - maximum value in minutes that users can set for idle timeout. Useful for enforcing organizational limits.
-  - `min_idle_timeout_in_minutes` - minimum value in minutes that users can set for idle timeout. Useful for enforcing organizational baseline policies.
+  - `max_idle_timeout_in_minutes` - maximum value in minutes that users can set for idle timeout. Useful for enforcing organizational limits. (`idle_timeout_in_minutes` needs to be defined as well)
+  - `min_idle_timeout_in_minutes` - minimum value in minutes that users can set for idle timeout. Useful for enforcing organizational baseline policies. (`idle_timeout_in_minutes` needs to be defined as well)
   - `mlflow_enabled` - `True | False` -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
   - `mlflow_server_name` - tracking server name, `mlflow` by default.
   - `mlflow_server_version` - tracking server version. Leave empty for latest available.

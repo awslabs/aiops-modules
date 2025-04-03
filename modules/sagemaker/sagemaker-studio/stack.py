@@ -333,7 +333,7 @@ class SagemakerStudioStack(Stack):
         image_name: Optional[str] = None,
         idle_timeout_in_minutes: Optional[int] = None,
         max_idle_timeout_in_minutes: Optional[int] = None,
-        min_idle_timeout_in_minutes: Optional[int] = None
+        min_idle_timeout_in_minutes: Optional[int] = None,
     ) -> Optional[sagemaker.CfnDomain.JupyterLabAppSettingsProperty]:
         """Create JupyterLabAppSettingsProperty with custom images and/or app lifecycle management."""
         # Initialize settings dict
@@ -348,33 +348,30 @@ class SagemakerStudioStack(Stack):
                 )
             ]
 
-        # Add app lifecycle management with idle settings if any idle parameters provided
-        if any(param is not None for param in [
-            idle_timeout_in_minutes,
-            max_idle_timeout_in_minutes,
-            min_idle_timeout_in_minutes
-        ]):
-            # Create idle settings with only the non-None parameters
-            idle_settings_props = {
-                "lifecycle_management": "ENABLED"
-            }
-            if idle_timeout_in_minutes is not None:
-                idle_settings_props["idle_timeout_in_minutes"] = idle_timeout_in_minutes
-            if max_idle_timeout_in_minutes is not None:
-                idle_settings_props["max_idle_timeout_in_minutes"] = max_idle_timeout_in_minutes
-            if min_idle_timeout_in_minutes is not None:
-                idle_settings_props["min_idle_timeout_in_minutes"] = min_idle_timeout_in_minutes
-
-            # Set the lifecycle_management_type correctly
-            jupyter_lab_settings_props["app_lifecycle_management"] = (
-                sagemaker.CfnDomain.AppLifecycleManagementProperty(
-                    idle_settings=sagemaker.CfnDomain.IdleSettingsProperty(**idle_settings_props)
-                )
+        # Add app lifecycle management with idle settings
+        # First check if min or max is defined without idle_timeout
+        if (
+            max_idle_timeout_in_minutes is not None or min_idle_timeout_in_minutes is not None
+        ) and idle_timeout_in_minutes is None:
+            raise ValueError(
+                "If min_idle_timeout_in_minutes or max_idle_timeout_in_minutes is defined, idle_timeout_in_minutes must also be defined"
             )
 
-        # Return None if no settings were added
-        if not jupyter_lab_settings_props:
-            return None
+        # Configure idle settings based on parameter presence
+        idle_settings_props = {"lifecycle_management": "ENABLED" if idle_timeout_in_minutes is not None else "DISABLED"}
+
+        # Add timeout parameters if they exist
+        if idle_timeout_in_minutes is not None:
+            idle_settings_props["idle_timeout_in_minutes"] = idle_timeout_in_minutes
+        if max_idle_timeout_in_minutes is not None:
+            idle_settings_props["max_idle_timeout_in_minutes"] = max_idle_timeout_in_minutes
+        if min_idle_timeout_in_minutes is not None:
+            idle_settings_props["min_idle_timeout_in_minutes"] = min_idle_timeout_in_minutes
+
+        # Set the app lifecycle management property
+        jupyter_lab_settings_props["app_lifecycle_management"] = sagemaker.CfnDomain.AppLifecycleManagementProperty(
+            idle_settings=sagemaker.CfnDomain.IdleSettingsProperty(**idle_settings_props)
+        )
 
         return sagemaker.CfnDomain.JupyterLabAppSettingsProperty(**jupyter_lab_settings_props)
 
@@ -444,7 +441,7 @@ class SagemakerStudioStack(Stack):
             image_name=image_name,
             idle_timeout_in_minutes=idle_timeout_in_minutes,
             max_idle_timeout_in_minutes=max_idle_timeout_in_minutes,
-            min_idle_timeout_in_minutes=min_idle_timeout_in_minutes
+            min_idle_timeout_in_minutes=min_idle_timeout_in_minutes,
         )
 
         if jupyter_lab_app_settings:
