@@ -353,9 +353,7 @@ class SagemakerStudioStack(Stack):
         if (
             max_idle_timeout_in_minutes is not None or min_idle_timeout_in_minutes is not None
         ) and idle_timeout_in_minutes is None:
-            raise ValueError(
-                "If min_idle_timeout_in_minutes or max_idle_timeout_in_minutes is defined, idle_timeout_in_minutes must also be defined"
-            )
+            raise ValueError("idle_timeout_in_minutes is required when min or max idle timeout is set")
 
         # Configure idle settings based on parameter presence
         idle_settings_props = {"lifecycle_management": "ENABLED" if idle_timeout_in_minutes is not None else "DISABLED"}
