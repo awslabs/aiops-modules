@@ -49,6 +49,10 @@ class SeedFarmerParameters(CdkBaseSettings):
     data_science_users: List[str] = Field(default=[])
     lead_data_science_users: List[str] = Field(default=[])
 
+    idle_timeout_in_minutes: Optional[int] = Field(default=None)
+    max_idle_timeout_in_minutes: Optional[int] = Field(default=None)
+    min_idle_timeout_in_minutes: Optional[int] = Field(default=None)
+
     mlflow_enabled: bool = Field(default=False)
     mlflow_server_name: str = Field(default="mlflow")
     mlflow_server_version: Optional[str] = Field(default=None)

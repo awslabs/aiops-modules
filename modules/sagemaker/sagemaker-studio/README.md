@@ -40,7 +40,7 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
 ## Inputs and outputs:
 ### Required inputs:
   - `vpc_id` - the VPC id that the SageMaker Studio Domain will be created in
-  - `subnet_ids` - the subnets that the SageMaker Studio Domai will be created in
+  - `subnet_ids` - the subnets that the SageMaker Studio Domain will be created in
 ### Optional Inputs:
   - `studio_domain_name` - name of the SageMaker Studio Domain
   - `studio_bucket_name` - name of the bucket used by studio
@@ -59,6 +59,9 @@ Note: If using SSO auth, the account must be set up with IAM Identity Center and
   - `enable_docker_access` - `True | False` -- whether to enable Docker access.  Default is False
   - `vpc_only_trusted_accounts` - list of trusted AWS accounts to pull Amazon ECR private registry images from when running Studio in VPC-only mode. Empty by default
   - `jupyterlab_app_instance_type` - EC2 instance type for JupyterLab. Default is `ml.t3.medium`.
+  - `idle_timeout_in_minutes` - number of minutes of inactivity after which an app will be automatically stopped. Set according to your organization's idle timeout policies.
+  - `max_idle_timeout_in_minutes` - maximum value in minutes that users can set for idle timeout. Useful for enforcing organizational limits.
+  - `min_idle_timeout_in_minutes` - minimum value in minutes that users can set for idle timeout. Useful for enforcing organizational baseline policies.
   - `mlflow_enabled` - `True | False` -- if set to True, MLFlow Tracking Server will be deployed. Default is `False`.
   - `mlflow_server_name` - tracking server name, `mlflow` by default.
   - `mlflow_server_version` - tracking server version. Leave empty for latest available.

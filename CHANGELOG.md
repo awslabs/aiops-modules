@@ -9,9 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 - added `enable_docker_access` to `sagemaker-studio` module
+- added `idle_timeout_in_minutes` to `sagemaker-studio` module
+- added `max_idle_timeout_in_minutes` to `sagemaker-studio` module
+- added `min_idle_timeout_in_minutes` to `sagemaker-studio` module
 
 ### **Changed**
 - fixed notebook name lengths in `sagemaker-notebook` module
+
+
+### **Changed**
+- removed deprecated parameter in heredoc
 
 ## v1.8.0
 
