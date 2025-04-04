@@ -1,5 +1,4 @@
 import os
-from unittest import mock
 
 import pytest
 
@@ -30,14 +29,11 @@ def env_defaults():
     os.environ["SEEDFARMER_PARAMETER_TAGS"] = '{"dummy321": "dummy321"}'
 
 
-@mock.patch("time.time")
-def test_settings_inputs(mock_time, env_defaults) -> None:
-    mock_time.return_value = 1234567
-
+def test_settings_inputs(env_defaults) -> None:
     settings = ApplicationSettings()
 
     nb_name = os.environ["SEEDFARMER_PARAMETER_NOTEBOOK_NAME"]
-    assert settings.parameters.notebook_name == f"{nb_name}-1234567"
+    assert settings.parameters.notebook_name == nb_name
 
     project_name = os.environ["SEEDFARMER_PROJECT_NAME"]
     deployment_name = os.environ["SEEDFARMER_DEPLOYMENT_NAME"]
@@ -49,22 +45,20 @@ def test_settings_inputs(mock_time, env_defaults) -> None:
     assert settings.default.account == account
 
 
-@mock.patch("time.time")
-def test_settings_nb_name_parameter_length(mock_time, env_defaults) -> None:
-    n = 60
+def test_settings_nb_name_parameter_length(env_defaults) -> None:
+    n = 64
     nb_name = "a" * n
     os.environ["SEEDFARMER_PARAMETER_NOTEBOOK_NAME"] = nb_name
 
-    with pytest.raises(ValueError, match=f"'name' length must be <= 50, got '{n}'"):
+    with pytest.raises(ValueError, match=f"'name' length must be <= 63, got '{n}'"):
         ApplicationSettings()
 
     n = 50
     nb_name = "a" * n
-    mock_time.return_value = 1234567
     os.environ["SEEDFARMER_PARAMETER_NOTEBOOK_NAME"] = nb_name
     settings = ApplicationSettings()
 
-    assert settings.parameters.notebook_name == f"{nb_name}-1234567"
+    assert settings.parameters.notebook_name == nb_name
 
 
 def test_settings_required_parameters(env_defaults) -> None:

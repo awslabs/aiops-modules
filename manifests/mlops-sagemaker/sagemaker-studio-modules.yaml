@@ -1,5 +1,5 @@
 name: studio
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-studio?ref=release/1.8.0&depth=1
+path: modules/sagemaker/sagemaker-studio
 targetAccount: primary
 parameters:
   - name: vpc_id
@@ -38,3 +38,7 @@ parameters:
         group: storage
         name: buckets
         key: ArtifactsBucketName
+  - name: mlflow_artifact_store_bucket_prefix
+    value: "mlflow/"
+  - name: enable_docker_access
+    value: 'True'

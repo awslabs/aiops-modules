@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added `enable_docker_access` to `sagemaker-studio` module
 
 ### **Changed**
+- fixed notebook name lengths in `sagemaker-notebook` module
 
 ## v1.8.0
 
