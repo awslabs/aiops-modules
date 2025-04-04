@@ -16,10 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - fixed notebook name lengths in `sagemaker-notebook` module
 
-
-### **Changed**
-- removed deprecated parameter in heredoc
-
 ## v1.8.0
 
 ### **Added**
