@@ -360,11 +360,11 @@ class SagemakerStudioStack(Stack):
 
         # Add timeout parameters if they exist
         if idle_timeout_in_minutes is not None:
-            idle_settings_props["idle_timeout_in_minutes"] = idle_timeout_in_minutes
+            idle_settings_props["idle_timeout_in_minutes"] = str(idle_timeout_in_minutes)
         if max_idle_timeout_in_minutes is not None:
-            idle_settings_props["max_idle_timeout_in_minutes"] = max_idle_timeout_in_minutes
+            idle_settings_props["max_idle_timeout_in_minutes"] = str(max_idle_timeout_in_minutes)
         if min_idle_timeout_in_minutes is not None:
-            idle_settings_props["min_idle_timeout_in_minutes"] = min_idle_timeout_in_minutes
+            idle_settings_props["min_idle_timeout_in_minutes"] = str(min_idle_timeout_in_minutes)
 
         # Set the app lifecycle management property
         jupyter_lab_settings_props["app_lifecycle_management"] = sagemaker.CfnDomain.AppLifecycleManagementProperty(
