@@ -52,6 +52,9 @@ def stack(
     enable_docker_access = False
     vpc_only_trusted_accounts = []
     jupyterlab_app_instance_type = None
+    idle_timeout_in_minutes = None
+    max_idle_timeout_in_minutes = None
+    min_idle_timeout_in_minutes = None
 
     return stack.SagemakerStudioStack(
         app,
@@ -70,6 +73,9 @@ def stack(
         enable_docker_access=enable_docker_access,
         vpc_only_trusted_accounts=vpc_only_trusted_accounts,
         jupyterlab_app_instance_type=jupyterlab_app_instance_type,
+        idle_timeout_in_minutes=idle_timeout_in_minutes,
+        max_idle_timeout_in_minutes=max_idle_timeout_in_minutes,
+        min_idle_timeout_in_minutes=min_idle_timeout_in_minutes,
         auth_mode=auth_mode,
         role_path=role_path,
         permissions_boundary_arn=permissions_boundary_arn,
