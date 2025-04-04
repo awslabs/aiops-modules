@@ -360,18 +360,18 @@ class SagemakerStudioStack(Stack):
 
         # Add timeout parameters if they exist
         if idle_timeout_in_minutes is not None:
-            idle_settings_props["idle_timeout_in_minutes"] = str(idle_timeout_in_minutes)
+            idle_settings_props["idle_timeout_in_minutes"] = idle_timeout_in_minutes  # type:ignore
         if max_idle_timeout_in_minutes is not None:
-            idle_settings_props["max_idle_timeout_in_minutes"] = str(max_idle_timeout_in_minutes)
+            idle_settings_props["max_idle_timeout_in_minutes"] = max_idle_timeout_in_minutes  # type:ignore
         if min_idle_timeout_in_minutes is not None:
-            idle_settings_props["min_idle_timeout_in_minutes"] = str(min_idle_timeout_in_minutes)
+            idle_settings_props["min_idle_timeout_in_minutes"] = min_idle_timeout_in_minutes  # type:ignore
 
         # Set the app lifecycle management property
         jupyter_lab_settings_props["app_lifecycle_management"] = sagemaker.CfnDomain.AppLifecycleManagementProperty(
-            idle_settings=sagemaker.CfnDomain.IdleSettingsProperty(**idle_settings_props)
+            idle_settings=sagemaker.CfnDomain.IdleSettingsProperty(**idle_settings_props)  # type:ignore
         )
 
-        return sagemaker.CfnDomain.JupyterLabAppSettingsProperty(**jupyter_lab_settings_props)
+        return sagemaker.CfnDomain.JupyterLabAppSettingsProperty(**jupyter_lab_settings_props)  # type:ignore
 
     def sagemaker_studio_domain(
         self,
@@ -456,7 +456,7 @@ class SagemakerStudioStack(Stack):
                     vpc_only_trusted_accounts=vpc_only_trusted_accounts if vpc_only_trusted_accounts else None,
                 ),
             ),
-            default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(**user_settings_props),
+            default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(**user_settings_props),  # type:ignore
             domain_name=domain_name,
             subnet_ids=subnet_ids,
             vpc_id=vpc_id,
