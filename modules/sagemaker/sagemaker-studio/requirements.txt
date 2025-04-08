@@ -1,6 +1,6 @@
-aws-cdk-lib~=2.155.0
-aws_cdk.aws_lambda_python_alpha~=2.155.0a0
-aws_cdk.integ-tests-alpha~=2.155.0a0
+aws-cdk-lib~=2.178.2
+aws_cdk.aws_lambda_python_alpha~=2.178.2a0
+aws_cdk.integ-tests-alpha~=2.178.2a0
 cdk-nag~=2.28.160
 pydantic~=2.8.2
 pydantic-settings~=2.3.4

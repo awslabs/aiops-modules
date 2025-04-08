@@ -1,6 +1,5 @@
 """Defines the stack settings."""
 
-import time
 from abc import ABC
 from typing import Dict, List, Optional
 
@@ -47,10 +46,10 @@ class SeedFarmerParameters(CdkBaseSettings):
     @classmethod
     def validate_name_length(cls, v: str) -> str:
         """Validate if notebook_name length is valid."""
-        if len(v) <= 50:
-            return f"{v}-{int(time.time())}"
+        if len(v) <= 63:
+            return v
 
-        raise ValueError(f"'name' length must be <= 50, got '{len(v)}'")
+        raise ValueError(f"'name' length must be <= 63, got '{len(v)}'")
 
 
 class SeedFarmerSettings(CdkBaseSettings):

@@ -39,6 +39,8 @@ class SeedFarmerParameters(CdkBaseSettings):
     enable_domain_resource_isolation: bool = Field(default=True)
     enable_jupyterlab_app: bool = Field(default=False)
     enable_jupyterlab_app_sharing: bool = Field(default=False)
+    enable_docker_access: bool = Field(default=False)
+    vpc_only_trusted_accounts: List[str] = Field(default=[])
     jupyterlab_app_instance_type: Optional[str] = Field(default=None)
     auth_mode: Literal["IAM", "SSO"] = Field(default="IAM")
     role_path: Optional[str] = Field(default=None)
@@ -46,6 +48,10 @@ class SeedFarmerParameters(CdkBaseSettings):
 
     data_science_users: List[str] = Field(default=[])
     lead_data_science_users: List[str] = Field(default=[])
+
+    idle_timeout_in_minutes: Optional[int] = Field(default=None)
+    max_idle_timeout_in_minutes: Optional[int] = Field(default=None)
+    min_idle_timeout_in_minutes: Optional[int] = Field(default=None)
 
     mlflow_enabled: bool = Field(default=False)
     mlflow_server_name: str = Field(default="mlflow")
