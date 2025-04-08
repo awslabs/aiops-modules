@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-sagemaker-alpha": "^2.138.0-alpha.0",
-    "aws-cdk-lib": "^2.138.0",
+    "aws-cdk-lib": "^2.186.0",
     "cdk-nag": "^2.28.120",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
