@@ -34,7 +34,12 @@ class SagemakerStudioStack(Stack):
         enable_domain_resource_isolation: bool,
         enable_jupyterlab_app: bool,
         enable_jupyterlab_app_sharing: bool,
+        enable_docker_access: bool,
+        vpc_only_trusted_accounts: List[str],
         jupyterlab_app_instance_type: Optional[str],
+        idle_timeout_in_minutes: Optional[int],
+        max_idle_timeout_in_minutes: Optional[int],
+        min_idle_timeout_in_minutes: Optional[int],
         auth_mode: str,
         role_path: Optional[str],
         permissions_boundary_arn: Optional[str],
@@ -75,6 +80,11 @@ class SagemakerStudioStack(Stack):
             app_image_config_name=app_image_config_name,
             image_name=image_name,
             auth_mode=auth_mode,
+            enable_docker_access=enable_docker_access,
+            vpc_only_trusted_accounts=vpc_only_trusted_accounts,
+            idle_timeout_in_minutes=idle_timeout_in_minutes,
+            max_idle_timeout_in_minutes=max_idle_timeout_in_minutes,
+            min_idle_timeout_in_minutes=min_idle_timeout_in_minutes,
         )
 
         if enable_custom_sagemaker_projects:
@@ -317,6 +327,52 @@ class SagemakerStudioStack(Stack):
         for role in roles:
             role.attach_inline_policy(policy)
 
+    def _create_jupyter_lab_app_settings(
+        self,
+        app_image_config_name: Optional[str] = None,
+        image_name: Optional[str] = None,
+        idle_timeout_in_minutes: Optional[int] = None,
+        max_idle_timeout_in_minutes: Optional[int] = None,
+        min_idle_timeout_in_minutes: Optional[int] = None,
+    ) -> Optional[sagemaker.CfnDomain.JupyterLabAppSettingsProperty]:
+        """Create JupyterLabAppSettingsProperty with custom images and/or app lifecycle management."""
+        # Initialize settings dict
+        jupyter_lab_settings_props = {}
+
+        # Add custom images if provided
+        if app_image_config_name is not None and image_name is not None:
+            jupyter_lab_settings_props["custom_images"] = [
+                sagemaker.CfnDomain.CustomImageProperty(
+                    app_image_config_name=app_image_config_name,
+                    image_name=image_name,
+                )
+            ]
+
+        # Add app lifecycle management with idle settings
+        # First check if min or max is defined without idle_timeout
+        if (
+            max_idle_timeout_in_minutes is not None or min_idle_timeout_in_minutes is not None
+        ) and idle_timeout_in_minutes is None:
+            raise ValueError("idle_timeout_in_minutes is required when min or max idle timeout is set")
+
+        # Configure idle settings based on parameter presence
+        idle_settings_props = {"lifecycle_management": "ENABLED" if idle_timeout_in_minutes is not None else "DISABLED"}
+
+        # Add timeout parameters if they exist
+        if idle_timeout_in_minutes is not None:
+            idle_settings_props["idle_timeout_in_minutes"] = idle_timeout_in_minutes  # type:ignore
+        if max_idle_timeout_in_minutes is not None:
+            idle_settings_props["max_idle_timeout_in_minutes"] = max_idle_timeout_in_minutes  # type:ignore
+        if min_idle_timeout_in_minutes is not None:
+            idle_settings_props["min_idle_timeout_in_minutes"] = min_idle_timeout_in_minutes  # type:ignore
+
+        # Set the app lifecycle management property
+        jupyter_lab_settings_props["app_lifecycle_management"] = sagemaker.CfnDomain.AppLifecycleManagementProperty(
+            idle_settings=sagemaker.CfnDomain.IdleSettingsProperty(**idle_settings_props)  # type:ignore
+        )
+
+        return sagemaker.CfnDomain.JupyterLabAppSettingsProperty(**jupyter_lab_settings_props)  # type:ignore
+
     def sagemaker_studio_domain(
         self,
         domain_name: str,
@@ -326,15 +382,27 @@ class SagemakerStudioStack(Stack):
         app_image_config_name: Optional[str],
         image_name: Optional[str],
         auth_mode: str,
+        enable_docker_access: bool,
+        vpc_only_trusted_accounts: List[str],
+        idle_timeout_in_minutes: Optional[int] = None,
+        max_idle_timeout_in_minutes: Optional[int] = None,
+        min_idle_timeout_in_minutes: Optional[int] = None,
     ) -> sagemaker.CfnDomain:
         """
         Create the SageMaker Studio Domain
 
         :param domain_name: - name to assign to the SageMaker Studio Domain
-        :param s3_bucket: - S3 bucket used for sharing notebooks between users
         :param sagemaker_studio_role: - IAM Execution Role for the domain
         :param subnet_ids: - list of comma separated subnet ids
-        :param vpc_id: - VPC Id for the domain
+        :param vpc_id: -  VPC Id for the domain
+        :param app_image_config_name: - config name
+        :param image_name: - image name
+        :param auth_mode: - auth mode (IAM or SSO)
+        :param enable_docker_access: - flag to enable docker from studio
+        :param vpc_only_trusted_accounts: - list of trusted aws account ids in vpc only mode
+        :param idle_timeout_in_minutes: - idle timeout in minutes
+        :param max_idle_timeout_in_minutes: - maximum idle timeout in minutes
+        :param min_idle_timeout_in_minutes: - minimum idle timeout in minutes
         """
         sagemaker_sg = ec2.SecurityGroup(
             self,
@@ -357,17 +425,38 @@ class SagemakerStudioStack(Stack):
                 )
             )
 
+        # Create user settings
+        user_settings_props = {
+            "execution_role": sagemaker_studio_role.role_arn,
+            "security_groups": [sagemaker_sg.security_group_id],
+            "sharing_settings": sagemaker.CfnDomain.SharingSettingsProperty(),
+            **custom_kernel_settings,  # type:ignore
+        }
+
+        # Get JupyterLab app settings if available
+        jupyter_lab_app_settings = self._create_jupyter_lab_app_settings(
+            app_image_config_name=app_image_config_name,
+            image_name=image_name,
+            idle_timeout_in_minutes=idle_timeout_in_minutes,
+            max_idle_timeout_in_minutes=max_idle_timeout_in_minutes,
+            min_idle_timeout_in_minutes=min_idle_timeout_in_minutes,
+        )
+
+        if jupyter_lab_app_settings:
+            user_settings_props["jupyter_lab_app_settings"] = jupyter_lab_app_settings
+
         return sagemaker.CfnDomain(
             self,
             "sagemaker-domain",
             auth_mode=auth_mode,
             app_network_access_type="VpcOnly",
-            default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(
-                execution_role=sagemaker_studio_role.role_arn,
-                security_groups=[sagemaker_sg.security_group_id],
-                sharing_settings=sagemaker.CfnDomain.SharingSettingsProperty(),
-                **custom_kernel_settings,  # type:ignore
+            domain_settings=sagemaker.CfnDomain.DomainSettingsProperty(
+                docker_settings=sagemaker.CfnDomain.DockerSettingsProperty(
+                    enable_docker_access="ENABLED" if enable_docker_access else "DISABLED",
+                    vpc_only_trusted_accounts=vpc_only_trusted_accounts if vpc_only_trusted_accounts else None,
+                ),
             ),
+            default_user_settings=sagemaker.CfnDomain.UserSettingsProperty(**user_settings_props),  # type:ignore
             domain_name=domain_name,
             subnet_ids=subnet_ids,
             vpc_id=vpc_id,
