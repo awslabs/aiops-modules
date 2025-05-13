@@ -788,7 +788,7 @@ def create_state_machine(
     state_machine_log_group = logs.LogGroup(
         scope,
         "StateMachineLogGroup",
-        log_group_name=f"{id}-state-machine",
+        log_group_name=f"/aws/vendedlogs/states/{job_name}",
         retention=logs.RetentionDays.ONE_MONTH,
         removal_policy=RemovalPolicy.DESTROY,
     )
