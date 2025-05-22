@@ -3,6 +3,7 @@ deploy:
   phases:
     install:
       commands:
+        - npm install -g aws-cdk@2.1016.1
         - npm install
     build:
       commands:
@@ -11,6 +12,7 @@ destroy:
   phases:
     install:
       commands:
+        - npm install -g aws-cdk@2.1016.1
         - npm install
     build:
       commands:
