@@ -151,7 +151,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
         "Cache": {
           "Type": "NO_CACHE",
         },
-        "Description": "Pipeline step MyTestStack/Pipeline/Assets/FileAsset1",
+        "Description": "Pipeline step MyTestStack/Pipeline/Assets/MyTestStack_TestProject-experimenation-deploy9ee035983AutoDeleteObjectsCustomResourceProvider_Code",
         "EncryptionKey": {
           "Fn::GetAtt": [
             "PipelineArtifactsBucketKms876A3C5B",
@@ -177,7 +177,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
   "phases": {
     "install": {
       "commands": [
-        "npm install -g cdk-assets@2"
+        "npm install -g cdk-assets@latest"
       ]
     },
     "build": {
@@ -202,7 +202,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
         "Cache": {
           "Type": "NO_CACHE",
         },
-        "Description": "Pipeline step MyTestStack/Pipeline/Assets/FileAsset2",
+        "Description": "Pipeline step MyTestStack/Pipeline/Assets/TriggerPipelineLambda_Code",
         "EncryptionKey": {
           "Fn::GetAtt": [
             "PipelineArtifactsBucketKms876A3C5B",
@@ -228,7 +228,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
   "phases": {
     "install": {
       "commands": [
-        "npm install -g cdk-assets@2"
+        "npm install -g cdk-assets@latest"
       ]
     },
     "build": {
@@ -502,7 +502,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
                     "Name": "Synth_Output",
                   },
                 ],
-                "Name": "FileAsset1",
+                "Name": "MyTestStack_TestProject-experimenation-deploy9ee035983AutoDeleteObjectsCustomResourceProvider_Code",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "MLOpsCodePipelineCodeBuildActionRole47989E97",
@@ -528,7 +528,7 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
                     "Name": "Synth_Output",
                   },
                 ],
-                "Name": "FileAsset2",
+                "Name": "TriggerPipelineLambda_Code",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "MLOpsCodePipelineCodeBuildActionRole47989E97",
@@ -1531,15 +1531,9 @@ exports[`MLOpsCodePipelineStack to match snapshot 1`] = `
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":iam::123456789011:root",
-                    ],
+                  "Fn::GetAtt": [
+                    "MLOpsCodePipelineRole4160A0A4",
+                    "Arn",
                   ],
                 },
               },

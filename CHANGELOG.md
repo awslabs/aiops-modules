@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 - fixed notebook name lengths in `sagemaker-notebook` module
 - fixed log group name  in `sagemaker-ground-truth` module
+- updated cdk cli versions
 
 ## v1.8.0
 
