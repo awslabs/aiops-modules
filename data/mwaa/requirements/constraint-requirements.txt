@@ -600,7 +600,7 @@ qdrant-client==1.11.1
 reactivex==4.0.4
 readme_renderer==43.0
 redis==5.0.8
-redshift-connector==2.1.3
+redshift-connector==2.1.7
 referencing==0.35.1
 regex==2024.7.24
 requests-file==2.1.0
