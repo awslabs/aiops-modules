@@ -142,7 +142,7 @@ pox==0.3.4
     # via pathos
 ppft==1.7.6.8
     # via pathos
-protobuf==4.25.4
+protobuf==4.25.8
     # via sagemaker
 psutil==6.0.0
     # via sagemaker
