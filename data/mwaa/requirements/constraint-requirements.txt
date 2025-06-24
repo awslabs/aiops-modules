@@ -719,7 +719,7 @@ uc-micro-py==1.0.3
 unicodecsv==0.14.1
 universal_pathlib==0.2.3
 uritemplate==4.1.1
-urllib3==2.2.2
+urllib3==2.5.0
 userpath==1.9.2
 uv==0.4.1
 validators==0.33.0
