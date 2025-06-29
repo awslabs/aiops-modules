@@ -1,0 +1,15 @@
+name: eks-strands-agents-demo
+toolchainRegion: us-east-1
+groups:
+  - name: core
+    path: manifests/eks-strands-agents-demo/core-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    codebuildImage: public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:5.0
+    regionMappings:
+      - region: us-west-2
+        default: true
