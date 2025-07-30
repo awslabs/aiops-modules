@@ -1,0 +1,52 @@
+publishGenericEnvVariables: True
+deploy:
+  phases:
+    install:
+      commands:
+        # Install helm
+        - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    build:
+      commands:
+        - export CLUSTER_NAME=$SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME
+        - export REPOSITORY_NAME=${SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME:=strands-agents-weather}
+        - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}
+        # Create Amazon EKS cluster in auto mode 
+        - eksctl create cluster --name $CLUSTER_NAME --enable-auto-mode
+        - aws eks update-kubeconfig --name $CLUSTER_NAME
+        - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+        # Create Amazon ECR repository
+        - aws ecr create-repository --repository-name strands-agents-weather --region ${AWS_REGION}
+        # Build & push agent Docker image
+        - docker build --platform linux/amd64 -t strands-agents-weather:latest docker/
+        - docker tag strands-agents-weather:latest ${REPOSITORY_URI}:latest
+        - docker push ${REPOSITORY_URI}:latest
+        # Associate permissions
+        - eksctl create addon --cluster=eks-strands-agents-demo --name=eks-pod-identity-agent
+        - aws iam create-policy --policy-name strands-agents-weather-bedrock-policy --policy-document file://bedrock-policy.json
+        - | 
+          eksctl create podidentityassociation --cluster $CLUSTER_NAME \
+            --namespace default \
+            --service-account-name strands-agents-weather \
+            --permission-policy-arns arn:aws:iam::${AWS_ACCOUNT_ID}:policy/strands-agents-weather-bedrock-policy \
+            --role-name eks-strands-agents-weather
+        # Deploy agent
+        - |
+          helm install strands-agents-weather ./chart \
+            --set image.repository=${REPOSITORY_URI} --set image.tag=latest
+        - kubectl wait --for=condition=available deployments strands-agents-weather --all --timeout=120s
+destroy:
+  phases:
+    install:
+      commands:
+        # Install helm
+        - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    build:
+      commands:
+        - export CLUSTER_NAME=$SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME
+        - aws eks update-kubeconfig --name $CLUSTER_NAME
+        # Destroy agent
+        - helm uninstall strands-agents-weather
+        # Destroy cluster
+        - eksctl delete cluster --name $CLUSTER_NAME --wait
+        # Delete IAM Policy
+        - aws iam delete-policy --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/strands-agents-weather-bedrock-policy

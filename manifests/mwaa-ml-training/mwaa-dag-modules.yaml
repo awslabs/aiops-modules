@@ -20,9 +20,9 @@ parameters:
         group: mwaa
         name: mwaa
         key: MwaaExecRoleArn
-  # - name: bucket-policy-arn
-  #   valueFrom:
-  #     moduleMetadata:
-  #       group: optionals
-  #       name: datalake-buckets
-  #       key: FullAccessPolicyArn
+#   - name: bucket-policy-arn
+#     valueFrom:
+#       moduleMetadata:
+#         group: optionals
+#         name: datalake-buckets
+#         key: FullAccessPolicyArn

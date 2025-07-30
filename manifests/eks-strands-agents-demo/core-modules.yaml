@@ -1,0 +1,5 @@
+name: eks
+path: modules/agents/eks-strands-agents-demo
+parameters:
+  - name: EksClusterName
+    value: eks-strands-agents-demo
