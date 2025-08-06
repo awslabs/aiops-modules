@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added `eks-strands-agents-demo` manifest
 - added `enable_docker_access` to `sagemaker-studio` module
 - added `idle_timeout_in_minutes` to `sagemaker-studio` module
 - added `max_idle_timeout_in_minutes` to `sagemaker-studio` module
