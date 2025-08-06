@@ -173,7 +173,7 @@ apache-airflow-providers-sftp==4.11.0
 apache-airflow-providers-singularity==3.6.0
 apache-airflow-providers-slack==8.9.0
 apache-airflow-providers-smtp==1.8.0
-apache-airflow-providers-snowflake==5.7.0
+apache-airflow-providers-snowflake==6.4.0
 apache-airflow-providers-sqlite==3.9.0
 apache-airflow-providers-ssh==3.13.1
 apache-airflow-providers-tableau==4.6.0
