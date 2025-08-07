@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - updated seedfarmer version (WARNING: uses AL2023 base image)
 - remove gettext-base dependency from `sagemaker-studio` module (fixes install with AL2023 base image)
 - fix add explicit boto3 dependency to `sagemaker-custom-kernels` module
+- fix missing permission causing UpdateFailed status in `sagemaker-studio` after deploying `sagemaker-custom-kernels`
 
 ## v1.8.0
 
