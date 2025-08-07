@@ -5,7 +5,6 @@ deploy:
       commands:
         - npm install -g aws-cdk@2.178.2
         - pip install -r requirements.txt
-        - apt-get install gettext-base
     build:
       commands:
         - LCC_CONTENT=`openssl base64 -A -in scripts/on-jupyter-server-start.sh`

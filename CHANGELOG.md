@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fixed notebook name lengths in `sagemaker-notebook` module
 - fixed log group name  in `sagemaker-ground-truth` module
 - updated cdk cli versions
+- updated seedfarmer version (WARNING: uses AL2023 base image)
+- remove gettext-base dependency from `sagemaker-studio` module (fixes install with AL2023 base image)
+- fix add explicit boto3 dependency to `sagemaker-custom-kernels` module
 
 ## v1.8.0
 

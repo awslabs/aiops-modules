@@ -4,3 +4,4 @@ cdk-nag==2.12.29
 cdk-ecr-deployment==3.0.43
 pydantic==2.7.2
 pydantic-settings==2.2.1
+boto3
