@@ -17,6 +17,7 @@ targetAccountMappings:
     accountId:
       valueFrom:
         envVariable: PRIMARY_ACCOUNT
+    codebuildImage: aws/codebuild/standard:7.0
     default: true
     regionMappings:
       - region: us-east-1
