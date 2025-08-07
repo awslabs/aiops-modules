@@ -721,7 +721,7 @@ universal_pathlib==0.2.3
 uritemplate==4.1.1
 urllib3==2.5.0
 userpath==1.9.2
-uv==0.4.1
+uv==0.8.6
 validators==0.33.0
 vertica-python==1.4.0
 vine==5.1.0
