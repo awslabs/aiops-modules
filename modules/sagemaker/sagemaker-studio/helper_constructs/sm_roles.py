@@ -321,6 +321,19 @@ class SMRoles(Construct):
                     "AmazonSageMakerFullAccess",
                 ),
             ],
+            inline_policies={
+                "DescribeImageVersion": iam.PolicyDocument(
+                    statements=[
+                        iam.PolicyStatement(
+                            effect=iam.Effect.ALLOW,
+                            actions=[
+                                "sagemaker:DescribeImageVersion",
+                            ],
+                            resources=[f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:image-version/*"],
+                        )
+                    ]
+                )
+            },
         )
 
         services_policy.attach_to_role(self.sagemaker_studio_role)
