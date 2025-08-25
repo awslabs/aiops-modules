@@ -15,10 +15,9 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from typing import Any
+from typing import Any, Optional
 
 import aws_cdk
-import aws_cdk.aws_servicecatalog as servicecatalog
 from aws_cdk import Aws, CfnOutput, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
@@ -27,11 +26,11 @@ from aws_cdk import aws_s3_assets as s3_assets
 from aws_cdk import aws_sagemaker as sagemaker
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType
+from settings import RepositoryType
 from templates.hf_import_models.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 
 
-class Product(servicecatalog.ProductStack):
+class HfImportModelsProject(Construct):
     DESCRIPTION: str = "Enables the import of Hugging Face models"
     TEMPLATE_NAME: str = "Hugging Face Model Import"
 
@@ -40,72 +39,24 @@ class Product(servicecatalog.ProductStack):
         scope: Construct,
         construct_id: str,
         build_app_asset: s3_assets.Asset,
-        deploy_app_asset: s3_assets.Asset,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
+        pre_prod_account_id: str,
+        prod_account_id: str,
+        hf_access_token_secret: str,
+        hf_model_id: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
 
-        # Define required parameters
-        project_name = aws_cdk.CfnParameter(
-            self,
-            "SageMakerProjectName",
-            type="String",
-            description="The name of the SageMaker project.",
-            min_length=1,
-            max_length=32,
-        ).value_as_string
-
-        project_id = aws_cdk.CfnParameter(
-            self,
-            "SageMakerProjectId",
-            type="String",
-            min_length=1,
-            max_length=16,
-            description="Service generated Id of the project.",
-        ).value_as_string
-
-        staging_account = aws_cdk.CfnParameter(
-            self,
-            "StgAccountId",
-            type="String",
-            min_length=1,
-            max_length=16,
-            description="Staging account id.",
-        ).value_as_string
-
-        prod_account = aws_cdk.CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            min_length=1,
-            max_length=16,
-            description="Prod account id.",
-        ).value_as_string
-
-        hf_access_token_secret = aws_cdk.CfnParameter(
-            self,
-            "HFAccessTokenSecret",
-            type="String",
-            min_length=1,
-            description="AWS Secret Of Hugging Face Access Token",
-        ).value_as_string
-
-        hf_model_id = aws_cdk.CfnParameter(
-            self,
-            "HFModelID",
-            type="String",
-            min_length=1,
-            description="Model ID from hf.co/models",
-        ).value_as_string
-
-        Tags.of(self).add("sagemaker:project-id", project_id)
-        Tags.of(self).add("sagemaker:project-name", project_name)
+        Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
+        Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
         if sagemaker_domain_id:
             Tags.of(self).add("sagemaker:domain-id", sagemaker_domain_id)
         if sagemaker_domain_arn:
@@ -143,8 +94,8 @@ class Product(servicecatalog.ProductStack):
                     "*",
                 ],
                 principals=[
-                    iam.AccountPrincipal(staging_account),
-                    iam.AccountPrincipal(prod_account),
+                    iam.AccountPrincipal(pre_prod_account_id),
+                    iam.AccountPrincipal(prod_account_id),
                 ],
             )
         )
@@ -152,7 +103,7 @@ class Product(servicecatalog.ProductStack):
         s3_artifact = s3.Bucket(
             self,
             "S3 Artifact",
-            bucket_name=f"mlops-{project_name}-{Aws.ACCOUNT_ID}",  # Bucket name has a limit of 63 characters
+            bucket_name=f"mlops-{sagemaker_project_name}-{Aws.ACCOUNT_ID}",  # Bucket name has a limit of 63 characters
             encryption_key=kms_key_artifact,
             versioned=True,
             removal_policy=aws_cdk.RemovalPolicy.DESTROY,
@@ -163,11 +114,11 @@ class Product(servicecatalog.ProductStack):
         s3_artifact.grant_read_write(iam.AccountRootPrincipal())
 
         # PROD account access to objects in the bucket
-        s3_artifact.grant_read_write(iam.AccountPrincipal(staging_account))
-        s3_artifact.grant_read_write(iam.AccountPrincipal(prod_account))
+        s3_artifact.grant_read_write(iam.AccountPrincipal(pre_prod_account_id))
+        s3_artifact.grant_read_write(iam.AccountPrincipal(prod_account_id))
 
         # cross account model registry resource policy
-        model_package_group_name = f"{project_name}-{project_id}"
+        model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"
         model_package_group_policy = iam.PolicyDocument(
             statements=[
                 iam.PolicyStatement(
@@ -179,8 +130,8 @@ class Product(servicecatalog.ProductStack):
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{model_package_group_name}"
                     ],
                     principals=[
-                        iam.AccountPrincipal(staging_account),
-                        iam.AccountPrincipal(prod_account),
+                        iam.AccountPrincipal(pre_prod_account_id),
+                        iam.AccountPrincipal(prod_account_id),
                     ],
                 ),
                 iam.PolicyStatement(
@@ -195,8 +146,8 @@ class Product(servicecatalog.ProductStack):
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
                     ],
                     principals=[
-                        iam.AccountPrincipal(staging_account),
-                        iam.AccountPrincipal(prod_account),
+                        iam.AccountPrincipal(pre_prod_account_id),
+                        iam.AccountPrincipal(prod_account_id),
                     ],
                 ),
             ]
@@ -206,19 +157,19 @@ class Product(servicecatalog.ProductStack):
             self,
             "Model Package Group",
             model_package_group_name=model_package_group_name,
-            model_package_group_description=f"Model Package Group for {project_name}",
+            model_package_group_description=f"Model Package Group for {sagemaker_project_name}",
             model_package_group_policy=model_package_group_policy,
             tags=[
-                aws_cdk.CfnTag(key="sagemaker:project-id", value=project_id),
-                aws_cdk.CfnTag(key="sagemaker:project-name", value=project_name),
+                aws_cdk.CfnTag(key="sagemaker:project-id", value=sagemaker_project_id),
+                aws_cdk.CfnTag(key="sagemaker:project-name", value=sagemaker_project_name),
             ],
         )
 
         BuildPipelineConstruct(
             self,
             "build",
-            project_name=project_name,
-            project_id=project_id,
+            project_name=sagemaker_project_name,
+            project_id=sagemaker_project_id,
             domain_id=sagemaker_domain_id,
             domain_arn=sagemaker_domain_arn,
             s3_artifact=s3_artifact,

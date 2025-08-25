@@ -3,11 +3,10 @@
 
 
 import json
-from typing import Any, List, Tuple
+from typing import Any, List, Optional, Tuple, cast
 
 import aws_cdk.aws_s3_assets as s3_assets
-import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnParameter, CustomResource, Duration, Tags
+from aws_cdk import Aws, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codecommit as codecommit
 from aws_cdk import aws_iam as iam
@@ -16,10 +15,11 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk.aws_codebuild import ISource
 from constructs import Construct
 
-from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
+from common.code_repo_construct import GitHubRepositoryCreator
+from settings import RepositoryType
 
 
-class Product(servicecatalog.ProductStack):
+class ModelDeployProject(Construct):
     DESCRIPTION: str = (
         "Creates a self-mutating CodePipeline that deploys a model endpoint to dev, pre-prod, and prod environments."
     )
@@ -71,6 +71,11 @@ class Product(servicecatalog.ProductStack):
         scope: Construct,
         id: str,
         deploy_app_asset: s3_assets.Asset,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
+        model_package_group_name: str,
+        model_bucket_name: str,
+        enable_network_isolation: str,
         dev_vpc_id: str,
         dev_subnet_ids: List[str],
         dev_security_group_ids: List[str],
@@ -87,81 +92,12 @@ class Product(servicecatalog.ProductStack):
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
-
-        sagemaker_project_name = CfnParameter(
-            self,
-            "SageMakerProjectName",
-            type="String",
-            description="Name of the project.",
-        ).value_as_string
-
-        sagemaker_project_id = CfnParameter(
-            self,
-            "SageMakerProjectId",
-            type="String",
-            description="Service generated Id of the project.",
-        ).value_as_string
-
-        model_package_group_name = CfnParameter(
-            self,
-            "ModelPackageGroupName",
-            type="String",
-            description="Name of the model package group.",
-        ).value_as_string
-
-        model_bucket_name = CfnParameter(
-            self,
-            "ModelBucketName",
-            type="String",
-            description="Name of the bucket that stores model artifacts.",
-        ).value_as_string
-
-        pre_prod_account_id = CfnParameter(
-            self,
-            "PreProdAccountId",
-            type="String",
-            description="Pre-prod AWS account id.",
-            default=pre_prod_account_id,
-        ).value_as_string
-
-        pre_prod_region = CfnParameter(
-            self,
-            "PreProdRegion",
-            type="String",
-            description="Pre-prod region name.",
-            default=pre_prod_region,
-        ).value_as_string
-
-        prod_account_id = CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            description="Prod AWS account id.",
-            default=prod_account_id,
-        ).value_as_string
-
-        prod_region = CfnParameter(
-            self,
-            "ProdRegion",
-            type="String",
-            description="Prod region name.",
-            default=prod_region,
-        ).value_as_string
-
-        enable_network_isolation = CfnParameter(
-            self,
-            "EnableNetworkIsolation",
-            type="String",
-            description="Enable network isolation",
-            allowed_values=["true", "false"],
-            default="false",
-        ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -218,11 +154,11 @@ class Product(servicecatalog.ProductStack):
             codebuild_source = self.codebuild_source_for_codecommit(sagemaker_project_name, deploy_app_asset)
         elif repository_type == RepositoryType.GITHUB:
             codebuild_source, github_repo = self.codebuild_source_for_github(
-                repository_owner,
+                cast(str, repository_owner),
                 sagemaker_project_name,
                 deploy_app_asset,
-                access_token_secret_name,
-                aws_codeconnection_arn,
+                cast(str, access_token_secret_name),
+                cast(str, aws_codeconnection_arn),
             )
             github_env_vars = {
                 "CODE_CONNECTION_ARN": codebuild.BuildEnvironmentVariable(value=aws_codeconnection_arn),
@@ -323,7 +259,7 @@ class Product(servicecatalog.ProductStack):
                                 "codeconnections:GetConnection",
                                 "codeconnections:GetConnectionToken",
                             ],
-                            resources=[aws_codeconnection_arn],
+                            resources=[cast(str, aws_codeconnection_arn)],
                         ),
                     ],
                 )
