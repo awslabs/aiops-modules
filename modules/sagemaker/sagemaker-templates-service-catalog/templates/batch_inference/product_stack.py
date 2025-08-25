@@ -1,18 +1,18 @@
-from typing import Any
+from typing import Any, Optional
 
 import aws_cdk
-import aws_cdk.aws_servicecatalog as servicecatalog
+import cdk_nag
 from aws_cdk import Aws, Tags
 from aws_cdk import aws_kms as kms
 from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType
+from settings import RepositoryType
 from templates.batch_inference.pipeline_constructs.build_pipeline_construct import BuildPipelineConstruct
 
 
-class Product(servicecatalog.ProductStack):
+class BatchInferenceProject(Construct):
     DESCRIPTION: str = "Creates a SageMaker pipeline for executing batch transforms."
     TEMPLATE_NAME: str = "Invoke Batch Transforms on SageMaker Pipelines"
 
@@ -21,60 +21,20 @@ class Product(servicecatalog.ProductStack):
         scope: Construct,
         construct_id: str,
         build_app_asset: s3_assets.Asset,
-        deploy_app_asset: None,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
+        model_package_group_name: str,
+        model_bucket_name: str,
+        base_job_prefix: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
-
-        # Define required parameters
-        sagemaker_project_name = aws_cdk.CfnParameter(
-            self,
-            "SageMakerProjectName",
-            type="String",
-            description="The name of the SageMaker project.",
-            min_length=1,
-            max_length=32,
-        ).value_as_string
-
-        sagemaker_project_id = aws_cdk.CfnParameter(
-            self,
-            "SageMakerProjectId",
-            type="String",
-            min_length=1,
-            max_length=16,
-            description="Service generated ID of the project.",
-        ).value_as_string
-
-        model_package_group_name = aws_cdk.CfnParameter(
-            self,
-            "Model Package Group Name",
-            type="String",
-            min_length=1,
-            description="Model package group name",
-        ).value_as_string
-
-        model_bucket_name = aws_cdk.CfnParameter(
-            self,
-            "Model Bucket Name",
-            type="String",
-            min_length=1,
-            description="Name of the model S3 bucket.",
-        ).value_as_string
-
-        base_job_prefix = aws_cdk.CfnParameter(
-            self,
-            "Base Job Prefix",
-            type="String",
-            min_length=1,
-            description="Prefix for the base job name.",
-            default="transformer-output/",
-        ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -120,4 +80,17 @@ class Product(servicecatalog.ProductStack):
             access_token_secret_name=access_token_secret_name,
             aws_codeconnection_arn=aws_codeconnection_arn,
             repository_owner=repository_owner,
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            pipeline_artifact_bucket,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for CI/CD pipeline artifact buckets"
+                        "as they contain build artifacts, not user access data."
+                    ),
+                }
+            ],
         )

@@ -15,9 +15,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from typing import Any
+from typing import Any, Optional, cast
 
 import aws_cdk
+import cdk_nag
 from aws_cdk import Aws
 from aws_cdk import aws_cloudwatch as cloudwatch
 from aws_cdk import aws_codebuild as codebuild
@@ -29,7 +30,8 @@ from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_s3_assets as s3_assets
 from constructs import Construct
 
-from common.code_repo_construct import GitHubRepositoryCreator, RepositoryType
+from common.code_repo_construct import GitHubRepositoryCreator
+from settings import RepositoryType
 
 
 class BuildPipelineConstruct(Construct):
@@ -47,9 +49,9 @@ class BuildPipelineConstruct(Construct):
         hf_access_token_secret: str,
         hf_model_id: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -82,13 +84,13 @@ class BuildPipelineConstruct(Construct):
             GitHubRepositoryCreator(
                 self,
                 "Build App Code Repo",
-                github_token_secret_name=access_token_secret_name,
+                github_token_secret_name=cast(str, access_token_secret_name),
                 repo_name=f"{project_name}-{construct_id}",
                 repo_description=f"Repository for project {project_name}",
-                github_owner=repository_owner,
+                github_owner=cast(str, repository_owner),
                 s3_bucket_name=repo_asset.s3_bucket_name,
                 s3_bucket_object_key=repo_asset.s3_object_key,
-                code_connection_arn=aws_codeconnection_arn,
+                code_connection_arn=cast(str, aws_codeconnection_arn),
             )
 
         sagemaker_seedcode_bucket = s3.Bucket.from_bucket_name(
@@ -319,11 +321,11 @@ class BuildPipelineConstruct(Construct):
             source_stage.add_action(
                 codepipeline_actions.CodeStarConnectionsSourceAction(
                     action_name="Source",
-                    owner=repository_owner,
+                    owner=cast(str, repository_owner),
                     repo=f"{project_name}-{construct_id}",
                     output=source_artifact,
                     branch="main",
-                    connection_arn=aws_codeconnection_arn,
+                    connection_arn=cast(str, aws_codeconnection_arn),
                 )
             )
 
@@ -335,4 +337,32 @@ class BuildPipelineConstruct(Construct):
                 input=source_artifact,
                 project=sm_pipeline_build,
             )
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            sm_pipeline_build,
+            [
+                {
+                    "id": "AwsSolutions-CB4",
+                    "reason": (
+                        "CodeBuild project uses the default AWS managed encryption which is "
+                        "sufficient for ML pipeline builds. Customer managed KMS keys are "
+                        "not required for this use case."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/CodeBuild Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for SageMaker model packages, pipeline "
+                        "executions, and image versions as the exact resource names are generated "
+                        "dynamically during ML pipeline execution."
+                    ),
+                }
+            ],
         )
