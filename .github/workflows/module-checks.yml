@@ -1,4 +1,6 @@
 name: Module Checks
+permissions:
+  contents: read
 
 on:
   push:
