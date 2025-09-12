@@ -2,15 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import aws_cdk
-import cdk_nag
 
 from settings import ApplicationSettings
-from stack import ServiceCatalogStack
+from stack import ProjectStack
 
 app = aws_cdk.App()
 app_settings = ApplicationSettings()
 
-stack = ServiceCatalogStack(
+stack = ProjectStack(
     app,
     id=app_settings.seedfarmer_settings.app_prefix,
     env=aws_cdk.Environment(
@@ -18,17 +17,10 @@ stack = ServiceCatalogStack(
         region=app_settings.cdk_settings.region,
     ),
     **app_settings.module_settings.model_dump(),
-)
-
-aws_cdk.CfnOutput(
-    scope=stack,
-    id="metadata",
-    value=stack.to_json_string(
-        {
-            "ServiceCatalogPortfolioName": stack.portfolio_name,
-            "ServiceCatalogPortfolioOwner": stack.portfolio_owner,
-        }
-    ),
+    xgboost_abalone_project_settings=app_settings.xgboost_abalone_project_settings,
+    model_deploy_project_settings=app_settings.model_deploy_project_settings,
+    hf_import_models_project_settings=app_settings.hf_import_models_project_settings,
+    batch_inference_project_settings=app_settings.batch_inference_project_settings,
 )
 
 aws_cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
