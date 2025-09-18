@@ -220,15 +220,15 @@ class ProjectStack(Stack):
             if deploy_app_asset:
                 cdk_nag.NagSuppressions.add_resource_suppressions(
                     deploy_app_asset.bucket,
-                [
-                    {
-                        "id": "AwsSolutions-S1",
-                        "reason": (
-                            "S3 access logs are not required for CDK asset buckets as"
-                            "they are managed by CDK and used for deployment artifacts only."
-                        ),
-                    }
-                ],
-            )
+                    [
+                        {
+                            "id": "AwsSolutions-S1",
+                            "reason": (
+                                "S3 access logs are not required for CDK asset buckets as"
+                                "they are managed by CDK and used for deployment artifacts only."
+                            ),
+                        }
+                    ],
+                )
 
         return build_app_asset, deploy_app_asset

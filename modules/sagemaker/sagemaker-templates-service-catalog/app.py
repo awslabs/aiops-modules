@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import aws_cdk
+import cdk_nag
 
 from settings import ApplicationSettings
 from stack import ProjectStack

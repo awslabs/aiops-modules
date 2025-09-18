@@ -5,7 +5,7 @@ deploy:
       commands:
         - env
         # Install whatever additional build libraries
-        - npm install -g aws-cdk@2.130.0
+        - npm install -g aws-cdk@2.1029.2
         - pip install -r requirements.txt
     build:
       commands:
@@ -15,7 +15,7 @@ destroy:
     install:
       commands:
         # Install whatever additional build libraries
-        - npm install -g aws-cdk@2.130.0
+        - npm install -g aws-cdk@2.1029.2
         - pip install -r requirements.txt
     build:
       commands:
