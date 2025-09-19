@@ -1,29 +1,32 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import importlib
 import os
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, cast
 
 import cdk_nag
-from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack, Tags
-from aws_cdk import aws_ec2 as ec2
-from aws_cdk import aws_iam as iam
+from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack
 from aws_cdk import aws_s3_assets as s3_assets
-from aws_cdk import aws_servicecatalog as servicecatalog
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType
+from settings import ProjectTemplateType, RepositoryType
+from templates.batch_inference.product_stack import BatchInferenceProject
+from templates.finetune_llm_evaluation.product_stack import FinetuneLlmEvaluationProject
+from templates.hf_import_models.product_stack import HfImportModelsProject
+from templates.model_deploy.product_stack import ModelDeployProject
+from templates.xgboost_abalone.product_stack import XGBoostAbaloneProject
 
 
-class ServiceCatalogStack(Stack):
+class ProjectStack(Stack):
     def __init__(
         self,
         scope: Construct,
         id: str,
-        portfolio_name: str,
-        portfolio_owner: str,
-        portfolio_access_role_arn: str,
+        project_template_type: ProjectTemplateType,
+        sagemaker_domain_id: str,
+        sagemaker_domain_arn: str,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
         dev_vpc_id: str,
         dev_subnet_ids: List[str],
         dev_security_group_ids: List[str],
@@ -37,81 +40,114 @@ class ServiceCatalogStack(Stack):
         prod_vpc_id: str,
         prod_subnet_ids: List[str],
         prod_security_group_ids: List[str],
-        sagemaker_domain_id: str,
-        sagemaker_domain_arn: str,
         repository_type: RepositoryType,
         access_token_secret_name: Optional[str] = None,
         aws_codeconnection_arn: Optional[str] = None,
         repository_owner: Optional[str] = None,
+        xgboost_abalone_project_settings: Any = None,
+        model_deploy_project_settings: Any = None,
+        hf_import_models_project_settings: Any = None,
+        batch_inference_project_settings: Any = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
 
-        self.portfolio_name = portfolio_name
-        self.portfolio_owner = portfolio_owner
-
-        self.portfolio = servicecatalog.Portfolio(
-            self,
-            "Portfolio",
-            display_name=portfolio_name,
-            provider_name=portfolio_owner,
-            description="MLOps Unified Templates",
+        build_app_asset, deploy_app_asset = self.upload_assets(
+            template_name=project_template_type.value,
         )
 
-        account_root_principal = iam.Role(
-            self,
-            "AccountRootPrincipal",
-            assumed_by=iam.AccountRootPrincipal(),
-        )
-        self.portfolio.give_access_to_role(account_root_principal)
-
-        portfolio_access_role: iam.IRole = iam.Role.from_role_arn(
-            self, "portfolio-access-role", portfolio_access_role_arn
-        )
-        self.portfolio.give_access_to_role(portfolio_access_role)
-
-        product_launch_role = iam.Role(
-            self,
-            "ProductLaunchRole",
-            assumed_by=iam.CompositePrincipal(
-                iam.ServicePrincipal("servicecatalog.amazonaws.com"),
-                iam.ServicePrincipal("cloudformation.amazonaws.com"),
-                iam.ArnPrincipal(portfolio_access_role.role_arn),
-            ),
-            managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AdministratorAccess")],
-        )
-
-        dev_vpc = None
-        if dev_vpc_id:
-            dev_vpc = ec2.Vpc.from_lookup(self, "dev-vpc", vpc_id=dev_vpc_id)
-
-        templates_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
-        for template_name in next(os.walk(templates_dir))[1]:
-            if template_name == "__pycache__":
-                continue
-            build_app_asset, deploy_app_asset = self.upload_assets(
-                portfolio_access_role=portfolio_access_role,
-                template_name=template_name,
-            )
-
-            product_stack_module = importlib.import_module(f"templates.{template_name}.product_stack")
-            product_stack: servicecatalog.ProductStack = product_stack_module.Product(
+        if project_template_type == ProjectTemplateType.XGBOOST_ABALONE:
+            XGBoostAbaloneProject(
                 self,
-                f"{template_name}ProductStack",
-                build_app_asset=build_app_asset,
-                deploy_app_asset=deploy_app_asset,
+                "XGBoostAbaloneProject",
+                build_app_asset=cast(s3_assets.Asset, build_app_asset),
+                pre_prod_account_id=pre_prod_account_id,
+                prod_account_id=prod_account_id,
+                sagemaker_domain_id=sagemaker_domain_id,
+                sagemaker_domain_arn=sagemaker_domain_arn,
+                sagemaker_project_name=sagemaker_project_name,
+                sagemaker_project_id=sagemaker_project_id,
                 dev_vpc_id=dev_vpc_id,
-                dev_vpc=dev_vpc,
+                dev_subnet_ids=dev_subnet_ids,
+                enable_network_isolation=xgboost_abalone_project_settings.enable_network_isolation,
+                encrypt_inter_container_traffic=xgboost_abalone_project_settings.encrypt_inter_container_traffic,
+                repository_type=repository_type,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
+            )
+        elif project_template_type == ProjectTemplateType.BATCH_INFERENCE:
+            BatchInferenceProject(
+                self,
+                "BatchInferenceProject",
+                build_app_asset=cast(s3_assets.Asset, build_app_asset),
+                sagemaker_project_name=sagemaker_project_name,
+                sagemaker_project_id=sagemaker_project_id,
+                sagemaker_domain_id=sagemaker_domain_id,
+                sagemaker_domain_arn=sagemaker_domain_arn,
+                model_package_group_name=batch_inference_project_settings.model_package_group_name,
+                model_bucket_name=batch_inference_project_settings.model_bucket_name,
+                base_job_prefix=batch_inference_project_settings.base_job_prefix,
+                repository_type=repository_type,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
+            )
+        elif project_template_type == ProjectTemplateType.FINETUNE_LLM_EVALUATION:
+            FinetuneLlmEvaluationProject(
+                self,
+                "FinetuneLlmEvaluationProject",
+                build_app_asset=cast(s3_assets.Asset, build_app_asset),
+                sagemaker_project_name=sagemaker_project_name,
+                sagemaker_project_id=sagemaker_project_id,
+                pre_prod_account_id=pre_prod_account_id,
+                prod_account_id=prod_account_id,
+                sagemaker_domain_id=sagemaker_domain_id,
+                sagemaker_domain_arn=sagemaker_domain_arn,
+                repository_type=repository_type,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
+            )
+        elif project_template_type == ProjectTemplateType.HF_IMPORT_MODELS:
+            HfImportModelsProject(
+                self,
+                "HfImportModelsProject",
+                build_app_asset=cast(s3_assets.Asset, build_app_asset),
+                sagemaker_domain_id=sagemaker_domain_id,
+                sagemaker_domain_arn=sagemaker_domain_arn,
+                sagemaker_project_name=sagemaker_project_name,
+                sagemaker_project_id=sagemaker_project_id,
+                pre_prod_account_id=pre_prod_account_id,
+                prod_account_id=prod_account_id,
+                hf_access_token_secret=hf_import_models_project_settings.hf_access_token_secret,
+                hf_model_id=hf_import_models_project_settings.hf_model_id,
+                repository_type=repository_type,
+                access_token_secret_name=access_token_secret_name,
+                aws_codeconnection_arn=aws_codeconnection_arn,
+                repository_owner=repository_owner,
+            )
+        elif project_template_type == ProjectTemplateType.MODEL_DEPLOY:
+            ModelDeployProject(
+                self,
+                "ModelDeployProject",
+                deploy_app_asset=cast(s3_assets.Asset, deploy_app_asset),
+                sagemaker_project_name=sagemaker_project_name,
+                sagemaker_project_id=sagemaker_project_id,
+                model_package_group_name=model_deploy_project_settings.model_package_group_name,
+                model_bucket_name=model_deploy_project_settings.model_bucket_name,
+                enable_network_isolation=model_deploy_project_settings.enable_network_isolation,
+                dev_vpc_id=dev_vpc_id,
                 dev_subnet_ids=dev_subnet_ids,
                 dev_security_group_ids=dev_security_group_ids,
-                pre_prod_vpc_id=pre_prod_vpc_id,
                 pre_prod_account_id=pre_prod_account_id,
                 pre_prod_region=pre_prod_region,
+                pre_prod_vpc_id=pre_prod_vpc_id,
                 pre_prod_subnet_ids=pre_prod_subnet_ids,
                 pre_prod_security_group_ids=pre_prod_security_group_ids,
-                prod_vpc_id=prod_vpc_id,
                 prod_account_id=prod_account_id,
                 prod_region=prod_region,
+                prod_vpc_id=prod_vpc_id,
                 prod_subnet_ids=prod_subnet_ids,
                 prod_security_group_ids=prod_security_group_ids,
                 sagemaker_domain_id=sagemaker_domain_id,
@@ -121,63 +157,18 @@ class ServiceCatalogStack(Stack):
                 aws_codeconnection_arn=aws_codeconnection_arn,
                 repository_owner=repository_owner,
             )
-
-            product_name: str = getattr(product_stack, "TEMPLATE_NAME", template_name)
-            product_description: Optional[str] = getattr(product_stack, "DESCRIPTION", None)
-
-            product = servicecatalog.CloudFormationProduct(
-                self,
-                f"{template_name}CloudFormationProduct",
-                owner=portfolio_owner,
-                product_name=product_name,
-                description=product_description,
-                product_versions=[
-                    servicecatalog.CloudFormationProductVersion(
-                        cloud_formation_template=servicecatalog.CloudFormationTemplate.from_product_stack(
-                            product_stack
-                        ),
-                    )
-                ],
-            )
-
-            self.portfolio.add_product(product)
-            self.portfolio.set_launch_role(product, product_launch_role)
-
-            Tags.of(product).add(key="sagemaker:studio-visibility", value="true")
-
-            cdk_nag.NagSuppressions.add_resource_suppressions(
-                portfolio_access_role,
-                apply_to_children=True,
-                suppressions=[
-                    cdk_nag.NagPackSuppression(
-                        id="AwsSolutions-IAM5",
-                        reason="The role needs wildcard permissions to be able to access template assets in S3",
-                    ),
-                ],
-            )
-            cdk_nag.NagSuppressions.add_resource_suppressions(
-                product_launch_role,
-                suppressions=[
-                    cdk_nag.NagPackSuppression(
-                        id="AwsSolutions-IAM4",
-                        reason=(
-                            "Product launch role needs admin permissions in order to be able "
-                            "to create resources in the AWS account."
-                        ),
-                    ),
-                ],
-            )
+        else:
+            raise ValueError(f"Unsupported project template type: {project_template_type}")
 
     def upload_assets(
         self,
-        portfolio_access_role: iam.IRole,
         template_name: str,
     ) -> Tuple[Optional[s3_assets.Asset], Optional[s3_assets.Asset]]:
-        # Create the build and deployment asset as an output to pass to pipeline stack
-        zip_image = DockerImage.from_build("images/zip-image")
+        module_dir = os.path.dirname(os.path.abspath(__file__))
+        zip_image = DockerImage.from_build(os.path.join(module_dir, "images/zip-image"))
 
-        build_path = f"templates/{template_name}/seed_code/build_app/"
-        deploy_path = f"templates/{template_name}/seed_code/deploy_app/"
+        build_path = os.path.join(module_dir, f"templates/{template_name}/seed_code/build_app/")
+        deploy_path = os.path.join(module_dir, f"templates/{template_name}/seed_code/deploy_app/")
         build_app_asset = None
         deploy_app_asset = None
 
@@ -185,7 +176,7 @@ class ServiceCatalogStack(Stack):
             build_app_asset = s3_assets.Asset(
                 self,
                 f"{template_name}BuildAsset",
-                path=f"templates/{template_name}/seed_code/build_app/",
+                path=build_path,
                 bundling=BundlingOptions(
                     image=zip_image,
                     command=[
@@ -196,13 +187,12 @@ class ServiceCatalogStack(Stack):
                     output_type=BundlingOutput.ARCHIVED,
                 ),
             )
-            build_app_asset.grant_read(grantee=portfolio_access_role)
 
         if os.path.isdir(deploy_path):
             deploy_app_asset = s3_assets.Asset(
                 self,
                 f"{template_name}DeployAsset",
-                path=f"templates/{template_name}/seed_code/deploy_app/",
+                path=deploy_path,
                 bundling=BundlingOptions(
                     image=zip_image,
                     command=[
@@ -213,6 +203,32 @@ class ServiceCatalogStack(Stack):
                     output_type=BundlingOutput.ARCHIVED,
                 ),
             )
-            deploy_app_asset.grant_read(grantee=portfolio_access_role)
+
+            if build_app_asset:
+                cdk_nag.NagSuppressions.add_resource_suppressions(
+                    build_app_asset.bucket,
+                    [
+                        {
+                            "id": "AwsSolutions-S1",
+                            "reason": (
+                                "S3 access logs are not required for CDK asset buckets as"
+                                "they are managed by CDK and used for deployment artifacts only."
+                            ),
+                        }
+                    ],
+                )
+            if deploy_app_asset:
+                cdk_nag.NagSuppressions.add_resource_suppressions(
+                    deploy_app_asset.bucket,
+                    [
+                        {
+                            "id": "AwsSolutions-S1",
+                            "reason": (
+                                "S3 access logs are not required for CDK asset buckets as"
+                                "they are managed by CDK and used for deployment artifacts only."
+                            ),
+                        }
+                    ],
+                )
 
         return build_app_asset, deploy_app_asset

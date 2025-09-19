@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any, List
+from typing import Any, List, Optional
 
 import aws_cdk.aws_ec2 as ec2
 import aws_cdk.aws_iam as iam
@@ -9,17 +9,17 @@ import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
-import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnOutput, CfnParameter, RemovalPolicy, Tags
+import cdk_nag
+from aws_cdk import Aws, CfnOutput, RemovalPolicy, Tags
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType
+from settings import RepositoryType
 from templates.xgboost_abalone.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
 
 
-class Product(servicecatalog.ProductStack):
+class XGBoostAbaloneProject(Construct):
     DESCRIPTION: str = "Creates a SageMaker pipeline which trains a model on Abalone dataset."
     TEMPLATE_NAME: str = "Train a model on Abalone dataset using XGBoost"
 
@@ -32,12 +32,16 @@ class Product(servicecatalog.ProductStack):
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
-        dev_vpc: ec2.IVpc,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
+        dev_vpc_id: str,
         dev_subnet_ids: List[str],
+        enable_network_isolation: str,
+        encrypt_inter_container_traffic: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -46,56 +50,9 @@ class Product(servicecatalog.ProductStack):
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
-        sagemaker_project_name = CfnParameter(
-            self,
-            "SageMakerProjectName",
-            type="String",
-            description="Name of the project.",
-        ).value_as_string
-
-        sagemaker_project_id = CfnParameter(
-            self,
-            "SageMakerProjectId",
-            type="String",
-            description="Service generated Id of the project.",
-        ).value_as_string
-
-        pre_prod_account_id = CfnParameter(
-            self,
-            "PreProdAccountId",
-            type="String",
-            description="Pre-prod AWS account id.. Required for cross-account model registry permissions.",
-            default=pre_prod_account_id,
-        ).value_as_string
-
-        prod_account_id = CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            description="Prod AWS account id. Required for cross-account model registry permissions.",
-            default=prod_account_id,
-        ).value_as_string
-
-        enable_network_isolation = CfnParameter(
-            self,
-            "EnableNetworkIsolation",
-            type="String",
-            description=(
-                "Enable network isolation. Will NOT enable network isolation on preprocess step as it requires access "
-                "to S3 for training data."
-            ),
-            allowed_values=["true", "false"],
-            default="false",
-        ).value_as_string
-
-        encrypt_inter_container_traffic = CfnParameter(
-            self,
-            "EncryptInterContainerTraffic",
-            type="String",
-            description="Encrypt inter container traffic",
-            allowed_values=["true", "false"],
-            default="false",
-        ).value_as_string
+        dev_vpc = None
+        if dev_vpc_id:
+            dev_vpc = ec2.Vpc.from_lookup(self, "dev-vpc", vpc_id=dev_vpc_id)
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -284,6 +241,31 @@ class Product(servicecatalog.ProductStack):
             access_token_secret_name=access_token_secret_name,
             aws_codeconnection_arn=aws_codeconnection_arn,
             repository_owner=repository_owner,
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            model_bucket,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for ML model artifact buckets as"
+                        "they contain training artifacts and models, not user access data."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            pipeline_artifact_bucket,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for CI/CD pipeline artifact buckets"
+                        "as they contain build artifacts, not user access data."
+                    ),
+                }
+            ],
         )
 
         CfnOutput(
