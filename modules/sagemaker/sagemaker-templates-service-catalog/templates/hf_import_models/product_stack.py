@@ -1,19 +1,5 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-#
-# SPDX-License-Identifier: MIT-0
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software
-# without restriction, including without limitation the rights to use, copy, modify,
-# merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# SPDX-License-Identifier: Apache-2.0
 
 from typing import Any, Optional
 
@@ -55,6 +41,10 @@ class HfImportModelsProject(Construct):
     ) -> None:
         super().__init__(scope, construct_id)
 
+        dev_account_id = Aws.ACCOUNT_ID
+        pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
+        prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
         if sagemaker_domain_id:
@@ -75,29 +65,25 @@ class HfImportModelsProject(Construct):
                         effect=iam.Effect.ALLOW,
                         resources=["*"],
                         principals=[iam.AccountRootPrincipal()],
+                    ),
+                    iam.PolicyStatement(
+                        actions=[
+                            "kms:Encrypt",
+                            "kms:Decrypt",
+                            "kms:ReEncrypt*",
+                            "kms:GenerateDataKey*",
+                            "kms:DescribeKey",
+                        ],
+                        resources=[
+                            "*",
+                        ],
+                        principals=[
+                            iam.AccountPrincipal(pre_prod_account_id),
+                            iam.AccountPrincipal(prod_account_id),
+                        ],
                     )
                 ]
             ),
-        )
-
-        # allow cross account access to the kms key
-        kms_key_artifact.add_to_resource_policy(
-            iam.PolicyStatement(
-                actions=[
-                    "kms:Encrypt",
-                    "kms:Decrypt",
-                    "kms:ReEncrypt*",
-                    "kms:GenerateDataKey*",
-                    "kms:DescribeKey",
-                ],
-                resources=[
-                    "*",
-                ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
-            )
         )
 
         s3_artifact = s3.Bucket(

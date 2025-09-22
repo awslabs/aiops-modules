@@ -99,6 +99,7 @@ class ModelDeployProjectSettings(CdkBaseSettings):
 
     model_package_group_name: str = Field(default="")
     model_bucket_name: str = Field(default="")
+    enable_network_isolation: str = Field(default="False")
 
 
 class HfImportModelsProjectSettings(CdkBaseSettings):
