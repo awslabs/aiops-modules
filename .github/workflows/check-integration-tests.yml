@@ -8,6 +8,8 @@ on:
 jobs:
   get-modules:
     name: Get Modules
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.get-modules.outputs.matrix }}
