@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import aws_cdk
-import cdk_nag
 
 from settings import ApplicationSettings
 from stack import ProjectStack
@@ -23,8 +22,6 @@ stack = ProjectStack(
     hf_import_models_project_settings=app_settings.hf_import_models_project_settings,
     batch_inference_project_settings=app_settings.batch_inference_project_settings,
 )
-
-aws_cdk.Aspects.of(stack).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))
 
 aws_cdk.Tags.of(app).add("SeedFarmerDeploymentName", app_settings.seedfarmer_settings.deployment_name)
 aws_cdk.Tags.of(app).add("SeedFarmerModuleName", app_settings.seedfarmer_settings.module_name)
