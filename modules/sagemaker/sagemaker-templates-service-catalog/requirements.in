@@ -1,6 +1,6 @@
 aws-cdk-lib==2.215.0
 cdk-nag==2.37.30
-boto3~=1.40.33
-pydantic~=2.7.2
-pydantic-settings~=2.2.1
+boto3>=1.39.0,<1.40.0
+pydantic>=2.8.2,<2.11.0
+pydantic-settings==2.2.1
 urllib3~=2.5.0
