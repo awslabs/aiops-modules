@@ -2,9 +2,9 @@
 
 from abc import ABC
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
-from pydantic import Field, computed_field
+from pydantic import Field, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -48,31 +48,31 @@ class ModuleSettings(CdkBaseSettings):
 
     project_template_type: ProjectTemplateType
 
-    sagemaker_domain_id: str = Field(default="")
-    sagemaker_domain_arn: str = Field(default="")
-    sagemaker_project_name: str = Field(default="")
-    sagemaker_project_id: str = Field(default="")
+    sagemaker_domain_id: Optional[str] = Field(default=None)
+    sagemaker_domain_arn: Optional[str] = Field(default=None)
+    sagemaker_project_name: str
+    sagemaker_project_id: str
 
-    dev_vpc_id: str = Field(default="")
+    dev_vpc_id: Optional[str] = Field(default=None)
     dev_subnet_ids: List[str] = Field(default=[])
     dev_security_group_ids: List[str] = Field(default=[])
 
-    pre_prod_account_id: str = Field(default="")
-    pre_prod_region: str = Field(default="")
-    pre_prod_vpc_id: str = Field(default="")
+    pre_prod_account_id: Optional[str] = Field(default=None)
+    pre_prod_region: Optional[str] = Field(default=None)
+    pre_prod_vpc_id: Optional[str] = Field(default=None)
     pre_prod_subnet_ids: List[str] = Field(default=[])
     pre_prod_security_group_ids: List[str] = Field(default=[])
 
-    prod_account_id: str = Field(default="")
-    prod_region: str = Field(default="")
-    prod_vpc_id: str = Field(default="")
+    prod_account_id: Optional[str] = Field(default=None)
+    prod_region: Optional[str] = Field(default=None)
+    prod_vpc_id: Optional[str] = Field(default=None)
     prod_subnet_ids: List[str] = Field(default=[])
     prod_security_group_ids: List[str] = Field(default=[])
 
     repository_type: RepositoryType = Field(default=RepositoryType.CODECOMMIT)
     access_token_secret_name: str = Field(default="github_token")
-    aws_codeconnection_arn: str = Field(default="")
-    repository_owner: str = Field(default="")
+    aws_codeconnection_arn: Optional[str] = Field(default=None)
+    repository_owner: Optional[str] = Field(default=None)
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 
@@ -85,8 +85,8 @@ class XGBoostAbaloneProjectSettings(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    enable_network_isolation: str = Field(default="False")
-    encrypt_inter_container_traffic: str = Field(default="False")
+    enable_network_isolation: bool = Field(default=False)
+    encrypt_inter_container_traffic: bool = Field(default=False)
 
 
 class ModelDeployProjectSettings(CdkBaseSettings):
@@ -97,9 +97,9 @@ class ModelDeployProjectSettings(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    model_package_group_name: str = Field(default="")
-    model_bucket_name: str = Field(default="")
-    enable_network_isolation: str = Field(default="False")
+    model_package_group_name: str
+    model_bucket_name: str
+    enable_network_isolation: bool = Field(default=False)
 
 
 class HfImportModelsProjectSettings(CdkBaseSettings):
@@ -110,8 +110,8 @@ class HfImportModelsProjectSettings(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    hf_access_token_secret: str = Field(default="")
-    hf_model_id: str = Field(default="")
+    hf_access_token_secret: str
+    hf_model_id: str
 
 
 class BatchInferenceProjectSettings(CdkBaseSettings):
@@ -122,9 +122,9 @@ class BatchInferenceProjectSettings(CdkBaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
-    model_package_group_name: str = Field(default="")
-    model_bucket_name: str = Field(default="")
-    base_job_prefix: str = Field(default="")
+    model_package_group_name: str
+    model_bucket_name: str
+    base_job_prefix: str
 
 
 class SeedFarmerSettings(CdkBaseSettings):
@@ -164,14 +164,22 @@ class ApplicationSettings(CdkBaseSettings):
 
     seedfarmer_settings: SeedFarmerSettings = Field(default_factory=SeedFarmerSettings)
     module_settings: ModuleSettings = Field(default_factory=ModuleSettings)
-    xgboost_abalone_project_settings: XGBoostAbaloneProjectSettings = Field(
-        default_factory=XGBoostAbaloneProjectSettings
-    )
-    model_deploy_project_settings: ModelDeployProjectSettings = Field(default_factory=ModelDeployProjectSettings)
-    hf_import_models_project_settings: HfImportModelsProjectSettings = Field(
-        default_factory=HfImportModelsProjectSettings
-    )
-    batch_inference_project_settings: BatchInferenceProjectSettings = Field(
-        default_factory=BatchInferenceProjectSettings
-    )
     cdk_settings: CDKSettings = Field(default_factory=CDKSettings)
+
+    xgboost_abalone_project_settings: Optional[XGBoostAbaloneProjectSettings] = Field(default=None)
+    model_deploy_project_settings: Optional[ModelDeployProjectSettings] = Field(default=None)
+    hf_import_models_project_settings: Optional[HfImportModelsProjectSettings] = Field(default=None)
+    batch_inference_project_settings: Optional[BatchInferenceProjectSettings] = Field(default=None)
+
+    @model_validator(mode="after")
+    def initialize_project_settings(self: Any) -> None:
+        template_type = self.module_settings.project_template_type
+
+        if template_type == ProjectTemplateType.XGBOOST_ABALONE and self.xgboost_abalone_project_settings is None:
+            self.xgboost_abalone_project_settings = XGBoostAbaloneProjectSettings()
+        elif template_type == ProjectTemplateType.MODEL_DEPLOY and self.model_deploy_project_settings is None:
+            self.model_deploy_project_settings = ModelDeployProjectSettings()
+        elif template_type == ProjectTemplateType.HF_IMPORT_MODELS and self.hf_import_models_project_settings is None:
+            self.hf_import_models_project_settings = HfImportModelsProjectSettings()
+        elif template_type == ProjectTemplateType.BATCH_INFERENCE and self.batch_inference_project_settings is None:
+            self.batch_inference_project_settings = BatchInferenceProjectSettings()

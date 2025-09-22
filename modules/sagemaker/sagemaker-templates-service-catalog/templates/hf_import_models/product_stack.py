@@ -41,7 +41,6 @@ class HfImportModelsProject(Construct):
     ) -> None:
         super().__init__(scope, construct_id)
 
-        dev_account_id = Aws.ACCOUNT_ID
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
@@ -81,7 +80,7 @@ class HfImportModelsProject(Construct):
                             iam.AccountPrincipal(pre_prod_account_id),
                             iam.AccountPrincipal(prod_account_id),
                         ],
-                    )
+                    ),
                 ]
             ),
         )
