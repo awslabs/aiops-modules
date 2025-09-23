@@ -4,6 +4,7 @@
 from typing import Any, Optional
 
 import aws_cdk
+import cdk_nag
 from aws_cdk import Aws, CfnOutput, Tags
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
@@ -93,6 +94,20 @@ class HfImportModelsProject(Construct):
             versioned=True,
             removal_policy=aws_cdk.RemovalPolicy.DESTROY,
             enforce_ssl=True,  # Blocks insecure requests to the bucket
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            s3_artifact,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for ML artifact buckets as they are used "
+                        "for temporary storage of model artifacts and pipeline outputs. Access is "
+                        "controlled through IAM policies and the bucket is encrypted."
+                    ),
+                }
+            ],
         )
 
         # DEV account access to objects in the bucket

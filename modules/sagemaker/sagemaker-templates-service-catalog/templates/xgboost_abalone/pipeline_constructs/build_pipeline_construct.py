@@ -376,6 +376,62 @@ class BuildPipelineConstruct(Construct):
         )
         cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
             aws_cdk.Stack.of(self),
+            f"{self.node.path}/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for CodePipeline source action S3 operations "
+                        "including GetObject*, GetBucket*, List*, DeleteObject*, and Abort* as the exact "
+                        "object keys are generated dynamically during source code retrieval."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/Pipeline/Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for CodePipeline S3 operations including "
+                        "GetObject*, GetBucket*, List*, DeleteObject*, and Abort* as the exact object "
+                        "keys and bucket operations are generated dynamically during pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/SageMaker Policy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for ML operations including ECR image access, "
+                        "KMS encryption operations, S3 object access, and CloudWatch logging as the exact "
+                        "resource names are generated dynamically during ML pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/SageMaker Execution Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for SageMaker resources (models, processing jobs, "
+                        "training jobs, model packages) and EC2 network interfaces as the exact resource names "
+                        "are generated dynamically during ML pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
             f"{self.node.path}/CodeBuild Role/DefaultPolicy/Resource",
             [
                 {

@@ -245,6 +245,60 @@ class BuildPipelineConstruct(Construct):
 
         cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
             aws_cdk.Stack.of(self),
+            f"{self.node.path}/SageMaker Policy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for ML operations including CloudWatch logging, "
+                        "KMS encryption operations, and S3 object access as the exact resource names are "
+                        "generated dynamically during ML pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/SageMaker Execution Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for SageMaker resources (models, processing jobs, "
+                        "transform jobs) as the exact resource names are generated dynamically during "
+                        "ML pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/CodePipeline/Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for CodePipeline S3 operations as the exact "
+                        "object keys are generated dynamically during pipeline execution."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/CodePipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for CodePipeline source action S3 operations "
+                        "as the exact object keys are generated dynamically during source code retrieval."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
             f"{self.node.path}/CodeBuild Role/DefaultPolicy/Resource",
             [
                 {

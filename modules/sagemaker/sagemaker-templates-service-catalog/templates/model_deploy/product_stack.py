@@ -6,6 +6,7 @@ import json
 from typing import Any, List, Optional, Tuple, cast
 
 import aws_cdk.aws_s3_assets as s3_assets
+import cdk_nag
 from aws_cdk import Aws, CustomResource, Duration, Tags
 from aws_cdk import aws_codebuild as codebuild
 from aws_cdk import aws_codecommit as codecommit
@@ -347,3 +348,76 @@ def handler(event, context):
         custom_resource.node.add_dependency(codebuild_project)
         if repository_type == RepositoryType.GITHUB:
             custom_resource.node.add_dependency(github_repo)
+
+        # CDK NAG suppressions
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            codebuild_project,
+            [
+                {
+                    "id": "AwsSolutions-CB4",
+                    "reason": (
+                        "CodeBuild project uses the default AWS managed encryption which is "
+                        "sufficient for model deployment builds. Customer managed KMS keys are "
+                        "not required for this use case."
+                    ),
+                }
+            ],
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            custom_resource_lambda,
+            [
+                {
+                    "id": "AwsSolutions-L1",
+                    "reason": (
+                        "Lambda function uses Python 3.9 runtime which is appropriate for this "
+                        "custom resource trigger. Runtime version is managed by the CDK construct."
+                    ),
+                }
+            ],
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            custom_resource_lambda_role,
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for CloudWatch logs as the exact log "
+                        "group and stream names are generated dynamically during Lambda execution."
+                    ),
+                }
+            ],
+        )
+
+        if codebuild_project.role is not None:
+            cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+                codebuild_project.stack,
+                f"{codebuild_project.role.node.path}/DefaultPolicy/Resource",
+                [
+                    {
+                        "id": "AwsSolutions-IAM5",
+                        "reason": (
+                            "Wildcard permissions are required for CodeBuild logs and report groups "
+                            "as the exact resource names are generated dynamically during build execution."
+                        ),
+                    }
+                ],
+            )
+
+            # Suppress the Policy resource
+            policy_construct = self.node.find_child("Policy")
+            if policy_construct:
+                cdk_nag.NagSuppressions.add_resource_suppressions(
+                    policy_construct,
+                    [
+                        {
+                            "id": "AwsSolutions-IAM5",
+                            "reason": (
+                                "Wildcard permissions are required for SageMaker model packages and "
+                                "cross-account CDK role assumptions as the exact resource names are "
+                                "generated dynamically during multi-account deployment."
+                            ),
+                        }
+                    ],
+                )

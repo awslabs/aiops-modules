@@ -159,6 +159,22 @@ class BuildPipelineConstruct(Construct):
         sagemaker_policy.attach_to_role(sagemaker_execution_role)
         sagemaker_policy.attach_to_role(codebuild_role)
 
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            sagemaker_policy,
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for ML operations: "
+                        "1) CloudWatch logs require wildcard for dynamic log group/stream creation "
+                        "2) ECR Describe* actions are needed for container image discovery "
+                        "3) KMS ReEncrypt* actions are required for cross-region key operations "
+                        "4) S3 and SageMaker resources use dynamic naming patterns in ML pipelines"
+                    ),
+                }
+            ],
+        )
+
         # Grant extra permissions for the SageMaker role
         sagemaker_execution_role.add_to_policy(
             iam.PolicyStatement(
@@ -206,6 +222,22 @@ class BuildPipelineConstruct(Construct):
                     f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
                 ],
             ),
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/SageMaker Execution Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "Wildcard permissions are required for SageMaker execution role: "
+                        "1) SageMaker model resources use dynamic naming during model creation "
+                        "2) Model package resources require wildcard for versioned packages "
+                        "These permissions are scoped to specific resource types and the project's model package group."
+                    ),
+                }
+            ],
         )
 
         # Grant extra permissions for the CodeBuild role
@@ -306,6 +338,21 @@ class BuildPipelineConstruct(Construct):
             self, "Pipeline", pipeline_name=codepipeline_name, artifact_bucket=s3_artifact
         )
 
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/Pipeline/Role/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "CodePipeline service role requires wildcard permissions for S3 operations "
+                        "to manage artifacts across different pipeline stages. These permissions are "
+                        "scoped to the artifact bucket and necessary for pipeline functionality."
+                    ),
+                }
+            ],
+        )
+
         # add a source stage
         source_stage = build_pipeline.add_stage(stage_name="Source")
         if repository_type == RepositoryType.CODECOMMIT:
@@ -337,6 +384,21 @@ class BuildPipelineConstruct(Construct):
                 input=source_artifact,
                 project=sm_pipeline_build,
             )
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions_by_path(
+            aws_cdk.Stack.of(self),
+            f"{self.node.path}/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource",
+            [
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": (
+                        "CodePipeline source action role requires wildcard permissions for S3 operations "
+                        "to access source artifacts and manage pipeline artifacts. These permissions are "
+                        "necessary for CodeCommit/GitHub integration and artifact management."
+                    ),
+                }
+            ],
         )
 
         cdk_nag.NagSuppressions.add_resource_suppressions(
