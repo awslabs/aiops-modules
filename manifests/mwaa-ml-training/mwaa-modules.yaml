@@ -1,8 +1,6 @@
 name: mwaa
 path: git::https://github.com/awslabs/idf-modules.git//modules/orchestration/mwaa?ref=release/1.13.0&depth=1
 targetAccount: primary
-dataFiles:
-  - filePath: git::https://github.com/awslabs/aiops-modules.git//data/mwaa/requirements/requirements.txt?ref=release/1.9.0&depth=1
 parameters:
   - name: vpc-id
     valueFrom:
@@ -17,6 +15,4 @@ parameters:
         name: networking
         key: PrivateSubnetIds
   - name: airflow-version
-    value: "2.10.1"
-  - name: custom-requirements-path
-    value: data/mwaa/requirements/requirements.txt
+    value: "2.10.3"
