@@ -110,16 +110,15 @@ def get_pipeline(
         encrypt_inter_container_traffic=ENCRYPT_INTER_CONTAINER_TRAFFIC,
     )
 
+    default_input_data = f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/abalone-dataset.csv"
+
     # parameters for pipeline execution
     processing_instance_count = ParameterInteger(name="ProcessingInstanceCount", default_value=1)
     processing_instance_type = ParameterString(name="ProcessingInstanceType", default_value="ml.m5.xlarge")
     training_instance_type = ParameterString(name="TrainingInstanceType", default_value="ml.m5.xlarge")
     inference_instance_type = ParameterString(name="InferenceInstanceType", default_value="ml.m5.xlarge")  # noqa: F841
     model_approval_status = ParameterString(name="ModelApprovalStatus", default_value="PendingManualApproval")
-    input_data = ParameterString(
-        name="InputDataUrl",
-        default_value=f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/abalone-dataset.csv",
-    )
+    input_data = ParameterString(name="InputDataUrl", default_value=default_input_data)
     processing_image_name = "sagemaker-{0}-processingimagebuild".format(project_id)
     training_image_name = "sagemaker-{0}-trainingimagebuild".format(project_id)
     inference_image_name = "sagemaker-{0}-inferenceimagebuild".format(project_id)
@@ -157,7 +156,7 @@ def get_pipeline(
             ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
         ],
         code="source_scripts/preprocessing.py",
-        job_arguments=["--input-data", input_data],
+        job_arguments=["--input-data", default_input_data],
     )
 
     # training step for generating model artifacts

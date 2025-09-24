@@ -1,24 +1,24 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Any
+from typing import Any, Optional
 
 import aws_cdk.aws_iam as iam
 import aws_cdk.aws_kms as kms
 import aws_cdk.aws_s3 as s3
 import aws_cdk.aws_s3_assets as s3_assets
 import aws_cdk.aws_sagemaker as sagemaker
-import aws_cdk.aws_servicecatalog as servicecatalog
-from aws_cdk import Aws, CfnOutput, CfnParameter, CfnTag, RemovalPolicy, Tags
+import cdk_nag
+from aws_cdk import Aws, CfnOutput, CfnTag, RemovalPolicy, Tags
 from constructs import Construct
 
-from common.code_repo_construct import RepositoryType
+from settings import RepositoryType
 from templates.finetune_llm_evaluation.pipeline_constructs.build_pipeline_construct import (
     BuildPipelineConstruct,
 )
 
 
-class Product(servicecatalog.ProductStack):
+class FinetuneLlmEvaluationProject(Construct):
     DESCRIPTION: str = (
         "This template includes a model building pipeline that includes a workflow to pre-process data, "
         "fine-tune, evaluate and register a Large Language Model."
@@ -30,14 +30,16 @@ class Product(servicecatalog.ProductStack):
         scope: Construct,
         id: str,
         build_app_asset: s3_assets.Asset,
+        sagemaker_project_name: str,
+        sagemaker_project_id: str,
         pre_prod_account_id: str,
         prod_account_id: str,
         sagemaker_domain_id: str,
         sagemaker_domain_arn: str,
         repository_type: RepositoryType,
-        access_token_secret_name: str,
-        aws_codeconnection_arn: str,
-        repository_owner: str,
+        access_token_secret_name: Optional[str],
+        aws_codeconnection_arn: Optional[str],
+        repository_owner: Optional[str],
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
@@ -45,36 +47,6 @@ class Product(servicecatalog.ProductStack):
         dev_account_id = Aws.ACCOUNT_ID
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
-
-        sagemaker_project_name = CfnParameter(
-            self,
-            "SageMakerProjectName",
-            type="String",
-            description="Name of the project.",
-        ).value_as_string
-
-        sagemaker_project_id = CfnParameter(
-            self,
-            "SageMakerProjectId",
-            type="String",
-            description="Service generated Id of the project.",
-        ).value_as_string
-
-        pre_prod_account_id = CfnParameter(
-            self,
-            "PreProdAccountId",
-            type="String",
-            description="Pre-prod AWS account id.. Required for cross-account model registry permissions.",
-            default=pre_prod_account_id,
-        ).value_as_string
-
-        prod_account_id = CfnParameter(
-            self,
-            "ProdAccountId",
-            type="String",
-            description="Prod AWS account id. Required for cross-account model registry permissions.",
-            default=prod_account_id,
-        ).value_as_string
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -257,6 +229,31 @@ class Product(servicecatalog.ProductStack):
             access_token_secret_name=access_token_secret_name,
             aws_codeconnection_arn=aws_codeconnection_arn,
             repository_owner=repository_owner,
+        )
+
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            model_bucket,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for ML model artifact buckets as"
+                        "they contain training artifacts and models, not user access data."
+                    ),
+                }
+            ],
+        )
+        cdk_nag.NagSuppressions.add_resource_suppressions(
+            pipeline_artifact_bucket,
+            [
+                {
+                    "id": "AwsSolutions-S1",
+                    "reason": (
+                        "S3 access logs are not required for CI/CD pipeline artifact"
+                        "buckets as they contain build artifacts, not user access data."
+                    ),
+                }
+            ],
         )
 
         CfnOutput(

@@ -2,15 +2,9 @@
 
 This module creates organizational SageMaker Project Templates. 
 
-The templates are registered in Service Catalog and available via SageMaker Studio Classic.
-
-### Architecture
-
-![SageMaker Templates via Service Catalog Module Architecture](docs/_static/sagemaker-templates-service-catalog-module-architecture.png "SageMaker Templates in Service Catalog Module Architecture")
-
 ### Project Templates
 
-The module contains ogranizational SageMaker Project Templates vended as Service Catalog Products. Using the templates is available through SageMaker Studio Classic and AWS Service Catalog.
+The module contains ogranizational Project Templates.
 
 #### Train a model on Abalone dataset with XGBoost Template
 
@@ -63,30 +57,55 @@ SageMaker templates support third party code repository (GitHub) integration alo
 - Template also requires AWS CodeConnection created for GitHub provider in order to integrated GitHub repositories AWS CodeBuild and AWS CodePipeline. Refer guide [Create a connection to GitHub](https://docs.aws.amazon.com/dtconsole/latest/userguide/connections-create-github.html) in order to create connection with GitHub.
 
 ## Inputs and outputs:
+
 ### Required inputs:
-  - `portfolio-access-role-arn` - the ARN of the IAM Role used to access the Service Catalog Portfolio or SageMaker projects
-### Optional Inputs:
-  - `repository-type` - type of repository to be integrated with Sagemaker template source code, exp. `GitHub`. If `CodeCommit` is provided then other GitHub repository params are ignored. This is optional parameter, if not provided `CodeCommit` is set as default
-  - `repository-owner` - owner or organisation of project code repository 
-  - `access-token-secret-name` - AWS Secret Manager secret name where access token is stored, this is used to manage repository from template
-  - `aws-codeconnection-arn` -  AWS CodeConnection ARN for repository provider, currently template supports GitHub provider
-  - `portfolio-name` - name of the Service Catalog Portfolio
-  - `portfolio-owner` - owner of the Service Catalog Portfolio
-  - `dev-vpc-id` - id of VPC in dev environment
-  - `dev-subnet-ids` - list of subnet ids
-  - `dev-security-group-ids` - list of security group ids
-  - `pre-prod-account-id` - pre-prod account id
-  - `pre-prod-region` - pre-prod region
-  - `pre-prod-vpc-id` - id of VPC in pre-prod environment
-  - `pre-prod-subnet-ids` - list of subnet ids
-  - `pre-prod-security-group-ids` - list of security group ids
-  - `prod-account-id` - prod account id
-  - `prod-region` - prod region
-  - `prod-vpc-id` - id of VPC in prod environment
-  - `prod-subnet-ids` - list of subnet ids
-  - `prod-security-group-ids` - list of security group ids
-  - `sagemaker-domain-id`: SageMaker domain id
-  - `sagemaker-domain-arn`: SageMaker domain ARN. Used to tag resources with the `domain-arn`, which is used for domain resource isolation. If domain resource isolation is enabled `sagemaker-domain-arn` must be provided to ensure correct access to resources within the domain
+- `project-template-type` - type of project template to deploy. Available options: `xgboost_abalone`, `batch_inference`, `finetune_llm_evaluation`, `hf_import_models`, `model_deploy`
+- `sagemaker-project-name` - name of the SageMaker project
+- `sagemaker-project-id` - unique identifier for the SageMaker project
+
+### Common Optional Inputs:
+- `repository-type` - type of repository to be integrated with SageMaker template source code. Options: `CodeCommit` (default), `GitHub`, `GitHub Enterprise`
+- `repository-owner` - owner or organisation of project code repository (required for GitHub)
+- `access-token-secret-name` - AWS Secret Manager secret name where access token is stored (default: `github_token`)
+- `aws-codeconnection-arn` - AWS CodeConnection ARN for repository provider
+- `sagemaker-domain-id` - SageMaker domain id
+- `sagemaker-domain-arn` - SageMaker domain ARN for domain resource isolation
+- `tags` - key-value pairs for resource tagging
+
+#### Multi-account deployment parameters:
+- `dev-vpc-id` - VPC id in dev environment
+- `dev-subnet-ids` - list of subnet ids in dev environment
+- `dev-security-group-ids` - list of security group ids in dev environment
+- `pre-prod-account-id` - pre-prod account id
+- `pre-prod-region` - pre-prod region
+- `pre-prod-vpc-id` - VPC id in pre-prod environment
+- `pre-prod-subnet-ids` - list of subnet ids in pre-prod environment
+- `pre-prod-security-group-ids` - list of security group ids in pre-prod environment
+- `prod-account-id` - prod account id
+- `prod-region` - prod region
+- `prod-vpc-id` - VPC id in prod environment
+- `prod-subnet-ids` - list of subnet ids in prod environment
+- `prod-security-group-ids` - list of security group ids in prod environment
+
+### Project-specific Parameters:
+
+#### XGBoost Abalone Template:
+- `enable-network-isolation` - enable network isolation for training jobs (default: false)
+- `encrypt-inter-container-traffic` - encrypt traffic between containers (default: false)
+
+#### Model Deploy Template:
+- `model-package-group-name` - name of the model package group (required)
+- `model-bucket-name` - S3 bucket name for model artifacts (required)
+- `enable-network-isolation` - enable network isolation for endpoints (default: false)
+
+#### Hugging Face Import Models Template:
+- `hf-access-token-secret` - AWS Secret Manager secret containing Hugging Face access token (required)
+- `hf-model-id` - Hugging Face model identifier (required)
+
+#### Batch Inference Template:
+- `model-package-group-name` - name of the model package group (required)
+- `model-bucket-name` - S3 bucket name for model artifacts (required)
+- `base-job-prefix` - prefix for batch inference jobs (required)
 
 ### Sample manifest declaration
 
@@ -95,12 +114,6 @@ name: templates
 path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
-  - name: portfolio-access-role-arn
-    valueFrom:
-      moduleMetadata:
-        group: sagemaker-studio
-        name: studio
-        key: LeadDataScientistRoleArn
   # Below are the optional properties passed to the multi-account CI/CD deployment template
   - name: dev-account-id
     valueFrom:
@@ -172,15 +185,3 @@ parameters:
 ### Sample manifest example for source repository options
 [sagemaker-templates-modules-github.yaml](/examples/manifests/sagemaker-templates-modules-github.yaml)
 [sagemaker-templates-modules-codecommit.yaml](/examples/manifests/sagemaker-templates-modules-codecommit.yaml)
-
-### Outputs (module metadata):
-  - `ServiceCatalogPortfolioName` - the name of the Service Catalog Portfolio
-  - `ServiceCatalogPortfolioOwner` - the owner of the Service Catalog Portfolio
-
-### Example Output:
-```yaml
-{
-  "ServiceCatalogPortfolioName": "MLOps SageMaker Project Templates",
-  "ServiceCatalogPortfolioOwner": "administrator"
-}
-```
