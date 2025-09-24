@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - remove gettext-base dependency from `sagemaker-studio` module (fixes install with AL2023 base image)
 - fix add explicit boto3 dependency to `sagemaker-custom-kernels` module
 - fix missing permission causing UpdateFailed status in `sagemaker-studio` after deploying `sagemaker-custom-kernels`
-- refactored `sagemaker-templates-service-catalog` module into `sagemaker-templates-factory`
+- refactored `sagemaker-templates-service-catalog` module to remove SC and renamed to `sagemaker-templates`
 
 ### **Removed**
 - removed custom MWAA constraints and requirements file examples
