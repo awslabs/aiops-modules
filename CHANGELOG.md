@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix missing permission causing UpdateFailed status in `sagemaker-studio` after deploying `sagemaker-custom-kernels`
 - refactored `sagemaker-templates-service-catalog` module into `sagemaker-templates-factory`
 
+### **Removed**
+- removed custom MWAA constraints and requirements file examples
+
 ## v1.8.0
 
 ### **Added**
