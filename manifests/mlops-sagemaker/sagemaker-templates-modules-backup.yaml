@@ -1,13 +1,13 @@
-name: templates-xgboost
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+name: xgboost
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
     value: xgboost_abalone
   - name: sagemaker_project_name
-    value: xgboost-1
+    value: xgboost-abalone-2
   - name: sagemaker_project_id
-    value: xgboost-1
+    value: xgboost-abalone-2
   - name: sagemaker_domain_id
     valueFrom:
       moduleMetadata:
@@ -37,16 +37,16 @@ parameters:
   # - name: encrypt_inter_container_traffic
   #   value: False
 ---
-name: templates-batch
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+name: batch
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
     value: batch_inference
   - name: sagemaker_project_name
-    value: batch-1
+    value: batch-transform-2
   - name: sagemaker_project_id
-    value: batch-1
+    value: batch-transform-2
   - name: sagemaker_domain_id
     valueFrom:
       moduleMetadata:
@@ -75,19 +75,17 @@ parameters:
     value: test-1
   - name: model_bucket_name
     value: test-1
-  - name: base_job_prefix
-    value: batch-1
 ---
-name: templates-deploy
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+name: deploy
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
     value: model_deploy
   - name: sagemaker_project_name
-    value: model-deploy-1
+    value: model-deploy-2
   - name: sagemaker_project_id
-    value: model-deploy-1
+    value: model-deploy-2
   - name: sagemaker_domain_id
     valueFrom:
       moduleMetadata:
@@ -153,16 +151,16 @@ parameters:
   - name: model_bucket_name
     value: test-1
 ---
-name: templates-hf
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+name: hf
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
     value: hf_import_models
   - name: sagemaker_project_name
-    value: hf-import-1
+    value: hf-import-2
   - name: sagemaker_project_id
-    value: hf-import-1
+    value: hf-import-2
   - name: sagemaker_domain_id
     valueFrom:
       moduleMetadata:
@@ -192,16 +190,16 @@ parameters:
   - name: hf_model_id
     value: model-1
 ---
-name: templates-finetune-llm
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+name: finetune-llm
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
     value: finetune_llm_evaluation
   - name: sagemaker_project_name
-    value: finetune-llm-1
+    value: finetune-llm-2
   - name: sagemaker_project_id
-    value: finetune-llm-1
+    value: finetune-llm-2
   - name: sagemaker_domain_id
     valueFrom:
       moduleMetadata:
