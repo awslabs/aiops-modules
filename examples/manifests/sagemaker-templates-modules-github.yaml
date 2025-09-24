@@ -1,5 +1,5 @@
 name: service-catalog
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/1.8.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates?ref=release/1.8.0&depth=1
 targetAccount: primary
 parameters:
   - name: repository-type
@@ -10,12 +10,12 @@ parameters:
     value: github_token
   - name: aws-codeconnection-arn
     value: <arn>
-  - name: portfolio-access-role-arn
-    valueFrom:
-      moduleMetadata:
-        group: sagemaker-studio
-        name: studio
-        key: LeadDataScientistRoleArn
+  - name: project_template_type
+    value: xgboost_abalone
+  - name: sagemaker_project_name
+    value: xgboost-abalone-1
+  - name: sagemaker_project_id
+    value: xgboost-abalone-1
   - name: dev-account-id
     valueFrom:
       envVariable: PRIMARY_ACCOUNT

@@ -1,5 +1,5 @@
 name: templates
-path: modules/sagemaker/sagemaker-templates-service-catalog
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -38,7 +38,7 @@ parameters:
   #   value: False
 ---
 name: templates-batch
-path: modules/sagemaker/sagemaker-templates-service-catalog
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -77,7 +77,7 @@ parameters:
     value: test-1
 ---
 name: templates-deploy
-path: modules/sagemaker/sagemaker-templates-service-catalog
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -152,7 +152,7 @@ parameters:
     value: test-1
 ---
 name: templates-hf
-path: modules/sagemaker/sagemaker-templates-service-catalog
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -191,7 +191,7 @@ parameters:
     value: model-1
 ---
 name: templates-finetune-llm
-path: modules/sagemaker/sagemaker-templates-service-catalog
+path: modules/sagemaker/sagemaker-templates
 targetAccount: primary
 parameters:
   - name: project_template_type
