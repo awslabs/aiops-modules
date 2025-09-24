@@ -6,7 +6,6 @@ import sys
 from unittest import mock
 
 import pytest
-from pydantic import ValidationError
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -19,7 +18,11 @@ def stack_defaults():
         os.environ["CDK_DEFAULT_ACCOUNT"] = "111111111111"
         os.environ["CDK_DEFAULT_REGION"] = "us-east-1"
 
-        os.environ["SEEDFARMER_PARAMETER_PORTFOLIO_ACCESS_ROLE_ARN"] = "arn:aws:iam::xxxxxxxxxxxx:role/role"
+        os.environ["SEEDFARMER_PARAMETER_PROJECT_TEMPLATE_TYPE"] = "xgboost_abalone"
+        os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_PROJECT_NAME"] = "test-project"
+        os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_PROJECT_ID"] = "test-project-id"
+        os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_DOMAIN_ID"] = "test-domain-id"
+        os.environ["SEEDFARMER_PARAMETER_SAGEMAKER_DOMAIN_ARN"] = "test-domain"
 
         # Unload the app import so that subsequent tests don't reuse
         if "app" in sys.modules:
@@ -30,10 +33,3 @@ def stack_defaults():
 
 def test_app() -> None:
     import app  # noqa: F401
-
-
-def test_portfolio_access_role() -> None:
-    del os.environ["SEEDFARMER_PARAMETER_PORTFOLIO_ACCESS_ROLE_ARN"]
-
-    with pytest.raises(ValidationError):
-        import app  # noqa: F401

@@ -1,16 +1,9 @@
-from enum import Enum
 from typing import Any
 
 from aws_cdk import Aws, CustomResource, Duration
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as lambdafunction
 from constructs import Construct
-
-
-class RepositoryType(str, Enum):
-    CODECOMMIT = "CodeCommit"
-    GITHUB = "GitHub"
-    GITHUB_ENTERPRISE = "GitHub Enterprise"
 
 
 class GitHubRepositoryCreator(Construct):
