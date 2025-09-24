@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix add explicit boto3 dependency to `sagemaker-custom-kernels` module
 - fix missing permission causing UpdateFailed status in `sagemaker-studio` after deploying `sagemaker-custom-kernels`
 
+### **Removed**
+- removed custom MWAA constraints and requirements file examples
+
 ## v1.8.0
 
 ### **Added**
