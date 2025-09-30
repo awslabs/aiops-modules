@@ -1,0 +1,31 @@
+name: hyperpod
+path: modules/sagemaker/hyperpod-eks-tf
+targetAccount: primary
+parameters:
+  - name: HyperpodClusterName
+    value: ml-cluster
+  - name: AvailabilityZoneId
+    value: use1-az2
+  - name: AccelInstanceType
+    # value: ml.g5.xlarge
+    value: ml.p5en.48xlarge
+  - name: AccelCount
+    value: 8
+  - name: AccelVolumeSize
+    value: 800
+  # - name: TrainingPlanArn
+  #   value: arn:aws:sagemaker:us-east-1:<REDACTED>:training-plan/<REDACTED
+  - name: NodeRecovery
+    value: Automatic
+  - name: ArtifactsBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: artifacts-buckets
+        key: ArtifactsBucketName
+  - name: TfstateBucketName
+    valueFrom:
+      moduleMetadata:
+        group: base
+        name: tfstate-buckets
+        key: ArtifactsBucketName

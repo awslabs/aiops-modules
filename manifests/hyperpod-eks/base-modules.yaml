@@ -1,0 +1,15 @@
+name: artifact-buckets
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/buckets?ref=release/1.14.0&depth=1
+parameters:
+  - name: EncryptionType
+    value: SSE
+  - name: RetentionType
+    value: DESTROY
+---
+name: tfstate-buckets
+path: git::https://github.com/awslabs/idf-modules.git//modules/storage/buckets?ref=release/1.14.0&depth=1
+parameters:
+  - name: EncryptionType
+    value: SSE
+  - name: RetentionType
+    value: DESTROY
