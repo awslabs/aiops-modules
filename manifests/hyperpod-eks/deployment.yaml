@@ -4,8 +4,6 @@ toolchainRegion: us-east-1
 groups:
   - name: base
     path: manifests/hyperpod-eks/base-modules.yaml
-  - name: images
-    path: manifests/hyperpod-eks/images-modules.yaml
   - name: hyperpod
     path: manifests/hyperpod-eks/hyperpod-modules.yaml
 targetAccountMappings:

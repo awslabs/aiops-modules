@@ -7,10 +7,9 @@ parameters:
   - name: AvailabilityZoneId
     value: use1-az2
   - name: AccelInstanceType
-    # value: ml.g5.xlarge
-    value: ml.p5en.48xlarge
+    value: ml.g5.xlarge
   - name: AccelCount
-    value: 8
+    value: 1
   - name: AccelVolumeSize
     value: 800
   # - name: TrainingPlanArn
