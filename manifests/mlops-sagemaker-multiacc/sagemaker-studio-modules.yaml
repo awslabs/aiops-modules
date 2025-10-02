@@ -1,5 +1,5 @@
 name: studio
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-studio?ref=release/1.8.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-studio?ref=release/2.0.0&depth=1
 targetAccount: dev
 parameters:
   - name: vpc_id

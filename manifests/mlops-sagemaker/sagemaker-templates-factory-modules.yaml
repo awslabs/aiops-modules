@@ -1,0 +1,228 @@
+name: templates-xgboost
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: primary
+parameters:
+  - name: project_template_type
+    value: xgboost_abalone
+  - name: sagemaker_project_name
+    value: xgboost-1
+  - name: sagemaker_project_id
+    value: xgboost-1
+  - name: sagemaker_domain_id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker_domain_arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
+  - name: dev_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  # - name: enable_network_isolation
+  #   value: False
+  # - name: encrypt_inter_container_traffic
+  #   value: False
+---
+name: templates-batch
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: primary
+parameters:
+  - name: project_template_type
+    value: batch_inference
+  - name: sagemaker_project_name
+    value: batch-1
+  - name: sagemaker_project_id
+    value: batch-1
+  - name: sagemaker_domain_id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker_domain_arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
+  - name: dev_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: model_package_group_name
+    value: test-1
+  - name: model_bucket_name
+    value: test-1
+  - name: base_job_prefix
+    value: batch-1
+---
+name: templates-deploy
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: primary
+parameters:
+  - name: project_template_type
+    value: model_deploy
+  - name: sagemaker_project_name
+    value: model-deploy-1
+  - name: sagemaker_project_id
+    value: model-deploy-1
+  - name: sagemaker_domain_id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker_domain_arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
+  - name: dev_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: pre_prod_account_id
+    valueFrom:
+      envVariable: PRIMARY_ACCOUNT
+  - name: pre_prod_region
+    valueFrom:
+      envVariable: PRIMARY_REGION
+  - name: pre_prod_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: pre_prod_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: prod_account_id
+    valueFrom:
+      envVariable: PRIMARY_ACCOUNT
+  - name: prod_region
+    valueFrom:
+      envVariable: PRIMARY_REGION
+  - name: prod_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: prod_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: model_package_group_name
+    value: test-1
+  - name: model_bucket_name
+    value: test-1
+---
+name: templates-hf
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: primary
+parameters:
+  - name: project_template_type
+    value: hf_import_models
+  - name: sagemaker_project_name
+    value: hf-import-1
+  - name: sagemaker_project_id
+    value: hf-import-1
+  - name: sagemaker_domain_id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker_domain_arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
+  - name: dev_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
+  - name: hf_access_token_secret
+    value: secret-1
+  - name: hf_model_id
+    value: model-1
+---
+name: templates-finetune-llm
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: primary
+parameters:
+  - name: project_template_type
+    value: finetune_llm_evaluation
+  - name: sagemaker_project_name
+    value: finetune-llm-1
+  - name: sagemaker_project_id
+    value: finetune-llm-1
+  - name: sagemaker_domain_id
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainId
+  - name: sagemaker_domain_arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: StudioDomainArn
+  - name: dev_vpc_id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: VpcId
+  - name: dev_subnet_ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking
+        key: PrivateSubnetIds
