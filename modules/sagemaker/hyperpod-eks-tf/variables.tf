@@ -221,12 +221,13 @@ variable "node_recovery" {
 variable "instance_groups" {
   description = "Map of instance group configurations"
   type = map(object({
-    instance_type       = string
-    instance_count      = number
-    ebs_volume_size    = number
-    threads_per_core   = number
-    enable_stress_check = bool
+    instance_type             = string
+    instance_count            = number
+    ebs_volume_size           = number
+    threads_per_core          = number
+    enable_stress_check       = bool
     enable_connectivity_check = bool
-    lifecycle_script    = string
+    lifecycle_script          = string
+    training_plan_arn         = optional(string, "")
   }))
 }

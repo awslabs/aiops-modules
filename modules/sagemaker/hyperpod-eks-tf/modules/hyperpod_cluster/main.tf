@@ -26,6 +26,10 @@ locals {
           source_s3_uri = "s3://${var.s3_bucket_name}"
         }
       },
+      # Only include training_plan_arn if provided
+      config.training_plan_arn != "" ? {
+        training_plan_arn = config.training_plan_arn
+      } : {},
       # Only include on_start_deep_health_checks if at least one check is enabled
       config.enable_stress_check || config.enable_connectivity_check ? {
         on_start_deep_health_checks = distinct(concat(

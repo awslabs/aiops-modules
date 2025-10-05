@@ -14,12 +14,10 @@ deploy:
         - ./scripts/get_helm_charts.sh
     build:
       commands:
-      - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME}"
+      - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME} region=${AWS_REGION}"
       - |
         if [ -n "$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN" ] ; then
-          echo "create_hyperpod_module = false" >> custom.tfvars
-        else
-          echo "create_hyperpod_module = true" >> custom.tfvars
+          sed -i "s|training_plan_arn = .*|training_plan_arn = \"$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN\"|" custom.tfvars
         fi
       - echo "availability_zone_id  = \"${SEEDFARMER_PARAMETER_AVAILABILITY_ZONE_ID}\"" >> custom.tfvars
       - terraform plan -var-file=custom.tfvars -out tf.plan
@@ -27,24 +25,6 @@ deploy:
       # Fetch terraform outputs
       - ./scripts/terraform_outputs.sh
       - cat terraform_outputs.json
-      # Set env vairables for CreateCluster API call
-      - HYPERPOD_CLUSTER_NAME=$SEEDFARMER_PARAMETER_HYPERPOD_CLUSTER_NAME
-      - ACCEL_INSTANCE_TYPE=$SEEDFARMER_PARAMETER_ACCEL_INSTANCE_TYPE
-      - ACCEL_COUNT=$SEEDFARMER_PARAMETER_ACCEL_COUNT
-      - ACCEL_VOLUME_SIZE=$SEEDFARMER_PARAMETER_ACCEL_VOLUME_SIZE
-      - TRAINING_PLAN_ARN=$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN
-      - NODE_RECOVERY=$SEEDFARMER_PARAMETER_NODE_RECOVERY
-      - EKS_CLUSTER_ARN=$(cat terraform_outputs.json | jq -r '.eks_cluster_arn.value')
-      - SAGEMAKER_IAM_ROLE_ARN=$(cat terraform_outputs.json | jq -r '.sagemaker_iam_role_arn.value')
-      - S3_BUCKET_NAME=$(cat terraform_outputs.json | jq -r '.s3_bucket_name.value')
-      - SECURITY_GROUP_ID=$(cat terraform_outputs.json | jq -r '.security_group_id.value')
-      - PRIVATE_SUBNET_ID=$(cat terraform_outputs.json | jq -r '.private_subnet_id.value')
-      - env
-      # Create cluster with a training plan via API (temporary while no IaC support for training plans)
-      - |
-        if [ -n "$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN" ] ; then
-          ./scripts/create_cluster.sh || true
-        fi
     post_build:
       commands:
       - echo "Deploy successful"
@@ -63,16 +43,7 @@ destroy:
         - ./scripts/get_helm_charts.sh
     build:
       commands:
-       # Delete cluster manually (temporary while no IaC support for training plans)
-       - |
-         if [ -n "$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN" ] ; then
-           aws sagemaker delete-cluster --cluster-name ${SEEDFARMER_PARAMETER_HYPERPOD_CLUSTER_NAME} || true
-           echo "create_hyperpod_module = false" >> custom.tfvars
-         fi
-       - sleep 120
-       # Delete the rest of the infra
-       - echo "availability_zone_id  = \"${SEEDFARMER_PARAMETER_AVAILABILITY_ZONE_ID}\"" >> custom.tfvars
-       - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME}"
+       - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME} region=${AWS_REGION}"
        - terraform plan -destroy -var-file=custom.tfvars -out tf_destroy.plan
        - terraform apply tf_destroy.plan
     post_build:
