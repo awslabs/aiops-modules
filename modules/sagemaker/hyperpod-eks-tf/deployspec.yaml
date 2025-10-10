@@ -14,7 +14,10 @@ deploy:
         - ./scripts/get_helm_charts.sh
     build:
       commands:
-      - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME} region=${AWS_REGION}"
+      - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME}" -backend-config="region=${AWS_REGION}"
+      - echo "resource_name_prefix  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}\"" >> custom.tfvars
+      - echo "eks_cluster_name  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-eks-cluster\"" >> custom.tfvars
+      - echo "hyperpod_cluster_name  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-hyperpod-cluster\"" >> custom.tfvars
       - |
         if [ -n "$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN" ] ; then
           sed -i "s|training_plan_arn = .*|training_plan_arn = \"$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN\"|" custom.tfvars
@@ -43,7 +46,7 @@ destroy:
         - ./scripts/get_helm_charts.sh
     build:
       commands:
-       - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME} region=${AWS_REGION}"
+       - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME}" -backend-config="region=${AWS_REGION}"
        - terraform plan -destroy -var-file=custom.tfvars -out tf_destroy.plan
        - terraform apply tf_destroy.plan
     post_build:

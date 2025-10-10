@@ -1,13 +1,15 @@
-name: hyperpod
+name: hp
 path: modules/sagemaker/hyperpod-eks-tf
 targetAccount: primary
 parameters:
   - name: HyperpodClusterName
     value: ml-cluster
   - name: AvailabilityZoneId
-    value: use1-az2
+    value: use1-az4
   - name: AccelInstanceType
     value: ml.g5.xlarge
+  # - name: AccelInstanceType
+  #   value: ml.trn1.32xlarge
   - name: AccelCount
     value: 1
   - name: AccelVolumeSize
@@ -20,7 +22,7 @@ parameters:
     valueFrom:
       moduleMetadata:
         group: base
-        name: artifacts-buckets
+        name: artifact-buckets
         key: ArtifactsBucketName
   - name: TfstateBucketName
     valueFrom:

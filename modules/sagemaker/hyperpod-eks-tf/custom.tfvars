@@ -1,10 +1,6 @@
 kubernetes_version = "1.32"
-eks_cluster_name = "eks-1"
-hyperpod_cluster_name = "hyperpod-1"
-resource_name_prefix = "ai-poc"
 create_hyperpod_module = true
 # Default instance group for hyperpod
-# Will not be used if Flexible Training Plan Arn is provided
 instance_groups = {
     accelerated-instance-group-1 = {
         instance_type = "ml.g5.xlarge",
