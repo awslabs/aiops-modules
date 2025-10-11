@@ -23,7 +23,7 @@ locals {
 
         life_cycle_config = {
           on_create     = config.lifecycle_script
-          source_s3_uri = "s3://${var.s3_bucket_name}"
+          source_s3_uri = "s3://${var.s3_bucket_name}/lifecycle_scripts/"
         }
       },
       # Only include training_plan_arn if provided

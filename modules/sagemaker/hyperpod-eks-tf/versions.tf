@@ -25,6 +25,8 @@ terraform {
 
   backend "s3" {
     key          = "backend/terraform.tfstate"
+    bucket = "aiops-hyperpod-eks-artifacts-bucket-181ff6f2-6e211731e636b81"
+    region = "us-east-2"
     use_lockfile = true
   }
 }

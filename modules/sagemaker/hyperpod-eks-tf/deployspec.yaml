@@ -23,8 +23,8 @@ deploy:
           sed -i "s|training_plan_arn = .*|training_plan_arn = \"$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN\"|" custom.tfvars
         fi
       - echo "availability_zone_id  = \"${SEEDFARMER_PARAMETER_AVAILABILITY_ZONE_ID}\"" >> custom.tfvars
-      - terraform plan -var-file=custom.tfvars -out tf.plan
-      - terraform apply tf.plan
+      - terraform plan -var-file=custom.tfvars -out tf.plan -replace='helm_release.hyperpod[0]'
+      - terraform apply -replace='helm_release.hyperpod[0]' tf.plan
       # Fetch terraform outputs
       - ./scripts/terraform_outputs.sh
       - cat terraform_outputs.json

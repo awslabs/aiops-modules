@@ -81,6 +81,7 @@ resource "helm_release" "hyperpod" {
   namespace  = var.namespace
   skip_crds  = true
   dependency_update = true
+  replace    = true
 
   depends_on = [
     null_resource.git_clone,
