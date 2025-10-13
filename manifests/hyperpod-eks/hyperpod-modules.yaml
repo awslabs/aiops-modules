@@ -2,8 +2,6 @@ name: hp
 path: modules/sagemaker/hyperpod-eks-tf
 targetAccount: primary
 parameters:
-  - name: HyperpodClusterName
-    value: ml-cluster
   - name: AvailabilityZoneId
     value: use2-az1
   - name: ArtifactsBucketName
