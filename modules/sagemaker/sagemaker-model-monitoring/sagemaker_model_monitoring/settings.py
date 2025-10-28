@@ -28,24 +28,24 @@ class ModuleSettings(CdkBaseSettings):
     model_config = SettingsConfigDict(env_prefix="SEEDFARMER_PARAMETER_")
 
     endpoint_name: str
-    security_group_id: str
-    subnet_ids: List[str]
-    model_package_arn: str
+
+    security_group_id: Optional[str] = Field(default=None)
+    subnet_ids: Optional[List[str]] = Field(default=None)
+    # model_package_arn: str
     model_bucket_arn: str
-    kms_key_id: str
+    kms_key_id: Optional[str] = Field(default=None)
 
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
 
-    ground_truth_prefix: str = Field(default="")
-    enable_data_quality_monitor: bool = Field(default=True)
-    enable_model_quality_monitor: bool = Field(default=True)
-    enable_model_bias_monitor: bool = Field(default=True)
-    enable_model_explainability_monitor: bool = Field(default=True)
+    enable_data_quality_monitor: bool = Field(default=False)
+    enable_model_quality_monitor: bool = Field(default=False)
+    enable_model_bias_monitor: bool = Field(default=False)
+    enable_model_explainability_monitor: bool = Field(default=False)
 
     # Data quality monitoring options.
-    data_quality_checkstep_output_prefix: str = Field(default="")
-    data_quality_output_prefix: str = Field(default="")
+    data_quality_baseline_s3_uri: Optional[str] = Field(default="")
+    data_quality_output_s3_uri: Optional[str] = Field(default="")
     data_quality_instance_count: int = Field(default=1, ge=1)
     data_quality_instance_type: str = Field(default="ml.m5.large")
     data_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
@@ -53,8 +53,9 @@ class ModuleSettings(CdkBaseSettings):
     data_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     # Model quality monitoring options.
-    model_quality_checkstep_output_prefix: str = Field(default="")
-    model_quality_output_prefix: str = Field(default="")
+    model_quality_baseline_s3_uri: str = Field(default="")
+    model_quality_output_s3_uri: str = Field(default="")
+    model_quality_ground_truth_s3_uri: str = Field(default="")
     model_quality_instance_count: int = Field(default=1, ge=1)
     model_quality_instance_type: str = Field(default="ml.m5.large")
     model_quality_instance_volume_size_in_gb: int = Field(default=20, ge=1)
@@ -62,13 +63,14 @@ class ModuleSettings(CdkBaseSettings):
     model_quality_problem_type: str = Field(default="Regression")
     model_quality_inference_attribute: Optional[str] = Field(default=None)
     model_quality_probability_attribute: Optional[str] = Field(default=None)
-    model_quality_probability_threshold_attribute: Optional[int] = Field(default=None)
+    model_quality_probability_threshold_attribute: Optional[float] = Field(default=None)
     model_quality_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     # Model bias monitoring options.
-    model_bias_checkstep_output_prefix: str = Field(default="")
-    model_bias_checkstep_analysis_config_prefix: Optional[str] = Field(default=None)
-    model_bias_output_prefix: str = Field(default="")
+    model_bias_baseline_s3_uri: str = Field(default="")
+    model_bias_analysis_s3_uri: Optional[str] = Field(default="")
+    model_bias_output_s3_uri: str = Field(default="")
+    model_bias_ground_truth_s3_uri: str = Field(default="")
     model_bias_instance_count: int = Field(default=1, ge=1)
     model_bias_instance_type: str = Field(default="ml.m5.large")
     model_bias_instance_volume_size_in_gb: int = Field(default=20, ge=1)
@@ -76,13 +78,13 @@ class ModuleSettings(CdkBaseSettings):
     model_bias_features_attribute: Optional[str] = Field(default=None)
     model_bias_inference_attribute: Optional[str] = Field(default=None)
     model_bias_probability_attribute: Optional[str] = Field(default=None)
-    model_bias_probability_threshold_attribute: Optional[int] = Field(default=None)
+    model_bias_probability_threshold_attribute: Optional[float] = Field(default=None)
     model_bias_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
     # Model explainability monitoring options.
-    model_explainability_checkstep_output_prefix: str = Field(default="")
-    model_explainability_checkstep_analysis_config_prefix: Optional[str] = Field(default=None)
-    model_explainability_output_prefix: str = Field(default="")
+    model_explainability_baseline_s3_uri: str = Field(default="")
+    model_explainability_analysis_s3_uri: Optional[str] = Field(default=None)
+    model_explainability_output_s3_uri: str = Field(default="")
     model_explainability_instance_count: int = Field(default=1, ge=1)
     model_explainability_instance_type: str = Field(default="ml.m5.large")
     model_explainability_instance_volume_size_in_gb: int = Field(default=20, ge=1)

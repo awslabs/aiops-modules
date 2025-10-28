@@ -3,7 +3,6 @@ from typing import Any, List, Optional
 import constructs
 from aws_cdk import Stack, Tags
 from aws_cdk import aws_iam as iam
-from aws_cdk import aws_sagemaker as sagemaker
 from cdk_nag import NagSuppressions
 from sagemaker import image_uris
 
@@ -32,25 +31,25 @@ class SageMakerModelMonitoringStack(Stack):
         endpoint_name: str,
         security_group_id: str,
         subnet_ids: List[str],
-        model_package_arn: str,
+        # model_package_arn: str,
         model_bucket_arn: str,
         kms_key_id: str,
-        ground_truth_prefix: str,
         enable_data_quality_monitor: bool,
         enable_model_quality_monitor: bool,
         enable_model_bias_monitor: bool,
         enable_model_explainability_monitor: bool,
         # Data quality monitoring options.
-        data_quality_checkstep_output_prefix: str,
-        data_quality_output_prefix: str,
+        data_quality_baseline_s3_uri: str,
+        data_quality_output_s3_uri: str,
         data_quality_instance_count: int,
         data_quality_instance_type: str,
         data_quality_instance_volume_size_in_gb: int,
         data_quality_max_runtime_in_seconds: int,
         data_quality_schedule_expression: str,
         # Model quality monitoring options.
-        model_quality_checkstep_output_prefix: str,
-        model_quality_output_prefix: str,
+        model_quality_baseline_s3_uri: str,
+        model_quality_output_s3_uri: str,
+        model_quality_ground_truth_s3_uri: str,
         model_quality_instance_count: int,
         model_quality_instance_type: str,
         model_quality_instance_volume_size_in_gb: int,
@@ -61,9 +60,10 @@ class SageMakerModelMonitoringStack(Stack):
         model_quality_probability_threshold_attribute: Optional[int],
         model_quality_schedule_expression: str,
         # Model bias monitoring options.
-        model_bias_checkstep_output_prefix: str,
-        model_bias_checkstep_analysis_config_prefix: Optional[str],
-        model_bias_output_prefix: str,
+        model_bias_baseline_s3_uri: str,
+        model_bias_analysis_s3_uri: Optional[str],
+        model_bias_output_s3_uri: str,
+        model_bias_ground_truth_s3_uri: str,
         model_bias_instance_count: int,
         model_bias_instance_type: str,
         model_bias_instance_volume_size_in_gb: int,
@@ -74,9 +74,9 @@ class SageMakerModelMonitoringStack(Stack):
         model_bias_probability_threshold_attribute: Optional[int],
         model_bias_schedule_expression: str,
         # Model explainability monitoring options.
-        model_explainability_checkstep_output_prefix: str,
-        model_explainability_checkstep_analysis_config_prefix: str,
-        model_explainability_output_prefix: str,
+        model_explainability_baseline_s3_uri: str,
+        model_explainability_analysis_s3_uri: Optional[str],
+        model_explainability_output_s3_uri: str,
         model_explainability_instance_count: int,
         model_explainability_instance_type: str,
         model_explainability_instance_volume_size_in_gb: int,
@@ -96,7 +96,7 @@ class SageMakerModelMonitoringStack(Stack):
 
         # TODO Add back cross-region support as a separate S3 replica module?
         # sagemaker requires model package and inference image uri to be in the same region as model and endpoint
-        sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)
+        # sagemaker.CfnModel.ContainerDefinitionProperty(model_package_name=model_package_arn)
 
         # Error if no monitoring is enabled.
         if not any(
@@ -187,12 +187,12 @@ class SageMakerModelMonitoringStack(Stack):
         if enable_data_quality_monitor:
             DataQualityConstruct(
                 self,
-                "Data Quality Construct",
+                "DataQuality",
                 monitor_image_uri=monitor_image_uri,
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
-                data_quality_checkstep_output_prefix=data_quality_checkstep_output_prefix,
-                data_quality_output_prefix=data_quality_output_prefix,
+                data_quality_baseline_s3_uri=data_quality_baseline_s3_uri,
+                data_quality_output_s3_uri=data_quality_output_s3_uri,
                 kms_key_id=kms_key_id,
                 model_monitor_role_arn=model_monitor_role.role_arn,
                 security_group_id=security_group_id,
@@ -207,13 +207,13 @@ class SageMakerModelMonitoringStack(Stack):
         if enable_model_quality_monitor:
             ModelQualityConstruct(
                 self,
-                "Model Quality Construct",
+                "ModelQuality",
                 monitor_image_uri=monitor_image_uri,
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
-                model_quality_checkstep_output_prefix=model_quality_checkstep_output_prefix,
-                model_quality_output_prefix=model_quality_output_prefix,
-                ground_truth_prefix=ground_truth_prefix,
+                model_quality_baseline_s3_uri=model_quality_baseline_s3_uri,
+                model_quality_output_s3_uri=model_quality_output_s3_uri,
+                model_quality_ground_truth_s3_uri=model_quality_ground_truth_s3_uri,
                 kms_key_id=kms_key_id,
                 model_monitor_role_arn=model_monitor_role.role_arn,
                 security_group_id=security_group_id,
@@ -232,14 +232,14 @@ class SageMakerModelMonitoringStack(Stack):
         if enable_model_bias_monitor:
             ModelBiasConstruct(
                 self,
-                "Model Bias Construct",
+                "ModelBias",
                 clarify_image_uri=clarify_image_uri,
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
-                model_bias_checkstep_output_prefix=model_bias_checkstep_output_prefix,
-                model_bias_checkstep_analysis_config_prefix=model_bias_checkstep_analysis_config_prefix,
-                model_bias_output_prefix=model_bias_output_prefix,
-                ground_truth_prefix=ground_truth_prefix,
+                model_bias_baseline_s3_uri=model_bias_baseline_s3_uri,
+                model_bias_analysis_s3_uri=model_bias_analysis_s3_uri,
+                model_bias_output_s3_uri=model_bias_output_s3_uri,
+                model_bias_ground_truth_s3_uri=model_bias_ground_truth_s3_uri,
                 kms_key_id=kms_key_id,
                 model_monitor_role_arn=model_monitor_role.role_arn,
                 security_group_id=security_group_id,
@@ -258,13 +258,13 @@ class SageMakerModelMonitoringStack(Stack):
         if enable_model_explainability_monitor:
             ModelExplainabilityConstruct(
                 self,
-                "Model Explainability Construct",
+                "ModelExplainability",
                 clarify_image_uri=clarify_image_uri,
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
-                model_explainability_checkstep_output_prefix=model_explainability_checkstep_output_prefix,
-                model_explainability_checkstep_analysis_config_prefix=model_explainability_checkstep_analysis_config_prefix,
-                model_explainability_output_prefix=model_explainability_output_prefix,
+                model_explainability_baseline_s3_uri=model_explainability_baseline_s3_uri,
+                model_explainability_analysis_s3_uri=model_explainability_analysis_s3_uri,
+                model_explainability_output_s3_uri=model_explainability_output_s3_uri,
                 kms_key_id=kms_key_id,
                 model_monitor_role_arn=model_monitor_role.role_arn,
                 security_group_id=security_group_id,

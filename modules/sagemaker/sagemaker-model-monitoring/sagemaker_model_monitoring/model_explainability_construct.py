@@ -20,9 +20,9 @@ class ModelExplainabilityConstruct(Construct):
         clarify_image_uri: str,
         endpoint_name: str,
         model_bucket_name: str,
-        model_explainability_checkstep_output_prefix: str,
-        model_explainability_checkstep_analysis_config_prefix: Optional[str],
-        model_explainability_output_prefix: str,
+        model_explainability_baseline_s3_uri: str,
+        model_explainability_analysis_s3_uri: Optional[str],
+        model_explainability_output_s3_uri: str,
         kms_key_id: str,
         model_monitor_role_arn: str,
         security_group_id: str,
@@ -45,9 +45,9 @@ class ModelExplainabilityConstruct(Construct):
             clarify_image_uri,
             endpoint_name,
             model_bucket_name,
-            model_explainability_checkstep_output_prefix,
-            model_explainability_checkstep_analysis_config_prefix,
-            model_explainability_output_prefix,
+            model_explainability_baseline_s3_uri,
+            model_explainability_analysis_s3_uri,
+            model_explainability_output_s3_uri,
             kms_key_id,
             model_monitor_role_arn,
             security_group_id,
@@ -61,11 +61,11 @@ class ModelExplainabilityConstruct(Construct):
             probability_attribute,
             schedule_expression,
         )
-        job_definition_name = f"{endpoint_name}-model-explain-{unique_id}"
+        job_definition_name = f"model-explainability-{unique_id}"
 
         # To match the defaults in SageMaker.
-        if model_explainability_checkstep_analysis_config_prefix is None:
-            model_explainability_checkstep_analysis_config_prefix = model_explainability_checkstep_output_prefix
+        if model_explainability_analysis_s3_uri is None:
+            model_explainability_analysis_s3_uri = model_explainability_baseline_s3_uri
 
         model_explainability_job_definition = sagemaker.CfnModelExplainabilityJobDefinition(
             self,
@@ -79,7 +79,7 @@ class ModelExplainabilityConstruct(Construct):
                 )
             ),
             model_explainability_app_specification=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityAppSpecificationProperty(
-                config_uri=f"s3://{model_bucket_name}/{model_explainability_checkstep_analysis_config_prefix}/analysis_config.json",
+                config_uri=f"{model_explainability_analysis_s3_uri}/analysis_config.json",
                 image_uri=clarify_image_uri,
             ),
             model_explainability_job_input=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityJobInputProperty(
@@ -96,7 +96,7 @@ class ModelExplainabilityConstruct(Construct):
                     sagemaker.CfnModelExplainabilityJobDefinition.MonitoringOutputProperty(
                         s3_output=sagemaker.CfnModelExplainabilityJobDefinition.S3OutputProperty(
                             local_path="/opt/ml/processing/output/model_explainability_output",
-                            s3_uri=f"s3://{model_bucket_name}/{model_explainability_output_prefix}",
+                            s3_uri=model_explainability_output_s3_uri,
                             s3_upload_mode="EndOfJob",
                         )
                     )
@@ -107,7 +107,7 @@ class ModelExplainabilityConstruct(Construct):
             role_arn=model_monitor_role_arn,
             model_explainability_baseline_config=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelExplainabilityJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{model_explainability_checkstep_output_prefix}/analysis.json"
+                    s3_uri=f"{model_explainability_baseline_s3_uri}/constraints.json"
                 )
             ),
             stopping_condition=sagemaker.CfnModelExplainabilityJobDefinition.StoppingConditionProperty(
@@ -118,7 +118,9 @@ class ModelExplainabilityConstruct(Construct):
                 enable_network_isolation=False,
                 vpc_config=sagemaker.CfnModelExplainabilityJobDefinition.VpcConfigProperty(
                     security_group_ids=[security_group_id], subnets=subnet_ids
-                ),
+                )
+                if security_group_id and subnet_ids
+                else None,
             ),
         )
 
