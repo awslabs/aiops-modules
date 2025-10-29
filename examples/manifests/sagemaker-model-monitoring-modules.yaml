@@ -38,15 +38,15 @@ parameters:
   - name: model-quality-schedule-expression
     value: cron(0 * ? * * *)
   - name: model_quality_baseline_s3_uri
-    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/baseline
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/mq-baseline
   - name: model_quality_output_s3_uri
-    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/output
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/mq-output
   - name: model_quality_ground_truth_s3_uri
     value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/ground_truth
   - name: model_quality_inference_attribute
-    value: prediction
+    value: 0
   - name: model_quality_probability_attribute
-    value: probability
+    value: 0
   - name: model_quality_probability_threshold_attribute
     value: 0.8
     # Model bias monitor properties

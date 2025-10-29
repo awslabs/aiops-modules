@@ -86,23 +86,23 @@ class ModelQualityConstruct(Construct):
                 ),
                 endpoint_input=sagemaker.CfnModelQualityJobDefinition.EndpointInputProperty(
                     endpoint_name=endpoint_name,
-                    local_path="/opt/ml/processing/input/model_quality_input",
-                    inference_attribute=inference_attribute,
-                    probability_attribute=probability_attribute,
-                    probability_threshold_attribute=probability_threshold_attribute,
+                    local_path="/opt/ml/processing/input_data",
+                    inference_attribute=inference_attribute if inference_attribute else None,
+                    probability_attribute=probability_attribute if probability_attribute else None,
+                    probability_threshold_attribute=probability_threshold_attribute if probability_threshold_attribute else None,
                 ),
             ),
             model_quality_job_output_config=sagemaker.CfnModelQualityJobDefinition.MonitoringOutputConfigProperty(
                 monitoring_outputs=[
                     sagemaker.CfnModelQualityJobDefinition.MonitoringOutputProperty(
                         s3_output=sagemaker.CfnModelQualityJobDefinition.S3OutputProperty(
-                            local_path="/opt/ml/processing/output/model_quality_output",
+                            local_path="/opt/ml/processing/output",
                             s3_uri=model_quality_output_s3_uri,
                             s3_upload_mode="EndOfJob",
                         )
                     )
                 ],
-                kms_key_id=kms_key_id,
+                kms_key_id=kms_key_id if kms_key_id else None,
             ),
             job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
