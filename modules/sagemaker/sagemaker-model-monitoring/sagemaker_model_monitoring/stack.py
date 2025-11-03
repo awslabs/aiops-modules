@@ -61,7 +61,6 @@ class SageMakerModelMonitoringStack(Stack):
         model_quality_schedule_expression: str,
         # Model bias monitoring options.
         model_bias_baseline_s3_uri: str,
-        model_bias_analysis_s3_uri: Optional[str],
         model_bias_output_s3_uri: str,
         model_bias_ground_truth_s3_uri: str,
         model_bias_instance_count: int,
@@ -75,7 +74,6 @@ class SageMakerModelMonitoringStack(Stack):
         model_bias_schedule_expression: str,
         # Model explainability monitoring options.
         model_explainability_baseline_s3_uri: str,
-        model_explainability_analysis_s3_uri: Optional[str],
         model_explainability_output_s3_uri: str,
         model_explainability_instance_count: int,
         model_explainability_instance_type: str,
@@ -237,7 +235,6 @@ class SageMakerModelMonitoringStack(Stack):
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
                 model_bias_baseline_s3_uri=model_bias_baseline_s3_uri,
-                model_bias_analysis_s3_uri=model_bias_analysis_s3_uri,
                 model_bias_output_s3_uri=model_bias_output_s3_uri,
                 model_bias_ground_truth_s3_uri=model_bias_ground_truth_s3_uri,
                 kms_key_id=kms_key_id,
@@ -263,7 +260,6 @@ class SageMakerModelMonitoringStack(Stack):
                 endpoint_name=endpoint_name,
                 model_bucket_name=model_bucket_name,
                 model_explainability_baseline_s3_uri=model_explainability_baseline_s3_uri,
-                model_explainability_analysis_s3_uri=model_explainability_analysis_s3_uri,
                 model_explainability_output_s3_uri=model_explainability_output_s3_uri,
                 kms_key_id=kms_key_id,
                 model_monitor_role_arn=model_monitor_role.role_arn,

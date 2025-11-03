@@ -89,7 +89,9 @@ class ModelQualityConstruct(Construct):
                     local_path="/opt/ml/processing/input_data",
                     inference_attribute=inference_attribute if inference_attribute else None,
                     probability_attribute=probability_attribute if probability_attribute else None,
-                    probability_threshold_attribute=probability_threshold_attribute if probability_threshold_attribute else None,
+                    probability_threshold_attribute=probability_threshold_attribute
+                    if probability_threshold_attribute
+                    else None,
                 ),
             ),
             model_quality_job_output_config=sagemaker.CfnModelQualityJobDefinition.MonitoringOutputConfigProperty(

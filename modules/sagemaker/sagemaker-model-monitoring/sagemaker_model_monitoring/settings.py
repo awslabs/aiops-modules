@@ -68,7 +68,6 @@ class ModuleSettings(CdkBaseSettings):
 
     # Model bias monitoring options.
     model_bias_baseline_s3_uri: str = Field(default="")
-    model_bias_analysis_s3_uri: Optional[str] = Field(default="")
     model_bias_output_s3_uri: str = Field(default="")
     model_bias_ground_truth_s3_uri: str = Field(default="")
     model_bias_instance_count: int = Field(default=1, ge=1)
@@ -83,7 +82,6 @@ class ModuleSettings(CdkBaseSettings):
 
     # Model explainability monitoring options.
     model_explainability_baseline_s3_uri: str = Field(default="")
-    model_explainability_analysis_s3_uri: Optional[str] = Field(default=None)
     model_explainability_output_s3_uri: str = Field(default="")
     model_explainability_instance_count: int = Field(default=1, ge=1)
     model_explainability_instance_type: str = Field(default="ml.m5.large")

@@ -21,7 +21,6 @@ class ModelBiasConstruct(Construct):
         endpoint_name: str,
         model_bucket_name: str,
         model_bias_baseline_s3_uri: str,
-        model_bias_analysis_s3_uri: Optional[str],
         model_bias_output_s3_uri: str,
         model_bias_ground_truth_s3_uri: str,
         kms_key_id: str,
@@ -48,7 +47,6 @@ class ModelBiasConstruct(Construct):
             endpoint_name,
             model_bucket_name,
             model_bias_baseline_s3_uri,
-            model_bias_analysis_s3_uri,
             model_bias_output_s3_uri,
             model_bias_ground_truth_s3_uri,
             kms_key_id,
@@ -67,10 +65,6 @@ class ModelBiasConstruct(Construct):
         )
         job_definition_name = f"model-bias-{unique_id}"
 
-        # To match the defaults in SageMaker.
-        if model_bias_analysis_s3_uri is None:
-            model_bias_analysis_s3_uri = model_bias_baseline_s3_uri
-
         model_bias_job_definition = sagemaker.CfnModelBiasJobDefinition(
             self,
             "ModelBiasJobDefinition",
@@ -83,7 +77,7 @@ class ModelBiasConstruct(Construct):
                 )
             ),
             model_bias_app_specification=sagemaker.CfnModelBiasJobDefinition.ModelBiasAppSpecificationProperty(
-                config_uri=f"{model_bias_analysis_s3_uri}/analysis_config.json",
+                config_uri=f"{model_bias_baseline_s3_uri}/analysis_config.json",
                 image_uri=clarify_image_uri,
             ),
             model_bias_job_input=sagemaker.CfnModelBiasJobDefinition.ModelBiasJobInputProperty(
@@ -115,8 +109,8 @@ class ModelBiasConstruct(Construct):
             role_arn=model_monitor_role_arn,
             model_bias_baseline_config=sagemaker.CfnModelBiasJobDefinition.ModelBiasBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelBiasJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"{model_bias_baseline_s3_uri}/constraints.json"
-                )
+                    s3_uri=f"{model_bias_baseline_s3_uri}/analysis.json"
+                ),
             ),
             stopping_condition=sagemaker.CfnModelBiasJobDefinition.StoppingConditionProperty(
                 max_runtime_in_seconds=max_runtime_in_seconds

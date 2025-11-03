@@ -21,7 +21,6 @@ class ModelExplainabilityConstruct(Construct):
         endpoint_name: str,
         model_bucket_name: str,
         model_explainability_baseline_s3_uri: str,
-        model_explainability_analysis_s3_uri: Optional[str],
         model_explainability_output_s3_uri: str,
         kms_key_id: str,
         model_monitor_role_arn: str,
@@ -46,7 +45,6 @@ class ModelExplainabilityConstruct(Construct):
             endpoint_name,
             model_bucket_name,
             model_explainability_baseline_s3_uri,
-            model_explainability_analysis_s3_uri,
             model_explainability_output_s3_uri,
             kms_key_id,
             model_monitor_role_arn,
@@ -63,10 +61,6 @@ class ModelExplainabilityConstruct(Construct):
         )
         job_definition_name = f"model-explainability-{unique_id}"
 
-        # To match the defaults in SageMaker.
-        if model_explainability_analysis_s3_uri is None:
-            model_explainability_analysis_s3_uri = model_explainability_baseline_s3_uri
-
         model_explainability_job_definition = sagemaker.CfnModelExplainabilityJobDefinition(
             self,
             "ModelExplainabilityJobDefinition",
@@ -79,7 +73,7 @@ class ModelExplainabilityConstruct(Construct):
                 )
             ),
             model_explainability_app_specification=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityAppSpecificationProperty(
-                config_uri=f"{model_explainability_analysis_s3_uri}/analysis_config.json",
+                config_uri=f"{model_explainability_baseline_s3_uri}/analysis_config.json",
                 image_uri=clarify_image_uri,
             ),
             model_explainability_job_input=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityJobInputProperty(
@@ -107,8 +101,8 @@ class ModelExplainabilityConstruct(Construct):
             role_arn=model_monitor_role_arn,
             model_explainability_baseline_config=sagemaker.CfnModelExplainabilityJobDefinition.ModelExplainabilityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelExplainabilityJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"{model_explainability_baseline_s3_uri}/constraints.json"
-                )
+                    s3_uri=f"{model_explainability_baseline_s3_uri}/analysis.json"
+                ),
             ),
             stopping_condition=sagemaker.CfnModelExplainabilityJobDefinition.StoppingConditionProperty(
                 max_runtime_in_seconds=max_runtime_in_seconds
