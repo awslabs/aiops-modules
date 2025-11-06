@@ -8,7 +8,7 @@ parameters:
   - name: model_bucket_arn
     value: arn:aws:s3:::sagemaker-us-east-2-<REDACTED>
   # - name: kms_key_id
-  #   value: a77b83fc-e0d5-42ef-8772-ecb7f05d2c98 
+  #   value: <REDACTED>
   - name: endpoint_name
     value: DEMO-xgb-churn-pred-model-monitor-2025-10-23-19-11-16
   # - name: security_group_id
