@@ -95,7 +95,7 @@ class ModelExplainabilityConstruct(Construct):
                         )
                     )
                 ],
-                kms_key_id=kms_key_id,
+                kms_key_id=kms_key_id if kms_key_id else None,
             ),
             job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
