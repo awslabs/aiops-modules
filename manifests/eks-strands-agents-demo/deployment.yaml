@@ -1,4 +1,4 @@
-name: eks-strands-agents-demo
+name: eks-strands-agents-demo-1
 toolchainRegion: us-east-1
 groups:
   - name: core

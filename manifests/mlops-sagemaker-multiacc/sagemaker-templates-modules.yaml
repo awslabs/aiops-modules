@@ -1,0 +1,64 @@
+name: service-catalog
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/2.0.0&depth=1
+targetAccount: dev
+parameters:
+  - name: portfolio-access-role-arn
+    valueFrom:
+      moduleMetadata:
+        group: sagemaker-studio
+        name: studio
+        key: LeadDataScientistRoleArn
+  - name: dev-account-id
+    valueFrom:
+      envVariable: DEV_ACCOUNT
+  - name: dev-region
+    valueFrom:
+      envVariable: DEV_REGION
+  - name: dev-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-dev
+        key: VpcId
+  - name: dev-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-dev
+        key: PrivateSubnetIds
+  - name: pre-prod-account-id
+    valueFrom:
+      envVariable: PRE_PROD_ACCOUNT
+  - name: pre-prod-region
+    valueFrom:
+      envVariable: PRE_PROD_REGION
+  - name: pre-prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: VpcId
+  - name: pre-prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-pre-prod
+        key: PrivateSubnetIds
+  - name: prod-account-id
+    valueFrom:
+      envVariable: PROD_ACCOUNT
+  - name: prod-region
+    valueFrom:
+      envVariable: PROD_REGION
+  - name: prod-vpc-id
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: VpcId
+  - name: prod-subnet-ids
+    valueFrom:
+      moduleMetadata:
+        group: networking
+        name: networking-prod
+        key: PrivateSubnetIds
