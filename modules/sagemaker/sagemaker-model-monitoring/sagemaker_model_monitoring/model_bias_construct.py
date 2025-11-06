@@ -20,10 +20,9 @@ class ModelBiasConstruct(Construct):
         clarify_image_uri: str,
         endpoint_name: str,
         model_bucket_name: str,
-        model_bias_checkstep_output_prefix: str,
-        model_bias_checkstep_analysis_config_prefix: Optional[str],
-        model_bias_output_prefix: str,
-        ground_truth_prefix: str,
+        model_bias_baseline_s3_uri: str,
+        model_bias_output_s3_uri: str,
+        model_bias_ground_truth_s3_uri: str,
         kms_key_id: str,
         model_monitor_role_arn: str,
         security_group_id: str,
@@ -47,10 +46,9 @@ class ModelBiasConstruct(Construct):
             clarify_image_uri,
             endpoint_name,
             model_bucket_name,
-            model_bias_checkstep_output_prefix,
-            model_bias_checkstep_analysis_config_prefix,
-            model_bias_output_prefix,
-            ground_truth_prefix,
+            model_bias_baseline_s3_uri,
+            model_bias_output_s3_uri,
+            model_bias_ground_truth_s3_uri,
             kms_key_id,
             model_monitor_role_arn,
             security_group_id,
@@ -65,11 +63,7 @@ class ModelBiasConstruct(Construct):
             probability_threshold_attribute,
             schedule_expression,
         )
-        job_definition_name = f"{endpoint_name}-model-bias-{unique_id}"
-
-        # To match the defaults in SageMaker.
-        if model_bias_checkstep_analysis_config_prefix is None:
-            model_bias_checkstep_analysis_config_prefix = model_bias_checkstep_output_prefix
+        job_definition_name = f"model-bias-{unique_id}"
 
         model_bias_job_definition = sagemaker.CfnModelBiasJobDefinition(
             self,
@@ -83,12 +77,12 @@ class ModelBiasConstruct(Construct):
                 )
             ),
             model_bias_app_specification=sagemaker.CfnModelBiasJobDefinition.ModelBiasAppSpecificationProperty(
-                config_uri=f"s3://{model_bucket_name}/{model_bias_checkstep_analysis_config_prefix}/analysis_config.json",
+                config_uri=f"{model_bias_baseline_s3_uri}/analysis_config.json",
                 image_uri=clarify_image_uri,
             ),
             model_bias_job_input=sagemaker.CfnModelBiasJobDefinition.ModelBiasJobInputProperty(
                 ground_truth_s3_input=sagemaker.CfnModelBiasJobDefinition.MonitoringGroundTruthS3InputProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{ground_truth_prefix}"
+                    s3_uri=model_bias_ground_truth_s3_uri,
                 ),
                 endpoint_input=sagemaker.CfnModelBiasJobDefinition.EndpointInputProperty(
                     endpoint_name=endpoint_name,
@@ -104,7 +98,7 @@ class ModelBiasConstruct(Construct):
                     sagemaker.CfnModelBiasJobDefinition.MonitoringOutputProperty(
                         s3_output=sagemaker.CfnModelBiasJobDefinition.S3OutputProperty(
                             local_path="/opt/ml/processing/output/model_bias_output",
-                            s3_uri=f"s3://{model_bucket_name}/{model_bias_output_prefix}",
+                            s3_uri=model_bias_output_s3_uri,
                             s3_upload_mode="EndOfJob",
                         )
                     )
@@ -115,8 +109,8 @@ class ModelBiasConstruct(Construct):
             role_arn=model_monitor_role_arn,
             model_bias_baseline_config=sagemaker.CfnModelBiasJobDefinition.ModelBiasBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelBiasJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{model_bias_checkstep_output_prefix}/analysis.json"
-                )
+                    s3_uri=f"{model_bias_baseline_s3_uri}/analysis.json"
+                ),
             ),
             stopping_condition=sagemaker.CfnModelBiasJobDefinition.StoppingConditionProperty(
                 max_runtime_in_seconds=max_runtime_in_seconds
@@ -126,7 +120,9 @@ class ModelBiasConstruct(Construct):
                 enable_network_isolation=False,
                 vpc_config=sagemaker.CfnModelBiasJobDefinition.VpcConfigProperty(
                     security_group_ids=[security_group_id], subnets=subnet_ids
-                ),
+                )
+                if security_group_id and subnet_ids
+                else None,
             ),
         )
 
