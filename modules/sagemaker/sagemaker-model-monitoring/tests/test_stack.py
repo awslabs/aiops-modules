@@ -35,7 +35,6 @@ def stack_model_package_input(
     sagemaker_project_name = "sagemaker-project"
     endpoint_name = "example-endpoint-name"
     security_group_id = "example-security-group-id"
-    model_package_arn = "example-package-arn"
     model_bucket_arn = "arn:aws:s3:::test-bucket"
     kms_key_id = "example-kms-key-id"
 
@@ -46,7 +45,6 @@ def stack_model_package_input(
         endpoint_name=endpoint_name,
         security_group_id=security_group_id,
         subnet_ids=[],
-        model_package_arn=model_package_arn,
         model_bucket_arn=model_bucket_arn,
         kms_key_id=kms_key_id,
         enable_data_quality_monitor=enable_data_quality_monitor,
