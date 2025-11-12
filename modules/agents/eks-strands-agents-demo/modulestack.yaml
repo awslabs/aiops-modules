@@ -11,6 +11,9 @@ Parameters:
   RoleName:
     Type: String
     Description: The name of the IAM Role
+  EksClusterName:
+    Type: String
+    Description: The name of the EKS Cluster
 
 Resources:
   Policy:
@@ -19,8 +22,20 @@ Resources:
       PolicyDocument:
         Statement:
           - Effect: Allow
-            Action: '*'
-            Resource: '*'
+            Action:
+              - "iam:CreatePolicy"
+            Resource:
+              - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/*"
+          - Effect: Allow
+            Action:
+              - "eks:Create*"
+              - "eks:Update*"
+              - "eks:Delete*"
+              - "eks:List*"
+              - "eks:Describe*"
+            Resource:
+              - !Sub "arn:${AWS::Partition}:eks:${AWS::Region}:${AWS::AccountId}:cluster/${EksClusterName}"
+              - !Sub "arn:${AWS::Partition}:eks:${AWS::Region}:${AWS::AccountId}:*/${EksClusterName}/*"
         Version: 2012-10-17
       PolicyName: "strands-module-policy"
       Roles: [!Ref RoleName]
