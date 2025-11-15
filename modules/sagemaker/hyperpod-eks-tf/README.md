@@ -4,6 +4,18 @@
 
 This module creates a complete Amazon SageMaker HyperPod cluster infrastructure orchestrated by Amazon EKS. It deploys networking components, EKS cluster, HyperPod cluster, and supporting resources including FSx Lustre for high-performance storage.
 
+## Architecture
+
+![SageMaker HyperPod EKS Architecture](docs/_static/sagemaker_hyperpod_eks_architecture.png "SageMaker HyperPod EKS Architecture")
+
+The architecture includes:
+- **VPC with public and private subnets** for network isolation
+- **Amazon EKS cluster** for container orchestration
+- **SageMaker HyperPod cluster** with ML compute instances
+- **FSx Lustre** for high-performance shared storage
+- **S3 bucket** for lifecycle scripts and data
+- **IAM roles** for secure service access
+
 ## Inputs/Outputs
 
 ### Input Parameters
