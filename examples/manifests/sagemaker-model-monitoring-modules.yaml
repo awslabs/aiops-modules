@@ -1,41 +1,71 @@
-# This is an example manifest group.
-# Replace the parameters with the parameters for your model below prior the deployment.
-name: monitor
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-monitoring?ref=release/2.0.0&depth=1
+name: monitor2
+path: modules/sagemaker/sagemaker-model-monitoring
 parameters:
   - name: sagemaker_project_id
-    value: project-1
+    value: SF-DEMO-xgb-churn-pred-model-monitor-2025-10-23-19-11-16
   - name: sagemaker_project_name
-    value: project-1
-  - name: model_package_arn
-    value: arn:aws:sagemaker:<region>:<account>:model-package/<package-name>/1
+    value: SF-DEMO-xgb-churn-pred-model-monitor-2025-10-23-19-11-16
   - name: model_bucket_arn
-    value: arn:aws:s3:::<model-bucket-name>>
-  - name: data-quality-checkstep-output-prefix
-    value: <model-prefix>/dataqualitycheckstep
-  - name: data-quality-output-prefix
-    value: monitor/dataqualityoutput
+    value: arn:aws:s3:::sagemaker-us-east-2-<REDACTED>
+  # - name: kms_key_id
+  #   value: <REDACTED>
   - name: endpoint_name
-    valueFrom:
-      moduleMetadata:
-        group: endpoints
-        name: endpoint
-        key: EndpointName
-  - name: security_group_id
-    valueFrom:
-      moduleMetadata:
-        group: endpoints
-        name: endpoint
-        key: SecurityGroupId
-  - name: kms_key_id
-    valueFrom:
-      moduleMetadata:
-        group: endpoints
-        name: endpoint
-        key: KmsKeyId
-  - name: subnet_ids
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: PrivateSubnetIds
+    value: DEMO-xgb-churn-pred-model-monitor-2025-10-23-19-11-16
+  # - name: security_group_id
+  #   valueFrom:
+  #     moduleMetadata:
+  #       group: networking
+  #       name: networking
+  #       key: SecurityGroupId
+  # - name: subnet_ids
+  #   valueFrom:
+  #     moduleMetadata:
+  #       group: networking
+  #       name: networking
+  #       key: PrivateSubnetIds
+  # Data quality monitor properties
+  - name: enable_data_quality_monitor
+    value: true
+  - name: data-quality-schedule-expression
+    value: cron(0 * ? * * *)
+  - name: data_quality_baseline_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/baseline
+  - name: data_quality_output_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/output
+  # Model quality monitor properties
+  - name: enable_model_quality_monitor
+    value: true
+  - name: model-quality-schedule-expression
+    value: cron(0 * ? * * *)
+  - name: model_quality_baseline_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/mq-baseline
+  - name: model_quality_output_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/mq-output
+  - name: model_quality_ground_truth_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/ground_truth
+  - name: model_quality_inference_attribute
+    value: 0
+  - name: model_quality_probability_attribute
+    value: 0
+  - name: model_quality_probability_threshold_attribute
+    value: 0.8
+    # Model bias monitor properties
+  - name: enable_model_bias_monitor
+    value: true
+  - name: model_bias_schedule_expression
+    value: cron(0 * ? * * *)
+  - name: model_bias_baseline_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/baseline
+  - name: model_bias_output_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/output
+  - name: model_bias_ground_truth_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/ground_truth
+  # Model explainability monitor properties
+  - name: enable_model_explainability_monitor
+    value: true
+  - name: model_explainability_schedule_expression
+    value: cron(0 * ? * * *)
+  - name: model_explainability_baseline_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/baseline
+  - name: model_explainability_output_s3_uri
+    value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/output

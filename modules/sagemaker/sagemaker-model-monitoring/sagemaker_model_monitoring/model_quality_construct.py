@@ -20,9 +20,9 @@ class ModelQualityConstruct(Construct):
         monitor_image_uri: str,
         endpoint_name: str,
         model_bucket_name: str,
-        model_quality_checkstep_output_prefix: str,
-        model_quality_output_prefix: str,
-        ground_truth_prefix: str,
+        model_quality_baseline_s3_uri: str,
+        model_quality_output_s3_uri: str,
+        model_quality_ground_truth_s3_uri: str,
         kms_key_id: str,
         model_monitor_role_arn: str,
         security_group_id: str,
@@ -46,9 +46,9 @@ class ModelQualityConstruct(Construct):
             monitor_image_uri,
             endpoint_name,
             model_bucket_name,
-            model_quality_checkstep_output_prefix,
-            model_quality_output_prefix,
-            ground_truth_prefix,
+            model_quality_baseline_s3_uri,
+            model_quality_output_s3_uri,
+            model_quality_ground_truth_s3_uri,
             kms_key_id,
             model_monitor_role_arn,
             security_group_id,
@@ -63,7 +63,7 @@ class ModelQualityConstruct(Construct):
             probability_threshold_attribute,
             schedule_expression,
         )
-        job_definition_name = f"{endpoint_name}-model-quality-{unique_id}"
+        job_definition_name = f"model-quality-{unique_id}"
 
         model_quality_job_definition = sagemaker.CfnModelQualityJobDefinition(
             self,
@@ -82,33 +82,35 @@ class ModelQualityConstruct(Construct):
             ),
             model_quality_job_input=sagemaker.CfnModelQualityJobDefinition.ModelQualityJobInputProperty(
                 ground_truth_s3_input=sagemaker.CfnModelQualityJobDefinition.MonitoringGroundTruthS3InputProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{ground_truth_prefix}"
+                    s3_uri=model_quality_ground_truth_s3_uri,
                 ),
                 endpoint_input=sagemaker.CfnModelQualityJobDefinition.EndpointInputProperty(
                     endpoint_name=endpoint_name,
-                    local_path="/opt/ml/processing/input/model_quality_input",
-                    inference_attribute=inference_attribute,
-                    probability_attribute=probability_attribute,
-                    probability_threshold_attribute=probability_threshold_attribute,
+                    local_path="/opt/ml/processing/input_data",
+                    inference_attribute=inference_attribute if inference_attribute else None,
+                    probability_attribute=probability_attribute if probability_attribute else None,
+                    probability_threshold_attribute=probability_threshold_attribute
+                    if probability_threshold_attribute
+                    else None,
                 ),
             ),
             model_quality_job_output_config=sagemaker.CfnModelQualityJobDefinition.MonitoringOutputConfigProperty(
                 monitoring_outputs=[
                     sagemaker.CfnModelQualityJobDefinition.MonitoringOutputProperty(
                         s3_output=sagemaker.CfnModelQualityJobDefinition.S3OutputProperty(
-                            local_path="/opt/ml/processing/output/model_quality_output",
-                            s3_uri=f"s3://{model_bucket_name}/{model_quality_output_prefix}",
+                            local_path="/opt/ml/processing/output",
+                            s3_uri=model_quality_output_s3_uri,
                             s3_upload_mode="EndOfJob",
                         )
                     )
                 ],
-                kms_key_id=kms_key_id,
+                kms_key_id=kms_key_id if kms_key_id else None,
             ),
             job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
             model_quality_baseline_config=sagemaker.CfnModelQualityJobDefinition.ModelQualityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnModelQualityJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{model_quality_checkstep_output_prefix}/constraints.json"
+                    s3_uri=f"{model_quality_baseline_s3_uri}/constraints.json"
                 )
             ),
             stopping_condition=sagemaker.CfnModelQualityJobDefinition.StoppingConditionProperty(
@@ -119,7 +121,9 @@ class ModelQualityConstruct(Construct):
                 enable_network_isolation=False,
                 vpc_config=sagemaker.CfnModelQualityJobDefinition.VpcConfigProperty(
                     security_group_ids=[security_group_id], subnets=subnet_ids
-                ),
+                )
+                if security_group_id and subnet_ids
+                else None,
             ),
         )
 
