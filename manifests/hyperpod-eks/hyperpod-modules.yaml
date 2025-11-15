@@ -10,3 +10,23 @@ parameters:
         group: base
         name: tfstate-buckets
         key: ArtifactsBucketName
+  # Optional: Override default cluster names (defaults to {project}-{deployment}-{module}-{eks|hyperpod}-cluster)
+  # - name: EksClusterName
+  #   value: my-custom-eks-cluster
+  # - name: HyperpodClusterName
+  #   value: my-custom-hyperpod-cluster
+  # Optional: Override default instance groups configuration
+  # - name: InstanceGroups
+  #   value: |
+  #     {
+  #       accelerated-instance-group-1 = {
+  #         instance_type = "ml.trn1.32xlarge"
+  #         instance_count = 1
+  #         ebs_volume_size = 400
+  #         threads_per_core = 2
+  #         enable_stress_check = false
+  #         enable_connectivity_check = false
+  #         lifecycle_script = "on_create.sh"
+  #         training_plan_arn = ""
+  #       }
+  #     }

@@ -15,12 +15,18 @@ deploy:
     build:
       commands:
       - terraform init -backend-config="bucket=${SEEDFARMER_PARAMETER_TFSTATE_BUCKET_NAME}" -backend-config="region=${AWS_REGION}"
-      - echo "resource_name_prefix  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}\"" >> custom.tfvars
-      - echo "eks_cluster_name  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-eks-cluster\"" >> custom.tfvars
-      - echo "hyperpod_cluster_name  = \"${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-hyperpod-cluster\"" >> custom.tfvars
+      - echo "resource_name_prefix  = \"${SEEDFARMER_PARAMETER_RESOURCE_NAME_PREFIX:-${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}\"" >> custom.tfvars
+      - echo "eks_cluster_name  = \"${SEEDFARMER_PARAMETER_EKS_CLUSTER_NAME:-${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-eks-cluster}\"" >> custom.tfvars
+      - echo "hyperpod_cluster_name  = \"${SEEDFARMER_PARAMETER_HYPERPOD_CLUSTER_NAME:-${SEEDFARMER_PROJECT_NAME}-${SEEDFARMER_DEPLOYMENT_NAME}-${SEEDFARMER_MODULE_NAME}-hyperpod-cluster}\"" >> custom.tfvars
       - |
         if [ -n "$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN" ] ; then
           sed -i "s|training_plan_arn = .*|training_plan_arn = \"$SEEDFARMER_PARAMETER_TRAINING_PLAN_ARN\"|" custom.tfvars
+        fi
+      - |
+        if [ -n "$SEEDFARMER_PARAMETER_INSTANCE_GROUPS" ] ; then
+          # Remove existing instance_groups block and add new one
+          sed -i '/^instance_groups = {/,/^}/d' custom.tfvars
+          echo "instance_groups = $SEEDFARMER_PARAMETER_INSTANCE_GROUPS" >> custom.tfvars
         fi
       - echo "availability_zone_id  = \"${SEEDFARMER_PARAMETER_AVAILABILITY_ZONE_ID}\"" >> custom.tfvars
       - terraform plan -var-file=custom.tfvars -out tf.plan -replace='helm_release.hyperpod[0]'
