@@ -10,6 +10,7 @@ from sagemaker_model_monitoring.data_quality_construct import DataQualityConstru
 from sagemaker_model_monitoring.model_bias_construct import ModelBiasConstruct
 from sagemaker_model_monitoring.model_explainability_construct import ModelExplainabilityConstruct
 from sagemaker_model_monitoring.model_quality_construct import ModelQualityConstruct
+from sagemaker_model_monitoring.baselining_construct import BaseliningConstruct
 
 
 class SageMakerModelMonitoringStack(Stack):
@@ -34,6 +35,12 @@ class SageMakerModelMonitoringStack(Stack):
         # model_package_arn: str,
         model_bucket_arn: str,
         kms_key_id: str,
+        baseline_training_data_s3_uri: Optional[str],
+        baseline_output_data_s3_uri: Optional[str],
+        baseline_instance_count: int,
+        baseline_instance_type: str,
+        baseline_volume_size_gb: int,
+        baseline_max_runtime_seconds: int,
         enable_data_quality_monitor: bool,
         enable_model_quality_monitor: bool,
         enable_model_bias_monitor: bool,
@@ -181,6 +188,37 @@ class SageMakerModelMonitoringStack(Stack):
         )
 
         model_bucket_name = model_bucket_arn.split(":")[-1]
+
+
+        if baseline_training_data_s3_uri and baseline_output_data_s3_uri:
+            enabled_monitors = []
+            if enable_data_quality_monitor:
+                enabled_monitors.append("data_quality")
+            if enable_model_quality_monitor:
+                enabled_monitors.append("model_quality")
+            if enable_model_bias_monitor:
+                enabled_monitors.append("model_bias")
+            if enable_model_explainability_monitor:
+                enabled_monitors.append("model_explainability")
+            
+            baselining = BaseliningConstruct(
+                self,
+                "BaseliningDataQuality",
+                endpoint_name=endpoint_name,
+                model_bucket_name=model_bucket_name,
+                enabled_monitors=enabled_monitors,
+                sagemaker_role_arn=model_monitor_role.role_arn,
+                baseline_training_data_s3_uri=baseline_training_data_s3_uri,
+                baseline_output_data_s3_uri=baseline_output_data_s3_uri,
+                baseline_instance_count=baseline_instance_count,
+                baseline_instance_type=baseline_instance_type,
+                baseline_volume_size_gb=baseline_volume_size_gb,
+                baseline_max_runtime_seconds=baseline_max_runtime_seconds,
+                model_quality_problem_type=model_quality_problem_type,
+                model_quality_inference_attribute=model_quality_inference_attribute,
+                model_quality_probability_attribute=model_quality_probability_attribute,
+                model_quality_ground_truth_attribute=model_quality_inference_attribute,
+            )
 
         if enable_data_quality_monitor:
             DataQualityConstruct(

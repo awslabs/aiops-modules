@@ -1,0 +1,2 @@
+sagemaker>=2.200.0
+pandas
