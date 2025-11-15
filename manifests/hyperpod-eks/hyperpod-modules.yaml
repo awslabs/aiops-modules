@@ -4,12 +4,6 @@ targetAccount: primary
 parameters:
   - name: AvailabilityZoneId
     value: use2-az1
-  - name: ArtifactsBucketName
-    valueFrom:
-      moduleMetadata:
-        group: base
-        name: artifact-buckets
-        key: ArtifactsBucketName
   - name: TfstateBucketName
     valueFrom:
       moduleMetadata:
