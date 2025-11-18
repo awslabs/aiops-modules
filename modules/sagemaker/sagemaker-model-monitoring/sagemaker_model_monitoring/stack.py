@@ -6,11 +6,11 @@ from aws_cdk import aws_iam as iam
 from cdk_nag import NagSuppressions
 from sagemaker import image_uris
 
+from sagemaker_model_monitoring.baselining_construct import BaseliningConstruct
 from sagemaker_model_monitoring.data_quality_construct import DataQualityConstruct
 from sagemaker_model_monitoring.model_bias_construct import ModelBiasConstruct
 from sagemaker_model_monitoring.model_explainability_construct import ModelExplainabilityConstruct
 from sagemaker_model_monitoring.model_quality_construct import ModelQualityConstruct
-from sagemaker_model_monitoring.baselining_construct import BaseliningConstruct
 
 
 class SageMakerModelMonitoringStack(Stack):
@@ -189,7 +189,6 @@ class SageMakerModelMonitoringStack(Stack):
 
         model_bucket_name = model_bucket_arn.split(":")[-1]
 
-
         if baseline_training_data_s3_uri and baseline_output_data_s3_uri:
             enabled_monitors = []
             if enable_data_quality_monitor:
@@ -200,8 +199,8 @@ class SageMakerModelMonitoringStack(Stack):
                 enabled_monitors.append("model_bias")
             if enable_model_explainability_monitor:
                 enabled_monitors.append("model_explainability")
-            
-            baselining = BaseliningConstruct(
+
+            BaseliningConstruct(
                 self,
                 "BaseliningDataQuality",
                 endpoint_name=endpoint_name,
@@ -210,14 +209,6 @@ class SageMakerModelMonitoringStack(Stack):
                 sagemaker_role_arn=model_monitor_role.role_arn,
                 baseline_training_data_s3_uri=baseline_training_data_s3_uri,
                 baseline_output_data_s3_uri=baseline_output_data_s3_uri,
-                baseline_instance_count=baseline_instance_count,
-                baseline_instance_type=baseline_instance_type,
-                baseline_volume_size_gb=baseline_volume_size_gb,
-                baseline_max_runtime_seconds=baseline_max_runtime_seconds,
-                model_quality_problem_type=model_quality_problem_type,
-                model_quality_inference_attribute=model_quality_inference_attribute,
-                model_quality_probability_attribute=model_quality_probability_attribute,
-                model_quality_ground_truth_attribute=model_quality_inference_attribute,
             )
 
         if enable_data_quality_monitor:

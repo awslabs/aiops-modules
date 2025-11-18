@@ -3,9 +3,17 @@ from typing import Any, Dict
 
 import boto3
 import pandas as pd
-from sagemaker.model_monitor import DefaultModelMonitor, ModelQualityMonitor, ModelBiasMonitor, ModelExplainabilityMonitor
+from models import DataQualityParams, ModelBiasParams, ModelExplainabilityParams, ModelQualityParams
+from sagemaker.clarify import BiasConfig, DataConfig, ModelConfig, ModelPredictedLabelConfig, SHAPConfig
+from sagemaker.model_monitor import (
+    DefaultModelMonitor,
+    ModelBiasMonitor,
+    ModelExplainabilityMonitor,
+    ModelQualityMonitor,
+)
 from sagemaker.model_monitor.dataset_format import DatasetFormat
-from sagemaker.clarify import DataConfig, BiasConfig, ModelConfig, ModelPredictedLabelConfig, SHAPConfig
+
+SAGEMAKER_ROLE_ARN = os.environ["SAGEMAKER_ROLE_ARN"]
 
 sagemaker = boto3.client("sagemaker")
 
@@ -28,22 +36,25 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
 
     monitor_type = event["monitor_type"]
     endpoint_name = event["endpoint_name"]
+    training_data_uri = event["training_data_uri"]
+    baseline_output_uri = event["baseline_output_uri"]
 
     if monitor_type == "data_quality":
         job_name = f"{endpoint_name}-data-quality-baseline"
-        
+        params = DataQualityParams(**event.get("data_quality_params", {}))
+
         monitor = DefaultModelMonitor(
-            role=os.environ["SAGEMAKER_ROLE_ARN"],
-            instance_count=int(os.environ.get("BASELINE_INSTANCE_COUNT", "1")),
-            instance_type=os.environ.get("BASELINE_INSTANCE_TYPE", "ml.m5.xlarge"),
-            volume_size_in_gb=int(os.environ.get("BASELINE_VOLUME_SIZE_GB", "20")),
-            max_runtime_in_seconds=int(os.environ.get("BASELINE_MAX_RUNTIME_SECONDS", "3600")),
+            role=SAGEMAKER_ROLE_ARN,
+            instance_count=params.instance_count,
+            instance_type=params.instance_type,
+            volume_size_in_gb=params.volume_size_gb,
+            max_runtime_in_seconds=params.max_runtime_seconds,
         )
 
         monitor.suggest_baseline(
-            baseline_dataset=os.environ["TRAINING_DATA_URI"],
+            baseline_dataset=training_data_uri,
             dataset_format=DatasetFormat.csv(header=True),
-            output_s3_uri=os.environ["BASELINE_OUTPUT_URI"],
+            output_s3_uri=baseline_output_uri,
             wait=False,
             logs=False,
         )
@@ -52,24 +63,25 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
 
     elif monitor_type == "model_quality":
         job_name = f"{endpoint_name}-model-quality-baseline"
-        
+        params = ModelQualityParams(**event.get("model_quality_params", {}))
+
         monitor = ModelQualityMonitor(
-            role=os.environ["SAGEMAKER_ROLE_ARN"],
-            instance_count=int(os.environ.get("BASELINE_INSTANCE_COUNT", "1")),
-            instance_type=os.environ.get("BASELINE_INSTANCE_TYPE", "ml.m5.xlarge"),
-            volume_size_in_gb=int(os.environ.get("BASELINE_VOLUME_SIZE_GB", "20")),
-            max_runtime_in_seconds=int(os.environ.get("BASELINE_MAX_RUNTIME_SECONDS", "1800")),
+            role=SAGEMAKER_ROLE_ARN,
+            instance_count=params.instance_count,
+            instance_type=params.instance_type,
+            volume_size_in_gb=params.volume_size_gb,
+            max_runtime_in_seconds=params.max_runtime_seconds,
         )
 
         monitor.suggest_baseline(
             job_name=job_name,
-            baseline_dataset=os.environ["TRAINING_DATA_URI"],
+            baseline_dataset=training_data_uri,
             dataset_format=DatasetFormat.csv(header=True),
-            output_s3_uri=os.environ["BASELINE_OUTPUT_URI"],
-            problem_type=os.environ.get("MODEL_QUALITY_PROBLEM_TYPE", "BinaryClassification"),
-            inference_attribute=os.environ.get("MODEL_QUALITY_INFERENCE_ATTRIBUTE", "prediction"),
-            probability_attribute=os.environ.get("MODEL_QUALITY_PROBABILITY_ATTRIBUTE", "probability"),
-            ground_truth_attribute=os.environ.get("MODEL_QUALITY_GROUND_TRUTH_ATTRIBUTE", "label"),
+            output_s3_uri=baseline_output_uri,
+            problem_type=params.problem_type,
+            inference_attribute=params.inference_attribute,
+            probability_attribute=params.probability_attribute,
+            ground_truth_attribute=params.ground_truth_attribute,
             wait=False,
             logs=False,
         )
@@ -78,36 +90,37 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
 
     elif monitor_type == "model_bias":
         job_name = f"{endpoint_name}-model-bias-baseline"
-        
+        params = ModelBiasParams(**event.get("model_bias_params", {}))
+
         monitor = ModelBiasMonitor(
-            role=os.environ["SAGEMAKER_ROLE_ARN"],
-            max_runtime_in_seconds=int(os.environ.get("BASELINE_MAX_RUNTIME_SECONDS", "1800")),
+            role=SAGEMAKER_ROLE_ARN,
+            max_runtime_in_seconds=params.max_runtime_seconds,
         )
 
         model_bias_data_config = DataConfig(
-            s3_data_input_path=os.environ["TRAINING_DATA_URI"],
-            s3_output_path=os.environ["BASELINE_OUTPUT_URI"],
-            label=os.environ.get("MODEL_BIAS_LABEL_HEADER", "label"),
-            headers=os.environ.get("MODEL_BIAS_HEADERS", "").split(",") if os.environ.get("MODEL_BIAS_HEADERS") else None,
-            dataset_type=os.environ.get("MODEL_BIAS_DATASET_TYPE", "text/csv"),
+            s3_data_input_path=training_data_uri,
+            s3_output_path=baseline_output_uri,
+            label=params.label_header,
+            headers=params.get_headers(),
+            dataset_type=params.dataset_type,
         )
 
         model_bias_config = BiasConfig(
-            label_values_or_threshold=[int(x) for x in os.environ.get("MODEL_BIAS_LABEL_VALUES", "1").split(",")],
-            facet_name=os.environ.get("MODEL_BIAS_FACET_NAME", "Account Length"),
-            facet_values_or_threshold=[int(x) for x in os.environ.get("MODEL_BIAS_FACET_VALUES", "100").split(",")],
+            label_values_or_threshold=params.get_label_values(),
+            facet_name=params.facet_name,
+            facet_values_or_threshold=params.get_facet_values(),
         )
 
         model_predicted_label_config = ModelPredictedLabelConfig(
-            probability_threshold=float(os.environ.get("MODEL_BIAS_PROBABILITY_THRESHOLD", "0.8")),
+            probability_threshold=params.probability_threshold,
         )
 
         model_config = ModelConfig(
-            model_name=os.environ.get("MODEL_BIAS_MODEL_NAME", endpoint_name),
-            instance_count=int(os.environ.get("BASELINE_INSTANCE_COUNT", "1")),
-            instance_type=os.environ.get("BASELINE_INSTANCE_TYPE", "ml.m5.xlarge"),
-            content_type=os.environ.get("MODEL_BIAS_DATASET_TYPE", "text/csv"),
-            accept_type=os.environ.get("MODEL_BIAS_DATASET_TYPE", "text/csv"),
+            model_name=params.model_name or endpoint_name,
+            instance_count=params.instance_count,
+            instance_type=params.instance_type,
+            content_type=params.dataset_type,
+            accept_type=params.dataset_type,
         )
 
         monitor.suggest_baseline(
@@ -123,37 +136,38 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
 
     elif monitor_type == "model_explainability":
         job_name = f"{endpoint_name}-model-explainability-baseline"
-        
+        params = ModelExplainabilityParams(**event.get("model_explainability_params", {}))
+
         monitor = ModelExplainabilityMonitor(
-            role=os.environ["SAGEMAKER_ROLE_ARN"],
-            max_runtime_in_seconds=int(os.environ.get("BASELINE_MAX_RUNTIME_SECONDS", "1800")),
+            role=SAGEMAKER_ROLE_ARN,
+            max_runtime_in_seconds=params.max_runtime_seconds,
         )
 
         model_explainability_data_config = DataConfig(
-            s3_data_input_path=os.environ["TRAINING_DATA_URI"],
-            s3_output_path=os.environ["BASELINE_OUTPUT_URI"],
-            label=os.environ.get("MODEL_EXPLAINABILITY_LABEL_HEADER", "label"),
-            headers=os.environ.get("MODEL_EXPLAINABILITY_HEADERS", "").split(",") if os.environ.get("MODEL_EXPLAINABILITY_HEADERS") else None,
-            dataset_type=os.environ.get("MODEL_EXPLAINABILITY_DATASET_TYPE", "text/csv"),
+            s3_data_input_path=training_data_uri,
+            s3_output_path=baseline_output_uri,
+            label=params.label_header,
+            headers=params.get_headers(),
+            dataset_type=params.dataset_type,
         )
 
         # Use mean value of test dataset as SHAP baseline
-        test_dataframe = pd.read_csv(os.environ["TRAINING_DATA_URI"], header=None)
+        test_dataframe = pd.read_csv(training_data_uri, header=None)
         shap_baseline = [list(test_dataframe.mean())]
 
         shap_config = SHAPConfig(
             baseline=shap_baseline,
-            num_samples=100,
-            agg_method="mean_abs",
-            save_local_shap_values=False,
+            num_samples=params.num_samples,
+            agg_method=params.agg_method,
+            save_local_shap_values=params.save_local_shap_values,
         )
 
         model_config = ModelConfig(
-            model_name=os.environ.get("MODEL_EXPLAINABILITY_MODEL_NAME", endpoint_name),
-            instance_count=int(os.environ.get("BASELINE_INSTANCE_COUNT", "1")),
-            instance_type=os.environ.get("BASELINE_INSTANCE_TYPE", "ml.m5.xlarge"),
-            content_type=os.environ.get("MODEL_EXPLAINABILITY_DATASET_TYPE", "text/csv"),
-            accept_type=os.environ.get("MODEL_EXPLAINABILITY_DATASET_TYPE", "text/csv"),
+            model_name=params.model_name or endpoint_name,
+            instance_count=params.instance_count,
+            instance_type=params.instance_type,
+            content_type=params.dataset_type,
+            accept_type=params.dataset_type,
         )
 
         monitor.suggest_baseline(

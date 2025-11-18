@@ -31,7 +31,7 @@ class ModuleSettings(CdkBaseSettings):
 
     security_group_id: Optional[str] = Field(default=None)
     subnet_ids: Optional[List[str]] = Field(default=None)
-    
+
     model_bucket_arn: str
     kms_key_id: Optional[str] = Field(default=None)
 
