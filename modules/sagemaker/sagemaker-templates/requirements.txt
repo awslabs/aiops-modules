@@ -4,8 +4,6 @@
 #
 #    pip-compile requirements.in
 #
---extra-index-url https://plugin.us-east-1.prod.workshops.aws
---trusted-host plugin.us-east-1.prod.workshops.aws
 
 annotated-types==0.7.0
     # via pydantic
