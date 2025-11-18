@@ -2,7 +2,6 @@ import os
 from typing import Any, Dict
 
 import boto3
-import pandas as pd
 from models import DataQualityParams, ModelBiasParams, ModelExplainabilityParams, ModelQualityParams
 from sagemaker.clarify import BiasConfig, DataConfig, ModelConfig, ModelPredictedLabelConfig, SHAPConfig
 from sagemaker.model_monitor import (
@@ -151,12 +150,9 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
             dataset_type=params.dataset_type,
         )
 
-        # Use mean value of test dataset as SHAP baseline
-        test_dataframe = pd.read_csv(training_data_uri, header=None)
-        shap_baseline = [list(test_dataframe.mean())]
-
+        # Use configurable SHAP baseline
         shap_config = SHAPConfig(
-            baseline=shap_baseline,
+            baseline=params.shap_baseline,
             num_samples=params.num_samples,
             agg_method=params.agg_method,
             save_local_shap_values=params.save_local_shap_values,

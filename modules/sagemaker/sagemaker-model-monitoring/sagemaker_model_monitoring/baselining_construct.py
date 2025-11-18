@@ -47,7 +47,12 @@ class BaseliningConstruct(Construct):
                     command=[
                         "bash",
                         "-c",
-                        "pip install -r requirements.txt -t /asset-output && cp -au . /asset-output",
+                        "pip install pydantic==2.10.3 -t /asset-output --no-cache-dir && "
+                        "pip install sagemaker==2.232.2 -t /asset-output --no-deps --no-cache-dir && "
+                        "rm -rf /asset-output/{boto*,urllib3*,certifi*,six*,python_dateutil*,jmespath*,s3transfer*} && "
+                        "find /asset-output \\( -name '*.pyc' -o -name '*.so' \\) -delete && "
+                        "find /asset-output -type d \\( -name '__pycache__' -o -name 'test*' \\) -exec rm -rf {} + && "
+                        "cp -au . /asset-output",
                     ],
                 ),
             ),
@@ -87,8 +92,8 @@ class BaseliningConstruct(Construct):
                     "s3:PutObject",
                 ],
                 resources=[
-                    f"{baseline_training_data_s3_uri}*",
-                    f"{baseline_output_data_s3_uri}*",
+                    f"arn:aws:s3:::{baseline_training_data_s3_uri.replace('s3://', '')}*",
+                    f"arn:aws:s3:::{baseline_output_data_s3_uri.replace('s3://', '')}*",
                 ],
             )
         )

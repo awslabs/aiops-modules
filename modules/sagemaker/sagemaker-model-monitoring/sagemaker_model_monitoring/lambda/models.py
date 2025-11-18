@@ -49,6 +49,7 @@ class ModelExplainabilityParams(BaseParams):
     num_samples: int = Field(default=100, ge=1, description="Number of samples for SHAP")
     agg_method: str = Field(default="mean_abs", description="SHAP aggregation method")
     save_local_shap_values: bool = Field(default=False, description="Save local SHAP values")
+    shap_baseline: List[List[float]] = Field(default=[[0.0]], description="SHAP baseline values")
 
     def get_headers(self) -> Optional[List[str]]:
         return [h.strip() for h in self.headers.split(",")] if self.headers else None
