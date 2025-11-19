@@ -31,9 +31,17 @@ class ModuleSettings(CdkBaseSettings):
 
     security_group_id: Optional[str] = Field(default=None)
     subnet_ids: Optional[List[str]] = Field(default=None)
-    # model_package_arn: str
+
     model_bucket_arn: str
     kms_key_id: Optional[str] = Field(default=None)
+
+    # Baselining parameters
+    baseline_training_data_s3_uri: Optional[str] = Field(default=None)
+    baseline_output_data_s3_uri: Optional[str] = Field(default=None)
+    baseline_instance_count: int = Field(default=1, ge=1)
+    baseline_instance_type: str = Field(default="ml.m5.xlarge")
+    baseline_volume_size_gb: int = Field(default=20, ge=1)
+    baseline_max_runtime_seconds: int = Field(default=3600, ge=1)
 
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
