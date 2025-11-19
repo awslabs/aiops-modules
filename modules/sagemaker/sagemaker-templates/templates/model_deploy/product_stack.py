@@ -327,7 +327,7 @@ def handler(event, context):
         custom_resource_lambda = lambdafunction.Function(
             self,
             "CustomResourceLambda",
-            runtime=lambdafunction.Runtime.PYTHON_3_9,
+            runtime=lambdafunction.Runtime.PYTHON_3_13,
             handler="index.handler",
             role=custom_resource_lambda_role,
             code=lambdafunction.Code.from_inline(lambda_func_code),

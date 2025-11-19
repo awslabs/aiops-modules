@@ -4,6 +4,7 @@
 #
 #    pip-compile requirements.in
 #
+
 annotated-types==0.7.0
     # via pydantic
 attrs==23.2.0
@@ -16,7 +17,7 @@ aws-cdk-asset-node-proxy-agent-v6==2.1.0
     # via aws-cdk-lib
 aws-cdk-cloud-assembly-schema==48.10.0
     # via aws-cdk-lib
-aws-cdk-lib==2.215.0
+aws-cdk-lib==2.225.0
     # via
     #   -r requirements.in
     #   cdk-nag
@@ -28,7 +29,7 @@ botocore==1.39.17
     #   s3transfer
 cattrs==23.2.3
     # via jsii
-cdk-nag==2.37.30
+cdk-nag==2.37.55
     # via -r requirements.in
 constructs==10.3.0
     # via
@@ -40,7 +41,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsii==1.114.1
+jsii==1.119.0
     # via
     #   aws-cdk-asset-awscli-v1
     #   aws-cdk-asset-node-proxy-agent-v6
@@ -90,6 +91,4 @@ typing-extensions==4.10.0
     #   pydantic
     #   pydantic-core
 urllib3==1.26.20
-    # via
-    #   -r requirements.in
-    #   botocore
+    # via botocore
