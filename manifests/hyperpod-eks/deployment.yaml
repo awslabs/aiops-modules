@@ -1,0 +1,18 @@
+name: hyperpod-eks
+forceDependencyRedeploy: True
+toolchainRegion: us-east-2
+groups:
+  - name: base
+    path: manifests/hyperpod-eks/base-modules.yaml
+  - name: hyperpod
+    path: manifests/hyperpod-eks/hyperpod-modules.yaml
+targetAccountMappings:
+  - alias: primary
+    accountId:
+      valueFrom:
+        envVariable: PRIMARY_ACCOUNT
+    default: true
+    codebuildImage: aws/codebuild/standard:7.0
+    regionMappings:
+      - region: us-east-2
+        default: true

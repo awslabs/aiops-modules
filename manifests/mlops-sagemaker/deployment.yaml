@@ -1,5 +1,5 @@
 name: mlops-sagemaker
-toolchainRegion: us-east-1
+toolchainRegion: us-east-2
 forceDependencyRedeploy: true
 groups:
   - name: networking
@@ -18,5 +18,5 @@ targetAccountMappings:
     codebuildImage: aws/codebuild/standard:7.0
     default: true
     regionMappings:
-      - region: us-east-1
+      - region: us-east-2
         default: true
