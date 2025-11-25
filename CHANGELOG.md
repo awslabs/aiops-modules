@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 - updated `sagemaker-model-monitor` module and tested 4 types of monitoring end-to-end
+- updated lambda runtime and depdencies in `sagemaker-templates` module
 
 ## v2.0.0
 
