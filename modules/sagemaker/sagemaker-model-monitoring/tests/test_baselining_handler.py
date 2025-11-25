@@ -8,8 +8,9 @@ import pytest
 @pytest.fixture(autouse=True)
 def mock_sagemaker_modules():
     """Mock sagemaker modules for these tests only."""
-    # Set environment variable
+    # Set environment variables
     os.environ["SAGEMAKER_ROLE_ARN"] = "arn:aws:iam::123456789012:role/test-role"
+    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 
     # Store original modules
     original_modules = {}
