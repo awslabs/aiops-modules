@@ -17,7 +17,6 @@ def stack_defaults():
     os.environ["SEEDFARMER_PARAMETER_SECURITY_GROUP_ID"] = "example-security-group-id"
     os.environ["SEEDFARMER_PARAMETER_SUBNET_IDS"] = "[]"
     os.environ["SEEDFARMER_PARAMETER_ENDPOINT_NAME"] = "example-endpoint-name"
-    os.environ["SEEDFARMER_PARAMETER_MODEL_PACKAGE_ARN"] = "example-model-arn"
     os.environ["SEEDFARMER_PARAMETER_MODEL_BUCKET_ARN"] = "example-bucket-arn"
     os.environ["SEEDFARMER_PARAMETER_KMS_KEY_ID"] = "example-kms-key-id"
 

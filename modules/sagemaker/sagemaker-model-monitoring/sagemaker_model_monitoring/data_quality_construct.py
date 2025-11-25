@@ -20,8 +20,8 @@ class DataQualityConstruct(Construct):
         monitor_image_uri: str,
         endpoint_name: str,
         model_bucket_name: str,
-        data_quality_checkstep_output_prefix: str,
-        data_quality_output_prefix: str,
+        data_quality_baseline_s3_uri: str,
+        data_quality_output_s3_uri: str,
         kms_key_id: str,
         model_monitor_role_arn: str,
         security_group_id: str,
@@ -41,8 +41,8 @@ class DataQualityConstruct(Construct):
             monitor_image_uri,
             endpoint_name,
             model_bucket_name,
-            data_quality_checkstep_output_prefix,
-            data_quality_output_prefix,
+            data_quality_baseline_s3_uri,
+            data_quality_output_s3_uri,
             kms_key_id,
             model_monitor_role_arn,
             security_group_id,
@@ -53,7 +53,7 @@ class DataQualityConstruct(Construct):
             max_runtime_in_seconds,
             schedule_expression,
         )
-        job_definition_name = f"{endpoint_name}-data-quality-{unique_id}"
+        job_definition_name = f"data-quality-{unique_id}"
 
         data_quality_job_definition = sagemaker.CfnDataQualityJobDefinition(
             self,
@@ -72,29 +72,29 @@ class DataQualityConstruct(Construct):
                     sagemaker.CfnDataQualityJobDefinition.MonitoringOutputProperty(
                         s3_output=sagemaker.CfnDataQualityJobDefinition.S3OutputProperty(
                             local_path="/opt/ml/processing/output/data_quality_output",
-                            s3_uri=f"s3://{model_bucket_name}/{data_quality_output_prefix}",
+                            s3_uri=data_quality_output_s3_uri,
                             s3_upload_mode="EndOfJob",
                         )
                     )
                 ],
-                kms_key_id=kms_key_id,
+                kms_key_id=kms_key_id if kms_key_id else None,
             ),
             job_resources=sagemaker.CfnDataQualityJobDefinition.MonitoringResourcesProperty(
                 cluster_config=sagemaker.CfnDataQualityJobDefinition.ClusterConfigProperty(
                     instance_count=instance_count,
                     instance_type=instance_type,
                     volume_size_in_gb=instance_volume_size_in_gb,
-                    volume_kms_key_id=kms_key_id,
+                    volume_kms_key_id=kms_key_id if kms_key_id else None,
                 )
             ),
             job_definition_name=job_definition_name,
             role_arn=model_monitor_role_arn,
             data_quality_baseline_config=sagemaker.CfnDataQualityJobDefinition.DataQualityBaselineConfigProperty(
                 constraints_resource=sagemaker.CfnDataQualityJobDefinition.ConstraintsResourceProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{data_quality_checkstep_output_prefix}/constraints.json"
+                    s3_uri=f"{data_quality_baseline_s3_uri}/constraints.json"
                 ),
                 statistics_resource=sagemaker.CfnDataQualityJobDefinition.StatisticsResourceProperty(
-                    s3_uri=f"s3://{model_bucket_name}/{data_quality_checkstep_output_prefix}/statistics.json"
+                    s3_uri=f"{data_quality_baseline_s3_uri}/statistics.json"
                 ),
             ),
             stopping_condition=sagemaker.CfnDataQualityJobDefinition.StoppingConditionProperty(
@@ -105,7 +105,9 @@ class DataQualityConstruct(Construct):
                 enable_network_isolation=False,
                 vpc_config=sagemaker.CfnDataQualityJobDefinition.VpcConfigProperty(
                     security_group_ids=[security_group_id], subnets=subnet_ids
-                ),
+                )
+                if security_group_id and subnet_ids
+                else None,
             ),
         )
 
