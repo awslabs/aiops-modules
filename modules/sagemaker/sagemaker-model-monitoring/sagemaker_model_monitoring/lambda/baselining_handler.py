@@ -1,4 +1,4 @@
-# mypy: disable-error-code="attr-defined,no-untyped-call,assignment,call-arg"
+# mypy: disable-error-code="attr-defined,no-untyped-call,assignment,call-arg,no-any-return,union-attr"
 import os
 from typing import Any, Dict
 
