@@ -10,7 +10,7 @@ def mock_sagemaker_modules():
     """Mock sagemaker modules for these tests only."""
     # Set environment variable
     os.environ["SAGEMAKER_ROLE_ARN"] = "arn:aws:iam::123456789012:role/test-role"
-    
+
     # Store original modules
     original_modules = {}
     sagemaker_module_names = [
@@ -19,38 +19,38 @@ def mock_sagemaker_modules():
         "sagemaker.model_monitor",
         "sagemaker.model_monitor.dataset_format",
     ]
-    
+
     for module_name in sagemaker_module_names:
         if module_name in sys.modules:
             original_modules[module_name] = sys.modules[module_name]
-    
+
     # Mock the sagemaker modules
     sys.modules["sagemaker"] = MagicMock()
     sys.modules["sagemaker.clarify"] = MagicMock()
     sys.modules["sagemaker.model_monitor"] = MagicMock()
     sys.modules["sagemaker.model_monitor.dataset_format"] = MagicMock()
-    
+
     # Add lambda path
     lambda_path = "sagemaker_model_monitoring/lambda"
     if lambda_path not in sys.path:
         sys.path.insert(0, lambda_path)
-    
+
     # Import after mocking
     from baselining_handler import check_baselining_job, lambda_handler
-    
+
     yield check_baselining_job, lambda_handler
-    
+
     # Restore original modules
     for module_name in sagemaker_module_names:
         if module_name in original_modules:
             sys.modules[module_name] = original_modules[module_name]
         else:
             sys.modules.pop(module_name, None)
-    
+
     # Remove lambda path
     if lambda_path in sys.path:
         sys.path.remove(lambda_path)
-    
+
     # Clean up imported handler module
     if "baselining_handler" in sys.modules:
         del sys.modules["baselining_handler"]
