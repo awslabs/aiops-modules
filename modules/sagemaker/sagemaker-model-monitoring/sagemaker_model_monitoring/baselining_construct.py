@@ -59,7 +59,6 @@ class BaseliningConstruct(Construct):
                 actions=[
                     "sagemaker:CreateProcessingJob",
                     "sagemaker:DescribeProcessingJob",
-                    "iam:PassRole",
                 ],
                 resources=["*"],
             )
