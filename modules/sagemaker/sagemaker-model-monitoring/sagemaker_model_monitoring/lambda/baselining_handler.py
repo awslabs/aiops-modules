@@ -1,6 +1,5 @@
 # mypy: disable-error-code="attr-defined,no-untyped-call,assignment,call-arg"
 import os
-from datetime import datetime
 from typing import Any, Dict
 
 import boto3
@@ -36,9 +35,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return {"statusCode": 500, "error": f"Internal error: {str(e)}"}
 
 
-def start_data_quality_baseline(
-    job_name: str, training_data_uri: str, baseline_output_uri: str, event: Dict[str, Any]
-) -> None:
+def start_data_quality_baseline(training_data_uri: str, baseline_output_uri: str, event: Dict[str, Any]) -> str:
     """Start data quality baseline job."""
     params = DataQualityParams(**event.get("data_quality_params", {}))
     monitor = DefaultModelMonitor(
@@ -55,11 +52,10 @@ def start_data_quality_baseline(
         wait=False,
         logs=False,
     )
+    return monitor.latest_baselining_job.job_name
 
 
-def start_model_quality_baseline(
-    job_name: str, training_data_uri: str, baseline_output_uri: str, event: Dict[str, Any]
-) -> None:
+def start_model_quality_baseline(training_data_uri: str, baseline_output_uri: str, event: Dict[str, Any]) -> str:
     """Start model quality baseline job."""
     params = ModelQualityParams(**event.get("model_quality_params", {}))
     monitor = ModelQualityMonitor(
@@ -70,7 +66,6 @@ def start_model_quality_baseline(
         max_runtime_in_seconds=params.max_runtime_seconds,
     )
     monitor.suggest_baseline(
-        job_name=job_name,
         baseline_dataset=training_data_uri,
         dataset_format=DatasetFormat.csv(header=True),
         output_s3_uri=baseline_output_uri,
@@ -81,11 +76,12 @@ def start_model_quality_baseline(
         wait=False,
         logs=False,
     )
+    return monitor.latest_baselining_job.job_name
 
 
 def start_model_bias_baseline(
-    job_name: str, training_data_uri: str, baseline_output_uri: str, endpoint_name: str, event: Dict[str, Any]
-) -> None:
+    training_data_uri: str, baseline_output_uri: str, endpoint_name: str, event: Dict[str, Any]
+) -> str:
     """Start model bias baseline job."""
     params = ModelBiasParams(**event.get("model_bias_params", {}))
     monitor = ModelBiasMonitor(role=SAGEMAKER_ROLE_ARN, max_runtime_in_seconds=params.max_runtime_seconds)
@@ -118,11 +114,12 @@ def start_model_bias_baseline(
         wait=False,
         logs=False,
     )
+    return monitor.latest_baselining_job.job_name
 
 
 def start_model_explainability_baseline(
-    job_name: str, training_data_uri: str, baseline_output_uri: str, endpoint_name: str, event: Dict[str, Any]
-) -> None:
+    training_data_uri: str, baseline_output_uri: str, endpoint_name: str, event: Dict[str, Any]
+) -> str:
     """Start model explainability baseline job."""
     params = ModelExplainabilityParams(**event.get("model_explainability_params", {}))
     monitor = ModelExplainabilityMonitor(role=SAGEMAKER_ROLE_ARN, max_runtime_in_seconds=params.max_runtime_seconds)
@@ -152,6 +149,7 @@ def start_model_explainability_baseline(
         model_config=model_config,
         explainability_config=shap_config,
     )
+    return monitor.latest_baselining_job.job_name
 
 
 def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
@@ -164,18 +162,16 @@ def start_baselining_job(event: Dict[str, Any]) -> Dict[str, Any]:
     except KeyError as e:
         return {"statusCode": 400, "error": f"Missing required parameter: {e}"}
 
-    timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-    job_name = f"baseline-{monitor_type}-{timestamp}"
-
     try:
+        job_name = None
         if monitor_type == "data_quality":
-            start_data_quality_baseline(job_name, training_data_uri, baseline_output_uri, event)
+            job_name = start_data_quality_baseline(training_data_uri, baseline_output_uri, event)
         elif monitor_type == "model_quality":
-            start_model_quality_baseline(job_name, training_data_uri, baseline_output_uri, event)
+            job_name = start_model_quality_baseline(training_data_uri, baseline_output_uri, event)
         elif monitor_type == "model_bias":
-            start_model_bias_baseline(job_name, training_data_uri, baseline_output_uri, endpoint_name, event)
+            job_name = start_model_bias_baseline(training_data_uri, baseline_output_uri, endpoint_name, event)
         elif monitor_type == "model_explainability":
-            start_model_explainability_baseline(job_name, training_data_uri, baseline_output_uri, endpoint_name, event)
+            job_name = start_model_explainability_baseline(training_data_uri, baseline_output_uri, endpoint_name, event)
         else:
             return {"statusCode": 400, "error": f"Unsupported monitor_type: {monitor_type}"}
 

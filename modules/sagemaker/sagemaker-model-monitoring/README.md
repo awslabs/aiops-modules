@@ -13,20 +13,7 @@ Available monitoring types:
 * Model Bias
 * Model Explainability
 
-### Baseline Generation
-
-The module includes an optional automated baseline generation feature that creates baseline statistics and constraints for your monitoring jobs. When you provide training data, the module will:
-
-1. Deploy a Step Functions state machine that orchestrates baseline generation
-2. Run SageMaker Processing jobs to analyze your training data
-3. Generate baseline statistics and constraints files
-4. Store the baseline artifacts in your specified S3 location
-5. Schedule automatic baseline regeneration (default: daily at 2 AM UTC)
-
-The baseline generation uses a Lambda function deployed as a Docker container image to handle the SageMaker SDK dependencies efficiently.
-
-Note that updating parameters will require replacing resources. Deployments may be delayed until any
-running monitoring jobs complete (and the resources can be destroyed).
+The module includes an optional automated baseline generation feature that creates baseline statistics and constraints for your monitoring jobs.
 
 ### Architecture
 
@@ -57,6 +44,22 @@ running monitoring jobs complete (and the resources can be destroyed).
     - **Violations Report**: Detailed violations file emitted to S3
     - **CloudWatch Metrics**: Some monitoring types emit metrics (e.g., data quality drift)
     - **CloudWatch Alarms**: Can be configured based on emitted metrics for automated alerting
+
+### Baseline Generation
+
+The module includes an optional automated baseline generation feature that creates baseline statistics and constraints for your monitoring jobs. 
+
+![SageMaker Model Monitoring Baseline Generation](docs/_static/sagemaker-model-monitoring-baseline.png "SageMaker Model Monitoring Baseline Generation")
+
+When you provide training data, the module will:
+
+1. Deploy a Step Functions state machine that orchestrates baseline generation
+2. Run SageMaker Processing jobs to analyze your training data
+3. Generate baseline statistics and constraints files
+4. Store the baseline artifacts in your specified S3 location
+5. Schedule automatic baseline regeneration (default: daily at 2 AM UTC)
+
+## Inputs/Outputs
 
 ### Input Parameters
 

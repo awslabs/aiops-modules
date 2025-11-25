@@ -108,6 +108,7 @@ class BaseliningConstruct(Construct):
                     "baseline_output_uri": baseline_output_data_s3_uri,
                 }
             ),
+            output_path="$.Payload",
         )
 
         wait_task = sfn.Wait(self, "WaitForBaselining", time=sfn.WaitTime.duration(Duration.minutes(2)))
@@ -116,7 +117,8 @@ class BaseliningConstruct(Construct):
             self,
             "CheckBaselining",
             lambda_function=baselining_lambda,
-            payload=sfn.TaskInput.from_object({"action": "check", "job_name.$": "$.Payload.job_name"}),
+            payload=sfn.TaskInput.from_object({"action": "check", "job_name.$": "$.job_name"}),
+            output_path="$.Payload",
         )
 
         # State machine
@@ -126,7 +128,7 @@ class BaseliningConstruct(Construct):
             .next(
                 sfn.Choice(self, "IsJobComplete")
                 .when(
-                    sfn.Condition.string_equals("$.Payload.status", "COMPLETED"),
+                    sfn.Condition.string_equals("$.status", "COMPLETED"),
                     sfn.Succeed(self, "JobCompleted"),
                 )
                 .otherwise(wait_task)
