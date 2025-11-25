@@ -1,6 +1,6 @@
 from typing import Any, List
 
-from aws_cdk import BundlingOptions, Duration
+from aws_cdk import Duration
 from aws_cdk import aws_events as events
 from aws_cdk import aws_events_targets as targets
 from aws_cdk import aws_iam as iam
@@ -34,27 +34,17 @@ class BaseliningConstruct(Construct):
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # Lambda function
-        baselining_lambda = lambda_.Function(
+        # Lambda function using Docker container image
+        # This approach bypasses the 250MB layer limit by using container images (up to 10GB)
+        baselining_lambda = lambda_.DockerImageFunction(
             self,
             "BaseliningLambda",
-            runtime=lambda_.Runtime.PYTHON_3_13,
-            handler="baselining_handler.lambda_handler",
-            code=lambda_.Code.from_asset(
+            code=lambda_.DockerImageCode.from_image_asset(
                 "sagemaker_model_monitoring/lambda",
-                bundling=BundlingOptions(
-                    image=lambda_.Runtime.PYTHON_3_13.bundling_image,
-                    command=[
-                        "bash",
-                        "-c",
-                        "pip install pydantic==2.10.3 -t /asset-output --no-cache-dir && "
-                        "pip install sagemaker==2.232.2 -t /asset-output --no-deps --no-cache-dir && "
-                        "rm -rf /asset-output/{boto*,urllib3*,certifi*,six*,python_dateutil*,jmespath*,s3transfer*} && "
-                        "find /asset-output \\( -name '*.pyc' -o -name '*.so' \\) -delete && "
-                        "find /asset-output -type d \\( -name '__pycache__' -o -name 'test*' \\) -exec rm -rf {} + && "
-                        "cp -au . /asset-output",
-                    ],
-                ),
+                cmd=["baselining_handler.lambda_handler"],
+                build_args={
+                    "PYTHON_VERSION": "3.13",
+                },
             ),
             timeout=Duration.minutes(15),
             memory_size=2048,
@@ -156,6 +146,16 @@ class BaseliningConstruct(Construct):
             ),
         )
 
+        # Cron trigger
+        rule = events.Rule(self, "BaseliningScheduleRule", schedule=events.Schedule.expression(schedule_expression))
+
+        for monitor_type in enabled_monitors:
+            rule.add_target(
+                targets.SfnStateMachine(
+                    state_machine, input=events.RuleTargetInput.from_object({"monitor_type": monitor_type})
+                )
+            )
+
         # Add CDK-nag suppressions
         if baselining_lambda.role:
             NagSuppressions.add_resource_suppressions(
@@ -183,13 +183,3 @@ class BaseliningConstruct(Construct):
             ],
             apply_to_children=True,
         )
-
-        # Cron trigger
-        rule = events.Rule(self, "BaseliningScheduleRule", schedule=events.Schedule.expression(schedule_expression))
-
-        for monitor_type in enabled_monitors:
-            rule.add_target(
-                targets.SfnStateMachine(
-                    state_machine, input=events.RuleTargetInput.from_object({"monitor_type": monitor_type})
-                )
-            )
