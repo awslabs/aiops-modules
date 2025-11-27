@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## UNRELEASED
 
 ### **Added**
+- added `hyperpod-eks` manifest and `hyperpod-eks-tf` module for training LLM and FM with Amazon SageMaker HyperPod
 
 ### **Changed**
 - updated `sagemaker-model-monitor` module and tested 4 types of monitoring end-to-end
