@@ -6,6 +6,7 @@ from aws_cdk import aws_iam as iam
 from cdk_nag import NagSuppressions
 from sagemaker import image_uris
 
+from sagemaker_model_monitoring.baselining_construct import BaseliningConstruct
 from sagemaker_model_monitoring.data_quality_construct import DataQualityConstruct
 from sagemaker_model_monitoring.model_bias_construct import ModelBiasConstruct
 from sagemaker_model_monitoring.model_explainability_construct import ModelExplainabilityConstruct
@@ -34,6 +35,12 @@ class SageMakerModelMonitoringStack(Stack):
         # model_package_arn: str,
         model_bucket_arn: str,
         kms_key_id: str,
+        baseline_training_data_s3_uri: Optional[str],
+        baseline_output_data_s3_uri: Optional[str],
+        baseline_instance_count: int,
+        baseline_instance_type: str,
+        baseline_volume_size_gb: int,
+        baseline_max_runtime_seconds: int,
         enable_data_quality_monitor: bool,
         enable_model_quality_monitor: bool,
         enable_model_bias_monitor: bool,
@@ -148,17 +155,6 @@ class SageMakerModelMonitoringStack(Stack):
             ),
         )
 
-        # TODO Reduce the use of wildcards by limiting to the provided KMS key ID & needed bucket prefixes.
-        NagSuppressions.add_resource_suppressions(
-            model_monitor_policy,
-            suppressions=[
-                {
-                    "id": "AwsSolutions-IAM5",
-                    "reason": "The IAM policy needs access to the S3 bucket and associated KMS keys",
-                },
-            ],
-        )
-
         model_monitor_role = iam.Role(
             self,
             "Model Monitor Role",
@@ -169,18 +165,29 @@ class SageMakerModelMonitoringStack(Stack):
             ],
         )
 
-        # TODO Avoid AmazonSageMakerFullAccess by limiting to the needed operations.
-        NagSuppressions.add_resource_suppressions(
-            model_monitor_role,
-            suppressions=[
-                {
-                    "id": "AwsSolutions-IAM4",
-                    "reason": "The IAM policy needs access to many SageMaker and EC2 operations.",
-                },
-            ],
-        )
-
         model_bucket_name = model_bucket_arn.split(":")[-1]
+
+        if baseline_training_data_s3_uri and baseline_output_data_s3_uri:
+            enabled_monitors = []
+            if enable_data_quality_monitor:
+                enabled_monitors.append("data_quality")
+            if enable_model_quality_monitor:
+                enabled_monitors.append("model_quality")
+            if enable_model_bias_monitor:
+                enabled_monitors.append("model_bias")
+            if enable_model_explainability_monitor:
+                enabled_monitors.append("model_explainability")
+
+            BaseliningConstruct(
+                self,
+                "BaseliningDataQuality",
+                endpoint_name=endpoint_name,
+                model_bucket_name=model_bucket_name,
+                enabled_monitors=enabled_monitors,
+                sagemaker_role_arn=model_monitor_role.role_arn,
+                baseline_training_data_s3_uri=baseline_training_data_s3_uri,
+                baseline_output_data_s3_uri=baseline_output_data_s3_uri,
+            )
 
         if enable_data_quality_monitor:
             DataQualityConstruct(
@@ -274,3 +281,25 @@ class SageMakerModelMonitoringStack(Stack):
                 probability_attribute=model_explainability_probability_attribute,
                 schedule_expression=model_explainability_schedule_expression,
             )
+
+        # TODO Avoid AmazonSageMakerFullAccess by limiting to the needed operations.
+        NagSuppressions.add_resource_suppressions(
+            model_monitor_role,
+            suppressions=[
+                {
+                    "id": "AwsSolutions-IAM4",
+                    "reason": "The IAM policy needs access to many SageMaker and EC2 operations.",
+                },
+            ],
+        )
+
+        # TODO Reduce the use of wildcards by limiting to the provided KMS key ID & needed bucket prefixes.
+        NagSuppressions.add_resource_suppressions(
+            model_monitor_policy,
+            suppressions=[
+                {
+                    "id": "AwsSolutions-IAM5",
+                    "reason": "The IAM policy needs access to the S3 bucket and associated KMS keys",
+                },
+            ],
+        )
