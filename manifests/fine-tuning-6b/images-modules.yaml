@@ -1,5 +1,5 @@
 name: ray
-path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-image?ref=release/2.0.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-image?ref=release/2.1.0&depth=1
 targetAccount: primary
 parameters:
   - name: EcrRepoName

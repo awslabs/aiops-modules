@@ -11,6 +11,11 @@ parameters:
   #   value: <REDACTED>
   - name: endpoint_name
     value: DEMO-xgb-churn-pred-model-monitor-2025-10-23-19-11-16
+  # Baselining
+  - name: baseline_training_data_s3_uri
+    value: s3://sagemaker-us-east-2-140023365315/SF2-DEMO-xgb-churn-pred-model-monitor/test/baseline/input
+  - name: baseline_output_data_s3_uri
+    value: s3://sagemaker-us-east-2-140023365315/SF2-DEMO-xgb-churn-pred-model-monitor/test/baseline/output
   # - name: security_group_id
   #   valueFrom:
   #     moduleMetadata:

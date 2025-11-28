@@ -1,5 +1,5 @@
 name: hp
-path: modules/sagemaker/hyperpod-eks-tf
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/hyperpod-eks-tf?ref=release/2.1.0&depth=1
 targetAccount: primary
 parameters:
   - name: AvailabilityZoneId
