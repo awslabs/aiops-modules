@@ -1,5 +1,5 @@
 name: model  # replace with name of the ML model you prefer
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-cicd?ref=release/2.0.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-cicd?ref=release/2.1.0&depth=1
 targetAccount: tooling
 parameters:
   - name: infra-repo
