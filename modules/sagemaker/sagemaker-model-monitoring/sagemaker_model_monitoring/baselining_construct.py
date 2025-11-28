@@ -50,6 +50,7 @@ class BaseliningConstruct(Construct):
             memory_size=2048,
             environment={
                 "SAGEMAKER_ROLE_ARN": sagemaker_role_arn,
+                "LOG_LEVEL": "INFO",
             },
         )
 
@@ -130,6 +131,15 @@ class BaseliningConstruct(Construct):
                 .when(
                     sfn.Condition.string_equals("$.status", "COMPLETED"),
                     sfn.Succeed(self, "JobCompleted"),
+                )
+                .when(
+                    sfn.Condition.string_equals("$.status", "FAILED"),
+                    sfn.Fail(
+                        self,
+                        "JobFailed",
+                        cause="Baselining job failed",
+                        error="ProcessingJobFailed",
+                    ),
                 )
                 .otherwise(wait_task)
             )
