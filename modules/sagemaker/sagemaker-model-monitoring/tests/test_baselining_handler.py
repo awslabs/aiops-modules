@@ -84,31 +84,29 @@ def test_lambda_handler_check_action(mock_sagemaker_modules, mock_env, mock_sage
     assert result["job_name"] == "test-job"
 
 
-def test_check_baselining_job_completed(mock_sagemaker_modules, mock_env, mock_sagemaker_client):
-    """Test check_baselining_job with completed job."""
+@pytest.mark.parametrize(
+    "processing_job_status,expected_status",
+    [
+        ("Completed", "COMPLETED"),
+        ("Failed", "FAILED"),
+        ("InProgress", "IN_PROGRESS"),
+        ("Stopping", "FAILED"),
+        ("Stopped", "FAILED"),
+    ],
+)
+def test_check_baselining_job_status(
+    mock_sagemaker_modules, mock_env, mock_sagemaker_client, processing_job_status, expected_status
+):
+    """Test check_baselining_job with various job statuses."""
     check_baselining_job, lambda_handler = mock_sagemaker_modules
     event = {"job_name": "test-job"}
 
-    mock_sagemaker_client.describe_processing_job.return_value = {"ProcessingJobStatus": "Completed"}
+    mock_sagemaker_client.describe_processing_job.return_value = {"ProcessingJobStatus": processing_job_status}
 
     result = check_baselining_job(event)
 
     assert result["statusCode"] == 200
-    assert result["status"] == "COMPLETED"
-    assert result["job_name"] == "test-job"
-
-
-def test_check_baselining_job_in_progress(mock_sagemaker_modules, mock_env, mock_sagemaker_client):
-    """Test check_baselining_job with in-progress job."""
-    check_baselining_job, lambda_handler = mock_sagemaker_modules
-    event = {"job_name": "test-job"}
-
-    mock_sagemaker_client.describe_processing_job.return_value = {"ProcessingJobStatus": "InProgress"}
-
-    result = check_baselining_job(event)
-
-    assert result["statusCode"] == 200
-    assert result["status"] == "IN_PROGRESS"
+    assert result["status"] == expected_status
     assert result["job_name"] == "test-job"
 
 
@@ -122,3 +120,48 @@ def test_check_baselining_job_missing_job_name(mock_sagemaker_modules, mock_env)
     assert result["statusCode"] == 400
     assert "error" in result
     assert "Missing required parameter" in result["error"]
+
+
+@pytest.mark.parametrize(
+    "monitor_type,monitor_class_path,expected_job_name",
+    [
+        ("data_quality", "baselining_handler.DefaultModelMonitor", "data-quality-job-123"),
+        ("model_quality", "baselining_handler.ModelQualityMonitor", "model-quality-job-456"),
+        ("model_bias", "baselining_handler.ModelBiasMonitor", "model-bias-job-789"),
+        ("model_explainability", "baselining_handler.ModelExplainabilityMonitor", "model-explainability-job-012"),
+    ],
+)
+def test_start_baselining_job_types(
+    mock_sagemaker_modules, mock_env, monitor_type, monitor_class_path, expected_job_name
+):
+    """Test starting different types of baselining jobs."""
+    check_baselining_job, lambda_handler = mock_sagemaker_modules
+
+    event = {
+        "action": "start",
+        "monitor_type": monitor_type,
+        "endpoint_name": "test-endpoint",
+        "training_data_uri": "s3://bucket/training-data",
+        "baseline_output_uri": "s3://bucket/baseline-output",
+    }
+
+    with patch(monitor_class_path) as mock_monitor_class:
+        mock_monitor_instance = MagicMock()
+        mock_monitor_class.return_value = mock_monitor_instance
+
+        # Mock the baselining job
+        mock_baselining_job = MagicMock()
+        mock_baselining_job.job_name = expected_job_name
+        mock_monitor_instance.latest_baselining_job = mock_baselining_job
+
+        result = lambda_handler(event, None)
+
+        assert result["statusCode"] == 200
+        assert result["status"] == "STARTED"
+        assert result["job_name"] == expected_job_name
+
+        # Verify the monitor was instantiated
+        mock_monitor_class.assert_called_once()
+
+        # Verify suggest_baseline was called
+        mock_monitor_instance.suggest_baseline.assert_called_once()
