@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - updated `sagemaker-model-monitor` module and tested 4 types of monitoring end-to-end
 - added baseline generation step function to `sagemaker-model-monitor` module
 - updated lambda runtime and depdencies in `sagemaker-templates` module
+- fixed baseline error handling in `sagemaker-model-monitor` module
 
 ## v2.0.0
 
