@@ -71,7 +71,7 @@ def create_peft_model(model: Any, gradient_checkpointing: bool = True, bf16: boo
 
     # get lora target modules
     modules = find_all_linear_names(model)
-    logger.info(f"Found {len( modules )} modules to quantize: {modules}")
+    logger.info(f"Found {len(modules)} modules to quantize: {modules}")
 
     peft_config = LoraConfig(
         r=64,
