@@ -112,6 +112,27 @@ def extract_zip_file(zip_file_path, extract_dir):
         print(f"Error extracting zip file: {str(e)}")
         raise e
 
+def is_organization(github_owner, headers):
+    # Check if github_owner is a GitHub organization (not a personal user account).
+    # Returns True if it's an organization, False otherwise.
+    print(f"Checking if '{github_owner}' is a GitHub organization...")
+    req = urllib.request.Request(f'https://api.github.com/orgs/{github_owner}', headers=headers)
+    try:
+        with urllib.request.urlopen(req) as response:
+            if response.getcode() == 200:
+                print(f"'{github_owner}' is a GitHub organization")
+                return True
+            else:
+                print(f"Unexpected status code {response.getcode()} when checking organization")
+                return False
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print(f"'{github_owner}' is not an organization (404 - not found)")
+            return False
+        else:
+            print(f"Error checking if '{github_owner}' is an organization: {e.code} - {e.reason}")
+            # For other errors (403, etc.), assume it might be an org and let the create call fail with proper error
+            return True
 
 def lambda_handler(event, context):
     print(f"Received event: {json.dumps(event)}")
@@ -142,18 +163,28 @@ def lambda_handler(event, context):
             'private': True
         }).encode('utf-8')
 
-        req = urllib.request.Request('https://api.github.com/user/repos', data=data, headers=headers, method='POST')
+        # Determine if github_owner is an organization or personal user account
+        if is_organization(github_owner, headers):
+            # Use organization endpoint
+            api_url = f'https://api.github.com/orgs/{github_owner}/repos'
+            print(f"Creating repository under organization '{github_owner}' using {api_url}")
+        else:
+            # Use user endpoint
+            api_url = 'https://api.github.com/user/repos'
+            print(f"Creating repository under user account using {api_url}")
+
+        req = urllib.request.Request(api_url, data=data, headers=headers, method='POST')
 
         try:
             with urllib.request.urlopen(req) as response:
                 repo_data = json.loads(response.read().decode())
                 repo_url = repo_data['clone_url']
+                print(f"Repository created successfully: {repo_url}")
         except urllib.error.HTTPError as e:
-            print(f"HTTP Error: {e.code} - {e.reason}")
-            print(e.read().decode())
+            print(f"HTTP Error creating repository: {e.code} - {e.reason}")
+            error_body = e.read().decode()
+            print(f"Error details: {error_body}")
             raise
-
-        print(f"Repository created: {repo_url}")
 
         # Download entire S3 bucket
         s3 = boto3.client('s3')

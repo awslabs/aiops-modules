@@ -228,8 +228,7 @@ class BuildPipelineConstruct(Construct):
                     "sagemaker:ListTags",
                 ],
                 resources=[
-                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/"
-                    f"{sagemaker_pipeline_name}",
+                    f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/{sagemaker_pipeline_name}",
                     f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:pipeline/"
                     f"{sagemaker_pipeline_name}/execution/*",
                 ],

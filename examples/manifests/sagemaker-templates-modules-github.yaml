@@ -5,7 +5,7 @@ parameters:
   - name: repository-type
     value: GitHub
   - name: repository-owner
-    value: <github_account_owner>
+    value: <github_account_owner>  # Can be a personal account username or organization name
   - name: access-token-secret-name
     value: github_token
   - name: aws-codeconnection-arn

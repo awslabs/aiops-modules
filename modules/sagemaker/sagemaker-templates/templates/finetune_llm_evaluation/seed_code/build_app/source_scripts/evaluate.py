@@ -77,7 +77,7 @@ def evaluate_model(args: Any) -> None:
         os.makedirs(args.model_dir, exist_ok=True)
         tar_file.extractall(args.model_dir)
 
-    logger.info(f"Decompressed Model assets: {os.listdir( args.model_dir )}")
+    logger.info(f"Decompressed Model assets: {os.listdir(args.model_dir)}")
 
     # Load test dataset
     test_dataset = load_from_disk(args.test_data_dir)
@@ -88,7 +88,7 @@ def evaluate_model(args: Any) -> None:
     # ensure that we do not have any trailing/leading whitespaces, this can lead to issues during inference
     test_data = test_dataset.map(lambda sample: {"prompt": sample["prompt"].strip()})
     logger.info("Loading test dataset")
-    logger.info(f"Test dataset has {len( test_data )} samples")
+    logger.info(f"Test dataset has {len(test_data)} samples")
 
     model = AutoModelForCausalLM.from_pretrained(args.model_dir, device_map="auto", torch_dtype=torch.float16)
 

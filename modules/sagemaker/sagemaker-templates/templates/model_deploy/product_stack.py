@@ -111,8 +111,7 @@ class ModelDeployProject(Construct):
         dev_region: str = Aws.REGION
 
         model_package_arn = (
-            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/"
-            f"{model_package_group_name}/*"
+            f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
         )
         model_package_group_arn = (
             f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/"
