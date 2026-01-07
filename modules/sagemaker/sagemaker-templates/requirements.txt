@@ -4,7 +4,6 @@
 #
 #    pip-compile requirements.in
 #
-
 annotated-types==0.7.0
     # via pydantic
 attrs==23.2.0
@@ -90,5 +89,5 @@ typing-extensions==4.10.0
     #   jsii
     #   pydantic
     #   pydantic-core
-urllib3==1.26.20
+urllib3==2.6.3
     # via botocore
