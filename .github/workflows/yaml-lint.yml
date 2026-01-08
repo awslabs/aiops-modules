@@ -26,4 +26,5 @@ jobs:
         run: pip install yamllint
 
       - name: Lint YAML files
-        run: yamllint --format github -d "{extends: default, ignore: ['*chart*']}" .
+        run: |
+          yamllint --format github -d "{extends: default, ignore: ['*chart*']}" .
