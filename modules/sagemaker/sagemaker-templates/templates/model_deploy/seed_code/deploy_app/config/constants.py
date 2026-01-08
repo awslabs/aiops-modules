@@ -51,3 +51,5 @@ DOMAIN_ARN = os.getenv("DOMAIN_ARN", None)
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)
 
 ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true").lower() == "true"
+ENABLE_MANUAL_APPROVAL = os.getenv("ENABLE_MANUAL_APPROVAL", "true").lower() == "true"
+ENABLE_EVENTBRIDGE_TRIGGER = os.getenv("ENABLE_EVENTBRIDGE_TRIGGER", "true").lower() == "true"

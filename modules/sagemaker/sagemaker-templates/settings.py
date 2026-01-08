@@ -100,6 +100,8 @@ class ModelDeployProjectSettings(CdkBaseSettings):
     model_package_group_name: str
     model_bucket_name: str
     enable_network_isolation: bool = Field(default=False)
+    enable_manual_approval: bool = Field(default=True)
+    enable_eventbridge_trigger: bool = Field(default=True)
 
 
 class HfImportModelsProjectSettings(CdkBaseSettings):
