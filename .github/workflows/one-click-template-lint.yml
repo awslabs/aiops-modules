@@ -39,12 +39,14 @@ jobs:
           enable-cache: true
       - name: Set up Python
         run: uv python install 3.11
+      - name: Create virtual environment
+        run: uv venv --python 3.11
       - name: Install Requirements
         run: |
           set -x
-          uv pip install --system -r requirements-dev.txt
+          uv pip install -r requirements-dev.txt
       - name: cfn-lint
-        run: cfn-lint --template ./one-click-launch.yaml
+        run: uv run cfn-lint --template ./one-click-launch.yaml
 
   nag:
     name: CFN Nag Template
