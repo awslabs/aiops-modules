@@ -87,6 +87,8 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
             model_package_group_name="test-model-package-group",
             model_bucket_name="test-model-bucket",
             enable_network_isolation="false",
+            enable_manual_approval=True,
+            enable_eventbridge_trigger=True,
         )
     elif project_template_type == ProjectTemplateType.HF_IMPORT_MODELS:
         hf_import_models_settings = HfImportModelsProjectSettings(

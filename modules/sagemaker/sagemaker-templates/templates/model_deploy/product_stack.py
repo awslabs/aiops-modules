@@ -76,29 +76,45 @@ class ModelDeployProject(Construct):
         sagemaker_project_id: str,
         model_package_group_name: str,
         model_bucket_name: str,
-        enable_network_isolation: str,
-        dev_vpc_id: str,
-        dev_subnet_ids: List[str],
-        dev_security_group_ids: List[str],
-        pre_prod_account_id: str,
-        pre_prod_region: str,
-        pre_prod_vpc_id: str,
-        pre_prod_subnet_ids: List[str],
-        pre_prod_security_group_ids: List[str],
-        prod_account_id: str,
-        prod_region: str,
-        prod_vpc_id: str,
-        prod_subnet_ids: List[str],
-        prod_security_group_ids: List[str],
-        sagemaker_domain_id: str,
-        sagemaker_domain_arn: str,
-        repository_type: RepositoryType,
-        access_token_secret_name: Optional[str],
-        aws_codeconnection_arn: Optional[str],
-        repository_owner: Optional[str],
+        enable_network_isolation: bool = False,
+        enable_manual_approval: bool = True,
+        enable_eventbridge_trigger: bool = True,
+        dev_vpc_id: str = "",
+        dev_subnet_ids: Optional[List[str]] = None,
+        dev_security_group_ids: Optional[List[str]] = None,
+        pre_prod_account_id: str = "",
+        pre_prod_region: str = "",
+        pre_prod_vpc_id: str = "",
+        pre_prod_subnet_ids: Optional[List[str]] = None,
+        pre_prod_security_group_ids: Optional[List[str]] = None,
+        prod_account_id: str = "",
+        prod_region: str = "",
+        prod_vpc_id: str = "",
+        prod_subnet_ids: Optional[List[str]] = None,
+        prod_security_group_ids: Optional[List[str]] = None,
+        sagemaker_domain_id: str = "",
+        sagemaker_domain_arn: str = "",
+        repository_type: RepositoryType = RepositoryType.CODECOMMIT,
+        access_token_secret_name: Optional[str] = None,
+        aws_codeconnection_arn: Optional[str] = None,
+        repository_owner: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
+
+        # Initialize mutable defaults
+        if dev_subnet_ids is None:
+            dev_subnet_ids = []
+        if dev_security_group_ids is None:
+            dev_security_group_ids = []
+        if pre_prod_subnet_ids is None:
+            pre_prod_subnet_ids = []
+        if pre_prod_security_group_ids is None:
+            pre_prod_security_group_ids = []
+        if prod_subnet_ids is None:
+            prod_subnet_ids = []
+        if prod_security_group_ids is None:
+            prod_security_group_ids = []
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -145,7 +161,11 @@ class ModelDeployProject(Construct):
             "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
             "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
             "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_security_group_ids)),
-            "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
+            "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=str(enable_network_isolation).lower()),
+            "ENABLE_MANUAL_APPROVAL": codebuild.BuildEnvironmentVariable(value=str(enable_manual_approval).lower()),
+            "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(
+                value=str(enable_eventbridge_trigger).lower()
+            ),
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 

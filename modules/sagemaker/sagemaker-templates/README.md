@@ -109,6 +109,8 @@ As an example, if `sagemaker-templates-service-catalog` template configured to u
 - `model-package-group-name` - name of the model package group (required)
 - `model-bucket-name` - S3 bucket name for model artifacts (required)
 - `enable-network-isolation` - enable network isolation for endpoints (default: false)
+- `enable-manual-approval` - require manual approval before Pre-Prod and Prod deployments (default: true)
+- `enable-eventbridge-trigger` - automatically trigger pipeline when model is approved in Model Registry (default: true)
 
 #### Hugging Face Import Models Template:
 - `hf-access-token-secret` - AWS Secret Manager secret containing Hugging Face access token (required)

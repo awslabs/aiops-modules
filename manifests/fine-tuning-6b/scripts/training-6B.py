@@ -82,8 +82,9 @@ def tokenize(batch: pd.DataFrame) -> dict:
 
 processed_datasets = {
     key: (
-        ds.map_batches(split_text, batch_format="pandas")
-        .map_batches(tokenize, batch_format="pandas")
+        ds.map_batches(split_text, batch_format="pandas").map_batches(
+            tokenize, batch_format="pandas"
+        )
     )
     for key, ds in ray_datasets.items()
 }
@@ -124,9 +125,9 @@ def train_func(config):
             "stage": 3,
             "offload_optimizer": {
                 "device": "cpu",
-                "pin_memory": False, #out of mmeory
+                "pin_memory": False,  # out of mmeory
             },
-            "overlap_comm": False, # running out of GRAM
+            "overlap_comm": False,  # running out of GRAM
             "contiguous_gradients": True,
             "reduce_bucket_size": "auto",
             "stage3_prefetch_bucket_size": "auto",
@@ -206,6 +207,7 @@ def train_func(config):
     trainer.add_callback(RayTrainReportCallback())
     trainer = prepare_trainer(trainer)
     trainer.train()
+
 
 batch_size = 12
 train_ds_size = processed_datasets["train"].count()
