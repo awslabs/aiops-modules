@@ -1,6 +1,9 @@
 {
   "name": "sagemaker-fm-endpoint",
   "version": "0.1.0",
+  "overrides": {
+    "qs": "^6.14.1"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",

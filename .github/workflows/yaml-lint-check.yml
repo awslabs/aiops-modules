@@ -22,8 +22,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
       - name: Install yamllint
-        run: pip install yamllint
+        run: uv pip install --system yamllint
 
       - name: Lint YAML files
         run: yamllint --format github -d "{extends: default, ignore: ['*chart*']}" .

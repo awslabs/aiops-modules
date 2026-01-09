@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 ### **Changed**
-- updated GitHub repo creation in `sagemaker-templates` module to support GitHub organizations
+- update urllib3 to 2.6.3
+- update boto3 to 1.35.0
+- update qs to 6.14.1
+- upgrade Python version from 3.8 to 3.11
 
 ## v2.1.1
 

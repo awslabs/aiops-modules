@@ -46,14 +46,14 @@ jobs:
       fail-fast: false
       matrix:
         modules: ${{ fromJson(needs.get-modules.outputs.matrix) }}
-        python-version: [3.9]
+        python-version: ["3.11"]
         node-version: [18.x]
     runs-on: ubuntu-latest
     env:
       MODULE_PATH: 'modules/${{ matrix.modules.module_name }}'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - id: determine-language
@@ -67,10 +67,17 @@ jobs:
           elif [ -f $MODULE_PATH/pyproject.toml ]; then \
             echo "language=python" >> "$GITHUB_OUTPUT"; \
           fi
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up uv
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Set up Python ${{ matrix.python-version }}
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
+        run: uv python install ${{ matrix.python-version }}
+      - name: Create virtual environment
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
+        run: uv venv --python ${{ matrix.python-version }}
       - name: Set up Node ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -79,20 +86,23 @@ jobs:
         if: ${{ steps.determine-language.outputs.language == 'python' }}
         run: |
           set -x
-          python -m pip install --upgrade pip
-          pip install -r requirements-dev.txt
-          pip install -r $MODULE_PATH/requirements.txt
+          uv pip install -r requirements-dev.txt
+          uv pip install -r $MODULE_PATH/requirements.txt
       - name: Install Requirements (Typescript)
         if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: |
           set -x
           cd $MODULE_PATH
           npm install
-      - name: Static checks and linting
-        run: scripts/validate.sh --language ${{ steps.determine-language.outputs.language }} --path $MODULE_PATH/
+      - name: Static checks and linting (Python)
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
+        run: uv run scripts/validate.sh --language python --path $MODULE_PATH/
+      - name: Static checks and linting (TypeScript)
+        if: ${{ steps.determine-language.outputs.language == 'typescript' }}
+        run: ./scripts/validate.sh --language typescript --path $MODULE_PATH/
       - name: Pytest
         if: ${{ steps.determine-language.outputs.language == 'python' }}
-        run: cd $MODULE_PATH/ && pytest
+        run: uv run --no-project --directory $MODULE_PATH pytest
       - name: NPM Test
         if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: cd $MODULE_PATH/ && npm test

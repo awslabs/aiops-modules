@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 120
-target-version = "py38"
+target-version = "py311"
 
 exclude = [
     ".eggs",
@@ -23,7 +23,7 @@ select = ["F", "I", "E", "W"]
 fixable = ["ALL"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.11"
 strict = true
 disallow_untyped_decorators = false
 exclude = "codeseeder.out/|example/|tests/|.venv"
