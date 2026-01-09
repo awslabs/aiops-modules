@@ -21,7 +21,7 @@ def lambda_handler(event, context):  # type: ignore[no-untyped-def]
 
     yaml_data = response["Body"].read().decode("utf-8")
     configuration = yaml.safe_load(yaml_data)
-    execution_name = f'{configuration["job_prefix"]}-{configuration["model_id"]}-{int(time.time())}'
+    execution_name = f"{configuration['job_prefix']}-{configuration['model_id']}-{int(time.time())}"
     stateMachineArn = os.environ["STATE_MACHINE_ARN"]
     sfn = boto3.client("stepfunctions")
     input_data = json.dumps(configuration)

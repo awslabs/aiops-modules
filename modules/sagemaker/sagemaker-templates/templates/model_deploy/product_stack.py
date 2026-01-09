@@ -149,7 +149,9 @@ class ModelDeployProject(Construct):
             "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_security_group_ids)),
             "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=enable_network_isolation),
             "ENABLE_MANUAL_APPROVAL": codebuild.BuildEnvironmentVariable(value=str(enable_manual_approval).lower()),
-            "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(value=str(enable_eventbridge_trigger).lower()),
+            "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(
+                value=str(enable_eventbridge_trigger).lower()
+            ),
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 
