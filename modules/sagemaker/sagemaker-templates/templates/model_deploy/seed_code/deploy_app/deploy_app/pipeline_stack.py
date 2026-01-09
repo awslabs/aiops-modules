@@ -37,9 +37,9 @@ ENV = {
     "PROD_VPC_ID": constants.PROD_VPC_ID,
     "PROD_SUBNET_IDS": json.dumps(constants.PROD_SUBNET_IDS),
     "PROD_SECURITY_GROUP_IDS": json.dumps(constants.PROD_SECURITY_GROUP_IDS),
-    "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION),
-    "ENABLE_MANUAL_APPROVAL": str(constants.ENABLE_MANUAL_APPROVAL),
-    "ENABLE_EVENTBRIDGE_TRIGGER": str(constants.ENABLE_EVENTBRIDGE_TRIGGER),
+    "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION).lower(),
+    "ENABLE_MANUAL_APPROVAL": str(constants.ENABLE_MANUAL_APPROVAL).lower(),
+    "ENABLE_EVENTBRIDGE_TRIGGER": str(constants.ENABLE_EVENTBRIDGE_TRIGGER).lower(),
 }
 
 
@@ -202,7 +202,7 @@ class PipelineStack(cdk.Stack):
             ),
             pre=[ManualApprovalStep("ApprovePreProd", comment="Approve deployment to Pre-Production")]
             if constants.ENABLE_MANUAL_APPROVAL
-            else None,
+            else [],
         )
 
         pipeline.add_stage(
@@ -213,10 +213,11 @@ class PipelineStack(cdk.Stack):
             ),
             pre=[ManualApprovalStep("ApproveProd", comment="Approve deployment to Production")]
             if constants.ENABLE_MANUAL_APPROVAL
-            else None,
+            else [],
         )
 
-        # Build the pipeline to access the underlying CodePipeline construct
+        # IMPORTANT: build_pipeline() must be called after all stages are added
+        # and before accessing pipeline.pipeline. No stages should be added after this call.
         pipeline.build_pipeline()
 
         # Add EventBridge rule to trigger pipeline when model is approved in Model Registry
