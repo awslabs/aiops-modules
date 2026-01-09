@@ -1,5 +1,5 @@
 name: bedrock-finetuning
-path: modules/fmops/bedrock-finetuning
+path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/bedrock-finetuning?ref=release/2.1.1&depth=1
 targetAccount: primary
 parameters:
   - name: bedrock-base-model-ID
@@ -18,61 +18,3 @@ parameters:
         key: PrivateSubnetIds
   - name: removal-policy
     value: DESTROY
----
-name: studio
-path: modules/sagemaker/sagemaker-studio
-targetAccount: primary
-parameters:
-  - name: vpc_id
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: VpcId
-  - name: subnet_ids
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: PrivateSubnetIds
-  - name: data_science_users
-    value:
-      - ds-user-1
-  - name: lead_data_science_users
-    value:
-      - lead-ds-user-1
-  - name: server_lifecycle_name
-    value: studio-auto-shutdown
-  - name: studio_bucket_name
-    value: mlops-*
-  - name: retain_efs
-    value: 'False'
-  - name: enable_domain_resource_isolation
-    value: 'False'
----
-name: deepseek-jumpstart
-path: modules/fmops/sagemaker-jumpstart-fm-endpoint
-targetAccount: primary
-parameters:
-  - name: jump-start-model-name
-    value: DEEPSEEK_LLM_R1_DISTILL_LLAMA_8B_1_1_2
-  - name: instance-type
-    value: ml.g6.12xlarge
-  - name: vpc_id
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: VpcId
-  - name: subnet_ids
-    valueFrom:
-      moduleMetadata:
-        group: networking
-        name: networking
-        key: PrivateSubnetIds
----
-name: eks
-path: modules/agents/eks-strands-agents-demo
-parameters:
-  - name: EksClusterName
-    value: eks-strands-agents-demo
