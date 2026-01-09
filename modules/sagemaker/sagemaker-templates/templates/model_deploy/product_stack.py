@@ -161,9 +161,7 @@ class ModelDeployProject(Construct):
             "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
             "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
             "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_security_group_ids)),
-            "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(
-                value=str(enable_network_isolation).lower()
-            ),
+            "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=str(enable_network_isolation).lower()),
             "ENABLE_MANUAL_APPROVAL": codebuild.BuildEnvironmentVariable(value=str(enable_manual_approval).lower()),
             "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(
                 value=str(enable_eventbridge_trigger).lower()
