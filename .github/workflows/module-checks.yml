@@ -123,7 +123,7 @@ jobs:
         run: ./scripts/validate.sh --language typescript --path $MODULE_PATH/
       - name: Pytest
         if: ${{ steps.determine-language.outputs.language == 'python' }}
-        run: cd $MODULE_PATH/ && uv run pytest
+        run: uv run pytest $MODULE_PATH/
       - name: NPM Test
         if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: cd $MODULE_PATH/ && npm test

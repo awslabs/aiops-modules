@@ -94,11 +94,15 @@ jobs:
           set -x
           cd $MODULE_PATH
           npm install
-      - name: Static checks and linting
-        run: uv run scripts/validate.sh --language ${{ steps.determine-language.outputs.language }} --path $MODULE_PATH/
+      - name: Static checks and linting (Python)
+        if: ${{ steps.determine-language.outputs.language == 'python' }}
+        run: uv run scripts/validate.sh --language python --path $MODULE_PATH/
+      - name: Static checks and linting (TypeScript)
+        if: ${{ steps.determine-language.outputs.language == 'typescript' }}
+        run: ./scripts/validate.sh --language typescript --path $MODULE_PATH/
       - name: Pytest
         if: ${{ steps.determine-language.outputs.language == 'python' }}
-        run: cd $MODULE_PATH/ && uv run pytest
+        run: uv run pytest $MODULE_PATH/
       - name: NPM Test
         if: ${{ steps.determine-language.outputs.language == 'typescript' }}
         run: cd $MODULE_PATH/ && npm test
