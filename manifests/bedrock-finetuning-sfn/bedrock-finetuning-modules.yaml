@@ -1,5 +1,5 @@
 name: bedrock-finetuning
-path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/bedrock-finetuning?ref=release/2.1.1&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/bedrock-finetuning?ref=release/2.1.2&depth=1
 targetAccount: primary
 parameters:
   - name: bedrock-base-model-ID
