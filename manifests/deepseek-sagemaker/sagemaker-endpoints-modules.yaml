@@ -1,5 +1,5 @@
 name: deepseek-jumpstart
-path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/sagemaker-jumpstart-fm-endpoint?ref=release/2.1.1&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/fmops/sagemaker-jumpstart-fm-endpoint?ref=release/2.1.2&depth=1
 targetAccount: primary
 parameters:
   - name: jump-start-model-name

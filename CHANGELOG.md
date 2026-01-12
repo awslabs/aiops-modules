@@ -10,7 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Added**
 
 ### **Changed**
-- updated GitHub repo creation in `sagemaker-templates` module to support GitHub organizations
+
+## v2.1.2
+
+### **Changed**
+
+- updated `sagemaker-templates` Model Deployment module to include an EventBridge trigger and Manual Approval gates for the seed code CodePipeline pipeline
 
 ## v2.1.1
 

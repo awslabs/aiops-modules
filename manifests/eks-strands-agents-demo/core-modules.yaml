@@ -1,5 +1,5 @@
 name: eks
-path: git::https://github.com/awslabs/aiops-modules.git//modules/agents/eks-strands-agents-demo?ref=release/2.1.1&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/agents/eks-strands-agents-demo?ref=release/2.1.2&depth=1
 parameters:
   - name: EksClusterName
     value: eks-strands-agents-demo
