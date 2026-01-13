@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 120
-target-version = "py310"
+target-version = "py311"
 extend-include = ["*.ipynb"]
 
 exclude = [
@@ -24,7 +24,7 @@ select = ["F", "I", "E", "W"]
 fixable = ["ALL"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 ignore_missing_imports = true
 disallow_untyped_decorators = false
