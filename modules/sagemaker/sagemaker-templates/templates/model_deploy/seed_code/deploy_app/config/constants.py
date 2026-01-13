@@ -17,6 +17,14 @@
 
 import json
 import os
+from typing import Union
+
+
+def get_bool_env(name: str, default: Union[bool, str] = True) -> bool:
+    """Get boolean environment variable with consistent parsing."""
+    default_str = str(default).lower() if isinstance(default, bool) else default.lower()
+    return os.getenv(name, default_str).lower() == "true"
+
 
 MAX_NAME_LENGTH = 63
 REPOSITORY_TYPE = os.getenv("REPOSITORY_TYPE", "CodeCommit")  # Default to CODECOMMIT if not set
@@ -50,4 +58,6 @@ DOMAIN_ARN = os.getenv("DOMAIN_ARN", None)
 
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)
 
-ENABLE_NETWORK_ISOLATION = os.getenv("ENABLE_NETWORK_ISOLATION", "true").lower() == "true"
+ENABLE_NETWORK_ISOLATION = get_bool_env("ENABLE_NETWORK_ISOLATION", default=True)
+ENABLE_MANUAL_APPROVAL = get_bool_env("ENABLE_MANUAL_APPROVAL", default=True)
+ENABLE_EVENTBRIDGE_TRIGGER = get_bool_env("ENABLE_EVENTBRIDGE_TRIGGER", default=True)
