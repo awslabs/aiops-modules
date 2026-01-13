@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+## v3.0.0
+
+Bumping to new major version due to not supporting Python 3.8 anymore, as it is End-of-Life.
+
+### **Changed**
+
 - update urllib3 to 2.6.3
 - update boto3 to 1.35.0
 - update qs to 6.14.1
