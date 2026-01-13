@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update boto3 to 1.35.0
 - update qs to 6.14.1
 - upgrade Python version from 3.8 to 3.11
+- upgrade CodeBuild image from Standard 5 to Standard 7
 
 ## v2.1.1
 

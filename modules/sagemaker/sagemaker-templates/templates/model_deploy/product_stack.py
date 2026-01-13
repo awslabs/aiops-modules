@@ -209,7 +209,7 @@ class ModelDeployProject(Construct):
             ),
             source=codebuild_source,
             environment=codebuild.BuildEnvironment(
-                build_image=codebuild.LinuxBuildImage.STANDARD_5_0,
+                build_image=codebuild.LinuxBuildImage.STANDARD_7_0,
                 environment_variables=codebuild_env_vars,
             ),
         )
