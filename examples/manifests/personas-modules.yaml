@@ -1,5 +1,5 @@
 name: personas
-path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/personas?ref=release/2.1.2&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/personas?ref=release/3.0.0&depth=1
 parameters:
   - name: bucket-name
     value: my-bucket
