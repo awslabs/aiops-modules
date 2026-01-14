@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v3.1.0
+
+### **Added**
+
 - added `enable-data-capture` parameter to `sagemaker-templates` Model Deploy template to enable endpoint data capture (default: true)
 
 ### **Changed**

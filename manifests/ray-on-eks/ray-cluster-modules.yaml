@@ -1,5 +1,5 @@
 name: ray-cluster
-path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-cluster?ref=release/3.0.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/eks/ray-cluster?ref=release/3.1.0&depth=1
 parameters:
   - name: EksClusterAdminRoleArn
     valueFrom:

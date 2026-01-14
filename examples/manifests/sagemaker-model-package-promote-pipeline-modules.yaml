@@ -1,5 +1,5 @@
 name: model-pipeline
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-package-promote-pipeline?ref=release/3.0.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-model-package-promote-pipeline?ref=release/3.1.0&depth=1
 targetAccount: tooling
 parameters:
   - name: source_model_package_group_arn
