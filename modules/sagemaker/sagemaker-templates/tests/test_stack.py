@@ -89,6 +89,7 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
             enable_network_isolation="false",
             enable_manual_approval=True,
             enable_eventbridge_trigger=True,
+            enable_data_capture=True,
         )
     elif project_template_type == ProjectTemplateType.HF_IMPORT_MODELS:
         hf_import_models_settings = HfImportModelsProjectSettings(

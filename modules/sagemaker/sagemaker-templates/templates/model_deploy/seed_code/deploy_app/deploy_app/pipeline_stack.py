@@ -40,6 +40,7 @@ ENV = {
     "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION).lower(),
     "ENABLE_MANUAL_APPROVAL": str(constants.ENABLE_MANUAL_APPROVAL).lower(),
     "ENABLE_EVENTBRIDGE_TRIGGER": str(constants.ENABLE_EVENTBRIDGE_TRIGGER).lower(),
+    "ENABLE_DATA_CAPTURE": str(constants.ENABLE_DATA_CAPTURE).lower(),
 }
 
 

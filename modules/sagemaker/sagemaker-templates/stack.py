@@ -139,6 +139,7 @@ class ProjectStack(Stack):
                 enable_network_isolation=model_deploy_project_settings.enable_network_isolation,
                 enable_manual_approval=model_deploy_project_settings.enable_manual_approval,
                 enable_eventbridge_trigger=model_deploy_project_settings.enable_eventbridge_trigger,
+                enable_data_capture=model_deploy_project_settings.enable_data_capture,
                 dev_vpc_id=dev_vpc_id,
                 dev_subnet_ids=dev_subnet_ids,
                 dev_security_group_ids=dev_security_group_ids,
