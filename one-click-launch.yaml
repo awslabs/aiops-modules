@@ -205,7 +205,7 @@ Resources:
                 nodejs: 18
             pre_build:
               commands:
-                - pip install seed-farmer
+                - pip install seed-farmer>=8.0.0
                 - apt-get install jq git
                 - npm install -g aws-cdk
             build:
