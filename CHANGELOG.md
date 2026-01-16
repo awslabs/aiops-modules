@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- `sagemaker-model-monitoring` now triggers a one-time baseline generation upon deployment 
+- update seedfarmer version to 8.0.0 
+
 ## v3.1.0
 
 ### **Added**

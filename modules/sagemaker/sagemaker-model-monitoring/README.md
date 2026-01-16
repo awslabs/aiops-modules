@@ -58,6 +58,7 @@ When you provide training data, the module will:
 3. Generate baseline statistics and constraints files
 4. Store the baseline artifacts in your specified S3 location
 5. Schedule automatic baseline regeneration (default: daily at 2 AM UTC)
+6. Trigger a one-time baseline generation immediately upon deployment
 
 ## Inputs/Outputs
 
