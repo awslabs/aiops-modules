@@ -11,28 +11,34 @@ deploy:
         - export REPOSITORY_NAME=${SEEDFARMER_PARAMETER_ECR_REPOSITORY_NAME:=strands-agents-weather}
         - export REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${REPOSITORY_NAME}
         # Create Amazon EKS cluster in auto mode 
-        - eksctl create cluster --name $CLUSTER_NAME --enable-auto-mode
+        - eksctl create cluster --name $CLUSTER_NAME --enable-auto-mode || true
         - aws eks update-kubeconfig --name $CLUSTER_NAME
         - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
         # Create Amazon ECR repository
-        - aws ecr create-repository --repository-name strands-agents-weather --region ${AWS_REGION}
+        - aws ecr create-repository --repository-name strands-agents-weather --region ${AWS_REGION} || true
         # Build & push agent Docker image
         - docker build --platform linux/amd64 -t strands-agents-weather:latest docker/
         - docker tag strands-agents-weather:latest ${REPOSITORY_URI}:latest
         - docker push ${REPOSITORY_URI}:latest
         # Associate permissions
-        - eksctl create addon --cluster=eks-strands-agents-demo --name=eks-pod-identity-agent
-        - aws iam create-policy --policy-name strands-agents-weather-bedrock-policy --policy-document file://bedrock-policy.json
+        - eksctl create addon --cluster=eks-strands-agents-demo --name=eks-pod-identity-agent || true
+        - aws iam create-policy --policy-name strands-agents-weather-bedrock-policy --policy-document file://policies/bedrock-policy.json || true
         - | 
           eksctl create podidentityassociation --cluster $CLUSTER_NAME \
             --namespace default \
             --service-account-name strands-agents-weather \
             --permission-policy-arns arn:aws:iam::${AWS_ACCOUNT_ID}:policy/strands-agents-weather-bedrock-policy \
-            --role-name eks-strands-agents-weather
+            --role-name eks-strands-agents-weather || true
+        # Configure ALB
+        # - kubectl apply -f manifests/ --wait --timeout=30s
+        # - export ALB_URL=$(kubectl get ingress strands-agents-weather -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+        # - aws elbv2 wait load-balancer-available --load-balancer-arns $(aws elbv2 describe-load-balancers --query 'LoadBalancers[?DNSName==`'"$ALB_URL"'`].LoadBalancerArn' --output text)
         # Deploy agent
         - |
           helm install strands-agents-weather ./chart \
-            --set image.repository=${REPOSITORY_URI} --set image.tag=latest
+            --set image.repository=${REPOSITORY_URI} --set image.tag=latest --replace
+        #     --set ingress.enabled=true \
+        #     --set ingress.className=alb || true
         - kubectl wait --for=condition=available deployments strands-agents-weather --all --timeout=120s
 destroy:
   phases:
