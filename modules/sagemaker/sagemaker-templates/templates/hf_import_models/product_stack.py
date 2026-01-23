@@ -132,9 +132,7 @@ class HfImportModelsProject(Construct):
                     resources=[
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{model_package_group_name}"
                     ],
-                    principals=[
-                        iam.AccountPrincipal(account_id) for account_id in unique_account_ids
-                    ],
+                    principals=[iam.AccountPrincipal(account_id) for account_id in unique_account_ids],
                 ),
                 iam.PolicyStatement(
                     sid="ModelPackage",
@@ -147,9 +145,7 @@ class HfImportModelsProject(Construct):
                     resources=[
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
                     ],
-                    principals=[
-                        iam.AccountPrincipal(account_id) for account_id in unique_account_ids
-                    ],
+                    principals=[iam.AccountPrincipal(account_id) for account_id in unique_account_ids],
                 ),
             ]
         ).to_json()
