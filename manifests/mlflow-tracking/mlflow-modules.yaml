@@ -1,5 +1,5 @@
 name: mlflow-fargate
-path: git::https://github.com/awslabs/aiops-modules.git//modules/mlflow/mlflow-fargate?ref=release/2.1.2&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/mlflow/mlflow-fargate?ref=release/3.1.0&depth=1
 targetAccount: primary
 parameters:
   - name: vpc-id

@@ -1,1 +1,1 @@
-seed-farmer~=7.0.10
+seed-farmer~=8.0.0

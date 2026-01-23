@@ -19,6 +19,7 @@ from config.constants import (
     DOMAIN_ARN,
     DOMAIN_ID,
     ECR_REPO_ARN,
+    ENABLE_DATA_CAPTURE,
     ENABLE_NETWORK_ISOLATION,
     MAX_NAME_LENGTH,
     MODEL_BUCKET_ARN,
@@ -133,7 +134,6 @@ class DeployEndpointStack(Stack):
         )
 
         model_bucket = s3.Bucket.from_bucket_arn(self, "ModelBucket", MODEL_BUCKET_ARN)
-        model_bucket.grant_read_write(model_execution_policy)
 
         if ECR_REPO_ARN:
             model_execution_policy.add_statements(
@@ -150,6 +150,9 @@ class DeployEndpointStack(Stack):
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[model_execution_policy],
         )
+
+        # Grant S3 read/write permissions to the role (not the ManagedPolicy)
+        model_bucket.grant_read_write(model_execution_role)
 
         # setup timestamp to be used to trigger the custom resource update event to retrieve
         # latest approved model and to be used with model and endpoint config resources' names
@@ -216,11 +219,38 @@ class DeployEndpointStack(Stack):
             ),
         )
 
+        # Data capture configuration
+        enable_data_capture = ENABLE_DATA_CAPTURE
+
+        if enable_data_capture:
+            destination_s3_uri = f"s3://{MODEL_BUCKET_ARN.split(':')[-1]}/endpoint-data-capture"
+
+            data_capture_config = sagemaker.CfnEndpointConfig.DataCaptureConfigProperty(
+                capture_options=[
+                    sagemaker.CfnEndpointConfig.CaptureOptionProperty(capture_mode="Input"),
+                    sagemaker.CfnEndpointConfig.CaptureOptionProperty(capture_mode="Output"),
+                ],
+                destination_s3_uri=destination_s3_uri,
+                initial_sampling_percentage=100,
+                capture_content_type_header=sagemaker.CfnEndpointConfig.CaptureContentTypeHeaderProperty(
+                    csv_content_types=["text/csv"],
+                    json_content_types=["application/json"],
+                ),
+                enable_capture=True,
+                kms_key_id=kms_key.key_id,
+            )
+
+            # Grant write permissions for data capture
+            model_bucket.grant_write(model_execution_role, "endpoint-data-capture/*")
+        else:
+            data_capture_config = None
+
         endpoint_config = sagemaker.CfnEndpointConfig(
             self,
             "EndpointConfig",
             endpoint_config_name=endpoint_config_name,
             kms_key_id=kms_key.key_id,
+            data_capture_config=data_capture_config,
             production_variants=[
                 endpoint_config_production_variant.get_endpoint_config_production_variant(
                     model.model_name  # type: ignore[arg-type]

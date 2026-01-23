@@ -79,6 +79,7 @@ class ModelDeployProject(Construct):
         enable_network_isolation: bool = False,
         enable_manual_approval: bool = True,
         enable_eventbridge_trigger: bool = True,
+        enable_data_capture: bool = True,
         dev_vpc_id: str = "",
         dev_subnet_ids: Optional[List[str]] = None,
         dev_security_group_ids: Optional[List[str]] = None,
@@ -166,6 +167,7 @@ class ModelDeployProject(Construct):
             "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(
                 value=str(enable_eventbridge_trigger).lower()
             ),
+            "ENABLE_DATA_CAPTURE": codebuild.BuildEnvironmentVariable(value=str(enable_data_capture).lower()),
         }
         code_pipeline_deploy_project_name = "CodePipelineDeployProject"
 

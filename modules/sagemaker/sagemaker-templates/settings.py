@@ -102,6 +102,7 @@ class ModelDeployProjectSettings(CdkBaseSettings):
     enable_network_isolation: bool = Field(default=False)
     enable_manual_approval: bool = Field(default=True)
     enable_eventbridge_trigger: bool = Field(default=True)
+    enable_data_capture: bool = Field(default=True)
 
 
 class HfImportModelsProjectSettings(CdkBaseSettings):

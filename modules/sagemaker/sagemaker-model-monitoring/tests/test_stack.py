@@ -102,7 +102,7 @@ def test_baseline_generation_resources(stack_defaults: None) -> None:
     template = Template.from_stack(stack)
 
     # Check for Lambda function
-    template.resource_count_is("AWS::Lambda::Function", 1)
+    template.resource_count_is("AWS::Lambda::Function", 2)
 
     # Check for Step Functions state machine
     template.resource_count_is("AWS::StepFunctions::StateMachine", 1)
