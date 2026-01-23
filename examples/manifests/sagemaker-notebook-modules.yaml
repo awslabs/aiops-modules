@@ -1,5 +1,5 @@
 name: notebook
-path: git::https://github.com/awslabs/aiops-modules.git//modules/modules/sagemaker/sagemaker-notebook?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/modules/sagemaker/sagemaker-notebook?ref=release/3.2.0&depth=1
 parameters:
   - name: notebook_name
     value: dummy

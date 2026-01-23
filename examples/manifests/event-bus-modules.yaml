@@ -1,5 +1,5 @@
 name: event-bus
-path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/event-bus?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/event-bus?ref=release/3.2.0&depth=1
 targetAccount: tooling
 parameters:
   - name: event_bus_name

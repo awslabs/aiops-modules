@@ -1,5 +1,5 @@
 name: templates-xgboost
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.2.0&depth=1
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -38,7 +38,7 @@ parameters:
   #   value: False
 ---
 name: templates-batch
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.2.0&depth=1
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -79,7 +79,7 @@ parameters:
     value: batch-1
 ---
 name: templates-deploy
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.2.0&depth=1
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -156,7 +156,7 @@ parameters:
     value: true
 ---
 name: templates-hf
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.2.0&depth=1
 targetAccount: primary
 parameters:
   - name: project_template_type
@@ -195,7 +195,7 @@ parameters:
     value: model-1
 ---
 name: templates-finetune-llm
-path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.1.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/sagemaker/sagemaker-templates-service-catalog?ref=release/3.2.0&depth=1
 targetAccount: primary
 parameters:
   - name: project_template_type
