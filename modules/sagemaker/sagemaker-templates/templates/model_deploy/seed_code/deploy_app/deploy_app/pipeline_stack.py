@@ -4,8 +4,10 @@ from typing import Any
 import aws_cdk as cdk
 import config.constants as constants
 from aws_cdk import aws_codecommit as codecommit
+from aws_cdk import aws_events as events
+from aws_cdk import aws_events_targets as targets
 from aws_cdk import aws_iam as iam
-from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource
+from aws_cdk.pipelines import CodeBuildStep, CodePipeline, CodePipelineSource, ManualApprovalStep
 from constructs import Construct
 
 from .deploy_endpoint_stack import DeployEndpointStack
@@ -35,7 +37,10 @@ ENV = {
     "PROD_VPC_ID": constants.PROD_VPC_ID,
     "PROD_SUBNET_IDS": json.dumps(constants.PROD_SUBNET_IDS),
     "PROD_SECURITY_GROUP_IDS": json.dumps(constants.PROD_SECURITY_GROUP_IDS),
-    "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION),
+    "ENABLE_NETWORK_ISOLATION": str(constants.ENABLE_NETWORK_ISOLATION).lower(),
+    "ENABLE_MANUAL_APPROVAL": str(constants.ENABLE_MANUAL_APPROVAL).lower(),
+    "ENABLE_EVENTBRIDGE_TRIGGER": str(constants.ENABLE_EVENTBRIDGE_TRIGGER).lower(),
+    "ENABLE_DATA_CAPTURE": str(constants.ENABLE_DATA_CAPTURE).lower(),
 }
 
 
@@ -195,7 +200,10 @@ class PipelineStack(cdk.Stack):
                 self,
                 "preprod",
                 env=cdk.Environment(account=constants.PRE_PROD_ACCOUNT_ID, region=constants.PRE_PROD_REGION),
-            )
+            ),
+            pre=[ManualApprovalStep("ApprovePreProd", comment="Approve deployment to Pre-Production")]
+            if constants.ENABLE_MANUAL_APPROVAL
+            else [],
         )
 
         pipeline.add_stage(
@@ -203,5 +211,29 @@ class PipelineStack(cdk.Stack):
                 self,
                 "prod",
                 env=cdk.Environment(account=constants.PROD_ACCOUNT_ID, region=constants.PROD_REGION),
-            )
+            ),
+            pre=[ManualApprovalStep("ApproveProd", comment="Approve deployment to Production")]
+            if constants.ENABLE_MANUAL_APPROVAL
+            else [],
         )
+
+        # IMPORTANT: build_pipeline() must be called after all stages are added
+        # and before accessing pipeline.pipeline. No stages should be added after this call.
+        pipeline.build_pipeline()
+
+        # Add EventBridge rule to trigger pipeline when model is approved in Model Registry
+        if constants.ENABLE_EVENTBRIDGE_TRIGGER:
+            events.Rule(
+                self,
+                "ModelApprovalEventRule",
+                rule_name=f"{constants.PROJECT_NAME}-model-approval-trigger",
+                event_pattern=events.EventPattern(
+                    source=["aws.sagemaker"],
+                    detail_type=["SageMaker Model Package State Change"],
+                    detail={
+                        "ModelPackageGroupName": [constants.MODEL_PACKAGE_GROUP_NAME],
+                        "ModelApprovalStatus": ["Approved"],
+                    },
+                ),
+                targets=[targets.CodePipeline(pipeline.pipeline)],
+            )

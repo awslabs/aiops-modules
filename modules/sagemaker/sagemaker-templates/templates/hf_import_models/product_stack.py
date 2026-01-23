@@ -45,6 +45,9 @@ class HfImportModelsProject(Construct):
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
+        # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
+        unique_account_ids = list(dict.fromkeys([pre_prod_account_id, prod_account_id]))
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
         if sagemaker_domain_id:
@@ -129,10 +132,7 @@ class HfImportModelsProject(Construct):
                     resources=[
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package-group/{model_package_group_name}"
                     ],
-                    principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
-                    ],
+                    principals=[iam.AccountPrincipal(account_id) for account_id in unique_account_ids],
                 ),
                 iam.PolicyStatement(
                     sid="ModelPackage",
@@ -145,10 +145,7 @@ class HfImportModelsProject(Construct):
                     resources=[
                         f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:model-package/{model_package_group_name}/*"
                     ],
-                    principals=[
-                        iam.AccountPrincipal(pre_prod_account_id),
-                        iam.AccountPrincipal(prod_account_id),
-                    ],
+                    principals=[iam.AccountPrincipal(account_id) for account_id in unique_account_ids],
                 ),
             ]
         ).to_json()

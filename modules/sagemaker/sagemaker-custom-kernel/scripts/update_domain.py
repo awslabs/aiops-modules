@@ -59,7 +59,7 @@ def update_domain():
 
 
 def print_step(step):
-    print(f'{"-" * 35} {step} {"-" * 35}')
+    print(f"{'-' * 35} {step} {'-' * 35}")
 
 
 if __name__ == "__main__":

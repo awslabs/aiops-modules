@@ -173,7 +173,7 @@ class RayOrchestrator(Stack):
                                 "command": [
                                     "sh",
                                     "-c",
-                                    ("cd /home/ray/sample/ && " "python inference-6B.py"),
+                                    ("cd /home/ray/sample/ && python inference-6B.py"),
                                 ],
                                 "volumeMounts": volume_mounts,
                             }

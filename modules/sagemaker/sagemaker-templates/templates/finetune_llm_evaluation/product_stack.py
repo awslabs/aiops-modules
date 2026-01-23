@@ -48,6 +48,9 @@ class FinetuneLlmEvaluationProject(Construct):
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
+        # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
+        unique_account_ids = list(dict.fromkeys([dev_account_id, pre_prod_account_id, prod_account_id]))
+
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
         if sagemaker_domain_id:
@@ -147,9 +150,8 @@ class FinetuneLlmEvaluationProject(Construct):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{account_id}:root")
+                        for account_id in unique_account_ids
                     ],
                 ),
                 iam.PolicyStatement(
@@ -167,9 +169,8 @@ class FinetuneLlmEvaluationProject(Construct):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{account_id}:root")
+                        for account_id in unique_account_ids
                     ],
                 ),
             ]

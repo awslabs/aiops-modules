@@ -3,8 +3,8 @@ Description: Creates AIOps setup for Developers
 Parameters:
   VersionTag:
     Type: String
-    Default: v2.1.0
-    Description: Version. Should reference version tag in the repository e.g v2.1.0
+    Default: v3.2.0
+    Description: Version. Should reference version tag in the repository e.g v3.2.0
   ManifestPath:
     Type: String
     Default: manifests/mlops-sagemaker/deployment.yaml
@@ -205,7 +205,7 @@ Resources:
                 nodejs: 18
             pre_build:
               commands:
-                - pip install seed-farmer
+                - pip install seed-farmer>=8.0.0
                 - apt-get install jq git
                 - npm install -g aws-cdk
             build:

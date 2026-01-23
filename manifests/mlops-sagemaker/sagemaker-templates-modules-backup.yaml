@@ -150,6 +150,8 @@ parameters:
     value: test-1
   - name: model_bucket_name
     value: test-1
+  - name: enable_data_capture
+    value: true
 ---
 name: hf
 path: modules/sagemaker/sagemaker-templates
