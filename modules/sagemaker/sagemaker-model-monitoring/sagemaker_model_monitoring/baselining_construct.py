@@ -1,6 +1,7 @@
+import json
 from typing import Any, List
 
-from aws_cdk import Duration
+from aws_cdk import CustomResource, Duration
 from aws_cdk import aws_events as events
 from aws_cdk import aws_events_targets as targets
 from aws_cdk import aws_iam as iam
@@ -165,6 +166,100 @@ class BaseliningConstruct(Construct):
                 targets.SfnStateMachine(
                     state_machine, input=events.RuleTargetInput.from_object({"monitor_type": monitor_type})
                 )
+            )
+
+        # Trigger baseline immediately on deployment (fire-and-forget)
+        trigger_lambda = lambda_.Function(
+            self,
+            "TriggerBaselineLambda",
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            handler="index.handler",
+            code=lambda_.Code.from_inline("""
+import boto3
+import json
+import urllib3
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+sfn = boto3.client('stepfunctions')
+http = urllib3.PoolManager()
+
+def send_response(event, context, status, reason=None):
+    response_body = {
+        'Status': status,
+        'Reason': reason or f'See CloudWatch Log Stream: {context.log_stream_name}',
+        'PhysicalResourceId': 'baseline-trigger',
+        'StackId': event['StackId'],
+        'RequestId': event['RequestId'],
+        'LogicalResourceId': event['LogicalResourceId'],
+    }
+
+    json_response = json.dumps(response_body)
+    headers = {'content-type': '', 'content-length': str(len(json_response))}
+
+    try:
+        http.request('PUT', event['ResponseURL'], body=json_response, headers=headers)
+    except Exception as e:
+        logger.error(f"Failed to send response: {e}")
+
+def handler(event, context):
+    try:
+        logger.info(f"Event: {json.dumps(event)}")
+        request_type = event['RequestType']
+
+        if request_type in ['Create', 'Update']:
+            state_machine_arn = event['ResourceProperties']['StateMachineArn']
+            monitor_types = json.loads(event['ResourceProperties']['MonitorTypes'])
+
+            for monitor_type in monitor_types:
+                sfn.start_execution(
+                    stateMachineArn=state_machine_arn,
+                    input=json.dumps({'monitor_type': monitor_type})
+                )
+
+            send_response(event, context, 'SUCCESS', 'Baseline generation triggered')
+        elif request_type == 'Delete':
+            send_response(event, context, 'SUCCESS', 'Nothing to delete')
+        else:
+            send_response(event, context, 'SUCCESS', f'No action for {request_type}')
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        send_response(event, context, 'FAILED', str(e))
+"""),
+            timeout=Duration.seconds(30),
+        )
+
+        trigger_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["states:StartExecution"],
+                resources=[state_machine.state_machine_arn],
+            )
+        )
+
+        CustomResource(
+            self,
+            "TriggerBaselineResource",
+            service_token=trigger_lambda.function_arn,
+            properties={
+                "StateMachineArn": state_machine.state_machine_arn,
+                "MonitorTypes": json.dumps(enabled_monitors),
+            },
+        )
+
+        # Add CDK-nag suppressions
+        if trigger_lambda.role:
+            NagSuppressions.add_resource_suppressions(
+                trigger_lambda.role,
+                [
+                    {
+                        "id": "AwsSolutions-IAM4",
+                        "reason": "Lambda function uses AWS managed policy for basic execution role",
+                    },
+                ],
+                apply_to_children=True,
             )
 
         # Add CDK-nag suppressions
