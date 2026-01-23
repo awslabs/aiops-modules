@@ -1,5 +1,5 @@
 name: stepfunctions
-path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/mlops-stepfunctions?ref=release/3.0.0&depth=1
+path: git::https://github.com/awslabs/aiops-modules.git//modules/examples/mlops-stepfunctions?ref=release/3.1.0&depth=1
 targetAccount: primary
 parameters:
   - name: model-name
