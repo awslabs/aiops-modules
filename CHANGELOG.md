@@ -11,15 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
-- `sagemaker-model-monitoring` now triggers a one-time baseline generation upon deployment 
-- update seedfarmer version to 8.0.0 
+## v3.2.0
+
+### **Added**
+
+### **Changed**
+
+- `sagemaker-model-monitoring` now triggers a one-time baseline generation upon deployment
+- update seedfarmer version to 8.0.0
 - fixed duplicate principal error in `sagemaker-templates` module when dev, pre-prod, and prod account IDs resolve to the same AWS account
 - fixed `sagemaker-templates` Model Deploy seed code incorrectly granting S3 permissions to a ManagedPolicy instead of a Role, which caused deployment failures with CDK 2.174.0+
 - update qs to 6.14.1 via npm override to address security vulnerability
 - pin @cdklabs/generative-ai-cdk-constructs to 0.1.311 to fix build compatibility
 - update starlette to 0.50.0 and fastapi to 0.128.0 to address security vulnerabilities
 - updated `sagemaker-templates` to try archiving when repo deletion fails
-
 
 ## v3.1.0
 
