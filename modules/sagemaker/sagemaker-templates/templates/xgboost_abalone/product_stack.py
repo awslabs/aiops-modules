@@ -50,6 +50,9 @@ class XGBoostAbaloneProject(Construct):
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
+        # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
+        unique_account_ids = list(dict.fromkeys([dev_account_id, pre_prod_account_id, prod_account_id]))
+
         dev_vpc = None
         if dev_vpc_id:
             dev_vpc = ec2.Vpc.from_lookup(self, "dev-vpc", vpc_id=dev_vpc_id)
@@ -153,9 +156,8 @@ class XGBoostAbaloneProject(Construct):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{account_id}:root")
+                        for account_id in unique_account_ids
                     ],
                 ),
                 iam.PolicyStatement(
@@ -173,9 +175,8 @@ class XGBoostAbaloneProject(Construct):
                         )
                     ],
                     principals=[
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{dev_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{pre_prod_account_id}:root"),
-                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{prod_account_id}:root"),
+                        iam.ArnPrincipal(f"arn:{Aws.PARTITION}:iam::{account_id}:root")
+                        for account_id in unique_account_ids
                     ],
                 ),
             ]

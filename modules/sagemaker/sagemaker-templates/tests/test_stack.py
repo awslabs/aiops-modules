@@ -157,3 +157,92 @@ def test_no_cdk_nag_errors(stack: cdk.Stack, project_template_type) -> None:
         Match.string_like_regexp(r"AwsSolutions-.*"),
     )
     assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
+
+
+@pytest.fixture(scope="function")
+def stack_single_account(stack_defaults, project_template_type) -> cdk.Stack:
+    import stack
+
+    app = cdk.App()
+    same_account_id = os.environ["CDK_DEFAULT_ACCOUNT"]
+    sagemaker_domain_id = "domain_id"
+
+    xgboost_abalone_settings = None
+    hf_import_models_settings = None
+
+    if project_template_type == ProjectTemplateType.XGBOOST_ABALONE:
+        xgboost_abalone_settings = XGBoostAbaloneProjectSettings(
+            enable_network_isolation="False", encrypt_inter_container_traffic="False"
+        )
+    elif project_template_type == ProjectTemplateType.HF_IMPORT_MODELS:
+        hf_import_models_settings = HfImportModelsProjectSettings(
+            hf_access_token_secret="test-hf-token-secret", hf_model_id="test-model-id"
+        )
+
+    return stack.ProjectStack(
+        app,
+        "test-single-account-stack",
+        project_template_type=project_template_type,
+        sagemaker_project_name="test-project",
+        sagemaker_project_id="test-project-id",
+        dev_vpc_id="",
+        dev_subnet_ids=[],
+        dev_security_group_ids=[],
+        pre_prod_account_id=same_account_id,
+        pre_prod_region="us-east-1",
+        pre_prod_vpc_id="",
+        pre_prod_subnet_ids=[],
+        pre_prod_security_group_ids=[],
+        prod_account_id=same_account_id,
+        prod_region="us-east-1",
+        prod_vpc_id="",
+        prod_subnet_ids=[],
+        prod_security_group_ids=[],
+        env=cdk.Environment(
+            account=same_account_id,
+            region=os.environ["CDK_DEFAULT_REGION"],
+        ),
+        sagemaker_domain_id=sagemaker_domain_id,
+        sagemaker_domain_arn=f"arn:aws:sagemaker:::domain/{sagemaker_domain_id}",
+        repository_type=RepositoryType.CODECOMMIT,
+        access_token_secret_name=None,
+        aws_codeconnection_arn=None,
+        repository_owner=None,
+        xgboost_abalone_project_settings=xgboost_abalone_settings,
+        model_deploy_project_settings=None,
+        hf_import_models_project_settings=hf_import_models_settings,
+        batch_inference_project_settings=None,
+    )
+
+
+@pytest.mark.parametrize(
+    "project_template_type",
+    [
+        ProjectTemplateType.XGBOOST_ABALONE,
+        ProjectTemplateType.FINETUNE_LLM_EVALUATION,
+        ProjectTemplateType.HF_IMPORT_MODELS,
+    ],
+    indirect=True,
+)
+def test_no_duplicate_principals_in_model_package_group_policy(
+    stack_single_account: cdk.Stack, project_template_type
+) -> None:
+    import json
+
+    from aws_cdk.assertions import Template
+
+    template = Template.from_stack(stack_single_account)
+    model_package_groups = template.find_resources("AWS::SageMaker::ModelPackageGroup")
+
+    for logical_id, resource in model_package_groups.items():
+        policy = resource.get("Properties", {}).get("ModelPackageGroupPolicy")
+        if policy and isinstance(policy, str):
+            policy_doc = json.loads(policy)
+            for statement in policy_doc.get("Statement", []):
+                principal = statement.get("Principal", {})
+                if isinstance(principal, dict):
+                    aws_principals = principal.get("AWS", [])
+                    if isinstance(aws_principals, list):
+                        assert len(aws_principals) == len(
+                            set(aws_principals)
+                        ), f"Duplicate principals in {logical_id}: {aws_principals}"
