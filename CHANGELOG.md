@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 
 - fixed `sagemaker-templates` Model Deploy seed code incorrectly granting S3 permissions to a ManagedPolicy instead of a Role, which caused deployment failures with CDK 2.174.0+
+- update qs to 6.14.1 via npm override to address security vulnerability
+- pin @cdklabs/generative-ai-cdk-constructs to 0.1.311 to fix build compatibility
+- update starlette to 0.50.0 and fastapi to 0.128.0 to address security vulnerabilities
 
 ## v3.1.0
 
