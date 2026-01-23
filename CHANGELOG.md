@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- fixed duplicate principal error in `sagemaker-templates` module when dev, pre-prod, and prod account IDs resolve to the same AWS account
+
 ## v3.1.0
 
 ### **Added**
