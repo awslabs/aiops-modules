@@ -134,7 +134,6 @@ class DeployEndpointStack(Stack):
         )
 
         model_bucket = s3.Bucket.from_bucket_arn(self, "ModelBucket", MODEL_BUCKET_ARN)
-        model_bucket.grant_read_write(model_execution_policy)
 
         if ECR_REPO_ARN:
             model_execution_policy.add_statements(
@@ -151,6 +150,9 @@ class DeployEndpointStack(Stack):
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[model_execution_policy],
         )
+
+        # Grant S3 read/write permissions to the role (not the ManagedPolicy)
+        model_bucket.grant_read_write(model_execution_role)
 
         # setup timestamp to be used to trigger the custom resource update event to retrieve
         # latest approved model and to be used with model and endpoint config resources' names

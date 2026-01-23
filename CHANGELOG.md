@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- fixed `sagemaker-templates` Model Deploy seed code incorrectly granting S3 permissions to a ManagedPolicy instead of a Role, which caused deployment failures with CDK 2.174.0+
+
 ## v3.1.0
 
 ### **Added**
