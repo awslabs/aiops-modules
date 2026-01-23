@@ -243,6 +243,6 @@ def test_no_duplicate_principals_in_model_package_group_policy(
                 if isinstance(principal, dict):
                     aws_principals = principal.get("AWS", [])
                     if isinstance(aws_principals, list):
-                        assert len(aws_principals) == len(set(aws_principals)), (
-                            f"Duplicate principals in {logical_id}: {aws_principals}"
-                        )
+                        assert len(aws_principals) == len(
+                            set(aws_principals)
+                        ), f"Duplicate principals in {logical_id}: {aws_principals}"
