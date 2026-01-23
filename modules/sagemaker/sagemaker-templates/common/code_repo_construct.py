@@ -252,9 +252,38 @@ def lambda_handler(event, context):
                 if response_code == 204:
                     print(f"Repository {repo_name} deleted successfully")
         except urllib.error.HTTPError as e:
-            print(f"HTTP Error: {e.code} - {e.reason}")
-            print(e.read().decode())
-            raise
+            if e.code == 404:
+                # Repository doesn't exist - already deleted
+                print(f"Repository {repo_name} not found - treating as successful deletion")
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                return
+            elif e.code == 403:
+                # Forbidden - try to archive instead
+                print(f"HTTP Error deleting repository: 403 - Forbidden")
+                print(f"Attempting to archive repository instead...")
+                try:
+                    archive_data = json.dumps({'archived': True}).encode('utf-8')
+                    archive_req = urllib.request.Request(
+                        f"https://api.github.com/repos/{github_owner}/{repo_name}",
+                        data=archive_data,
+                        headers=headers,
+                        method='PATCH'
+                    )
+                    with urllib.request.urlopen(archive_req) as archive_response:
+                        if archive_response.getcode() == 200:
+                            print(f"Repository {repo_name} archived successfully")
+                            cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                            return
+                except Exception as archive_error:
+                    print(f"Failed to archive repository: {str(archive_error)}")
+                    cfnresponse.send(event, context, cfnresponse.FAILED, {})
+                    return
+            else:
+                # Other errors - fail
+                print(f"HTTP Error deleting repository: {e.code} - {e.reason}")
+                print(e.read().decode())
+                cfnresponse.send(event, context, cfnresponse.FAILED, {})
+                return
 
         cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
     else:
