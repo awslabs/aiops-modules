@@ -28,6 +28,7 @@ class XGBoostAbaloneProject(Construct):
         scope: Construct,
         id: str,
         build_app_asset: s3_assets.Asset,
+        dev_account_id: str,
         pre_prod_account_id: str,
         prod_account_id: str,
         sagemaker_domain_id: str,
@@ -46,12 +47,14 @@ class XGBoostAbaloneProject(Construct):
     ) -> None:
         super().__init__(scope, id)
 
-        dev_account_id = Aws.ACCOUNT_ID
+        dev_account_id = Aws.ACCOUNT_ID if not dev_account_id else dev_account_id
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
         unique_account_ids = list(dict.fromkeys([dev_account_id, pre_prod_account_id, prod_account_id]))
+        # Deduplicate cross-account IDs (pre-prod and prod) for KMS and S3 policies
+        unique_cross_account_ids = list(dict.fromkeys([pre_prod_account_id, prod_account_id]))
 
         dev_vpc = None
         if dev_vpc_id:
@@ -89,10 +92,7 @@ class XGBoostAbaloneProject(Construct):
                         resources=[
                             "*",
                         ],
-                        principals=[
-                            iam.AccountPrincipal(pre_prod_account_id),
-                            iam.AccountPrincipal(prod_account_id),
-                        ],
+                        principals=[iam.AccountPrincipal(account_id) for account_id in unique_cross_account_ids],
                     ),
                 ]
             ),
@@ -132,10 +132,7 @@ class XGBoostAbaloneProject(Construct):
                     model_bucket.arn_for_objects(key_pattern="*"),
                     model_bucket.bucket_arn,
                 ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
+                principals=[iam.AccountPrincipal(account_id) for account_id in unique_cross_account_ids],
             )
         )
 

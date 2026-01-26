@@ -53,6 +53,7 @@ class ModuleSettings(CdkBaseSettings):
     sagemaker_project_name: str
     sagemaker_project_id: str
 
+    dev_account_id: Optional[str] = Field(default=None)
     dev_vpc_id: Optional[str] = Field(default=None)
     dev_subnet_ids: List[str] = Field(default=[])
     dev_security_group_ids: List[str] = Field(default=[])
