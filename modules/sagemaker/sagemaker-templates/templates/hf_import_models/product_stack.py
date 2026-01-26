@@ -30,6 +30,7 @@ class HfImportModelsProject(Construct):
         sagemaker_domain_arn: str,
         sagemaker_project_name: str,
         sagemaker_project_id: str,
+        dev_account_id: str,
         pre_prod_account_id: str,
         prod_account_id: str,
         hf_access_token_secret: str,
@@ -42,11 +43,14 @@ class HfImportModelsProject(Construct):
     ) -> None:
         super().__init__(scope, construct_id)
 
+        dev_account_id = Aws.ACCOUNT_ID if not dev_account_id else dev_account_id
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
-        unique_account_ids = list(dict.fromkeys([pre_prod_account_id, prod_account_id]))
+        unique_account_ids = list(dict.fromkeys([dev_account_id, pre_prod_account_id, prod_account_id]))
+        # Deduplicate cross-account IDs (pre-prod and prod) for KMS and S3 policies
+        unique_cross_account_ids = list(dict.fromkeys([pre_prod_account_id, prod_account_id]))
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -80,10 +84,7 @@ class HfImportModelsProject(Construct):
                         resources=[
                             "*",
                         ],
-                        principals=[
-                            iam.AccountPrincipal(pre_prod_account_id),
-                            iam.AccountPrincipal(prod_account_id),
-                        ],
+                        principals=[iam.AccountPrincipal(account_id) for account_id in unique_cross_account_ids],
                     ),
                 ]
             ),
@@ -117,8 +118,8 @@ class HfImportModelsProject(Construct):
         s3_artifact.grant_read_write(iam.AccountRootPrincipal())
 
         # PROD account access to objects in the bucket
-        s3_artifact.grant_read_write(iam.AccountPrincipal(pre_prod_account_id))
-        s3_artifact.grant_read_write(iam.AccountPrincipal(prod_account_id))
+        for account_id in unique_cross_account_ids:
+            s3_artifact.grant_read_write(iam.AccountPrincipal(account_id))
 
         # cross account model registry resource policy
         model_package_group_name = f"{sagemaker_project_name}-{sagemaker_project_id}"

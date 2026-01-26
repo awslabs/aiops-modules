@@ -32,6 +32,7 @@ class FinetuneLlmEvaluationProject(Construct):
         build_app_asset: s3_assets.Asset,
         sagemaker_project_name: str,
         sagemaker_project_id: str,
+        dev_account_id: str,
         pre_prod_account_id: str,
         prod_account_id: str,
         sagemaker_domain_id: str,
@@ -44,12 +45,14 @@ class FinetuneLlmEvaluationProject(Construct):
     ) -> None:
         super().__init__(scope, id)
 
-        dev_account_id = Aws.ACCOUNT_ID
+        dev_account_id = Aws.ACCOUNT_ID if not dev_account_id else dev_account_id
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
         prod_account_id = Aws.ACCOUNT_ID if not prod_account_id else prod_account_id
 
         # Deduplicate account IDs to avoid "Duplicate principal" errors in single-account deployments
         unique_account_ids = list(dict.fromkeys([dev_account_id, pre_prod_account_id, prod_account_id]))
+        # Deduplicate cross-account IDs (pre-prod and prod) for KMS and S3 policies
+        unique_cross_account_ids = list(dict.fromkeys([pre_prod_account_id, prod_account_id]))
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -83,10 +86,7 @@ class FinetuneLlmEvaluationProject(Construct):
                         resources=[
                             "*",
                         ],
-                        principals=[
-                            iam.AccountPrincipal(pre_prod_account_id),
-                            iam.AccountPrincipal(prod_account_id),
-                        ],
+                        principals=[iam.AccountPrincipal(account_id) for account_id in unique_cross_account_ids],
                     ),
                 ]
             ),
@@ -126,10 +126,7 @@ class FinetuneLlmEvaluationProject(Construct):
                     model_bucket.arn_for_objects(key_pattern="*"),
                     model_bucket.bucket_arn,
                 ],
-                principals=[
-                    iam.AccountPrincipal(pre_prod_account_id),
-                    iam.AccountPrincipal(prod_account_id),
-                ],
+                principals=[iam.AccountPrincipal(account_id) for account_id in unique_cross_account_ids],
             )
         )
 
