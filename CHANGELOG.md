@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+## v3.2.1
+
+### **Added**
+
+### **Changed**
+
 - fixed duplicate principal error in `sagemaker-templates` KMS key and S3 bucket policies when dev, pre-prod, and prod account IDs resolve to the same AWS account
 
 ## v3.2.0
