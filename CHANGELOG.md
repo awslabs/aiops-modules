@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- update transformers to 4.53.0 to address security vulnerabilities
+
 ## v3.2.1
 
 ### **Added**
