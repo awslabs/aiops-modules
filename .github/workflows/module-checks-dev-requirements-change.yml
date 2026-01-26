@@ -15,6 +15,9 @@ on:
     paths:
       - "requirements-dev.txt"
 
+permissions:
+  contents: read
+
 jobs:
   get-modules:
     name: Get Modules
