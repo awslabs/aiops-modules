@@ -50,6 +50,7 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
     project_name = "test-project"
     dep_name = "test-deployment"
     mod_name = "test-module"
+    dev_account_id = "dev_account_id"
     dev_vpc_id = "vpc"
     dev_subnet_ids = ["sub"]
     dev_security_group_ids = ["sg"]
@@ -108,6 +109,7 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
         project_template_type=project_template_type,
         sagemaker_project_name=sagemaker_project_name,
         sagemaker_project_id=sagemaker_project_id,
+        dev_account_id=dev_account_id,
         dev_vpc_id=dev_vpc_id,
         dev_subnet_ids=dev_subnet_ids,
         dev_security_group_ids=dev_security_group_ids,
@@ -185,6 +187,7 @@ def stack_single_account(stack_defaults, project_template_type) -> cdk.Stack:
         project_template_type=project_template_type,
         sagemaker_project_name="test-project",
         sagemaker_project_id="test-project-id",
+        dev_account_id=same_account_id,
         dev_vpc_id="",
         dev_subnet_ids=[],
         dev_security_group_ids=[],
@@ -227,22 +230,161 @@ def stack_single_account(stack_defaults, project_template_type) -> cdk.Stack:
 def test_no_duplicate_principals_in_model_package_group_policy(
     stack_single_account: cdk.Stack, project_template_type
 ) -> None:
+    """Test that single-account deployments don't create duplicate principals.
+
+    When all account IDs (dev, pre-prod, prod) are the same, the policy should
+    deduplicate them to avoid SageMaker's "Duplicate principal" validation error.
+
+    This test checks each policy statement individually, as SageMaker rejects
+    policies where the same principal appears multiple times within a single statement.
+    """
     import json
 
     from aws_cdk.assertions import Template
 
+    def stringify_principal(principal) -> str:
+        """Convert a principal to a comparable string representation."""
+        if isinstance(principal, str):
+            return principal
+        elif isinstance(principal, dict):
+            # Handle Fn::Join and other intrinsic functions
+            return json.dumps(principal, sort_keys=True)
+        return str(principal)
+
+    def check_statement_for_duplicates(statement: dict, logical_id: str, statement_sid: str) -> None:
+        """Check a single policy statement for duplicate principals."""
+        principal = statement.get("Principal", {})
+        if isinstance(principal, dict):
+            aws_principals = principal.get("AWS", [])
+            if isinstance(aws_principals, list):
+                principal_strs = [stringify_principal(p) for p in aws_principals]
+                assert len(principal_strs) == len(
+                    set(principal_strs)
+                ), f"Duplicate principals in {logical_id} statement '{statement_sid}': {aws_principals}"
+
     template = Template.from_stack(stack_single_account)
     model_package_groups = template.find_resources("AWS::SageMaker::ModelPackageGroup")
 
+    assert model_package_groups, "Expected at least one ModelPackageGroup resource"
+
     for logical_id, resource in model_package_groups.items():
         policy = resource.get("Properties", {}).get("ModelPackageGroupPolicy")
-        if policy and isinstance(policy, str):
-            policy_doc = json.loads(policy)
-            for statement in policy_doc.get("Statement", []):
-                principal = statement.get("Principal", {})
-                if isinstance(principal, dict):
-                    aws_principals = principal.get("AWS", [])
-                    if isinstance(aws_principals, list):
-                        assert len(aws_principals) == len(
-                            set(aws_principals)
-                        ), f"Duplicate principals in {logical_id}: {aws_principals}"
+        if policy:
+            if isinstance(policy, str):
+                policy = json.loads(policy)
+
+            if isinstance(policy, dict):
+                for statement in policy.get("Statement", []):
+                    statement_sid = statement.get("Sid", "unknown")
+                    check_statement_for_duplicates(statement, logical_id, statement_sid)
+
+
+@pytest.mark.parametrize(
+    "project_template_type",
+    [
+        ProjectTemplateType.XGBOOST_ABALONE,
+        ProjectTemplateType.FINETUNE_LLM_EVALUATION,
+        ProjectTemplateType.HF_IMPORT_MODELS,
+    ],
+    indirect=True,
+)
+def test_no_duplicate_principals_in_kms_key_policy(stack_single_account: cdk.Stack, project_template_type) -> None:
+    """Test that single-account deployments don't create duplicate principals in KMS key policies.
+
+    When pre-prod and prod account IDs are the same, the KMS key policy should
+    deduplicate them to avoid "Duplicate principal" validation errors.
+    """
+    import json
+
+    from aws_cdk.assertions import Template
+
+    def stringify_principal(principal) -> str:
+        """Convert a principal to a comparable string representation."""
+        if isinstance(principal, str):
+            return principal
+        elif isinstance(principal, dict):
+            return json.dumps(principal, sort_keys=True)
+        return str(principal)
+
+    def check_statement_for_duplicates(statement: dict, logical_id: str, statement_sid: str) -> None:
+        """Check a single policy statement for duplicate principals."""
+        principal = statement.get("Principal", {})
+        if isinstance(principal, dict):
+            aws_principals = principal.get("AWS", [])
+            if isinstance(aws_principals, list):
+                principal_strs = [stringify_principal(p) for p in aws_principals]
+                assert len(principal_strs) == len(
+                    set(principal_strs)
+                ), f"Duplicate principals in KMS key {logical_id} statement '{statement_sid}': {aws_principals}"
+
+    template = Template.from_stack(stack_single_account)
+    kms_keys = template.find_resources("AWS::KMS::Key")
+
+    assert kms_keys, "Expected at least one KMS Key resource"
+
+    for logical_id, resource in kms_keys.items():
+        policy = resource.get("Properties", {}).get("KeyPolicy")
+        if policy:
+            if isinstance(policy, str):
+                policy = json.loads(policy)
+
+            if isinstance(policy, dict):
+                for statement in policy.get("Statement", []):
+                    statement_sid = statement.get("Sid", "unknown")
+                    check_statement_for_duplicates(statement, logical_id, statement_sid)
+
+
+@pytest.mark.parametrize(
+    "project_template_type",
+    [
+        ProjectTemplateType.XGBOOST_ABALONE,
+        ProjectTemplateType.FINETUNE_LLM_EVALUATION,
+        ProjectTemplateType.HF_IMPORT_MODELS,
+    ],
+    indirect=True,
+)
+def test_no_duplicate_principals_in_s3_bucket_policy(stack_single_account: cdk.Stack, project_template_type) -> None:
+    """Test that single-account deployments don't create duplicate principals in S3 bucket policies.
+
+    When pre-prod and prod account IDs are the same, the S3 bucket policy should
+    deduplicate them to avoid "Duplicate principal" validation errors.
+    """
+    import json
+
+    from aws_cdk.assertions import Template
+
+    def stringify_principal(principal) -> str:
+        """Convert a principal to a comparable string representation."""
+        if isinstance(principal, str):
+            return principal
+        elif isinstance(principal, dict):
+            return json.dumps(principal, sort_keys=True)
+        return str(principal)
+
+    def check_statement_for_duplicates(statement: dict, logical_id: str, statement_sid: str) -> None:
+        """Check a single policy statement for duplicate principals."""
+        principal = statement.get("Principal", {})
+        if isinstance(principal, dict):
+            aws_principals = principal.get("AWS", [])
+            if isinstance(aws_principals, list):
+                principal_strs = [stringify_principal(p) for p in aws_principals]
+                assert len(principal_strs) == len(set(principal_strs)), (
+                    f"Duplicate principals in S3 bucket policy {logical_id} "
+                    f"statement '{statement_sid}': {aws_principals}"
+                )
+
+    template = Template.from_stack(stack_single_account)
+    bucket_policies = template.find_resources("AWS::S3::BucketPolicy")
+
+    assert bucket_policies, "Expected at least one S3 BucketPolicy resource"
+
+    for logical_id, resource in bucket_policies.items():
+        policy = resource.get("Properties", {}).get("PolicyDocument")
+        if policy:
+            if isinstance(policy, str):
+                policy = json.loads(policy)
+
+            if isinstance(policy, dict):
+                for statement in policy.get("Statement", []):
+                    statement_sid = statement.get("Sid", "unknown")
+                    check_statement_for_duplicates(statement, logical_id, statement_sid)
