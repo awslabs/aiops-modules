@@ -286,9 +286,152 @@ def lambda_handler(event, context):
                 return
 
         cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
-    else:
-        # raise Exception(f"Invalid request type: {event['RequestType']}")
-        cfnresponse.send(event, context, cfnresponse.FAILED, {})
+    elif event['RequestType'] == 'Update':
+        old_props = event['OldResourceProperties']
+        new_props = event['ResourceProperties']
+        physical_resource_id = event['PhysicalResourceId']
+
+        # Check if repository_owner changed - create new repo under new owner
+        if old_props['GitHubOwner'] != new_props['GitHubOwner']:
+            print(f"GitHubOwner changed from {old_props['GitHubOwner']} to {new_props['GitHubOwner']}")
+            print(
+                f"Creating new repo under {new_props['GitHubOwner']} with seed code, "
+                f"keeping old repo under {old_props['GitHubOwner']}"
+            )
+
+            new_github_owner = new_props['GitHubOwner']
+            new_repo_name = new_props['RepoName']
+
+            try:
+                # Create new repository under new owner
+                headers = {
+                    'Authorization': f'token {github_token}',
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                }
+                data = json.dumps({
+                    'name': new_repo_name,
+                    'description': repo_description,
+                    'private': True
+                }).encode('utf-8')
+
+                if is_organization(new_github_owner, headers):
+                    api_url = f'https://api.github.com/orgs/{new_github_owner}/repos'
+                else:
+                    api_url = 'https://api.github.com/user/repos'
+
+                req = urllib.request.Request(api_url, data=data, headers=headers, method='POST')
+                with urllib.request.urlopen(req) as response:
+                    repo_data = json.loads(response.read().decode())
+                    print(f"Created new repository: {repo_data['clone_url']}")
+
+                # Push seed code to new repo
+                s3 = boto3.client('s3')
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    zip_file_path = os.path.join(tmp_dir, 'code.zip')
+                    download_s3_object_v3(s3_bucket_name, s3_bucket_object_key, zip_file_path)
+                    extract_zip_file(zip_file_path, tmp_dir)
+
+                    new_repo_url = f"https://{new_github_owner}:{github_token}@github.com/{new_github_owner}/{new_repo_name}.git"
+                    init_and_push_repo(new_repo_url, tmp_dir)
+                    print(f"Pushed seed code to new repository under {new_github_owner}")
+
+            except Exception as e:
+                print(f"Error creating new repo under new owner: {e}")
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, physical_resource_id)
+                return
+
+        # Check if CodeConnectionArn changed - update CodeBuild credentials
+        if old_props.get('CodeConnectionArn') != new_props.get('CodeConnectionArn'):
+            print(f"CodeConnectionArn changed, updating CodeBuild source credentials")
+            codebuild = boto3.client('codebuild')
+            try:
+                # List and delete old GitHub credentials
+                response = codebuild.list_source_credentials()
+                for cred in response['sourceCredentialsInfos']:
+                    if cred['serverType'] == 'GITHUB' and cred['authType'] == 'CODECONNECTIONS':
+                        codebuild.delete_source_credentials(arn=cred['arn'])
+                        print(f"Deleted old source credential: {cred['arn']}")
+
+                # Import new credentials
+                codebuild.import_source_credentials(
+                    token=new_props['CodeConnectionArn'],
+                    serverType="GITHUB",
+                    authType="CODECONNECTIONS"
+                )
+                print(f"Imported new CodeConnection credentials")
+            except Exception as e:
+                print(f"Error updating CodeBuild credentials: {e}")
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, physical_resource_id)
+                return
+
+        # Check if S3 seed code changed - create branch and PR
+        if (old_props.get('S3BucketObjectKey') != new_props.get('S3BucketObjectKey')):
+            print(f"S3 seed code changed, creating branch and PR")
+            import time
+            branch_name = f"update-seedcode-{int(time.time())}"
+
+            try:
+                s3 = boto3.client('s3')
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    zip_file_path = os.path.join(tmp_dir, 'code.zip')
+                    download_s3_object_v3(s3_bucket_name, s3_bucket_object_key, zip_file_path)
+                    extract_zip_file(zip_file_path, tmp_dir)
+
+                    repo_url = f"https://{github_owner}:{github_token}@github.com/{github_owner}/{repo_name}.git"
+
+                    # Clone existing repo
+                    subprocess.run(['git', 'clone', repo_url, 'repo'], cwd=tmp_dir, check=True)
+                    repo_dir = os.path.join(tmp_dir, 'repo')
+
+                    # Configure git
+                    subprocess.run(['git', 'config', 'user.email', "user@aiops.com"], cwd=repo_dir, check=True)
+                    subprocess.run(['git', 'config', 'user.name', "aiops-user"], cwd=repo_dir, check=True)
+
+                    # Create new branch
+                    subprocess.run(['git', 'checkout', '-b', branch_name], cwd=repo_dir, check=True)
+
+                    # Copy new code (excluding .git and repo dir)
+                    for item in os.listdir(tmp_dir):
+                        if item not in ['code.zip', 'repo']:
+                            src = os.path.join(tmp_dir, item)
+                            dst = os.path.join(repo_dir, item)
+                            if os.path.isdir(src):
+                                shutil.copytree(src, dst, dirs_exist_ok=True)
+                            else:
+                                shutil.copy2(src, dst)
+
+                    # Commit and push
+                    subprocess.run(['git', 'add', '.'], cwd=repo_dir, check=True)
+                    subprocess.run(['git', 'commit', '-m', "Update seed code from S3"], cwd=repo_dir, check=True)
+                    subprocess.run(['git', 'push', '-u', 'origin', branch_name], cwd=repo_dir, check=True)
+
+                    # Create PR via GitHub API
+                    headers = {
+                        'Authorization': f'token {github_token}',
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    }
+                    pr_data = json.dumps({
+                        'title': 'Update seed code',
+                        'body': 'Automated update of seed code from S3',
+                        'head': branch_name,
+                        'base': 'main'
+                    }).encode('utf-8')
+
+                    pr_url = f'https://api.github.com/repos/{github_owner}/{repo_name}/pulls'
+                    req = urllib.request.Request(pr_url, data=pr_data, headers=headers, method='POST')
+                    with urllib.request.urlopen(req) as response:
+                        pr_result = json.loads(response.read().decode())
+                        print(f"Created PR: {pr_result['html_url']}")
+
+            except Exception as e:
+                print(f"Error creating branch and PR: {e}")
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, physical_resource_id)
+                return
+
+        # No changes or successful update
+        cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, physical_resource_id)
 """
         # Lambda function to create GitHub repository
         github_repo_creator_lambda = lambdafunction.Function(
@@ -323,7 +466,11 @@ def lambda_handler(event, context):
         # Add another policy statement to list source credentials for CodeBuild
         github_repo_creator_lambda.add_to_role_policy(
             iam.PolicyStatement(
-                actions=["codebuild:ListSourceCredentials", "codebuild:ImportSourceCredentials"],
+                actions=[
+                    "codebuild:ListSourceCredentials",
+                    "codebuild:ImportSourceCredentials",
+                    "codebuild:DeleteSourceCredentials",
+                ],
                 resources=["*"],
             )
         )

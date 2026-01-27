@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- added UPDATE handler support for `sagemaker-templates` GitHub repository custom resource:
+  - CodeConnectionArn changes: updates CodeBuild source credentials
+  - S3BucketObjectKey changes (seed code updates): creates branch and pull request with new code
+  - repository_owner changes: creates new repository under new owner with seed code, keeps old repository intact
+- added `codebuild:DeleteSourceCredentials` permission to `sagemaker-templates` GitHub repository Lambda role
+
 ### **Changed**
 
 - update transformers to 4.53.0 to address security vulnerabilities
