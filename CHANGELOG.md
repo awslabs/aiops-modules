@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- added slack notification on failure in the snyk workflow 
+
 ### **Changed**
 
 - update transformers to 4.53.0 to address security vulnerabilities
