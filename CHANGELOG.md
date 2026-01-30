@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+- added slack notification on failure in the snyk workflow 
 - added UPDATE handler support for `sagemaker-templates` GitHub repository custom resource:
   - CodeConnectionArn changes: updates CodeBuild source credentials
   - S3BucketObjectKey changes (seed code updates): creates branch and pull request with new code

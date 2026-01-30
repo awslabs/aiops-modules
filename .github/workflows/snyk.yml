@@ -16,13 +16,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Snyk to check for vulnerabilities
+        id: snyk
         uses: snyk/actions/python-3.10@master
         continue-on-error: true  # To make sure that SARIF upload gets called
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high --sarif-file-output=snyk.sarif
+
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk.sarif
+
+      - name: Notify Slack on Failure
+        if: steps.snyk.outcome == 'failure'
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"repository\": \"${{ github.repository }}\",
+            \"branch\": \"${{ github.ref_name }}\",
+            \"actor\": \"${{ github.actor }}\",
+            \"run_url\": \"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
