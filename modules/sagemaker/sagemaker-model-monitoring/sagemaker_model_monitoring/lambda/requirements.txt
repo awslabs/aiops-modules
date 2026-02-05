@@ -2,4 +2,4 @@ pydantic==2.10.3
 pydantic-core
 # Use numpy version with pre-built wheels for Python 3.13
 numpy>=1.26.0,<2.0
-sagemaker==2.237.3
+sagemaker==2.256.0
