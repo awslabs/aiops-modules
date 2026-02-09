@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v3.2.2
+
+### **Added**
+
 - added slack notification on failure in the snyk workflow 
 - added UPDATE handler support for `sagemaker-templates` GitHub repository custom resource:
   - CodeConnectionArn changes: updates CodeBuild source credentials
@@ -19,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### **Changed**
 
 - update transformers to 4.53.0 to address security vulnerabilities
+- update sagemaker to 2.256.0
+- add explicit permissions to workflow for security best practices
 
 ## v3.2.1
 
