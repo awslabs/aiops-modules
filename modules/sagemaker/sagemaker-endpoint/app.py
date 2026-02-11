@@ -36,6 +36,7 @@ stack = DeployEndpointStack(
     scaling_max_instance_count=app_settings.module_settings.scaling_max_instance_count,
     data_capture_sampling_percentage=app_settings.module_settings.data_capture_sampling_percentage,
     data_capture_prefix=app_settings.module_settings.data_capture_prefix,
+    permissions_boundary_name=app_settings.module_settings.permissions_boundary_name,
     env=aws_cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,

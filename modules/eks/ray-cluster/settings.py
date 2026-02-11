@@ -60,6 +60,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     worker_resources: Dict[str, Dict[str, str]] = Field(default=DEFAULT_POD_RESOURCES)
     worker_tolerations: List[Dict[str, str]] = Field(default=[])
     worker_labels: Dict[str, str] = Field(default={})
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

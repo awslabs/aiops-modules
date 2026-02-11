@@ -14,6 +14,7 @@ describe("Bedrock Finetuning Stack", () => {
   const subnetIds = ["sub1", "sub2"];
   const account = "123456789";
   const region = "us-east-1";
+  const permissionsBoundaryName = undefined;
 
   const stack = new AmazonBedrockFinetuningStack(
     app,
@@ -26,6 +27,7 @@ describe("Bedrock Finetuning Stack", () => {
       deploymentName,
       moduleName,
       removalPolicy,
+      permissionsBoundaryName,
       env: { account, region },
     },
   );

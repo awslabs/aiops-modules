@@ -31,6 +31,7 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
         sagemaker_project_name: Optional[str] = None,
         kms_key_arn: Optional[str] = None,
         retain_on_delete: bool = True,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """Create a Pipeline to promote Sagemaker Model Packages.
@@ -62,6 +63,13 @@ class SagemakerModelPackagePipelineStack(cdk.Stack):
             to the sagemaker model package resources and not to the resources in this stack.
         """
         super().__init__(scope, construct_id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         self.source_model_package_group_arn = source_model_package_group_arn
         self.target_bucket_name = target_bucket_name

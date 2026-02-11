@@ -22,6 +22,7 @@ This module builds custom kernel for SageMaker studio from a Dockerfile.
 - `kernel-user-uuid`: Default Unix User ID, defaults to: 1000
 - `kernel-user-guid`: Default Unix Group ID, defaults to 100
 - `kernel-user-mount-path`: # Path to mount in SageMaker Studio, defaults to `/home/sagemaker-user`
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Module Metadata Outputs
 

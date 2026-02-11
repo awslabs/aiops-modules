@@ -38,6 +38,7 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
     eks_handler_role_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/YYYYYYYY"
     namespace = "namespace"
     data_bucket_name = "bucket"
+    permissions_boundary_name = None
 
     return rbac_stack.RbacStack(
         scope=app,
@@ -52,6 +53,7 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
         eks_handler_role_arn=eks_handler_role_arn,
         namespace_name=namespace,
         data_bucket_name=data_bucket_name,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
@@ -77,6 +79,7 @@ def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
     eks_cluster_endpoint = "oidc.eks.us-west-2.amazonaws.com/id/XXXXXXXXXX"
     eks_cert_auth_data = "auth"
     namespace = "namespace"
+    permissions_boundary_name = None
 
     return ray_stack.RayOnEKS(
         scope=app,
@@ -93,6 +96,7 @@ def ray_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         namespace_name=namespace,
         service_account_name=rbac_stack.service_account.service_account_name,
         service_account_role=rbac_stack.service_account.role,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

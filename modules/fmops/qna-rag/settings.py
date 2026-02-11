@@ -35,6 +35,7 @@ class ModuleSettings(CdkBaseSettings):
     os_security_group_id: str
 
     input_asset_bucket_name: Optional[str] = Field(default=None)
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 

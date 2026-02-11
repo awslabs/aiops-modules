@@ -1,7 +1,7 @@
 """Defines the stack settings."""
 
 from abc import ABC
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -59,6 +59,7 @@ class ModuleSettings(CdkBaseSettings):
     verification_human_task_config: Dict[str, Any] = Field(default=DEFAULT_TASK_CONFIG)
     verification_task_price: Dict[str, Dict[str, int]] = Field(default={})
     labeling_workflow_schedule: str = Field(default="cron(0 12 * * ? *)")
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

@@ -24,6 +24,7 @@ The module uses [AWS Generative AI CDK Constructs](https://github.com/awslabs/ge
 - `vpc-id` - VPC id
 - `subnet-ids` - VPC subnet ids
 - `endpoint-name` - name of te endpoint. `{project}-{deloyment}-{module}` by default.
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Module Metadata Outputs
 

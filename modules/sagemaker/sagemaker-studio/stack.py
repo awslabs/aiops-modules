@@ -42,7 +42,7 @@ class SagemakerStudioStack(Stack):
         min_idle_timeout_in_minutes: Optional[int],
         auth_mode: str,
         role_path: Optional[str],
-        permissions_boundary_arn: Optional[str],
+        permissions_boundary_name: Optional[str],
         mlflow_enabled: bool,
         mlflow_server_name: str,
         mlflow_server_version: Optional[str],
@@ -52,6 +52,13 @@ class SagemakerStudioStack(Stack):
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         self.vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
 
@@ -67,7 +74,6 @@ class SagemakerStudioStack(Stack):
             s3_bucket_prefix=s3_bucket_prefix,
             mlflow_artifact_store_bucket_name=mlflow_artifact_store_bucket_name,
             role_path=role_path,
-            permissions_boundary_arn=permissions_boundary_arn,
             env=kwargs["env"],
         )
 
@@ -97,7 +103,6 @@ class SagemakerStudioStack(Stack):
                 vpc=self.vpc,
                 subnets=self.subnets,
                 role_path=role_path,
-                permissions_boundary_arn=permissions_boundary_arn,
             )
 
         if enable_domain_resource_isolation:
@@ -167,24 +172,12 @@ class SagemakerStudioStack(Stack):
         vpc: ec2.IVpc,
         subnets: List[ec2.ISubnet],
         role_path: Optional[str],
-        permissions_boundary_arn: Optional[str],
     ) -> None:
-        permissions_boundary = (
-            iam.ManagedPolicy.from_managed_policy_arn(
-                self,
-                "Boundary",
-                managed_policy_arn=permissions_boundary_arn,
-            )
-            if permissions_boundary_arn
-            else None
-        )
-
         lambda_role = iam.Role(
             self,
             "enable-projects-lambda-role",
             path=role_path,
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "service-role/AWSLambdaBasicExecutionRole",
@@ -228,7 +221,6 @@ class SagemakerStudioStack(Stack):
             "enable-projects-provider-role",
             path=role_path,
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
-            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "service-role/AWSLambdaBasicExecutionRole",

@@ -27,6 +27,7 @@ stack = RAGResources(
     os_security_group_id=app_settings.module_settings.os_security_group_id,
     os_index_name="rag-index",
     input_asset_bucket_name=app_settings.module_settings.input_asset_bucket_name,
+    permissions_boundary_name=app_settings.module_settings.permissions_boundary_name,
     env=aws_cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,

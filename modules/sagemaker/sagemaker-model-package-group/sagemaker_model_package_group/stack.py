@@ -24,6 +24,7 @@ class SagemakerModelPackageGroupStack(Stack):
         target_account_ids: Optional[List[str]] = None,
         sagemaker_project_id: Optional[str] = None,
         sagemaker_project_name: Optional[str] = None,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """Deploy a Sagemaker Model Package.
@@ -51,6 +52,14 @@ class SagemakerModelPackageGroupStack(Stack):
             SageMaker project name, defaults None
         """
         super().__init__(scope, construct_id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
+
         self.target_event_bus_arn = target_event_bus_arn
         self.target_account_ids = target_account_ids
         self.model_package_group_name = model_package_group_name

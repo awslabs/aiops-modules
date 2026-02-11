@@ -100,6 +100,7 @@ class ModuleSettings(CdkBaseSettings):
     model_explainability_probability_attribute: Optional[str] = Field(default=None)
     model_explainability_schedule_expression: str = Field(default="cron(0 * ? * * *)")
 
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

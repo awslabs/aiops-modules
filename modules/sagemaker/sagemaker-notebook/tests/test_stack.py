@@ -14,6 +14,7 @@ def stack() -> cdk.Stack:
     dep_name = "test-deployment"
     mod_name = "test-module"
     app_prefix = f"{project_name}-{dep_name}-{mod_name}"
+    permissions_boundary_name = None
 
     return stack.SagemakerNotebookStack(
         scope=app,
@@ -32,6 +33,7 @@ def stack() -> cdk.Stack:
         additional_code_repositories=["https://", "https://", "https://"],
         role_arn="arn:aws:iam::*:role/*",
         tags={"test": "True"},
+        permissions_boundary_name=permissions_boundary_name,
     )
 
 

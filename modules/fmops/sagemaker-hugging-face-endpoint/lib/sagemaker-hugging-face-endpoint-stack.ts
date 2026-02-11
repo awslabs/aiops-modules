@@ -21,6 +21,7 @@ interface SagemakerHuggingFaceEndpointStackProps extends cdk.StackProps {
   vpcId?: string | undefined;
   subnetIds: string[];
   hfTokenSecretName?: string;
+  permissionsBoundaryName?: string;
 }
 
 export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
@@ -29,6 +30,16 @@ export class SagemakerHuggingFaceEndpointStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props: SagemakerHuggingFaceEndpointStackProps) {
     super(scope, id, props);
+
+    // Apply permissions boundary to all roles in this stack if provided
+    if (props.permissionsBoundaryName) {
+      const permissionsBoundaryPolicy = iam.ManagedPolicy.fromManagedPolicyName(
+        this,
+        "PermBoundary",
+        props.permissionsBoundaryName,
+      );
+      iam.PermissionsBoundary.of(this).apply(permissionsBoundaryPolicy);
+    }
 
     this.role = new iam.Role(this, "Role", {
       assumedBy: new iam.ServicePrincipal("sagemaker.amazonaws.com"),

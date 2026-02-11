@@ -24,6 +24,7 @@ This module orchestrates submission of a Ray training job to the Ray Cluster and
 - `data_bucket_name` - Name of the bucket to grant service account permissions to
 - `pvc_name` - Persistent volume claim name. Empty by defeault. If no PVC is provided, the volume will not be mounted.
 - `dra_export_path` - Persistent volume mount path. Defaults to `/ray/export/`. Must start with a `/`.
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags` - A dictionary of additional tags to apply to all resources. Defaults to None
 
 ## User Guide

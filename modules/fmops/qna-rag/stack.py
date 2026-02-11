@@ -29,6 +29,7 @@ class RAGResources(Stack):
         os_security_group_id: str,
         os_index_name: str,
         input_asset_bucket_name: Optional[str],
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -37,6 +38,15 @@ class RAGResources(Stack):
             description=" This stack creates resources for the LLM - QA RAG ",
             **kwargs,
         )
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            from aws_cdk import aws_iam as iam
+
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         # get an existing OpenSearch provisioned cluster
         os_domain = os.Domain.from_domain_endpoint(

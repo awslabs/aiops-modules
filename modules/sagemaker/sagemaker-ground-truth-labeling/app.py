@@ -38,6 +38,7 @@ stack = DeployGroundTruthLabelingStack(
     verification_human_task_config=app_settings.module_settings.verification_human_task_config,
     verification_task_price=app_settings.module_settings.verification_task_price,
     labeling_workflow_schedule=app_settings.module_settings.labeling_workflow_schedule,
+    permissions_boundary_name=app_settings.module_settings.permissions_boundary_name,
     env=aws_cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,

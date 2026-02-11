@@ -35,6 +35,17 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
   ) {
     super(scope, id, props);
 
+    // Apply permissions boundary to all roles in this stack if provided
+    if (props.permissionsBoundaryName) {
+      const permissionsBoundaryPolicy =
+        cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
+          this,
+          'PermBoundary',
+          props.permissionsBoundaryName,
+        );
+      cdk.aws_iam.PermissionsBoundary.of(this).apply(permissionsBoundaryPolicy);
+    }
+
     const {
       projectName,
       env: toolingEnvironment,

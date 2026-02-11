@@ -21,6 +21,7 @@ interface AmazonBedrockFinetuningStackProps extends cdk.StackProps {
   bedrockBaseModelID: string;
   vpcId?: string;
   subnetIds: string[];
+  permissionsBoundaryName?: string;
 }
 
 export class AmazonBedrockFinetuningStack extends cdk.Stack {
@@ -32,6 +33,16 @@ export class AmazonBedrockFinetuningStack extends cdk.Stack {
     props: AmazonBedrockFinetuningStackProps,
   ) {
     super(scope, id, props);
+
+    // Apply permissions boundary to all roles in this stack if provided
+    if (props.permissionsBoundaryName) {
+      const permissionsBoundaryPolicy = iam.ManagedPolicy.fromManagedPolicyName(
+        this,
+        "PermBoundary",
+        props.permissionsBoundaryName,
+      );
+      iam.PermissionsBoundary.of(this).apply(permissionsBoundaryPolicy);
+    }
 
     // create S3 bucket
     const inputBucket = this.getBucket(props);

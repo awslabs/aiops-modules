@@ -42,6 +42,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     lb_access_logs_bucket_name: Optional[str] = Field(default=None)
     lb_access_logs_bucket_prefix: Optional[str] = Field(default=None)
     efs_removal_policy: str = Field(default="RETAIN")
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
     rds_hostname: Optional[str] = Field(default=None)

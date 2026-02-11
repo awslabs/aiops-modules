@@ -29,6 +29,7 @@ This module creates a SageMaker Notebook instance.
 - `code_repository`: The Git repository associated with the notebook instance as its default code repository, by default None
 - `additional_code_repositories`: An array of up to three Git repositories associated with the notebook instance, by default None
 - `role_arn`: An IAM Role ARN that SageMaker assumes to perform tasks on your behalf, by default None
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags`: Extra tags to apply to the SageMaker notebook instance, by default None
 
 ### Sample manifest declaration
@@ -42,6 +43,8 @@ parameters:
     value: dummy123
   - name: instance_type
     value: ml.t2.xlarge
+  - name: permissions_boundary_name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

@@ -44,6 +44,7 @@ class RayCluster(Stack):
         worker_labels: Dict[str, str],
         pvc_name: Optional[str],
         dra_export_path: str,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         self.project_name = project_name
@@ -55,6 +56,13 @@ class RayCluster(Stack):
             id,
             **kwargs,
         )
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         dep_mod = f"{project_name}-{deployment_name}-{module_name}"
         # used to tag AWS resources. Tag Value length can't exceed 256 characters

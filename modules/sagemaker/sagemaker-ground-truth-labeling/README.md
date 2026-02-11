@@ -78,8 +78,8 @@ More information on using a public workforce like Amazon Mechanical Turk is avai
 - `sqs-dlq-retention-period`: DLQ retention period in minutes, suggest setting to a high value to ensure they are caught and re-driven before deletion. Default is 20160 (14 days)
 - `sqs-dlq-visibility-timeout`: DLQ visibility timeout in minutes. Default is 720 (12 hours)
 - `sqs-dlq-alarm-threshold` - Number of messages in the DLQ on which to alarm. Default is 1, 0 to disable
-
-`labeling-workflow-schedule` and the SQS queue parameters should be set to values that ensure the workflow can run at least as many times as the `maxRecieveCount` before the `retentionPeriod` is reached, to avoid messages being deleted upon reaching the `retentionPeriod`, instead of being sent to the DLQ
+- `labeling-workflow-schedule` and the SQS queue parameters should be set to values that ensure the workflow can run at least as many times as the `maxRecieveCount` before the `retentionPeriod` is reached, to avoid messages being deleted upon reaching the `retentionPeriod`, instead of being sent to the DLQ
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Sample manifest declaration
 
@@ -115,6 +115,8 @@ parameters:
     value: 'Verify that the planes are correctly labeled'
   - name: verification-task-keywords
     value: ['image', 'object', 'detection', 'label verification', 'bounding boxes']
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

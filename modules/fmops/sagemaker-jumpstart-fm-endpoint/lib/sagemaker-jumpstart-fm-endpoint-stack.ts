@@ -19,6 +19,7 @@ interface SagemakerJumpStartFmEndpointStackProps extends cdk.StackProps {
   instanceType: string;
   vpcId?: string | undefined;
   subnetIds: string[];
+  permissionsBoundaryName?: string;
 }
 
 export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
@@ -27,6 +28,16 @@ export class SagemakerJumpStartFmEndpointStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props: SagemakerJumpStartFmEndpointStackProps) {
     super(scope, id, props);
+
+    // Apply permissions boundary to all roles in this stack if provided
+    if (props.permissionsBoundaryName) {
+      const permissionsBoundaryPolicy = cdk.aws_iam.ManagedPolicy.fromManagedPolicyName(
+        this,
+        "PermBoundary",
+        props.permissionsBoundaryName,
+      );
+      cdk.aws_iam.PermissionsBoundary.of(this).apply(permissionsBoundaryPolicy);
+    }
 
     this.role = new Role(this, "Role", {
       assumedBy: new ServicePrincipal("sagemaker.amazonaws.com"),

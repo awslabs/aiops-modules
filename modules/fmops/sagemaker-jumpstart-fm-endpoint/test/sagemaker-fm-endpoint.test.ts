@@ -15,6 +15,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
   const subnetIds = ["sub1", "sub2"];
   const account = "123456789";
   const region = "us-east-1";
+  const permissionsBoundaryName = undefined;
 
   const stack = new SagemakerJumpStartFmEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
     projectName,
@@ -25,6 +26,7 @@ describe("Sagemaker JumpStart Fm Endpoint Stack", () => {
     instanceType,
     vpcId,
     subnetIds,
+    permissionsBoundaryName,
     env: { account, region },
   });
 

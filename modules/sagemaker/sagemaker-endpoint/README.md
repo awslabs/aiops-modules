@@ -46,6 +46,7 @@ where endpoints are provisioned as part of automated Continuous Integration and 
 - `scaling-max-instance-count`: minimum autoscaling instance count. `10` by default. Only considered if `managed-instance-scaling` is `True`.
 - `data-capture-samping-percentage`: the percentage of requests to capture data
 - `data-capture-prefix`: the S3 prefix into `model-artifacts-bucket-arn` to store captured data
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Sample manifest declaration
 
@@ -85,6 +86,8 @@ parameters:
         group: sagemaker-studio
         name: studio
         key: StudioDomainArn
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

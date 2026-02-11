@@ -17,6 +17,8 @@ const instanceType: string = process.env.SEEDFARMER_PARAMETER_INSTANCE_TYPE!;
 const vpcId: string | undefined = process.env.SEEDFARMER_PARAMETER_VPC_ID;
 const subnetIds: string[] = JSON.parse(process.env.SEEDFARMER_PARAMETER_SUBNET_IDS || ("[]" as string));
 
+const permissionsBoundaryName: string | undefined = process.env.SEEDFARMER_PARAMETER_PERMISSIONS_BOUNDARY_NAME;
+
 const app = new cdk.App();
 
 const stack = new SagemakerJumpStartFmEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
@@ -28,6 +30,7 @@ const stack = new SagemakerJumpStartFmEndpointStack(app, `${projectName}-${deplo
   instanceType,
   vpcId,
   subnetIds,
+  permissionsBoundaryName,
   env: { account, region },
 });
 

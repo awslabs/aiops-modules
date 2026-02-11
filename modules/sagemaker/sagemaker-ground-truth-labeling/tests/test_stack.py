@@ -38,6 +38,7 @@ def stack(task_type: str, labeling_workflow_schedule: str, sqs_dlq_alarm_thresho
     verification_task_keywords = ["verification_keywords"]
     verification_human_task_config = {"key": "value"}
     verification_task_price = {"key": {"nested_key": "value"}}
+    permissions_boundary_name = None
 
     return stack.DeployGroundTruthLabelingStack(
         app,
@@ -67,6 +68,7 @@ def stack(task_type: str, labeling_workflow_schedule: str, sqs_dlq_alarm_thresho
         verification_human_task_config=verification_human_task_config,
         verification_task_price=verification_task_price,
         labeling_workflow_schedule=labeling_workflow_schedule,
+        permissions_boundary_name=permissions_boundary_name,
     )
 
 
