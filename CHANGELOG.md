@@ -13,6 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+## v3.2.3
+
+### **Added**
+
+- added permission boundary as optional input to all modules
+
+### **Changed**
+
 ## v3.2.2
 
 ### **Added**
