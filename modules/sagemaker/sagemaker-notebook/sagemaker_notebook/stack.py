@@ -31,6 +31,7 @@ class SagemakerNotebookStack(Stack):
         additional_code_repositories: Optional[List[str]] = None,
         role_arn: Optional[str] = None,
         tags: Optional[Dict[str, str]] = None,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """Deploy a SageMaker notebook.
@@ -70,6 +71,13 @@ class SagemakerNotebookStack(Stack):
             Extra tags to apply to the SageMaker notebook instance, by default None
         """
         super().__init__(scope, construct_id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         self.notebook_name = notebook_name
         self.instance_type = instance_type

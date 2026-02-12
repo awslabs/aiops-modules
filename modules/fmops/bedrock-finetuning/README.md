@@ -24,6 +24,7 @@ The module creates a finetuning job for Amazon Bedrock model of choice (you prov
 - `removal-policy`: the retention policy for the S3 bucket (if one is created)
   - defaults to `RETAIN`
   - supports `DESTROY` and `RETAIN` only
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 #### Input Example
 
@@ -50,4 +51,6 @@ parameters:
         group: networking
         name: networking
         key: PrivateSubnetIds
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```

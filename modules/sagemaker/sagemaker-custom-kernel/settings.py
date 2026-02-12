@@ -39,6 +39,7 @@ class ModuleSettings(EnvBaseSettings):
     kernel_user_uid: int = Field(default=1000)
     kernel_user_gid: int = Field(default=100)
     kernel_user_home_mount_path: str = Field(default="/home/sagemaker-user")
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 

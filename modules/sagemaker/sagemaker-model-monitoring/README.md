@@ -83,6 +83,7 @@ One or more of:
 - `kms_key_id`: The KMS key used to encrypted storage and output.
 - `sagemaker_project_id`: SageMaker project id
 - `sagemaker_project_name`: SageMaker project name
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags`: Dictionary of tags to apply to resources
 
 #### Baseline Generation Parameters (Optional)
@@ -177,6 +178,8 @@ parameters:
     value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/baseline
   - name: data_quality_output_s3_uri
     value: s3://sagemaker-us-east-2-<REDACTED>/SF-DEMO-xgb-churn-pred-model-monitor/output
+  - name: permissions_boundary_name
+    value: my-permissions-boundary
 ```
 
 #### With Automated Baseline Generation

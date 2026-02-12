@@ -53,6 +53,7 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
     worker_labels = {}
     pvc_name = "pvc"
     dra_export_path = "/ray/export"
+    permissions_boundary_name = None
 
     return ray_cluster_stack.RayCluster(
         scope=app,
@@ -82,6 +83,7 @@ def ray_cluster_stack(stack_defaults) -> cdk.Stack:
         worker_labels=worker_labels,
         pvc_name=pvc_name,
         dra_export_path=dra_export_path,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

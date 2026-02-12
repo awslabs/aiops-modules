@@ -82,6 +82,7 @@ As an example, if `sagemaker-templates-service-catalog` template configured to u
 - `aws-codeconnection-arn` - AWS CodeConnection ARN for repository provider
 - `sagemaker-domain-id` - SageMaker domain id
 - `sagemaker-domain-arn` - SageMaker domain ARN for domain resource isolation
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags` - key-value pairs for resource tagging
 
 #### Multi-account deployment parameters:
@@ -196,6 +197,8 @@ parameters:
         group: sagemaker-studio
         name: studio
         key: StudioDomainArn
+  - name: permissions_boundary_name
+    value: my-permissions-boundary
 ```
 ### Sample manifest example for source repository options
 [sagemaker-templates-modules-github.yaml](/examples/manifests/sagemaker-templates-modules-github.yaml)

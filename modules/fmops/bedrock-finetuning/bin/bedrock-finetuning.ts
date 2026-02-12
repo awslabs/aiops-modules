@@ -27,6 +27,9 @@ if (removalPolicy != "RETAIN" && removalPolicy != "DESTROY") {
   throw new Error("Invalid removal policy for resources");
 }
 
+const permissionsBoundaryName: string | undefined =
+  process.env.SEEDFARMER_PARAMETER_PERMISSIONS_BOUNDARY_NAME;
+
 const app = new cdk.App();
 const stack = new AmazonBedrockFinetuningStack(
   app,
@@ -40,6 +43,7 @@ const stack = new AmazonBedrockFinetuningStack(
     moduleName,
     bucketName,
     removalPolicy,
+    permissionsBoundaryName,
     env: { account, region },
   },
 );

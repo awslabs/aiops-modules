@@ -36,6 +36,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     sagemaker_project_name: Optional[str] = Field(default=None)
     kms_key_arn: Optional[str] = Field(default=None)
     retain_on_delete: bool = Field(default=True)
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

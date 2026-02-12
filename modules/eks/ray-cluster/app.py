@@ -42,6 +42,7 @@ ray_cluster_stack = RayCluster(
     worker_labels=app_settings.parameters.worker_labels,
     pvc_name=app_settings.parameters.pvc_name,
     dra_export_path=app_settings.parameters.dra_export_path,
+    permissions_boundary_name=app_settings.parameters.permissions_boundary_name,
     env=env,
 )
 

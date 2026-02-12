@@ -73,6 +73,8 @@ parameters:
           - name: prod-env
             account: '123456789017'
             type: prod
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

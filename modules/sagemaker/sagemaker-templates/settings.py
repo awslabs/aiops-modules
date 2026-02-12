@@ -75,6 +75,7 @@ class ModuleSettings(CdkBaseSettings):
     aws_codeconnection_arn: Optional[str] = Field(default=None)
     repository_owner: Optional[str] = Field(default=None)
 
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

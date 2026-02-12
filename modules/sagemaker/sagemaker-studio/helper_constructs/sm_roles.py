@@ -16,21 +16,10 @@ class SMRoles(Construct):
         s3_bucket_prefix: str,
         mlflow_artifact_store_bucket_name: Optional[str],
         role_path: Optional[str],
-        permissions_boundary_arn: Optional[str],
         env: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-
-        permissions_boundary = (
-            iam.ManagedPolicy.from_managed_policy_arn(
-                self,
-                "Boundary",
-                permissions_boundary_arn,
-            )
-            if permissions_boundary_arn
-            else None
-        )
 
         cdk_deploy_policy = iam.Policy(
             self,
@@ -236,7 +225,6 @@ class SMRoles(Construct):
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
-            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -269,7 +257,6 @@ class SMRoles(Construct):
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
-            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -305,7 +292,6 @@ class SMRoles(Construct):
                 iam.ServicePrincipal("lambda.amazonaws.com"),
                 iam.ServicePrincipal("sagemaker.amazonaws.com"),
             ),
-            permissions_boundary=permissions_boundary,
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "AmazonSSMReadOnlyAccess",
@@ -380,6 +366,5 @@ class SMRoles(Construct):
             "mlflow-role",
             path=role_path,
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-            permissions_boundary=permissions_boundary,
         )
         mlflow_tracking_server_policy.attach_to_role(self.mlflow_tracking_server_role)

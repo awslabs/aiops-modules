@@ -27,6 +27,7 @@ Question and Answering using RAG Architecture
 #### Optional
 
 - `input-asset-bucket` - Input asset bucket that is used to store input documents
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Module Metadata Outputs
 

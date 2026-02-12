@@ -26,9 +26,17 @@ class CustomKernelStack(Stack):
         kernel_user_uid: int,
         kernel_user_gid: int,
         mount_path: str,
+        permissions_boundary_name: str | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         # ECR Image deployment
         repo = ecr.Repository.from_repository_name(self, id=f"{id}-ecr-repo", repository_name=ecr_repo_name)

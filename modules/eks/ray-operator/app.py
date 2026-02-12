@@ -28,6 +28,7 @@ rbac_stack = RbacStack(
     eks_openid_issuer=app_settings.parameters.eks_openid_issuer,
     namespace_name=app_settings.parameters.namespace,
     data_bucket_name=app_settings.parameters.data_bucket_name,
+    permissions_boundary_name=app_settings.parameters.permissions_boundary_name,
     env=env,
 )
 
@@ -46,6 +47,7 @@ ray_on_eks_stack = RayOnEKS(
     namespace_name=app_settings.parameters.namespace,
     service_account_name=rbac_stack.service_account.service_account_name,
     service_account_role=rbac_stack.service_account.role,
+    permissions_boundary_name=app_settings.parameters.permissions_boundary_name,
     env=env,
 )
 

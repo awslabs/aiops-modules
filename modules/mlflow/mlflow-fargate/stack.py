@@ -42,9 +42,17 @@ class MlflowFargateStack(cdk.Stack):
         lb_access_logs_bucket_name: Optional[str],
         lb_access_logs_bucket_prefix: Optional[str],
         efs_removal_policy: str,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         task_role = iam.Role(
             self,

@@ -48,6 +48,7 @@ ray_orchestrator_stack = RayOrchestrator(
     service_account_role_arn=rbac_stack.service_account.role.role_arn,
     pvc_name=app_settings.parameters.pvc_name,
     dra_export_path=app_settings.parameters.dra_export_path,
+    permissions_boundary_name=app_settings.parameters.permissions_boundary_name,
     env=env,
 )
 

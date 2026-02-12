@@ -24,6 +24,7 @@ This module creates a SageMaker Model Package Group to register and version Sage
 - `target_account_ids`: A list of account ids which shall have read-only access to the model package group. Defaults None.
 - `sagemaker_project_id`: SageMaker project ID.
 - `sagemaker_project_name`: SageMaker project name.
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Sample manifest declaration
 
@@ -46,6 +47,8 @@ parameters:
     value: xxxxxxxx
   - name: sagemaker_project_name
     value: test
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

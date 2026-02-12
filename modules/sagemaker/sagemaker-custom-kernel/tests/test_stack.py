@@ -23,6 +23,7 @@ def stack() -> cdk.Stack:
     kernel_user_uid = 1000
     kernel_user_gid = 100
     mount_path = "/root"
+    permissions_boundary_name = None
 
     return stack.CustomKernelStack(
         app,
@@ -38,6 +39,7 @@ def stack() -> cdk.Stack:
         kernel_user_uid=int(kernel_user_uid),
         kernel_user_gid=int(kernel_user_gid),
         mount_path=mount_path,
+        permissions_boundary_name=permissions_boundary_name,
     )
 
 

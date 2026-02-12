@@ -37,6 +37,7 @@ stack = CustomKernelStack(
     kernel_user_uid=app_settings.module_settings.kernel_user_uid,
     kernel_user_gid=app_settings.module_settings.kernel_user_gid,
     mount_path=app_settings.module_settings.kernel_user_home_mount_path,
+    permissions_boundary_name=app_settings.module_settings.permissions_boundary_name,
     env=cdk.Environment(
         account=app_settings.cdk_settings.account,
         region=app_settings.cdk_settings.region,

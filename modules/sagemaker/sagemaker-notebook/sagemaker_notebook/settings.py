@@ -40,6 +40,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     vpc_id: Optional[str] = Field(default=None)
     kms_key_arn: Optional[str] = Field(default=None)
     role_arn: Optional[str] = Field(default=None)
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
     @field_validator("notebook_name")

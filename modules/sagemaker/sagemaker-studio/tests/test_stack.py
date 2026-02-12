@@ -27,7 +27,7 @@ def stack(
     enable_custom_sagemaker_projects: bool,
     auth_mode: str,
     role_path: Optional[str],
-    permissions_boundary_arn: Optional[str],
+    permissions_boundary_name: Optional[str],
     mlflow_enabled: bool,
     enable_jupyterlab_app: bool,
 ) -> cdk.Stack:
@@ -78,7 +78,7 @@ def stack(
         min_idle_timeout_in_minutes=min_idle_timeout_in_minutes,
         auth_mode=auth_mode,
         role_path=role_path,
-        permissions_boundary_arn=permissions_boundary_arn,
+        permissions_boundary_name=permissions_boundary_name,
         mlflow_enabled=mlflow_enabled,
         mlflow_server_name=mlflow_server_name,
         mlflow_server_version=mlflow_server_version,
@@ -95,7 +95,7 @@ def stack(
 
 @pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
 @pytest.mark.parametrize("role_path", [None, "/test/"])
-@pytest.mark.parametrize("permissions_boundary_arn", [None, "arn:aws:iam::123456789012:policy/boundary"])
+@pytest.mark.parametrize("permissions_boundary_name", [None, "TestBoundary"])
 @pytest.mark.parametrize("mlflow_enabled", [True, False])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
 @pytest.mark.parametrize("enable_jupyterlab_app", [True, False])
@@ -104,7 +104,7 @@ def test_synthesize_stack(
     enable_custom_sagemaker_projects: bool,
     auth_mode: str,
     role_path: Optional[str],
-    permissions_boundary_arn: Optional[str],
+    permissions_boundary_name: Optional[str],
     mlflow_enabled: bool,
     enable_jupyterlab_app: bool,
 ) -> None:
@@ -122,17 +122,18 @@ def test_synthesize_stack(
             "AWS::IAM::Role", {"Path": role_path}, 6 if enable_custom_sagemaker_projects else 4
         )
 
-    if permissions_boundary_arn:
+    if permissions_boundary_name:
+        # The boundary name is converted to ARN using CloudFormation intrinsic functions
         template.resource_properties_count_is(
             "AWS::IAM::Role",
-            {"PermissionsBoundary": permissions_boundary_arn},
+            {"PermissionsBoundary": Match.object_like({"Fn::Join": Match.any_value()})},
             6 if enable_custom_sagemaker_projects else 4,
         )
 
 
 @pytest.mark.parametrize("auth_mode", ["IAM", "SSO"])
 @pytest.mark.parametrize("role_path", [None, "/test1/"])
-@pytest.mark.parametrize("permissions_boundary_arn", [None, "arn:aws:iam::123456789012:policy/boundary"])
+@pytest.mark.parametrize("permissions_boundary_name", [None, "TestBoundary"])
 @pytest.mark.parametrize("mlflow_enabled", [True, False])
 @pytest.mark.parametrize("enable_custom_sagemaker_projects", [True, False])
 @pytest.mark.parametrize("enable_jupyterlab_app", [True, False])
@@ -141,7 +142,7 @@ def test_no_cdk_nag_errors(
     enable_custom_sagemaker_projects: bool,
     auth_mode: str,
     role_path: Optional[str],
-    permissions_boundary_arn: Optional[str],
+    permissions_boundary_name: Optional[str],
     mlflow_enabled: bool,
     enable_jupyterlab_app: bool,
 ) -> None:

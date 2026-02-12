@@ -19,6 +19,8 @@ const subnetIds: string[] = JSON.parse(process.env.SEEDFARMER_PARAMETER_SUBNET_I
 
 const hfTokenSecretName: string | undefined = process.env.SEEDFARMER_PARAMETER_HUGGING_FACE_TOKEN_SECRET_NAME;
 
+const permissionsBoundaryName: string | undefined = process.env.SEEDFARMER_PARAMETER_PERMISSIONS_BOUNDARY_NAME;
+
 const app = new cdk.App();
 
 const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deploymentName}-${moduleName}`, {
@@ -31,6 +33,7 @@ const stack = new SagemakerHuggingFaceEndpointStack(app, `${projectName}-${deplo
   vpcId,
   subnetIds,
   hfTokenSecretName,
+  permissionsBoundaryName,
   env: { account, region },
 });
 

@@ -19,6 +19,7 @@ def stack_model_package_input() -> cdk.Stack:
     cognito_pool_id = "us-east-1_XXXXX"
     os_domain_endpoint = "sample-endpoint.com"
     os_security_group_id = "sg-a1b2c3d4"
+    permissions_boundary_name = None
 
     return stack.RAGResources(
         scope=app,
@@ -30,6 +31,7 @@ def stack_model_package_input() -> cdk.Stack:
         os_security_group_id=os_security_group_id,
         os_index_name="sample",
         input_asset_bucket_name="input-bucket",
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account="111111111111",
             region="us-east-1",

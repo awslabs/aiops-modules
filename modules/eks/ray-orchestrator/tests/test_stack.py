@@ -37,6 +37,7 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
     eks_handler_role_arn = "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/YYYYYYYY"
     namespace = "namespace"
     data_bucket_name = "bucket"
+    permissions_boundary_name = None
 
     return rbac_stack.RbacStack(
         scope=app,
@@ -50,6 +51,7 @@ def rbac_stack(stack_defaults) -> cdk.Stack:
         eks_oidc_arn=eks_oidc_arn,
         namespace_name=namespace,
         data_bucket_name=data_bucket_name,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],
@@ -80,6 +82,7 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
     service_account_role_arn = "arn:aws:iam::123456789012:role/XXXXXXXX"
     pvc_name = "pvc"
     dra_export_path = "/ray/export"
+    permissions_boundary_name = None
 
     return ray_orchestrator_stack.RayOrchestrator(
         scope=app,
@@ -99,6 +102,7 @@ def ray_orchestrator_stack(rbac_stack, stack_defaults) -> cdk.Stack:
         service_account_role_arn=service_account_role_arn,
         pvc_name=pvc_name,
         dra_export_path=dra_export_path,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

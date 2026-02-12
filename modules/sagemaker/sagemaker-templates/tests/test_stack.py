@@ -137,6 +137,7 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
         model_deploy_project_settings=model_deploy_settings,
         hf_import_models_project_settings=hf_import_models_settings,
         batch_inference_project_settings=batch_inference_settings,
+        permissions_boundary_name=None,
     )
 
 
@@ -215,6 +216,7 @@ def stack_single_account(stack_defaults, project_template_type) -> cdk.Stack:
         model_deploy_project_settings=None,
         hf_import_models_project_settings=hf_import_models_settings,
         batch_inference_project_settings=None,
+        permissions_boundary_name=None,
     )
 
 

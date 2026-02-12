@@ -38,6 +38,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     data_bucket_name: Optional[str] = Field(default=None)
     pvc_name: Optional[str] = Field(default=None)
     dra_export_path: str = Field(default="/ray/export/")
+    permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
 
 

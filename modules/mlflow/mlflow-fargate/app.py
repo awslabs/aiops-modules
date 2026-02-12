@@ -25,6 +25,7 @@ stack = MlflowFargateStack(
     lb_access_logs_bucket_prefix=app_settings.parameters.lb_access_logs_bucket_prefix,
     efs_removal_policy=app_settings.parameters.efs_removal_policy,
     rds_settings=app_settings.parameters.rds_settings,
+    permissions_boundary_name=app_settings.parameters.permissions_boundary_name,
     env=aws_cdk.Environment(
         account=app_settings.default.account,
         region=app_settings.default.region,

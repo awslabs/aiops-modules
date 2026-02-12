@@ -52,6 +52,7 @@ class ModuleSettings(CdkBaseSettings):
     # Set to a percentage greater than 0 to enable data capture.
     data_capture_sampling_percentage: int = Field(default=0, ge=0, le=100)
     data_capture_prefix: str = Field(default="")
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
     tags: Optional[Dict[str, str]] = Field(default=None)
 

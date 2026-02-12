@@ -35,6 +35,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     target_account_ids: Optional[List[str]] = Field(default=None)
     sagemaker_project_id: Optional[str] = Field(default=None)
     sagemaker_project_name: Optional[str] = Field(default=None)
+    permissions_boundary_name: Optional[str] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

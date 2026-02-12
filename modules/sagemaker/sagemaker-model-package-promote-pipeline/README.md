@@ -25,6 +25,7 @@ A Seedfarmer module to deploy a Pipeline to promote SageMaker Model Packages in 
 - `sagemaker_project_name`: The SageMaker project name to associate with the model package group.
 - `kms_key_arn`: The KMS Key ARN to encrypt model artifacts.
 - `retain_on_delete`: Whether to retain model package resources on delete. Defaults True. This applies only to the sagemaker model package resources and not to the resources in this stack.
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Sample manifest declaration
 
@@ -37,6 +38,8 @@ parameters:
     value: arn:aws:sagemaker:xx-xxxx-x:444333666777:model-package-group/my-model-pkg
   - name: target_bucket_name
     value: mlops-unified-modelartifacts-111222333444-xx-xxxx-x
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

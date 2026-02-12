@@ -90,9 +90,17 @@ class SageMakerModelMonitoringStack(Stack):
         model_explainability_inference_attribute: Optional[str],
         model_explainability_probability_attribute: Optional[str],
         model_explainability_schedule_expression: str,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         if sagemaker_project_id:
             Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)

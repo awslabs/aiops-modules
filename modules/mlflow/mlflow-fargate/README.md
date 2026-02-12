@@ -35,6 +35,7 @@ By default, uses Elastic File System for backend storage and S3 for artifact sto
 - `rds-security-group-id`: Security group of the RDS instance
   - needed so that an inbound rule can be created to grant Fargate access to the database
 - `efs-removal-policy`: EFS removal policy. `RETAIN` by default. Allowed values: `RETAIN`, `DESTROY`.
+- `permissions-boundary-name`: IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 
 ### Sample manifest declaration
 
@@ -78,6 +79,8 @@ parameters:
         group: database
         name: mlflow-mysql
         key: CredentialsSecretArn
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

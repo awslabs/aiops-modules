@@ -119,6 +119,10 @@ export const MLOpsCodePipelinePropsSchema = z.object({
    * The repository for model deployment.
    */
   infraRepo: RepositorySchema,
+  /**
+   * IAM Policy Name to attach to all roles as permissions boundary.
+   */
+  permissionsBoundaryName: z.string().optional(),
 });
 
 export type MLOpsCodePipelineStackProps = z.infer<

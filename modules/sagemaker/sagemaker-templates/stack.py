@@ -49,9 +49,19 @@ class ProjectStack(Stack):
         model_deploy_project_settings: Any = None,
         hf_import_models_project_settings: Any = None,
         batch_inference_project_settings: Any = None,
+        permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            from aws_cdk import aws_iam as iam
+
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         build_app_asset, deploy_app_asset = self.upload_assets(
             template_name=project_template_type.value,

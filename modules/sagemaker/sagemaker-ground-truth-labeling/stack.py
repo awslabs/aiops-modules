@@ -54,9 +54,17 @@ class DeployGroundTruthLabelingStack(Stack):
         verification_human_task_config: Dict[str, Any],
         verification_task_price: Dict[str, Dict[str, int]],
         labeling_workflow_schedule: str,
+        permissions_boundary_name: str | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
+
+        # Apply permissions boundary to all roles in this stack if provided
+        if permissions_boundary_name:
+            permissions_boundary_policy = iam.ManagedPolicy.from_managed_policy_name(
+                self, "PermBoundary", permissions_boundary_name
+            )
+            iam.PermissionsBoundary.of(self).apply(permissions_boundary_policy)
 
         log_bucket = self.create_log_bucket(job_name=job_name, id=id)
 

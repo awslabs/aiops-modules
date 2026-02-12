@@ -50,6 +50,7 @@ def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
         }
     else:
         rds_settings = None
+    permissions_boundary_name = None
 
     return stack.MlflowFargateStack(
         scope=app,
@@ -67,6 +68,7 @@ def stack(stack_defaults, use_rds: bool) -> cdk.Stack:
         lb_access_logs_bucket_name=None,
         lb_access_logs_bucket_prefix=None,
         efs_removal_policy=efs_removal_policy,
+        permissions_boundary_name=permissions_boundary_name,
         env=cdk.Environment(
             account=os.environ["CDK_DEFAULT_ACCOUNT"],
             region=os.environ["CDK_DEFAULT_REGION"],

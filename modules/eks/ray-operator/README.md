@@ -25,6 +25,7 @@ This module runs Ray Operator in AWS EKS Kubernetes cluster. It deploys a KubeRa
 #### Optional
 
 - `data_bucket_name` - Name of the bucket to grant service account permissions to
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags` - List of additional tags to apply to all resources
 
 ### Sample manifest declaration
@@ -78,6 +79,8 @@ parameters:
   - name: Namespace
     valueFrom:
       parameterValue: rayNamespaceName
+  - name: permissions-boundary-name
+    value: my-permissions-boundary
 ```
 
 ### Module Metadata Outputs

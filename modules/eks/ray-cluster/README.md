@@ -68,6 +68,7 @@ This module creates a Ray cluster in AWS EKS Kubernetes cluster. It deploys a Ra
 ```
 - `pvc_name` - Persistent volume claim name. Empty by defeault. If no PVC is provided, the volume will not be mounted.
 - `dra_export_path` - Persistent volume mount path. Defaults to `/ray/export/`. Must start with a `/`.
+- `permissions_boundary_name` - IAM Policy Name to attach to all roles as permissions boundary. Empty by default.
 - `tags` - List of additional tags to apply to all resources
 
 ## User Guide

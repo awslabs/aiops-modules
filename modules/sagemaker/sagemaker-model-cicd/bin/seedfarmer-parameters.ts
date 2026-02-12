@@ -56,6 +56,8 @@ export function getModuleParameters() {
   const infraRepo = getSeedFarmerParamter('INFRA_REPO');
   const modelBuildRepo = getSeedFarmerParamter('MODEL_BUILD_REPO');
   const deploymentGroups = getSeedFarmerParamter('DEPLOYMENT_GROUPS');
+  const permissionsBoundaryName =
+    process.env.SEEDFARMER_PARAMETER_PERMISSIONS_BOUNDARY_NAME;
 
   // validate parameters
   try {
@@ -64,6 +66,7 @@ export function getModuleParameters() {
       infraRepo,
       modelBuildRepo,
       deploymentGroups,
+      permissionsBoundaryName,
     });
   } catch (err) {
     const validationError = fromError(err, {
