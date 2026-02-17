@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- fixed `sagemaker-templates` Model Deploy seed code S3 permission race condition where `grant_read_write()` on an imported bucket created a `DefaultPolicy` with no CloudFormation dependency from the SageMaker Model, causing intermittent `s3:GetObject` access denied errors
+
 ## v3.2.3
 
 ### **Added**
