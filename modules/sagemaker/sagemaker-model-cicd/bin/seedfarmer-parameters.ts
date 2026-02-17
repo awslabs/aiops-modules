@@ -58,6 +58,8 @@ export function getModuleParameters() {
   const deploymentGroups = getSeedFarmerParamter('DEPLOYMENT_GROUPS');
   const permissionsBoundaryName =
     process.env.SEEDFARMER_PARAMETER_PERMISSIONS_BOUNDARY_NAME;
+  const s3AccessLogsBucketArn =
+    process.env.SEEDFARMER_PARAMETER_S3_ACCESS_LOGS_BUCKET_ARN;
 
   // validate parameters
   try {
@@ -67,6 +69,7 @@ export function getModuleParameters() {
       modelBuildRepo,
       deploymentGroups,
       permissionsBoundaryName,
+      s3AccessLogsBucketArn,
     });
   } catch (err) {
     const validationError = fromError(err, {

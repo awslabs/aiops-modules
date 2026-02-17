@@ -53,6 +53,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
       modelBuildRepo,
       deploymentGroups,
       tags,
+      s3AccessLogsBucketArn,
     } = props;
 
     // get the infra codecommit repo that will be used as source for model deploy codepipeline
@@ -78,7 +79,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
         // this pipeline will already be updated during `seedfarmer apply`
         selfMutation: false,
         crossAccountKeys: true,
-        artifactBucket: utils.createPipelineArtifactsBucket(this),
+        artifactBucket: utils.createPipelineArtifactsBucket(this, s3AccessLogsBucketArn, `${projectName}-infra-pipeline-artifacts/`),
         synth: new cdk.pipelines.CodeBuildStep('Synth', {
           input: cdk.pipelines.CodePipelineSource.codeCommit(
             this.infraRepo,
@@ -127,6 +128,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
           modelPackageGroupName,
           modelApprovalTopicName: modelApprovalNotificationsTopicName,
           deployEnvironments,
+          s3AccessLogsBucketArn,
           // Model build support resources stack should be deployed to model build account
           env: {
             account: buildEnvironment.account,
@@ -153,6 +155,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
           sagemakerExecutionRoleName,
           codeBuildAssumeRoleName,
           modelPackageGroupName,
+          s3AccessLogsBucketArn,
           // this pipeline should be created in tooling account, which will trigger the model build in target account
           env: toolingEnvironment,
           description: `Model build pipeline for ${projectName} ${deploymentGroup.name}`,
@@ -175,6 +178,7 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
           deploymentGroup,
           modelPackageGroupName,
           sagemakerArtifactsBucketName,
+          s3AccessLogsBucketArn,
           // this pipeline should be created in tooling account, which will trigger the model deploy in target accounts
           env: toolingEnvironment,
           description: `Model deploy pipeline for ${projectName} ${deploymentGroup.name}`,

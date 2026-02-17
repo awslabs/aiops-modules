@@ -32,9 +32,14 @@ class BatchInferenceProject(Construct):
         access_token_secret_name: Optional[str],
         aws_codeconnection_arn: Optional[str],
         repository_owner: Optional[str],
+        s3_access_logs_bucket_arn: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id)
+
+        s3_access_logs_bucket: Optional[s3.IBucket] = None
+        if s3_access_logs_bucket_arn:
+            s3_access_logs_bucket = s3.Bucket.from_bucket_arn(self, "AccessLogsBucket", s3_access_logs_bucket_arn)
 
         Tags.of(self).add("sagemaker:project-id", sagemaker_project_id)
         Tags.of(self).add("sagemaker:project-name", sagemaker_project_name)
@@ -62,6 +67,10 @@ class BatchInferenceProject(Construct):
             versioned=True,
             enforce_ssl=True,  # Blocks insecure requests to the bucket
             removal_policy=aws_cdk.RemovalPolicy.DESTROY,
+            server_access_logs_bucket=s3_access_logs_bucket,
+            server_access_logs_prefix=(
+                f"mlops-{sagemaker_project_name}-pipeline-artifacts/" if s3_access_logs_bucket else None
+            ),
         )
 
         BuildPipelineConstruct(
@@ -82,15 +91,16 @@ class BatchInferenceProject(Construct):
             repository_owner=repository_owner,
         )
 
-        cdk_nag.NagSuppressions.add_resource_suppressions(
-            pipeline_artifact_bucket,
-            [
-                {
-                    "id": "AwsSolutions-S1",
-                    "reason": (
-                        "S3 access logs are not required for CI/CD pipeline artifact buckets"
-                        "as they contain build artifacts, not user access data."
-                    ),
-                }
-            ],
-        )
+        if not s3_access_logs_bucket:
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                pipeline_artifact_bucket,
+                [
+                    {
+                        "id": "AwsSolutions-S1",
+                        "reason": (
+                            "S3 access logs are not required for CI/CD pipeline artifact buckets "
+                            "as they contain build artifacts, not user access data."
+                        ),
+                    }
+                ],
+            )

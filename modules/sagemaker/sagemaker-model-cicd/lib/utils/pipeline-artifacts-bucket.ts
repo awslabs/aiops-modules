@@ -4,7 +4,11 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { NagSuppressions } from 'cdk-nag';
 import { Construct } from 'constructs';
 
-export function createPipelineArtifactsBucket(scope: Construct): s3.Bucket {
+export function createPipelineArtifactsBucket(
+  scope: Construct,
+  s3AccessLogsBucketArn?: string,
+  logsPrefix?: string,
+): s3.Bucket {
   const removalPolicy = cdk.RemovalPolicy.DESTROY;
   const autoDeleteObjects = removalPolicy === cdk.RemovalPolicy.DESTROY;
 
@@ -17,6 +21,10 @@ export function createPipelineArtifactsBucket(scope: Construct): s3.Bucket {
     },
   );
 
+  const accessLogsBucket = s3AccessLogsBucketArn
+    ? s3.Bucket.fromBucketArn(scope, 'PipelineAccessLogsBucket', s3AccessLogsBucketArn)
+    : undefined;
+
   const pipelineArtifactsBucket = new s3.Bucket(
     scope,
     'PipelineArtifactBucket',
@@ -26,13 +34,17 @@ export function createPipelineArtifactsBucket(scope: Construct): s3.Bucket {
       autoDeleteObjects,
       bucketKeyEnabled: true,
       enforceSSL: true,
+      serverAccessLogsBucket: accessLogsBucket,
+      serverAccessLogsPrefix: accessLogsBucket ? (logsPrefix || 'pipeline-artifacts/') : undefined,
     },
   );
-  NagSuppressions.addResourceSuppressions(pipelineArtifactsBucket, [
-    {
-      id: 'AwsSolutions-S1',
-      reason: 'The bucket stores pipeline artifacts, no logging required.',
-    },
-  ]);
+  if (!accessLogsBucket) {
+    NagSuppressions.addResourceSuppressions(pipelineArtifactsBucket, [
+      {
+        id: 'AwsSolutions-S1',
+        reason: 'The bucket stores pipeline artifacts, no logging required.',
+      },
+    ]);
+  }
   return pipelineArtifactsBucket;
 }
