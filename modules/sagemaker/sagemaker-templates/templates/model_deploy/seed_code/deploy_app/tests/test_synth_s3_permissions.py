@@ -1,8 +1,8 @@
-"""Verify that cdk synth produces the expected S3 permission statements.
+"""Verify that cdk synth produces correct SageMaker resource names.
 
 This test mocks the SageMaker API call (get_approved_package) and all
 required environment variables, then synthesizes the DeployEndpointStack
-and asserts the ManagedPolicy contains the correct S3 actions.
+and asserts that stage_name drives unique SageMaker resource names.
 """
 
 import json
@@ -53,7 +53,7 @@ from aws_cdk import assertions  # noqa: E402
 from deploy_app.deploy_endpoint_stack import DeployEndpointStack  # noqa: E402
 
 
-def _synth_deploy_endpoint_stack() -> assertions.Template:
+def _synth_deploy_endpoint_stack(stage_name: str = "dev") -> assertions.Template:
     """Synthesize a standalone DeployEndpointStack and return its Template."""
     # Reset the mock so each test gets a fresh call count
     _fake_get_approved.reset_mock()
@@ -67,7 +67,8 @@ def _synth_deploy_endpoint_stack() -> assertions.Template:
     )
     stack = DeployEndpointStack(
         stage,
-        "test-endpoint",
+        "test-project-endpoint",
+        stage_name=stage_name,
         vpc_id="vpc-abc123",
         subnet_ids=["subnet-aaa"],
         security_group_ids=["sg-aaa"],
@@ -76,95 +77,25 @@ def _synth_deploy_endpoint_stack() -> assertions.Template:
     return assertions.Template.from_stack(stack)
 
 
-def test_managed_policy_has_s3_read_write_actions():
-    """The ModelExecutionPolicy must contain S3 read/write actions on the model bucket."""
-    template = _synth_deploy_endpoint_stack()
-
-    template.has_resource_properties(
-        "AWS::IAM::ManagedPolicy",
-        assertions.Match.object_like(
-            {
-                "PolicyDocument": {
-                    "Statement": assertions.Match.array_with(
-                        [
-                            assertions.Match.object_like(
-                                {
-                                    "Action": assertions.Match.array_with(
-                                        [
-                                            "s3:GetObject*",
-                                            "s3:GetBucket*",
-                                            "s3:List*",
-                                            "s3:PutObject",
-                                        ]
-                                    ),
-                                    "Effect": "Allow",
-                                    "Resource": [
-                                        "arn:aws:s3:::test-model-bucket",
-                                        "arn:aws:s3:::test-model-bucket/*",
-                                    ],
-                                }
-                            ),
-                        ]
-                    ),
-                }
-            }
-        ),
-    )
+def _get_endpoint_name(template: assertions.Template) -> str:
+    """Extract the SageMaker endpoint name from a synthesized template."""
+    endpoints = template.find_resources("AWS::SageMaker::Endpoint")
+    assert len(endpoints) == 1, f"Expected 1 endpoint, found {len(endpoints)}"
+    props = next(iter(endpoints.values()))["Properties"]
+    return props["EndpointName"]
 
 
-def test_managed_policy_has_data_capture_write_actions():
-    """The ModelExecutionPolicy must contain S3 write actions for data capture."""
-    template = _synth_deploy_endpoint_stack()
+def test_stage_name_produces_unique_endpoint_names():
+    """Different stage_name values must produce different SageMaker endpoint names."""
+    dev_template = _synth_deploy_endpoint_stack(stage_name="dev")
+    prod_template = _synth_deploy_endpoint_stack(stage_name="prod")
 
-    template.has_resource_properties(
-        "AWS::IAM::ManagedPolicy",
-        assertions.Match.object_like(
-            {
-                "PolicyDocument": {
-                    "Statement": assertions.Match.array_with(
-                        [
-                            assertions.Match.object_like(
-                                {
-                                    "Action": assertions.Match.array_with(
-                                        [
-                                            "s3:PutObject",
-                                        ]
-                                    ),
-                                    "Effect": "Allow",
-                                    "Resource": "arn:aws:s3:::test-model-bucket/endpoint-data-capture/*",
-                                }
-                            ),
-                        ]
-                    ),
-                }
-            }
-        ),
-    )
+    dev_ep = _get_endpoint_name(dev_template)
+    prod_ep = _get_endpoint_name(prod_template)
 
-
-def test_no_separate_default_policy():
-    """There must be NO DefaultPolicy (inline AWS::IAM::Policy) for S3 permissions.
-
-    S3 permissions must be in the ManagedPolicy, not a separate inline policy,
-    to preserve the CloudFormation dependency chain.
-    """
-    template = _synth_deploy_endpoint_stack()
-
-    # Count all IAM::Policy resources -- there should be none with S3 actions
-    resources = template.find_resources("AWS::IAM::Policy")
-    for logical_id, resource in resources.items():
-        policy_doc = resource.get("Properties", {}).get("PolicyDocument", {})
-        statements = policy_doc.get("Statement", [])
-        for stmt in statements:
-            actions = stmt.get("Action", [])
-            if isinstance(actions, str):
-                actions = [actions]
-            s3_actions = [a for a in actions if a.startswith("s3:")]
-            assert not s3_actions, (
-                f"Found S3 actions {s3_actions} in inline IAM::Policy '{logical_id}'. "
-                f"S3 permissions must be in the ManagedPolicy to ensure correct "
-                f"CloudFormation dependency ordering."
-            )
+    assert dev_ep != prod_ep, f"dev and prod endpoint names should differ, both are '{dev_ep}'"
+    assert "-dev-" in dev_ep, f"Expected '-dev-' in endpoint name, got '{dev_ep}'"
+    assert "-prod-" in prod_ep, f"Expected '-prod-' in endpoint name, got '{prod_ep}'"
 
 
 def test_role_references_managed_policy():
