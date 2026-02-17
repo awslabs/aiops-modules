@@ -43,9 +43,7 @@ os.environ.update(_ENV)
 # Stub out the get_approved_package module before it tries to create a boto3 client.
 # The module creates a boto3.client("sagemaker") at import time, so we must
 # intercept it before deploy_endpoint_stack imports it.
-_fake_get_approved = MagicMock(
-    return_value="arn:aws:sagemaker:us-east-1:111111111111:model-package/test-group/1"
-)
+_fake_get_approved = MagicMock(return_value="arn:aws:sagemaker:us-east-1:111111111111:model-package/test-group/1")
 _fake_module = MagicMock()
 _fake_module.get_approved_package = _fake_get_approved
 sys.modules["deploy_app.get_approved_package"] = _fake_module
