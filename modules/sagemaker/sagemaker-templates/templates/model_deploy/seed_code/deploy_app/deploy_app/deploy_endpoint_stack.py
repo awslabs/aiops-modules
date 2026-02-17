@@ -11,7 +11,6 @@ from aws_cdk import Aws, Stack, Tags
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_kms as kms
-from aws_cdk import aws_s3 as s3
 from aws_cdk import aws_sagemaker as sagemaker
 from config.config_mux import StageYamlDataClassConfig
 from config.constants import (
@@ -133,7 +132,46 @@ class DeployEndpointStack(Stack):
             ),
         )
 
-        model_bucket = s3.Bucket.from_bucket_arn(self, "ModelBucket", MODEL_BUCKET_ARN)
+        # Add S3 read/write permissions directly to the managed policy document.
+        #
+        # We intentionally avoid using bucket.grant_read_write() here because
+        # the model bucket would be imported via from_bucket_arn (S3 ARNs contain no account),
+        # and this stack deploys inside a Stage with a concrete account ID. CDK's
+        # Grant.addToPrincipalOrResource compares the bucket's unresolved ${AWS::AccountId}
+        # token against the concrete account string, gets ONE_UNRESOLVED, and falls through
+        # to the resource-policy path. This causes two problems:
+        #
+        # 1. With a ManagedPolicy grantee (the original code), CDK 2.174.0+ rejects the
+        #    ManagedPolicy as an invalid Principal when constructing the resource policy
+        #    statement (aws/aws-cdk#32795).
+        #
+        # 2. With a Role grantee (PR #396's fix), CDK creates a separate DefaultPolicy
+        #    inline resource with no CloudFormation dependency from the CfnModel, causing
+        #    an IAM propagation race where SageMaker's CreateModel API runs before the S3
+        #    permissions are attached to the role.
+        #
+        # Adding statements directly to the ManagedPolicy avoids both issues: permissions
+        # are embedded in the policy document at creation time, and the existing dependency
+        # chain (ManagedPolicy -> Role -> CfnModel) guarantees they are effective before
+        # the model is created.
+        model_execution_policy.add_statements(
+            iam.PolicyStatement(
+                actions=[
+                    "s3:GetObject*",
+                    "s3:GetBucket*",
+                    "s3:List*",
+                    "s3:DeleteObject*",
+                    "s3:PutObject",
+                    "s3:PutObjectLegalHold",
+                    "s3:PutObjectRetention",
+                    "s3:PutObjectTagging",
+                    "s3:PutObjectVersionTagging",
+                    "s3:Abort*",
+                ],
+                effect=iam.Effect.ALLOW,
+                resources=[MODEL_BUCKET_ARN, f"{MODEL_BUCKET_ARN}/*"],
+            ),
+        )
 
         if ECR_REPO_ARN:
             model_execution_policy.add_statements(
@@ -150,9 +188,6 @@ class DeployEndpointStack(Stack):
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
             managed_policies=[model_execution_policy],
         )
-
-        # Grant S3 read/write permissions to the role (not the ManagedPolicy)
-        model_bucket.grant_read_write(model_execution_role)
 
         # setup timestamp to be used to trigger the custom resource update event to retrieve
         # latest approved model and to be used with model and endpoint config resources' names
@@ -240,8 +275,23 @@ class DeployEndpointStack(Stack):
                 kms_key_id=kms_key.key_id,
             )
 
-            # Grant write permissions for data capture
-            model_bucket.grant_write(model_execution_role, "endpoint-data-capture/*")
+            # Grant write permissions for data capture (same pattern as above —
+            # add directly to the managed policy to avoid the imported-bucket grant issue)
+            model_execution_policy.add_statements(
+                iam.PolicyStatement(
+                    actions=[
+                        "s3:DeleteObject*",
+                        "s3:PutObject",
+                        "s3:PutObjectLegalHold",
+                        "s3:PutObjectRetention",
+                        "s3:PutObjectTagging",
+                        "s3:PutObjectVersionTagging",
+                        "s3:Abort*",
+                    ],
+                    effect=iam.Effect.ALLOW,
+                    resources=[f"{MODEL_BUCKET_ARN}/endpoint-data-capture/*"],
+                ),
+            )
         else:
             data_capture_config = None
 
