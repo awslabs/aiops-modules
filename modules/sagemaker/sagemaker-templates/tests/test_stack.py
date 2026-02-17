@@ -249,9 +249,7 @@ def test_s3_access_logging_configured(stack_with_logging: cdk.Stack, project_tem
         if logging_config:
             prefix = logging_config.get("LogFilePrefix", "")
             assert prefix, f"Bucket {logical_id} has empty log prefix"
-            assert "xgboost-1" in prefix, (
-                f"Bucket {logical_id} log prefix missing project name: {prefix}"
-            )
+            assert "xgboost-1" in prefix, f"Bucket {logical_id} log prefix missing project name: {prefix}"
             buckets_with_logging.append(logical_id)
 
     assert len(buckets_with_logging) == expected_count, (
@@ -377,9 +375,9 @@ def test_no_duplicate_principals_in_model_package_group_policy(
             aws_principals = principal.get("AWS", [])
             if isinstance(aws_principals, list):
                 principal_strs = [stringify_principal(p) for p in aws_principals]
-                assert len(principal_strs) == len(
-                    set(principal_strs)
-                ), f"Duplicate principals in {logical_id} statement '{statement_sid}': {aws_principals}"
+                assert len(principal_strs) == len(set(principal_strs)), (
+                    f"Duplicate principals in {logical_id} statement '{statement_sid}': {aws_principals}"
+                )
 
     template = Template.from_stack(stack_single_account)
     model_package_groups = template.find_resources("AWS::SageMaker::ModelPackageGroup")
@@ -432,9 +430,9 @@ def test_no_duplicate_principals_in_kms_key_policy(stack_single_account: cdk.Sta
             aws_principals = principal.get("AWS", [])
             if isinstance(aws_principals, list):
                 principal_strs = [stringify_principal(p) for p in aws_principals]
-                assert len(principal_strs) == len(
-                    set(principal_strs)
-                ), f"Duplicate principals in KMS key {logical_id} statement '{statement_sid}': {aws_principals}"
+                assert len(principal_strs) == len(set(principal_strs)), (
+                    f"Duplicate principals in KMS key {logical_id} statement '{statement_sid}': {aws_principals}"
+                )
 
     template = Template.from_stack(stack_single_account)
     kms_keys = template.find_resources("AWS::KMS::Key")

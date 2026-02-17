@@ -119,7 +119,11 @@ export class ModelBuildCodePipelineStack extends cdk.Stack {
 
     const buildPipeline = new codepipeline.Pipeline(this, 'BuildPipeline', {
       pipelineName,
-      artifactBucket: utils.createPipelineArtifactsBucket(this, props.s3AccessLogsBucketArn, `${pipelineName}-artifacts/`),
+      artifactBucket: utils.createPipelineArtifactsBucket(
+        this,
+        props.s3AccessLogsBucketArn,
+        `${pipelineName}-artifacts/`,
+      ),
     });
     this.pipeline = buildPipeline;
 

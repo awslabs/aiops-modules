@@ -61,5 +61,7 @@ test('ModelBuildSupportStack without s3AccessLogsBucketArn has no LoggingConfigu
   const logsBucket = Object.values(buckets).find(
     (b: any) => !b.Properties.BucketName,
   );
-  expect(logsBucket?.Properties.LoggingConfiguration?.DestinationBucketName).toBeUndefined();
+  expect(
+    logsBucket?.Properties.LoggingConfiguration?.DestinationBucketName,
+  ).toBeUndefined();
 });

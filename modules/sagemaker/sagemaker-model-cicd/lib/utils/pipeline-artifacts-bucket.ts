@@ -22,7 +22,11 @@ export function createPipelineArtifactsBucket(
   );
 
   const accessLogsBucket = s3AccessLogsBucketArn
-    ? s3.Bucket.fromBucketArn(scope, 'PipelineAccessLogsBucket', s3AccessLogsBucketArn)
+    ? s3.Bucket.fromBucketArn(
+        scope,
+        'PipelineAccessLogsBucket',
+        s3AccessLogsBucketArn,
+      )
     : undefined;
 
   const pipelineArtifactsBucket = new s3.Bucket(
@@ -35,7 +39,9 @@ export function createPipelineArtifactsBucket(
       bucketKeyEnabled: true,
       enforceSSL: true,
       serverAccessLogsBucket: accessLogsBucket,
-      serverAccessLogsPrefix: accessLogsBucket ? (logsPrefix || 'pipeline-artifacts/') : undefined,
+      serverAccessLogsPrefix: accessLogsBucket
+        ? logsPrefix || 'pipeline-artifacts/'
+        : undefined,
     },
   );
   if (!accessLogsBucket) {

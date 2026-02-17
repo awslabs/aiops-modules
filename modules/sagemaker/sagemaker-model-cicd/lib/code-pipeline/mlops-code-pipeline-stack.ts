@@ -79,7 +79,11 @@ export class MLOpsCodePipelineStack extends cdk.Stack {
         // this pipeline will already be updated during `seedfarmer apply`
         selfMutation: false,
         crossAccountKeys: true,
-        artifactBucket: utils.createPipelineArtifactsBucket(this, s3AccessLogsBucketArn, `${projectName}-infra-pipeline-artifacts/`),
+        artifactBucket: utils.createPipelineArtifactsBucket(
+          this,
+          s3AccessLogsBucketArn,
+          `${projectName}-infra-pipeline-artifacts/`,
+        ),
         synth: new cdk.pipelines.CodeBuildStep('Synth', {
           input: cdk.pipelines.CodePipelineSource.codeCommit(
             this.infraRepo,

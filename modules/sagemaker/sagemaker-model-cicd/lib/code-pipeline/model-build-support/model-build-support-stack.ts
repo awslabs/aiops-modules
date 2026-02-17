@@ -101,14 +101,17 @@ export class ModelBuildSupportStack extends cdk.Stack {
       autoDeleteObjects: true,
       enforceSSL: true,
       serverAccessLogsBucket: accessLogsBucket,
-      serverAccessLogsPrefix: accessLogsBucket ? `${sagemakerArtifactsBucketName}-logs/` : undefined,
+      serverAccessLogsPrefix: accessLogsBucket
+        ? `${sagemakerArtifactsBucketName}-logs/`
+        : undefined,
     });
 
     if (!accessLogsBucket) {
       NagSuppressions.addResourceSuppressions(logsBucket, [
         {
           id: 'AwsSolutions-S1',
-          reason: 'This is itself a logging bucket; enabling access logs would create a circular dependency.',
+          reason:
+            'This is itself a logging bucket; enabling access logs would create a circular dependency.',
         },
       ]);
     }

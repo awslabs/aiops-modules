@@ -90,7 +90,11 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
       // this pipeline will be updated by project-infra pipeline
       selfMutation: false,
       crossAccountKeys: true,
-      artifactBucket: utils.createPipelineArtifactsBucket(this, props.s3AccessLogsBucketArn, `${pipelineName}-artifacts/`),
+      artifactBucket: utils.createPipelineArtifactsBucket(
+        this,
+        props.s3AccessLogsBucketArn,
+        `${pipelineName}-artifacts/`,
+      ),
       synth: new cdk.pipelines.CodeBuildStep('Synth', {
         input: cdk.pipelines.CodePipelineSource.codeCommit(
           infraRepo,
