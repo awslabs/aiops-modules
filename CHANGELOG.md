@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- consolidated redundant `DevStage`/`PreProdStage`/`ProdStage` classes into a single `DeployStage` in `sagemaker-templates` model deploy seed code, fixing redundant CF stack names (e.g. `dev-dev-endpoint` → `dev-{project}-endpoint`) and adding project uniqueness to prevent cross-project collisions
+
 ## v3.2.3
 
 ### **Added**

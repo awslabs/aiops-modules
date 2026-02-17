@@ -80,6 +80,8 @@ class DeployEndpointStack(Stack):
         self,
         scope: constructs.Construct,
         id: str,
+        *,
+        stage_name: str,
         vpc_id: str,
         subnet_ids: List[str],
         security_group_ids: List[str],
@@ -164,7 +166,7 @@ class DeployEndpointStack(Stack):
         latest_approved_model_package = get_approved_package()
 
         # Sagemaker Model
-        model_name = f"-{id}-{timestamp}"
+        model_name = f"-{stage_name}-{timestamp}"
         model_name = MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(model_name)] + model_name
 
         vpc_config = None
@@ -192,7 +194,7 @@ class DeployEndpointStack(Stack):
         )
 
         # Sagemaker Endpoint Config
-        endpoint_config_name = f"-{id}-ec-{timestamp}"
+        endpoint_config_name = f"-{stage_name}-ec-{timestamp}"
         endpoint_config_name = (
             MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(endpoint_config_name)] + endpoint_config_name
         )
@@ -261,7 +263,7 @@ class DeployEndpointStack(Stack):
         endpoint_config.add_dependency(model)
 
         # Sagemaker Endpoint
-        endpoint_name = f"-{id}-endpoint"
+        endpoint_name = f"-{stage_name}-ep"
         endpoint_name = MODEL_PACKAGE_GROUP_NAME[: MAX_NAME_LENGTH - len(endpoint_name)] + endpoint_name
 
         endpoint = sagemaker.CfnEndpoint(
