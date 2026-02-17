@@ -44,42 +44,27 @@ ENV = {
 }
 
 
-class DevStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
+class DeployStage(cdk.Stage):
+    def __init__(
+        self,
+        scope: Construct,
+        construct_id: str,
+        *,
+        stage_name: str,
+        vpc_id: str,
+        subnet_ids: list[str],
+        security_group_ids: list[str],
+        **kwargs: Any,
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         DeployEndpointStack(
             self,
-            "dev-endpoint",
-            vpc_id=constants.DEV_VPC_ID,
-            subnet_ids=constants.DEV_SUBNET_IDS,
-            security_group_ids=constants.DEV_SECURITY_GROUP_IDS,
-        )
-
-
-class PreProdStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
-        super().__init__(scope, construct_id, **kwargs)
-
-        DeployEndpointStack(
-            self,
-            "preprod-endpoint",
-            vpc_id=constants.PRE_PROD_VPC_ID,
-            subnet_ids=constants.PRE_PROD_SUBNET_IDS,
-            security_group_ids=constants.PRE_PROD_SECURITY_GROUP_IDS,
-        )
-
-
-class ProdStage(cdk.Stage):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs: Any) -> None:
-        super().__init__(scope, construct_id, **kwargs)
-
-        DeployEndpointStack(
-            self,
-            "prod-endpoint",
-            vpc_id=constants.PROD_VPC_ID,
-            subnet_ids=constants.PROD_SUBNET_IDS,
-            security_group_ids=constants.PROD_SECURITY_GROUP_IDS,
+            f"{constants.PROJECT_NAME}-endpoint",
+            stage_name=stage_name,
+            vpc_id=vpc_id,
+            subnet_ids=subnet_ids,
+            security_group_ids=security_group_ids,
         )
 
 
@@ -188,17 +173,25 @@ class PipelineStack(cdk.Stack):
         )
 
         pipeline.add_stage(
-            DevStage(
+            DeployStage(
                 self,
                 "dev",
+                stage_name="dev",
+                vpc_id=constants.DEV_VPC_ID,
+                subnet_ids=constants.DEV_SUBNET_IDS,
+                security_group_ids=constants.DEV_SECURITY_GROUP_IDS,
                 env=cdk.Environment(account=constants.DEV_ACCOUNT_ID, region=constants.DEV_REGION),
             )
         )
 
         pipeline.add_stage(
-            PreProdStage(
+            DeployStage(
                 self,
                 "preprod",
+                stage_name="preprod",
+                vpc_id=constants.PRE_PROD_VPC_ID,
+                subnet_ids=constants.PRE_PROD_SUBNET_IDS,
+                security_group_ids=constants.PRE_PROD_SECURITY_GROUP_IDS,
                 env=cdk.Environment(account=constants.PRE_PROD_ACCOUNT_ID, region=constants.PRE_PROD_REGION),
             ),
             pre=[ManualApprovalStep("ApprovePreProd", comment="Approve deployment to Pre-Production")]
@@ -207,9 +200,13 @@ class PipelineStack(cdk.Stack):
         )
 
         pipeline.add_stage(
-            ProdStage(
+            DeployStage(
                 self,
                 "prod",
+                stage_name="prod",
+                vpc_id=constants.PROD_VPC_ID,
+                subnet_ids=constants.PROD_SUBNET_IDS,
+                security_group_ids=constants.PROD_SECURITY_GROUP_IDS,
                 env=cdk.Environment(account=constants.PROD_ACCOUNT_ID, region=constants.PROD_REGION),
             ),
             pre=[ManualApprovalStep("ApproveProd", comment="Approve deployment to Production")]
