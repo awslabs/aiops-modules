@@ -8,7 +8,7 @@ and asserts the ManagedPolicy contains the correct S3 actions.
 import json
 import os
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 # -- Dummy environment variables (must be set before importing constants) ----
 _ENV = {
