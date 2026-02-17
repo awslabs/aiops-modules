@@ -58,9 +58,11 @@ test('ModelBuildSupportStack without s3AccessLogsBucketArn has no LoggingConfigu
 
   // The LogsBucket should NOT have a LoggingConfiguration (only ArtifactsBucket logs to LogsBucket)
   const buckets = template.findResources('AWS::S3::Bucket');
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const logsBucket = Object.values(buckets).find(
     (b: any) => !b.Properties.BucketName,
   );
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   expect(
     logsBucket?.Properties.LoggingConfiguration?.DestinationBucketName,
   ).toBeUndefined();
