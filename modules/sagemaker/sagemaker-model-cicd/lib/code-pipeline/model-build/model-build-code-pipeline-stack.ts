@@ -19,6 +19,7 @@ export interface ModelBuildCodePipelineProps extends cdk.StackProps {
   readonly sagemakerExecutionRoleName: string;
   readonly codeBuildAssumeRoleName: string;
   readonly modelPackageGroupName: string;
+  readonly s3AccessLogsBucketArn?: string;
 }
 
 export class ModelBuildCodePipelineStack extends cdk.Stack {
@@ -118,7 +119,11 @@ export class ModelBuildCodePipelineStack extends cdk.Stack {
 
     const buildPipeline = new codepipeline.Pipeline(this, 'BuildPipeline', {
       pipelineName,
-      artifactBucket: utils.createPipelineArtifactsBucket(this),
+      artifactBucket: utils.createPipelineArtifactsBucket(
+        this,
+        props.s3AccessLogsBucketArn,
+        `${pipelineName}-artifacts/`,
+      ),
     });
     this.pipeline = buildPipeline;
 

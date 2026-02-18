@@ -43,9 +43,14 @@ class XGBoostAbaloneProject(Construct):
         access_token_secret_name: Optional[str],
         aws_codeconnection_arn: Optional[str],
         repository_owner: Optional[str],
+        s3_access_logs_bucket_arn: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id)
+
+        s3_access_logs_bucket: Optional[s3.IBucket] = None
+        if s3_access_logs_bucket_arn:
+            s3_access_logs_bucket = s3.Bucket.from_bucket_arn(self, "AccessLogsBucket", s3_access_logs_bucket_arn)
 
         dev_account_id = Aws.ACCOUNT_ID if not dev_account_id else dev_account_id
         pre_prod_account_id = Aws.ACCOUNT_ID if not pre_prod_account_id else pre_prod_account_id
@@ -106,6 +111,10 @@ class XGBoostAbaloneProject(Construct):
             versioned=True,
             removal_policy=RemovalPolicy.DESTROY,
             enforce_ssl=True,  # Blocks insecure requests to the bucket
+            server_access_logs_bucket=s3_access_logs_bucket,
+            server_access_logs_prefix=(
+                f"mlops-{sagemaker_project_name}-model-artifacts/" if s3_access_logs_bucket else None
+            ),
         )
 
         # DEV account access to objects in the bucket
@@ -212,6 +221,10 @@ class XGBoostAbaloneProject(Construct):
             versioned=True,
             enforce_ssl=True,
             removal_policy=RemovalPolicy.DESTROY,
+            server_access_logs_bucket=s3_access_logs_bucket,
+            server_access_logs_prefix=(
+                f"pipeline-{sagemaker_project_name}-artifacts/" if s3_access_logs_bucket else None
+            ),
         )
 
         security_group_ids = []
@@ -241,30 +254,25 @@ class XGBoostAbaloneProject(Construct):
             repository_owner=repository_owner,
         )
 
-        cdk_nag.NagSuppressions.add_resource_suppressions(
-            model_bucket,
-            [
-                {
-                    "id": "AwsSolutions-S1",
-                    "reason": (
-                        "S3 access logs are not required for ML model artifact buckets as"
-                        "they contain training artifacts and models, not user access data."
-                    ),
-                }
-            ],
-        )
-        cdk_nag.NagSuppressions.add_resource_suppressions(
-            pipeline_artifact_bucket,
-            [
-                {
-                    "id": "AwsSolutions-S1",
-                    "reason": (
-                        "S3 access logs are not required for CI/CD pipeline artifact buckets"
-                        "as they contain build artifacts, not user access data."
-                    ),
-                }
-            ],
-        )
+        if not s3_access_logs_bucket:
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                model_bucket,
+                [
+                    {
+                        "id": "AwsSolutions-S1",
+                        "reason": "S3 access logging is optional and was not configured for this deployment.",
+                    }
+                ],
+            )
+            cdk_nag.NagSuppressions.add_resource_suppressions(
+                pipeline_artifact_bucket,
+                [
+                    {
+                        "id": "AwsSolutions-S1",
+                        "reason": "S3 access logging is optional and was not configured for this deployment.",
+                    }
+                ],
+            )
 
         CfnOutput(
             self,

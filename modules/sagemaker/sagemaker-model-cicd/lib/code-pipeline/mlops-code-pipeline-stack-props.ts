@@ -123,6 +123,11 @@ export const MLOpsCodePipelinePropsSchema = z.object({
    * IAM Policy Name to attach to all roles as permissions boundary.
    */
   permissionsBoundaryName: z.string().optional(),
+  /**
+   * S3 bucket ARN for server access logging. When provided, all S3 buckets
+   * will be configured to send access logs to this bucket.
+   */
+  s3AccessLogsBucketArn: z.string().optional(),
 });
 
 export type MLOpsCodePipelineStackProps = z.infer<

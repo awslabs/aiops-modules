@@ -28,6 +28,7 @@ export interface ModelDeployCodePipelineStackProps extends cdk.StackProps {
   readonly ssmParamName?: string;
   readonly modelPackageGroupName: string;
   readonly sagemakerArtifactsBucketName: string;
+  readonly s3AccessLogsBucketArn?: string;
 }
 
 export class ModelDeployCodePipelineStack extends cdk.Stack {
@@ -89,7 +90,11 @@ export class ModelDeployCodePipelineStack extends cdk.Stack {
       // this pipeline will be updated by project-infra pipeline
       selfMutation: false,
       crossAccountKeys: true,
-      artifactBucket: utils.createPipelineArtifactsBucket(this),
+      artifactBucket: utils.createPipelineArtifactsBucket(
+        this,
+        props.s3AccessLogsBucketArn,
+        `${pipelineName}-artifacts/`,
+      ),
       synth: new cdk.pipelines.CodeBuildStep('Synth', {
         input: cdk.pipelines.CodePipelineSource.codeCommit(
           infraRepo,

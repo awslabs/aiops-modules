@@ -138,6 +138,7 @@ def stack(stack_defaults, project_template_type) -> cdk.Stack:
         hf_import_models_project_settings=hf_import_models_settings,
         batch_inference_project_settings=batch_inference_settings,
         permissions_boundary_name=None,
+        s3_access_logs_bucket_arn=None,
     )
 
 
@@ -160,6 +161,119 @@ def test_no_cdk_nag_errors(stack: cdk.Stack, project_template_type) -> None:
         Match.string_like_regexp(r"AwsSolutions-.*"),
     )
     assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors"
+
+
+@pytest.fixture(scope="function")
+def stack_with_logging(stack_defaults, project_template_type) -> cdk.Stack:
+    import stack
+
+    app = cdk.App()
+
+    xgboost_abalone_settings = None
+    batch_inference_settings = None
+
+    if project_template_type == ProjectTemplateType.XGBOOST_ABALONE:
+        xgboost_abalone_settings = XGBoostAbaloneProjectSettings(
+            enable_network_isolation="False", encrypt_inter_container_traffic="False"
+        )
+    elif project_template_type == ProjectTemplateType.BATCH_INFERENCE:
+        batch_inference_settings = BatchInferenceProjectSettings(
+            model_package_group_name="test-model-package-group",
+            model_bucket_name="test-model-bucket",
+            base_job_prefix="test-job-prefix",
+        )
+
+    return stack.ProjectStack(
+        app,
+        "test-logging-stack",
+        project_template_type=project_template_type,
+        sagemaker_project_name="xgboost-1",
+        sagemaker_project_id="xgboost-1",
+        dev_account_id="dev_account_id",
+        dev_vpc_id="",
+        dev_subnet_ids=[],
+        dev_security_group_ids=[],
+        pre_prod_account_id="pre_prod_account_id",
+        pre_prod_region="us-east-1",
+        pre_prod_vpc_id="",
+        pre_prod_subnet_ids=[],
+        pre_prod_security_group_ids=[],
+        prod_account_id="prod_account_id",
+        prod_region="us-east-1",
+        prod_vpc_id="",
+        prod_subnet_ids=[],
+        prod_security_group_ids=[],
+        env=cdk.Environment(
+            account=os.environ["CDK_DEFAULT_ACCOUNT"],
+            region=os.environ["CDK_DEFAULT_REGION"],
+        ),
+        sagemaker_domain_id="domain_id",
+        sagemaker_domain_arn="arn:aws:sagemaker:::domain/domain_id",
+        repository_type=RepositoryType.CODECOMMIT,
+        access_token_secret_name=None,
+        aws_codeconnection_arn=None,
+        repository_owner=None,
+        xgboost_abalone_project_settings=xgboost_abalone_settings,
+        model_deploy_project_settings=None,
+        hf_import_models_project_settings=None,
+        batch_inference_project_settings=batch_inference_settings,
+        permissions_boundary_name=None,
+        s3_access_logs_bucket_arn="arn:aws:s3:::test-access-logs-bucket",
+    )
+
+
+@pytest.mark.parametrize(
+    "project_template_type",
+    [
+        ProjectTemplateType.XGBOOST_ABALONE,
+        ProjectTemplateType.BATCH_INFERENCE,
+    ],
+    indirect=True,
+)
+def test_s3_access_logging_configured(stack_with_logging: cdk.Stack, project_template_type) -> None:
+    """Test that S3 buckets have logging configuration when s3_access_logs_bucket_arn is provided."""
+    from aws_cdk.assertions import Template
+
+    template = Template.from_stack(stack_with_logging)
+    buckets = template.find_resources("AWS::S3::Bucket")
+
+    expected_count = {
+        ProjectTemplateType.XGBOOST_ABALONE: 2,
+        ProjectTemplateType.BATCH_INFERENCE: 1,
+    }[project_template_type]
+
+    buckets_with_logging = []
+    for logical_id, resource in buckets.items():
+        props = resource.get("Properties", {})
+        logging_config = props.get("LoggingConfiguration", {})
+        if logging_config:
+            prefix = logging_config.get("LogFilePrefix", "")
+            assert prefix, f"Bucket {logical_id} has empty log prefix"
+            assert "xgboost-1" in prefix, f"Bucket {logical_id} log prefix missing project name: {prefix}"
+            buckets_with_logging.append(logical_id)
+
+    assert (
+        len(buckets_with_logging) == expected_count
+    ), f"Expected {expected_count} buckets with logging, found {len(buckets_with_logging)}: {buckets_with_logging}"
+
+
+@pytest.mark.parametrize(
+    "project_template_type",
+    [
+        ProjectTemplateType.XGBOOST_ABALONE,
+        ProjectTemplateType.BATCH_INFERENCE,
+    ],
+    indirect=True,
+)
+def test_no_cdk_nag_errors_with_logging(stack_with_logging: cdk.Stack, project_template_type) -> None:
+    """Test that CDK Nag passes when S3 access logging is configured."""
+    cdk.Aspects.of(stack_with_logging).add(cdk_nag.AwsSolutionsChecks())
+
+    nag_errors = Annotations.from_stack(stack_with_logging).find_error(
+        "*",
+        Match.string_like_regexp(r"AwsSolutions-.*"),
+    )
+    assert not nag_errors, f"Found {len(nag_errors)} CDK nag errors with logging enabled"
 
 
 @pytest.fixture(scope="function")
@@ -217,6 +331,7 @@ def stack_single_account(stack_defaults, project_template_type) -> cdk.Stack:
         hf_import_models_project_settings=hf_import_models_settings,
         batch_inference_project_settings=None,
         permissions_boundary_name=None,
+        s3_access_logs_bucket_arn=None,
     )
 
 

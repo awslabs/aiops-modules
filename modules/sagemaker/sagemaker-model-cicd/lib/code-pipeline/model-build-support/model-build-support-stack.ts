@@ -6,6 +6,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import * as sns from 'aws-cdk-lib/aws-sns';
+import { NagSuppressions } from 'cdk-nag';
 import { Construct } from 'constructs';
 import { DeployEnvironment } from '../mlops-code-pipeline-stack-props';
 
@@ -18,6 +19,7 @@ export interface ModelBuildSupportStackProps extends cdk.StackProps {
   readonly modelPackageGroupName: string;
   readonly modelApprovalTopicName: string;
   readonly deployEnvironments: DeployEnvironment[];
+  readonly s3AccessLogsBucketArn?: string;
 }
 
 export class ModelBuildSupportStack extends cdk.Stack {
@@ -39,6 +41,7 @@ export class ModelBuildSupportStack extends cdk.Stack {
       modelApprovalTopicName,
       deployEnvironments,
       toolingEnvironment,
+      s3AccessLogsBucketArn,
     } = props;
 
     const deploymentAccountPrincipals: iam.AccountPrincipal[] =
@@ -87,13 +90,31 @@ export class ModelBuildSupportStack extends cdk.Stack {
       targetKey: kmsKey,
     });
 
+    const accessLogsBucket = s3AccessLogsBucketArn
+      ? s3.Bucket.fromBucketArn(this, 'AccessLogsBucket', s3AccessLogsBucketArn)
+      : undefined;
+
     const logsBucket = new s3.Bucket(this, 'LogsBucket', {
       encryption: s3.BucketEncryption.KMS,
       encryptionKey: kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
       enforceSSL: true,
+      serverAccessLogsBucket: accessLogsBucket,
+      serverAccessLogsPrefix: accessLogsBucket
+        ? `${sagemakerArtifactsBucketName}-logs/`
+        : undefined,
     });
+
+    if (!accessLogsBucket) {
+      NagSuppressions.addResourceSuppressions(logsBucket, [
+        {
+          id: 'AwsSolutions-S1',
+          reason:
+            'This is itself a logging bucket; enabling access logs would create a circular dependency.',
+        },
+      ]);
+    }
 
     const sagemakerArtifactsBucket = new s3.Bucket(this, 'ArtifactsBucket', {
       bucketName: sagemakerArtifactsBucketName,

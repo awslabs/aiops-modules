@@ -604,6 +604,16 @@ exports[`ModelBuildSupportStack to match snapshot 1`] = `
     },
     "LogsBucket9C4D8843": {
       "DeletionPolicy": "Delete",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "AwsSolutions-S1",
+              "reason": "This is itself a logging bucket; enabling access logs would create a circular dependency.",
+            },
+          ],
+        },
+      },
       "Properties": {
         "AccessControl": "LogDeliveryWrite",
         "BucketEncryption": {
