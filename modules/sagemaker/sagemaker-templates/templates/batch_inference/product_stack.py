@@ -97,10 +97,7 @@ class BatchInferenceProject(Construct):
                 [
                     {
                         "id": "AwsSolutions-S1",
-                        "reason": (
-                            "S3 access logs are not required for CI/CD pipeline artifact buckets "
-                            "as they contain build artifacts, not user access data."
-                        ),
+                        "reason": "S3 access logging is optional and was not configured for this deployment.",
                     }
                 ],
             )
