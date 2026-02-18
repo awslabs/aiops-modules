@@ -48,7 +48,8 @@ export function createPipelineArtifactsBucket(
     NagSuppressions.addResourceSuppressions(pipelineArtifactsBucket, [
       {
         id: 'AwsSolutions-S1',
-        reason: 'S3 access logging is optional and was not configured for this deployment.',
+        reason:
+          'S3 access logging is optional and was not configured for this deployment.',
       },
     ]);
   }
