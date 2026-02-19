@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
+### **Changed**
+
+## v3.2.4
+
+### **Added**
+
 - added permission boundary as optional input to all modules
 - added optional `s3_access_logs_bucket_arn` parameter to `sagemaker-templates` and `sagemaker-model-cicd` modules for S3 access logging (CT.S3.PR.2 Control Tower compliance)
 
