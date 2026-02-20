@@ -17,13 +17,40 @@
 
 import json
 import os
-from typing import Union
+from typing import Any, List, Union
 
 
 def get_bool_env(name: str, default: Union[bool, str] = True) -> bool:
     """Get boolean environment variable with consistent parsing."""
     default_str = str(default).lower() if isinstance(default, bool) else default.lower()
     return os.getenv(name, default_str).lower() == "true"
+
+
+def get_env_with_fallback(key: str, fallback: Any, is_json_list: bool = False, warn: bool = False) -> Any:
+    """Get environment variable with fallback to provided value.
+
+    Args:
+        key: Environment variable name
+        fallback: Value to use if env var is not set or empty
+        is_json_list: If True, parse as JSON list and fall back if empty list
+        warn: If True, print a warning when fallback is used
+
+    Returns:
+        The environment variable value, or fallback if not set/empty
+    """
+    raw = os.environ.get(key)
+    if is_json_list:
+        value: List[str] = json.loads(raw) if raw else []
+        if not value:
+            if warn:
+                print(f"INFO: {key} not provided, using fallback")
+            return fallback
+        return value
+    if not raw:
+        if warn:
+            print(f"INFO: {key} not provided, using fallback")
+        return fallback
+    return raw
 
 
 MAX_NAME_LENGTH = 63
@@ -33,23 +60,28 @@ SOURCE_REPOSITORY = os.getenv("SOURCE_REPOSITORY", "")
 MODEL_BUCKET_ARN = os.environ["MODEL_BUCKET_ARN"]
 MODEL_PACKAGE_GROUP_NAME = os.getenv("MODEL_PACKAGE_GROUP_NAME", "")
 
+# DEV environment configuration (required)
 DEV_ACCOUNT_ID = os.environ["DEV_ACCOUNT_ID"]
 DEV_REGION = os.environ["DEV_REGION"]
 DEV_VPC_ID = os.environ["DEV_VPC_ID"]
 DEV_SUBNET_IDS = json.loads(os.environ["DEV_SUBNET_IDS"])
 DEV_SECURITY_GROUP_IDS = json.loads(os.environ["DEV_SECURITY_GROUP_IDS"])
 
-PRE_PROD_ACCOUNT_ID = os.environ["PRE_PROD_ACCOUNT_ID"]
-PRE_PROD_REGION = os.environ["PRE_PROD_REGION"]
-PRE_PROD_VPC_ID = os.environ["PRE_PROD_VPC_ID"]
-PRE_PROD_SUBNET_IDS = json.loads(os.environ["PRE_PROD_SUBNET_IDS"])
-PRE_PROD_SECURITY_GROUP_IDS = json.loads(os.environ["PRE_PROD_SECURITY_GROUP_IDS"])
+# PRE_PROD environment configuration (falls back to DEV if not provided)
+PRE_PROD_ACCOUNT_ID = get_env_with_fallback("PRE_PROD_ACCOUNT_ID", DEV_ACCOUNT_ID, warn=True)
+PRE_PROD_REGION = get_env_with_fallback("PRE_PROD_REGION", DEV_REGION, warn=True)
+PRE_PROD_VPC_ID = get_env_with_fallback("PRE_PROD_VPC_ID", DEV_VPC_ID)
+PRE_PROD_SUBNET_IDS = get_env_with_fallback("PRE_PROD_SUBNET_IDS", DEV_SUBNET_IDS, is_json_list=True)
+PRE_PROD_SECURITY_GROUP_IDS = get_env_with_fallback(
+    "PRE_PROD_SECURITY_GROUP_IDS", DEV_SECURITY_GROUP_IDS, is_json_list=True
+)
 
-PROD_ACCOUNT_ID = os.environ["PROD_ACCOUNT_ID"]
-PROD_REGION = os.environ["PROD_REGION"]
-PROD_VPC_ID = os.environ["PROD_VPC_ID"]
-PROD_SUBNET_IDS = json.loads(os.environ["PROD_SUBNET_IDS"])
-PROD_SECURITY_GROUP_IDS = json.loads(os.environ["PROD_SECURITY_GROUP_IDS"])
+# PROD environment configuration (falls back to DEV if not provided)
+PROD_ACCOUNT_ID = get_env_with_fallback("PROD_ACCOUNT_ID", DEV_ACCOUNT_ID, warn=True)
+PROD_REGION = get_env_with_fallback("PROD_REGION", DEV_REGION, warn=True)
+PROD_VPC_ID = get_env_with_fallback("PROD_VPC_ID", DEV_VPC_ID)
+PROD_SUBNET_IDS = get_env_with_fallback("PROD_SUBNET_IDS", DEV_SUBNET_IDS, is_json_list=True)
+PROD_SECURITY_GROUP_IDS = get_env_with_fallback("PROD_SECURITY_GROUP_IDS", DEV_SECURITY_GROUP_IDS, is_json_list=True)
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "")
 PROJECT_ID = os.getenv("PROJECT_ID", "")

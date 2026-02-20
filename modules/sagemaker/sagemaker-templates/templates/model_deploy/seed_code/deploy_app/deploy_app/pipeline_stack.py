@@ -220,10 +220,15 @@ class PipelineStack(cdk.Stack):
 
         # Add EventBridge rule to trigger pipeline when model is approved in Model Registry
         if constants.ENABLE_EVENTBRIDGE_TRIGGER:
+            # Truncate project name to fit within 64 char limit for EventBridge rule names
+            rule_suffix = "-model-approval-trigger"
+            max_prefix_len = constants.MAX_NAME_LENGTH - len(rule_suffix)
+            truncated_project_name = constants.PROJECT_NAME[:max_prefix_len]
+
             events.Rule(
                 self,
                 "ModelApprovalEventRule",
-                rule_name=f"{constants.PROJECT_NAME}-model-approval-trigger",
+                rule_name=f"{truncated_project_name}{rule_suffix}",
                 event_pattern=events.EventPattern(
                     source=["aws.sagemaker"],
                     detail_type=["SageMaker Model Package State Change"],
