@@ -117,4 +117,7 @@ if __name__ == "__main__":
         pd.DataFrame(test).to_csv(f"{base_dir}/test/test.csv", header=False, index=False)
     else:
         logger.info("Writing out datasets to %s.", base_dir)
+        # Convert sparse matrix to dense array if needed
+        if hasattr(X_pre, 'toarray'):
+            X_pre = X_pre.toarray()
         pd.DataFrame(X_pre).to_csv(f"{base_dir}/output_data/data.csv", header=False, index=False)
