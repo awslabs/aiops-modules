@@ -63,13 +63,20 @@ if __name__ == "__main__":
     pathlib.Path(f"{base_dir}/data").mkdir(parents=True, exist_ok=True)
     input_data = args.input_data
     logger.info("Input data path: %s", input_data)
-    bucket = input_data.split("/")[2]
-    key = "/".join(input_data.split("/")[3:])
-
-    logger.info("Downloading data from bucket: %s, key: %s", bucket, key)
-    fn = f"{base_dir}/data/abalone-dataset.csv"
-    s3 = boto3.resource("s3")
-    s3.Bucket(bucket).download_file(key, fn)
+    
+    # Check if input_data is an S3 URL or a local path
+    if input_data.startswith("s3://"):
+        # Download from S3
+        bucket = input_data.split("/")[2]
+        key = "/".join(input_data.split("/")[3:])
+        logger.info("Downloading data from bucket: %s, key: %s", bucket, key)
+        fn = f"{base_dir}/data/abalone-dataset.csv"
+        s3 = boto3.resource("s3")
+        s3.Bucket(bucket).download_file(key, fn)
+    else:
+        # Use local path (file already downloaded by ProcessingInput)
+        logger.info("Using local input data path")
+        fn = input_data
 
     logger.debug("Reading downloaded data.")
     df = pd.read_csv(
