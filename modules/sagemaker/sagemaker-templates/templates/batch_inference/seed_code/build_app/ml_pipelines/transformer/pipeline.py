@@ -144,7 +144,7 @@ def get_pipeline(
         inputs=[
             ProcessingInput(
                 source=input_data,
-                destination="/opt/ml/processing/input/data.csv",
+                destination="/opt/ml/processing/input",
             ),
         ],
         outputs=[
@@ -153,7 +153,7 @@ def get_pipeline(
         code="source_scripts/preprocessing.py",
         job_arguments=[
             "--input-data",
-            "/opt/ml/processing/input/data.csv",
+            input_data,
             "--do-train-test-split",
             "False",
         ],
