@@ -152,8 +152,6 @@ def get_pipeline(
         ],
         code="source_scripts/preprocessing.py",
         job_arguments=[
-            "--input-data",
-            input_data,
             "--do-train-test-split",
             "False",
         ],

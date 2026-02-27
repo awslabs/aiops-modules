@@ -55,19 +55,22 @@ def merge_two_dicts(x: Dict[str, Any], y: Dict[str, Any]) -> Dict[str, Any]:
 if __name__ == "__main__":
     logger.debug("Starting preprocessing.")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input-data", type=str, required=True)
+    parser.add_argument("--input-data", type=str, required=False)
     parser.add_argument("--do-train-test-split", type=str, default="True")
     args = parser.parse_args()
 
     base_dir = "/opt/ml/processing"
     pathlib.Path(f"{base_dir}/data").mkdir(parents=True, exist_ok=True)
-    input_data = args.input_data
-    logger.info("Input data S3 URL: %s", input_data)
     
-    # Extract filename from S3 URL - file is already downloaded by ProcessingInput
-    filename = input_data.split('/')[-1]
-    fn = f"/opt/ml/processing/input/{filename}"
-    logger.info("Reading file: %s", fn)
+    # ProcessingInput downloads file to /opt/ml/processing/input/
+    # Find the CSV file (parameter can't be passed to job_arguments)
+    import glob
+    csv_files = glob.glob("/opt/ml/processing/input/*.csv")
+    if csv_files:
+        fn = csv_files[0]
+        logger.info("Found CSV file: %s", fn)
+    else:
+        raise ValueError("No CSV files found in /opt/ml/processing/input/")
 
     df = pd.read_csv(
         fn,
