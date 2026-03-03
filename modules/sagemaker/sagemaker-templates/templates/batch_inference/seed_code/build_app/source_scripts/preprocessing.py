@@ -1,12 +1,12 @@
 """Feature engineers the abalone dataset."""
 
 import argparse
+import glob
 import logging
 import os
 import pathlib
 from typing import Any, Dict
 
-import boto3
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -55,23 +55,22 @@ def merge_two_dicts(x: Dict[str, Any], y: Dict[str, Any]) -> Dict[str, Any]:
 if __name__ == "__main__":
     logger.debug("Starting preprocessing.")
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input-data", type=str, required=True)
+    parser.add_argument("--input-data", type=str, required=False)
     parser.add_argument("--do-train-test-split", type=str, default="True")
     args = parser.parse_args()
 
     base_dir = "/opt/ml/processing"
     pathlib.Path(f"{base_dir}/data").mkdir(parents=True, exist_ok=True)
-    input_data = args.input_data
-    logger.info("Input data path: %s", input_data)
-    bucket = input_data.split("/")[2]
-    key = "/".join(input_data.split("/")[3:])
 
-    logger.info("Downloading data from bucket: %s, key: %s", bucket, key)
-    fn = f"{base_dir}/data/abalone-dataset.csv"
-    s3 = boto3.resource("s3")
-    s3.Bucket(bucket).download_file(key, fn)
+    # ProcessingInput downloads file to /opt/ml/processing/input/
+    # Find the CSV file (parameter can't be passed to job_arguments)
+    csv_files = glob.glob("/opt/ml/processing/input/*.csv")
+    if csv_files:
+        fn = csv_files[0]
+        logger.info("Found CSV file: %s", fn)
+    else:
+        raise ValueError("No CSV files found in /opt/ml/processing/input/")
 
-    logger.debug("Reading downloaded data.")
     df = pd.read_csv(
         fn,
         header=None,
@@ -117,4 +116,7 @@ if __name__ == "__main__":
         pd.DataFrame(test).to_csv(f"{base_dir}/test/test.csv", header=False, index=False)
     else:
         logger.info("Writing out datasets to %s.", base_dir)
+        # Convert sparse matrix to dense array if needed
+        if hasattr(X_pre, "toarray"):
+            X_pre = X_pre.toarray()
         pd.DataFrame(X_pre).to_csv(f"{base_dir}/output_data/data.csv", header=False, index=False)

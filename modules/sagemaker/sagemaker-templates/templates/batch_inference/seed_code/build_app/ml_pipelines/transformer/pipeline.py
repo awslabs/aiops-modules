@@ -6,7 +6,7 @@ import sagemaker
 import sagemaker.session
 from sagemaker import ModelPackage
 from sagemaker.inputs import TransformInput
-from sagemaker.processing import ProcessingOutput
+from sagemaker.processing import ProcessingInput, ProcessingOutput
 from sagemaker.sklearn.processing import SKLearnProcessor
 from sagemaker.transformer import Transformer
 from sagemaker.workflow.execution_variables import ExecutionVariables
@@ -141,13 +141,17 @@ def get_pipeline(
     step_process = ProcessingStep(
         name="PreprocessData",
         processor=sklearn_processor,
+        inputs=[
+            ProcessingInput(
+                source=input_data,
+                destination="/opt/ml/processing/input",
+            ),
+        ],
         outputs=[
             ProcessingOutput(output_name="output_data", source="/opt/ml/processing/output_data"),
         ],
         code="source_scripts/preprocessing.py",
         job_arguments=[
-            "--input-data",
-            input_data,
             "--do-train-test-split",
             "False",
         ],
