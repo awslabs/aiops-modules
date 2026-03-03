@@ -1,12 +1,12 @@
 """Feature engineers the abalone dataset."""
 
 import argparse
+import glob
 import logging
 import os
 import pathlib
 from typing import Any, Dict
 
-import boto3
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -61,10 +61,9 @@ if __name__ == "__main__":
 
     base_dir = "/opt/ml/processing"
     pathlib.Path(f"{base_dir}/data").mkdir(parents=True, exist_ok=True)
-    
+
     # ProcessingInput downloads file to /opt/ml/processing/input/
     # Find the CSV file (parameter can't be passed to job_arguments)
-    import glob
     csv_files = glob.glob("/opt/ml/processing/input/*.csv")
     if csv_files:
         fn = csv_files[0]
@@ -83,12 +82,20 @@ if __name__ == "__main__":
     logger.debug("Defining transformers.")
     numeric_features = list(feature_columns_names)
     numeric_features.remove("sex")
-    numeric_transformer = Pipeline(steps=[("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())])
+    numeric_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", StandardScaler())
+        ]
+    )
 
     categorical_features = ["sex"]
     categorical_transformer = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+            (
+                "imputer",
+                SimpleImputer(strategy="constant", fill_value="missing")
+            ),
             ("onehot", OneHotEncoder(handle_unknown="ignore")),
         ]
     )
@@ -107,17 +114,30 @@ if __name__ == "__main__":
 
     if args.do_train_test_split == "True":
         X = np.concatenate((y_pre, X_pre), axis=1)
-        logger.info("Splitting %d rows of data into train, validation, test datasets.", len(X))
+        logger.info(
+            "Splitting %d rows of data into train, validation, test "
+            "datasets.", len(X)
+        )
         np.random.shuffle(X)
-        train, validation, test = np.split(X, [int(0.7 * len(X)), int(0.85 * len(X))])
+        train, validation, test = np.split(
+            X, [int(0.7 * len(X)), int(0.85 * len(X))]
+        )
 
         logger.info("Writing out datasets to %s.", base_dir)
-        pd.DataFrame(train).to_csv(f"{base_dir}/train/train.csv", header=False, index=False)
-        pd.DataFrame(validation).to_csv(f"{base_dir}/validation/validation.csv", header=False, index=False)
-        pd.DataFrame(test).to_csv(f"{base_dir}/test/test.csv", header=False, index=False)
+        pd.DataFrame(train).to_csv(
+            f"{base_dir}/train/train.csv", header=False, index=False
+        )
+        pd.DataFrame(validation).to_csv(
+            f"{base_dir}/validation/validation.csv", header=False, index=False
+        )
+        pd.DataFrame(test).to_csv(
+            f"{base_dir}/test/test.csv", header=False, index=False
+        )
     else:
         logger.info("Writing out datasets to %s.", base_dir)
         # Convert sparse matrix to dense array if needed
         if hasattr(X_pre, 'toarray'):
             X_pre = X_pre.toarray()
-        pd.DataFrame(X_pre).to_csv(f"{base_dir}/output_data/data.csv", header=False, index=False)
+        pd.DataFrame(X_pre).to_csv(
+            f"{base_dir}/output_data/data.csv", header=False, index=False
+        )
