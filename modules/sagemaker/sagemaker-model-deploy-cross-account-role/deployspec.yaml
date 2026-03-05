@@ -1,0 +1,15 @@
+name: SAGEMAKER_MODEL_DEPLOY_CROSS_ACCOUNT_ROLE
+path: modules/sagemaker/sagemaker-model-deploy-cross-account-role
+parameters:
+  - name: trusted-account-id
+    value_from:
+      module_metadata:
+        group: core
+        name: optionals
+        key: trusted_account_id
+  - name: trusted-role-name
+    value_from:
+      module_metadata:
+        group: core
+        name: optionals
+        key: trusted_role_name

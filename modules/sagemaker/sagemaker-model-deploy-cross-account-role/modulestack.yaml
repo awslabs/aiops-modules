@@ -1,0 +1,10 @@
+name: sagemaker-model-deploy-cross-account-role
+path: modules/sagemaker/sagemaker-model-deploy-cross-account-role
+description: Creates cross-account IAM role for SageMaker model deployment pipeline
+parameters:
+  - name: trusted-account-id
+    description: AWS account ID that contains the deployment pipeline
+    type: string
+  - name: trusted-role-name
+    description: Name of the pipeline role that will assume this role
+    type: string
