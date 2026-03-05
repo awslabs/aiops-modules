@@ -203,7 +203,7 @@ class ModelDeployProject(Construct):
                                 "npm install -g aws-cdk",
                                 "python -m pip install -r requirements.txt",
                                 f"export REPOSITORY_TYPE={repository_type.value}",
-                                'cdk deploy --require-approval never --app "python app.py" ',
+                                'cdk deploy --all --require-approval never --app "python app.py" ',
                             ]
                         }
                     },
