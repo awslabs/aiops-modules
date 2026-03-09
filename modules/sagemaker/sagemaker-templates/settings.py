@@ -69,7 +69,7 @@ class ModuleSettings(CdkBaseSettings):
     prod_vpc_id: Optional[str] = Field(default=None)
     prod_subnet_ids: List[str] = Field(default=[])
     prod_security_group_ids: List[str] = Field(default=[])
-
+    cross_account_external_id: Optional[str] = Field(default=None)
     repository_type: RepositoryType = Field(default=RepositoryType.CODECOMMIT)
     access_token_secret_name: str = Field(default="github_token")
     aws_codeconnection_arn: Optional[str] = Field(default=None)

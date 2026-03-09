@@ -51,6 +51,7 @@ class ProjectStack(Stack):
         batch_inference_project_settings: Any = None,
         permissions_boundary_name: Optional[str] = None,
         s3_access_logs_bucket_arn: Optional[str] = None,
+        cross_account_external_id: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)
@@ -176,6 +177,7 @@ class ProjectStack(Stack):
                 access_token_secret_name=access_token_secret_name,
                 aws_codeconnection_arn=aws_codeconnection_arn,
                 repository_owner=repository_owner,
+                cross_account_external_id=cross_account_external_id,
             )
         else:
             raise ValueError(f"Unsupported project template type: {project_template_type}")

@@ -93,6 +93,7 @@ class ModelDeployProject(Construct):
         prod_vpc_id: str = "",
         prod_subnet_ids: Optional[List[str]] = None,
         prod_security_group_ids: Optional[List[str]] = None,
+        cross_account_external_id: Optional[str] = None,
         sagemaker_domain_id: str = "",
         sagemaker_domain_arn: str = "",
         repository_type: RepositoryType = RepositoryType.CODECOMMIT,
@@ -162,6 +163,7 @@ class ModelDeployProject(Construct):
             "PROD_REGION": codebuild.BuildEnvironmentVariable(value=prod_region),
             "PROD_SUBNET_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_subnet_ids)),
             "PROD_SECURITY_GROUP_IDS": codebuild.BuildEnvironmentVariable(value=json.dumps(prod_security_group_ids)),
+            "CROSS_ACCOUNT_EXTERNAL_ID": codebuild.BuildEnvironmentVariable(value=cross_account_external_id or ""),
             "ENABLE_NETWORK_ISOLATION": codebuild.BuildEnvironmentVariable(value=str(enable_network_isolation).lower()),
             "ENABLE_MANUAL_APPROVAL": codebuild.BuildEnvironmentVariable(value=str(enable_manual_approval).lower()),
             "ENABLE_EVENTBRIDGE_TRIGGER": codebuild.BuildEnvironmentVariable(
