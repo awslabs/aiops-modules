@@ -41,6 +41,7 @@ ENV = {
     "ENABLE_MANUAL_APPROVAL": str(constants.ENABLE_MANUAL_APPROVAL).lower(),
     "ENABLE_EVENTBRIDGE_TRIGGER": str(constants.ENABLE_EVENTBRIDGE_TRIGGER).lower(),
     "ENABLE_DATA_CAPTURE": str(constants.ENABLE_DATA_CAPTURE).lower(),
+    "CROSS_ACCOUNT_EXTERNAL_ID": constants.CROSS_ACCOUNT_EXTERNAL_ID,
 }
 
 
@@ -54,9 +55,16 @@ class DeployStage(cdk.Stage):
         vpc_id: str,
         subnet_ids: list[str],
         security_group_ids: list[str],
+        lookup_role_external_id: str = "",
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        synthesizer = None
+        if lookup_role_external_id:
+            synthesizer = cdk.DefaultStackSynthesizer(
+                lookup_role_external_id=lookup_role_external_id,
+            )
 
         DeployEndpointStack(
             self,
@@ -65,6 +73,7 @@ class DeployStage(cdk.Stage):
             vpc_id=vpc_id,
             subnet_ids=subnet_ids,
             security_group_ids=security_group_ids,
+            synthesizer=synthesizer,
         )
 
 
@@ -192,6 +201,7 @@ class PipelineStack(cdk.Stack):
                 vpc_id=constants.PRE_PROD_VPC_ID,
                 subnet_ids=constants.PRE_PROD_SUBNET_IDS,
                 security_group_ids=constants.PRE_PROD_SECURITY_GROUP_IDS,
+                lookup_role_external_id=constants.CROSS_ACCOUNT_EXTERNAL_ID,
                 env=cdk.Environment(account=constants.PRE_PROD_ACCOUNT_ID, region=constants.PRE_PROD_REGION),
             ),
             pre=[ManualApprovalStep("ApprovePreProd", comment="Approve deployment to Pre-Production")]
@@ -207,6 +217,7 @@ class PipelineStack(cdk.Stack):
                 vpc_id=constants.PROD_VPC_ID,
                 subnet_ids=constants.PROD_SUBNET_IDS,
                 security_group_ids=constants.PROD_SECURITY_GROUP_IDS,
+                lookup_role_external_id=constants.CROSS_ACCOUNT_EXTERNAL_ID,
                 env=cdk.Environment(account=constants.PROD_ACCOUNT_ID, region=constants.PROD_REGION),
             ),
             pre=[ManualApprovalStep("ApproveProd", comment="Approve deployment to Production")]

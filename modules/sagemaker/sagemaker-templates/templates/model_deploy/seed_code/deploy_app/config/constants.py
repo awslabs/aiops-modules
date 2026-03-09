@@ -59,6 +59,10 @@ DOMAIN_ARN = os.getenv("DOMAIN_ARN", None)
 ECR_REPO_ARN = os.getenv("ECR_REPO_ARN", None)
 
 ENABLE_NETWORK_ISOLATION = get_bool_env("ENABLE_NETWORK_ISOLATION", default=True)
+# Only used for the CDK lookup role (Vpc.from_lookup during cdk synth).
+# CodePipeline does not support externalId on action roles, so this cannot
+# be applied to the deploy role.
+CROSS_ACCOUNT_EXTERNAL_ID = os.getenv("CROSS_ACCOUNT_EXTERNAL_ID", "")
 ENABLE_MANUAL_APPROVAL = get_bool_env("ENABLE_MANUAL_APPROVAL", default=True)
 ENABLE_EVENTBRIDGE_TRIGGER = get_bool_env("ENABLE_EVENTBRIDGE_TRIGGER", default=True)
 ENABLE_DATA_CAPTURE = get_bool_env("ENABLE_DATA_CAPTURE", default=True)
