@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+## v3.2.5
+
+### **Added**
+
+- added optional `cross_account_external_id` parameter to `sagemaker-templates` model deploy for strengthening CDK bootstrap lookup role trust with `sts:ExternalId`
+
+### **Changed**
+
+- bumped `aws-cdk-lib` from 2.128.0 to 2.170.0 in model deploy seed code to support `lookupRoleExternalId` in `DefaultStackSynthesizer`
+- fixed batch inference parameter resolution in `sagemaker-templates`
+- added `--all` flag to `cdk deploy` in model deploy for multi-stack cross-account deployments
+- added region validation for cross-region deployment in model deploy seed code
+
 ## v3.2.4
 
 ### **Added**
