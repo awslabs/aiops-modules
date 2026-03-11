@@ -1,5 +1,5 @@
 aws-cdk-lib==2.221.0
 cdk-nag==2.37.55
-sagemaker==2.253.1
+sagemaker==2.256.0
 pydantic~=2.12.3
 pydantic-settings~=2.11.0
