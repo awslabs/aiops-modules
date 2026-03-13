@@ -316,10 +316,12 @@ class SMRoles(Construct):
                                 "sagemaker:DescribeImage",
                                 "sagemaker:DescribeImageVersion",
                                 "sagemaker:ListImageVersions",
+                                "sagemaker:DescribeAppImageConfig",
                             ],
                             resources=[
-                                f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:image/*"
-                                f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:image-version/*/*"
+                                f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:image/*",
+                                f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:image-version/*/*",
+                                f"arn:{Aws.PARTITION}:sagemaker:{Aws.REGION}:{Aws.ACCOUNT_ID}:app-image-config/*",
                             ],
                         )
                     ]

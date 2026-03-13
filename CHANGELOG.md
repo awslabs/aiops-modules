@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Changed**
 
+- fixed `sagemaker-studio` role broken describe image version permissions
+
 ## v3.2.5
 
 ### **Added**
