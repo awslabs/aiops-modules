@@ -21,7 +21,10 @@ stack = SagemakerNotebookStack(
     scope=app,
     construct_id=app_settings.settings.app_prefix,
     env=env,
-    **app_settings.parameters.model_dump(),
+    **{
+        **app_settings.parameters.model_dump(exclude={"custom_tags"}),
+        "tags": {**(app_settings.parameters.tags or {}), **(app_settings.parameters.custom_tags or {})},
+    },
 )
 
 cdk.Aspects.of(app).add(cdk_nag.AwsSolutionsChecks(log_ignores=True))

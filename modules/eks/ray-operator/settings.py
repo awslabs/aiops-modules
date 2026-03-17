@@ -38,6 +38,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     data_bucket_name: Optional[str] = Field(default=None)
     permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
+    custom_tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

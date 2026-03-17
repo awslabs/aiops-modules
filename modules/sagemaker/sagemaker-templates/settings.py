@@ -78,6 +78,7 @@ class ModuleSettings(CdkBaseSettings):
     permissions_boundary_name: Optional[str] = Field(default=None)
     s3_access_logs_bucket_arn: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
+    custom_tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class XGBoostAbaloneProjectSettings(CdkBaseSettings):
