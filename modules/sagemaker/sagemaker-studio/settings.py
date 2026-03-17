@@ -61,6 +61,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     mlflow_artifact_store_bucket_prefix: str = Field(default="/")
 
     tags: Optional[Dict[str, str]] = Field(default=None)
+    custom_tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

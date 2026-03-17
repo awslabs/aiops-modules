@@ -45,3 +45,8 @@ def test_eks_cluster_name(stack_defaults):
 
     with pytest.raises(ValidationError):
         import app  # noqa: F401
+
+
+def test_app_with_custom_tags(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_CUSTOM_TAGS"] = '{"CustomerTag": "test-value"}'
+    import app  # noqa: F401

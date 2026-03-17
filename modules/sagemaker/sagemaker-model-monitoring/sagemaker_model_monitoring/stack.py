@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import constructs
 from aws_cdk import Stack, Tags
@@ -91,6 +91,7 @@ class SageMakerModelMonitoringStack(Stack):
         model_explainability_probability_attribute: Optional[str],
         model_explainability_schedule_expression: str,
         permissions_boundary_name: Optional[str] = None,
+        custom_tags: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)

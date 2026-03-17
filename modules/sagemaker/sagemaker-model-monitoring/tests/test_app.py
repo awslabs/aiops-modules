@@ -39,3 +39,8 @@ def test_all_disabled(stack_defaults):
 
     with pytest.raises(Exception, match="At least one of enable_data_quality_monitor, .+ must be True"):
         import app  # noqa: F401
+
+
+def test_app_with_custom_tags(stack_defaults):
+    os.environ["SEEDFARMER_PARAMETER_CUSTOM_TAGS"] = '{"CustomerTag": "test-value"}'
+    import app  # noqa: F401

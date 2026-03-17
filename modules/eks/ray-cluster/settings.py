@@ -62,6 +62,7 @@ class SeedFarmerParameters(CdkBaseSettings):
     worker_labels: Dict[str, str] = Field(default={})
     permissions_boundary_name: Optional[str] = Field(default=None)
     tags: Optional[Dict[str, str]] = Field(default=None)
+    custom_tags: Optional[Dict[str, str]] = Field(default=None)
 
 
 class SeedFarmerSettings(CdkBaseSettings):

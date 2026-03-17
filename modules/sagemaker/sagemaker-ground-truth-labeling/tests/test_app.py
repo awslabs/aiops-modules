@@ -92,3 +92,8 @@ def test_labeling_task_keywords() -> None:
 
     with pytest.raises(ValidationError):
         import app  # noqa: F401
+
+
+def test_app_with_custom_tags() -> None:
+    os.environ["SEEDFARMER_PARAMETER_CUSTOM_TAGS"] = '{"CustomerTag": "test-value"}'
+    import app  # noqa: F401
