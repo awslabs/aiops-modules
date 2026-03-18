@@ -55,6 +55,7 @@ def stack_model_package_input(
         enable_model_explainability_monitor=enable_model_explainability_monitor,
         baseline_training_data_s3_uri=baseline_training_data_s3_uri,
         baseline_output_data_s3_uri=baseline_output_data_s3_uri,
+        custom_tags={"CustomerTag": "test-value"},
     )
 
     return stack.SageMakerModelMonitoringStack(

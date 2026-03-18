@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, Dict, List, Optional, Tuple, cast
 
 import cdk_nag
 from aws_cdk import BundlingOptions, BundlingOutput, DockerImage, Stack
@@ -52,6 +52,7 @@ class ProjectStack(Stack):
         permissions_boundary_name: Optional[str] = None,
         s3_access_logs_bucket_arn: Optional[str] = None,
         cross_account_external_id: Optional[str] = None,
+        custom_tags: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(scope, id, **kwargs)

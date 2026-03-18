@@ -31,6 +31,7 @@ class SagemakerNotebookStack(Stack):
         additional_code_repositories: Optional[List[str]] = None,
         role_arn: Optional[str] = None,
         tags: Optional[Dict[str, str]] = None,
+        custom_tags: Optional[Dict[str, str]] = None,
         permissions_boundary_name: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
@@ -91,6 +92,7 @@ class SagemakerNotebookStack(Stack):
         self.kms_key_arn = kms_key_arn
         self.role_arn = role_arn
         self.additional_tags = tags
+        self.custom_tags = custom_tags
 
         self.additional_code_repositories = (
             ["https://github.com/aws/amazon-sagemaker-examples.git"]
@@ -148,6 +150,8 @@ class SagemakerNotebookStack(Stack):
         """Add tags to all resources."""
         Tags.of(self).add("sagemaker:deployment-stage", Stack.of(self).stack_name)
         for k, v in (self.additional_tags or {}).items():
+            Tags.of(self).add(k, v)
+        for k, v in (self.custom_tags or {}).items():
             Tags.of(self).add(k, v)
 
     def setup_outputs(self) -> None:
