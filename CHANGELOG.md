@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### **Added**
 
-- added optional `custom_tags` parameter to all modules for customer-provided tag support
-
 ### **Changed**
+
+## v3.2.7
+
+### **Added**
+
+- added optional `custom_tags` parameter to all modules for customer-provided tag support
 
 ## v3.2.6
 
