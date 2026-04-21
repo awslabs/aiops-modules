@@ -61,7 +61,7 @@ pydantic-settings==2.2.1
     # via -r requirements.in
 python-dateutil==2.8.2
     # via jsii
-python-dotenv==0.21.1
+python-dotenv==1.2.2
     # via pydantic-settings
 pyyaml==6.0.1
     # via -r requirements.in
