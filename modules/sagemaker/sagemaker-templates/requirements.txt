@@ -65,7 +65,7 @@ python-dateutil==2.8.2
     # via
     #   botocore
     #   jsii
-python-dotenv==1.0.1
+python-dotenv==1.2.2
     # via pydantic-settings
 s3transfer==0.13.1
     # via boto3
